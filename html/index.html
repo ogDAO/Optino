@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Doptions - Decentralised Options</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Goblok Control Panel (c) Bok Consulting Pty Ltd 2019">
+    <meta name="author" content="BokkyPooBah@bokconsulting.com.au">
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="css/bootstrap-vue.css"/>
+    <link href="css/app.css" rel="stylesheet" media="screen" />
+    <!-- <link rel="stylesheet" href="highlight.js-styles/hopscotch.css"> -->
+    <!-- <link type="text/css" rel="stylesheet" href="css/theme.css" /> -->
+    <!-- <script src="js/polyfill.js"></script> -->
+    <script src="js/vue.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/bootstrap-vue.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/vuex.js"></script>
+    <script src="js/vuex-router-sync.js"></script>
+    <!-- <script src="js/w2ui-1.5.rc1.js"></script> -->
+    <script src="js/bignumber.min.js"></script>
+    <script src="js/web3.js"></script>
+    <script src="js/sha3.js"></script>
+    <!-- <script src="js/js-ipfs.js"></script> -->
+    <script src="js/ipfs-http-client.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.js"></script> -->
+    <!-- <script src="js/highlight.pack.js"></script> -->
+    <script src="functions.js"></script>
+    <script src="connectionModule.js"></script>
+    <script src="dataServiceModule.js"></script>
+    <script src="tokenContractModule.js"></script>
+    <script src="priceFeedModule.js"></script>
+    <script src="ipfsServiceModule.js"></script>
+    <script src="tokenContractExplorerModule.js"></script>
+    <script src="priceFeedExplorerModule.js"></script>
+    <script src="apiReferenceModule.js"></script>
+    <script src="ipfsExplorerModule.js"></script>
+    <script src="dataServiceExplorerModule.js"></script>
+    <script src="homeModule.js"></script>
+    <script src="routes.js"></script>
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="images/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="images/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="images/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="images/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="images/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="images/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="&nbsp;"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="images/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="images/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="images/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="images/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="images/mstile-310x310.png" />
+  </head>
+  <body>
+    <div id="app">
+      <b-container fluid>
+        <div>
+          <b-navbar type="dark" variant="primary">
+            <b-navbar-brand to="/">
+              <!-- <img src="images/Me-zoomed.png" style="max-width:53px; margin-top: -16px;" class="d-inline-block align-top" alt="Ether Vending Machine" /> -->
+              <img src="images/Me-zoomed.png" style="max-width:30px; margin-top: -4px;" alt="Goblok Control Panel" />
+              Doptions - Decentralised Options
+            </b-navbar-brand>
+            <b-navbar-nav class="ml-auto">
+              <b-nav-item to="/priceFeedExplorer/all" v-b-popover.hover="'View and set price feed'">Price Feed Explorer</b-nav-item>
+              <b-nav-item to="/tokenContractExplorer/all" v-b-popover.hover="'Mint your ERC721 Non-Fungible Tokens; view and set token attributes'">Token Contract Explorer</b-nav-item>
+              <b-nav-item to="/dataServiceExplorer/all" v-b-popover.hover="'State and media held on Data Server'">Data Service Explorer</b-nav-item>
+              <b-nav-item to="/ipfsExplorer/all" v-b-popover.hover="'IPFS Explorer'">IPFS Explorer</b-nav-item>
+              <b-nav-item to="/apiReference/all" v-b-popover.hover="'API Reference'">API Reference</b-nav-item>
+            </b-navbar-nav>
+          </b-navbar>
+        </div>
+        <br />
+        <router-view></router-view>
+      </b-container>
+    </div>
+    <script src="index.js"></script>
+    <!-- <script>hljs.initHighlightingOnLoad();</script> -->
+  </body>
+</html>
