@@ -26,6 +26,8 @@ printf "START_DATE  = '$START_DATE' '$START_DATE_S'\n" | tee -a $TEST1OUTPUT
 printf "END_DATE    = '$END_DATE' '$END_DATE_S'\n" | tee -a $TEST1OUTPUT
 
 # Make copy of SOL file ---
+cp $SOURCEDIR/$WETH9SOL .
+# cp $SOURCEDIR/$DAISOL .
 # rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol --exclude=test/
 # rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol
 # Copy modified contracts if any files exist
@@ -44,7 +46,9 @@ printf "END_DATE    = '$END_DATE' '$END_DATE_S'\n" | tee -a $TEST1OUTPUT
 solc_0.6.0 --version | tee -a $TEST1OUTPUT
 
 echo "var priceFeedOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
+echo "var weth9Output=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
 echo "var tokenOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
+# echo "var daiOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
 # ../scripts/solidityFlattener.pl --contractsdir=../contracts --mainsol=$TOKENFACTORYSOL --outputsol=$TOKENFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
 
 
@@ -55,16 +59,27 @@ fi
 
 geth --verbosity 3 attach $GETHATTACHPOINT << EOF | tee -a $TEST1OUTPUT
 loadScript("$PRICEFEEDJS");
+loadScript("$WETH9JS");
+loadScript("$MINTABLETOKENJS");
 loadScript("lookups.js");
 loadScript("functions.js");
 
-console.log(JSON.stringify(priceFeedOutput));
+// console.log(JSON.stringify(priceFeedOutput));
 
 var priceFeedAbi = JSON.parse(priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].abi);
 var priceFeedBin = "0x" + priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].bin;
+var weth9Abi = JSON.parse(weth9Output.contracts["$WETH9SOL:$WETH9NAME"].abi);
+var weth9Bin = "0x" + weth9Output.contracts["$WETH9SOL:$WETH9NAME"].bin;
+var tokenAbi = JSON.parse(tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].abi);
+var tokenBin = "0x" + tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].bin;
 
-console.log("DATA: priceFeedAbi=" + JSON.stringify(priceFeedAbi));
-console.log("DATA: priceFeedBin=" + JSON.stringify(priceFeedBin));
+// console.log("DATA: priceFeedAbi=" + JSON.stringify(priceFeedAbi));
+// console.log("DATA: priceFeedBin=" + JSON.stringify(priceFeedBin));
+// console.log("DATA: weth9Abi=" + JSON.stringify(weth9Abi));
+// console.log("DATA: weth9Bin=" + JSON.stringify(weth9Bin));
+// console.log("DATA: tokenAbi=" + JSON.stringify(tokenAbi));
+// console.log("DATA: tokenBin=" + JSON.stringify(tokenBin));
+
 
 unlockAccounts("$PASSWORD");
 printBalances();
@@ -100,11 +115,57 @@ var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deploy
     }
   }
 );
+var weth9Contract = web3.eth.contract(weth9Abi);
+console.log("DATA: weth9Contract=" + JSON.stringify(weth9Contract));
+var weth9Tx = null;
+var weth9Address = null;
+var weth9 = weth9Contract.new({from: deployer, data: weth9Bin, gas: 4000000, gasPrice: defaultGasPrice},
+  function(e, contract) {
+    if (!e) {
+      if (!contract.address) {
+        weth9Tx = contract.transactionHash;
+      } else {
+        weth9Address = contract.address;
+        addAccount(weth9Address, "WETH9");
+        addTokenContractAddressAndAbi(0, weth9Address, weth9Abi);
+        addAddressSymbol(weth9Address, "WETH9");
+        console.log("DATA: var weth9Address=\"" + weth9Address + "\";");
+        console.log("DATA: var weth9Abi=" + JSON.stringify(weth9Abi) + ";");
+        console.log("DATA: var weth9=eth.contract(weth9Abi).at(weth9Address);");
+      }
+    }
+  }
+);
+var daiContract = web3.eth.contract(tokenAbi);
+console.log("DATA: daiContract=" + JSON.stringify(daiContract));
+var daiTx = null;
+var daiAddress = null;
+var dai = daiContract.new({from: deployer, data: weth9Bin, gas: 4000000, gasPrice: defaultGasPrice},
+  function(e, contract) {
+    if (!e) {
+      if (!contract.address) {
+        daiTx = contract.transactionHash;
+      } else {
+        daiAddress = contract.address;
+        addAccount(daiAddress, "DAI");
+        addAddressSymbol(daiAddress, "DAI");
+        addTokenContractAddressAndAbi(1, daiAddress, tokenAbi);
+        console.log("DATA: var daiAddress=\"" + daiAddress + "\";");
+        console.log("DATA: var daiAbi=" + JSON.stringify(tokenAbi) + ";");
+        console.log("DATA: var dai=eth.contract(daiAbi).at(daiAddress);");
+      }
+    }
+  }
+);
 while (txpool.status.pending > 0) {
 }
 printBalances();
 failIfTxStatusError(priceFeedTx, deployGroup1Message + " - PriceFeed");
 printTxData("priceFeedTx", priceFeedTx);
+failIfTxStatusError(weth9Tx, deployGroup1Message + " - WETH9");
+printTxData("weth9Tx", weth9Tx);
+failIfTxStatusError(daiTx, deployGroup1Message + " - DAI");
+printTxData("daiTx", daiTx);
 console.log("RESULT: ");
 printPriceFeedContractDetails();
 console.log("RESULT: ");
@@ -169,7 +230,8 @@ printBalances();
 passIfTxStatusError(testSecondInit_1Tx, testSecondInitMessage + " - expecting init() to fail");
 printTxData("testSecondInit_1Tx", testSecondInit_1Tx);
 console.log("RESULT: ");
-printTokenContractDetails();
+printTokenContractDetails(0);
+printTokenContractDetails(1);
 console.log("RESULT: ");
 
 

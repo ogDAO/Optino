@@ -54,35 +54,57 @@ addAddressNames("0x0000000000000000000000000000000000000000", "Null");
 // -----------------------------------------------------------------------------
 // Token Contract
 // -----------------------------------------------------------------------------
-var tokenContractAddress = null;
-var tokenContractAbi = null;
+//-----------------------------------------------------------------------------
+// Token Contracts
+//-----------------------------------------------------------------------------
+var _tokenContractAddresses = [];
+var _tokenContractAbis = [];
+var _tokens = [null, null, null, null];
+var _symbols = ["WETH9", "DAI", "2", "3"];
+var _decimals = [18, 18, 18, 18];
 
-function addTokenContractAddressAndAbi(address, tokenAbi) {
-  tokenContractAddress = address;
-  tokenContractAbi = tokenAbi;
+function addTokenContractAddressAndAbi(i, address, abi) {
+  _tokenContractAddresses[i] = address;
+  _tokenContractAbis[i] = abi;
+  _tokens[i] = web3.eth.contract(abi).at(address);
+  // if (i == 0) {
+  //   _symbols[i] = "WETH9";
+  //   _decimals[i] = 18;
+  // } else {
+  //   _symbols[i] = _tokens[i].symbol();
+  //   _decimals[i] = _tokens[i].decimals();
+  // }
 }
 
-// -----------------------------------------------------------------------------
-// Account ETH and token balances
-// -----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//Account ETH and token balances
+//-----------------------------------------------------------------------------
 function printBalances() {
-  var token = tokenContractAddress == null || tokenContractAbi == null ? null : web3.eth.contract(tokenContractAbi).at(tokenContractAddress);
-  var decimals = token == null ? 18 : token.decimals();
   var i = 0;
-  var totalTokenBalance = new BigNumber(0);
-  console.log("RESULT:  # Account                                             EtherBalanceChange                          Token Name");
-  console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ---------------------------");
+  var j;
+  var totalTokenBalances = [new BigNumber(0), new BigNumber(0), new BigNumber(0), new BigNumber(0)];
+  console.log("RESULT:  # Account                                             EtherBalanceChange               " + padLeft(_symbols[0], 16) + "               " + padLeft(_symbols[1], 16) + " Name");
+  // console.log("RESULT:                                                                                         " + padLeft(_symbols[2], 16) + "               " + padLeft(_symbols[3], 16));
+  console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------");
   accounts.forEach(function(e) {
     var etherBalanceBaseBlock = eth.getBalance(e, baseBlock);
     var etherBalance = web3.fromWei(eth.getBalance(e).minus(etherBalanceBaseBlock), "ether");
-    var tokenBalance = token == null ? new BigNumber(0) : token.balanceOf(e).shift(-decimals);
-    totalTokenBalance = totalTokenBalance.add(tokenBalance);
-    console.log("RESULT: " + pad2(i) + " " + e  + " " + pad(etherBalance) + " " + padToken(tokenBalance, decimals) + " " + accountNames[e]);
+    var tokenBalances = [];
+    for (j = 0; j < 2; j++) {
+      tokenBalances[j] = _tokens[j] == null ? new BigNumber(0) : _tokens[j].balanceOf.call(e).shift(-_decimals[j]);
+      totalTokenBalances[j] = totalTokenBalances[j].add(tokenBalances[j]);
+    }
+    console.log("RESULT: " + pad2(i) + " " + e  + " " + pad(etherBalance) + " " +
+      padToken(tokenBalances[0], _decimals[0]) + " " + padToken(tokenBalances[1], _decimals[1]) + " " + accountNames[e]);
+    // console.log("RESULT:                                                                           " +
+      // padToken(tokenBalances[2], _decimals[2]) + " " + padToken(tokenBalances[3], _decimals[3]));
     i++;
   });
-  console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ---------------------------");
-  console.log("RESULT:                                                                           " + padToken(totalTokenBalance, decimals) + " Total Token Balances");
-  console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ---------------------------");
+  console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------");
+  console.log("RESULT:                                                                           " + padToken(totalTokenBalances[0], _decimals[0]) + " " + padToken(totalTokenBalances[1], _decimals[1]) + " Total Token Balances");
+  // console.log("RESULT:                                                                           " + padToken(totalTokenBalances[2], _decimals[2]) + " " + padToken(totalTokenBalances[3], _decimals[3]));
+  console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------");
   console.log("RESULT: ");
 }
 
@@ -271,50 +293,50 @@ function waitUntilBlock(message, block, addBlocks) {
 //-----------------------------------------------------------------------------
 // Token Contract A
 //-----------------------------------------------------------------------------
-var tokenFromBlock = 0;
-function printTokenContractDetails() {
-  if (tokenFromBlock == 0) {
-    tokenFromBlock = baseBlock;
+var tokenFromBlock = [0, 0, 0, 0];
+function printTokenContractDetails(j) {
+  if (tokenFromBlock[j] == 0) {
+    tokenFromBlock[j] = baseBlock;
   }
-  console.log("RESULT: tokenContractAddress=" + getShortAddressName(tokenContractAddress));
-  if (tokenContractAddress != null) {
-    var contract = eth.contract(tokenContractAbi).at(tokenContractAddress);
-    var decimals = contract.decimals();
-    console.log("RESULT: token.owner/new=" + getShortAddressName(contract.owner()) + "/" + getShortAddressName(contract.newOwner()));
-    console.log("RESULT: token.details='" + contract.symbol() + "' '" + contract.name() + "' " + decimals + " dp");
-    console.log("RESULT: token.totalSupply=" + contract.totalSupply().shift(-decimals));
+  console.log("RESULT: token" + j + "ContractAddress=" + getShortAddressName(_tokenContractAddresses[j]));
+  if (_tokenContractAddresses[j] != null) {
+    var contract = _tokens[j];
+    var decimals = _decimals[j];
+    console.log("RESULT: token" + j + ".owner/new=" + getShortAddressName(contract.owner()) + "/" + getShortAddressName(contract.newOwner()));
+    console.log("RESULT: token" + j + ".details='" + contract.symbol() + "' '" + contract.name() + "' " + decimals + " dp");
+    console.log("RESULT: token" + j + ".totalSupply=" + contract.totalSupply().shift(-decimals));
 
     var latestBlock = eth.blockNumber;
     var i;
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: tokenFromBlock, toBlock: latestBlock });
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: tokenFromBlock[j], toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
-      console.log("RESULT: token.OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      console.log("RESULT: token" + j + ".OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     ownershipTransferredEvents.stopWatching();
 
-    var approvalEvents = contract.Approval({}, { fromBlock: tokenFromBlock, toBlock: latestBlock });
+    var approvalEvents = contract.Approval({}, { fromBlock: tokenFromBlock[j], toBlock: latestBlock });
     i = 0;
     approvalEvents.watch(function (error, result) {
       // console.log("RESULT: token" + j + ".Approval " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result));
-      console.log("RESULT: token.Approval " + i++ + " #" + result.blockNumber +
+      console.log("RESULT: token" + j + ".Approval " + i++ + " #" + result.blockNumber +
         " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
         " spender=" + getShortAddressName(result.args.spender) + " tokens=" + result.args.tokens.shift(-decimals));
     });
     approvalEvents.stopWatching();
 
-    var transferEvents = contract.Transfer({}, { fromBlock: tokenFromBlock, toBlock: latestBlock });
+    var transferEvents = contract.Transfer({}, { fromBlock: tokenFromBlock[j], toBlock: latestBlock });
     i = 0;
     transferEvents.watch(function (error, result) {
       // console.log("RESULT: token" + j + ".Transfer " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result));
-      console.log("RESULT: token.Transfer " + i++ + " #" + result.blockNumber +
+      console.log("RESULT: token" + j + ".Transfer " + i++ + " #" + result.blockNumber +
         " from=" + getShortAddressName(result.args.from) +
         " to=" + getShortAddressName(result.args.to) + " tokens=" + result.args.tokens.shift(-decimals));
     });
     transferEvents.stopWatching();
 
-    tokenFromBlock = latestBlock + 1;
+    tokenFromBlock[j] = latestBlock + 1;
   }
 }
 

@@ -98,15 +98,11 @@ const PriceFeedExplorer = {
 const priceFeedExplorerModule = {
   namespaced: true,
   state: {
-    value: "0",
-    hasValue: false,
     params: null,
     executing: false,
     executionQueue: [],
   },
   getters: {
-    value: state => state.value,
-    hasValue: state => state.hasValue,
     params: state => state.params,
     executionQueue: state => state.executionQueue,
   },
