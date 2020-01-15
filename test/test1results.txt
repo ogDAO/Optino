@@ -1,40 +1,74 @@
 
----------- Deploy Group #1 - PriceFeed, WETH, DAI, VanillaDoption ----------
+---------- Deploy Group #1 - Contracts ----------
  # Account                                             EtherBalanceChange                          WETH9                            DAI Name
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.014408255000000000           0.000000000000000000           0.000000000000000000 Miner
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.014408255000000000           0.000000000000000000     1000000.000000000000000000 Deployer
- 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976        0.000000000000000000           0.000000000000000000           0.000000000000000000 User1
- 3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000           0.000000000000000000           0.000000000000000000 User2
- 4 0xa44a08d3f6933c69212114bb66e2df1813651844        0.000000000000000000           0.000000000000000000           0.000000000000000000 User3
- 5 0xa55a151eb00fded1634d27d1127b4be4627079ea        0.000000000000000000           0.000000000000000000           0.000000000000000000 UI Fee Account
- 6 0x9fbfccdaf54799741c8ec053f6bcaf520fc53d4f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
- 7 0x0b53e5ec7b91526f737b93200ba0a43797763f33        0.000000000000000000           0.000000000000000000           0.000000000000000000 WETH9
- 8 0x3605208ab7eeb9f905ab1f9615fb4915fd2453ec        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
- 9 0x2e49c7f02a6639bebb7906930125c66d9ffbc161        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaDoption
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.014408315000000000           0.000000000000000000           0.000000000000000000 miner
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.014408315000000000           0.000000000000000000     4000000.000000000000000000 deployer
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976        0.000000000000000000           0.000000000000000000           0.000000000000000000 maker1
+ 3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000           0.000000000000000000           0.000000000000000000 maker2
+ 4 0xa44a08d3f6933c69212114bb66e2df1813651844        0.000000000000000000           0.000000000000000000           0.000000000000000000 taker1
+ 5 0xa55a151eb00fded1634d27d1127b4be4627079ea        0.000000000000000000           0.000000000000000000           0.000000000000000000 taker2
+ 6 0x60c8e00dafb889136ebd2dc558d0d00a69b7a84b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
+ 7 0x3529089fbacf865e6771ddb8a76ac997963a5393        0.000000000000000000           0.000000000000000000           0.000000000000000000 WETH9
+ 8 0xee0ec07598ed3d84fc4ff0ad4a6d70300f79d812        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
+ 9 0xcba3446221eaad5f03a413e070be7978bcf5beb9        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaDoption
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-                                                                                    0.000000000000000000     1000000.000000000000000000 Total Token Balances
+                                                                                    0.000000000000000000     4000000.000000000000000000 Total Token Balances
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
-PASS Deploy Group #1 - PriceFeed, WETH, DAI, VanillaDoption - PriceFeed
-priceFeedTx status=0x1 Success gas=4000000 gasUsed=319719 costETH=0.001598595 costUSD=0.232123986975 @ ETH/USD=145.205 gasPrice=5 gwei block=10135 txIx=0 txId=0x96501b51f2dcb446e1b2a7c9a188959bcf8de12cf0cd82c5fd31150d048aa458 @ 1579068433 Wed, 15 Jan 2020 06:07:13 UTC
-PASS Deploy Group #1 - PriceFeed, WETH, DAI, VanillaDoption - WETH9
-weth9Tx status=0x1 Success gas=4000000 gasUsed=505987 costETH=0.002529935 costUSD=0.367359211675 @ ETH/USD=145.205 gasPrice=5 gwei block=10135 txIx=1 txId=0x7a4597b7a334489002920ad92ee7bb8c1802c746a749ebfdf43c138cc791a8b0 @ 1579068433 Wed, 15 Jan 2020 06:07:13 UTC
-PASS Deploy Group #1 - PriceFeed, WETH, DAI, VanillaDoption - DAI
-daiTx status=0x1 Success gas=4000000 gasUsed=904530 costETH=0.00452265 costUSD=0.65671139325 @ ETH/USD=145.205 gasPrice=5 gwei block=10135 txIx=2 txId=0xda65eae62d60ec333ad17937abfee849c4b2a2f158840ca18671576441c6d266 @ 1579068433 Wed, 15 Jan 2020 06:07:13 UTC
-PASS Deploy Group #1 - PriceFeed, WETH, DAI, VanillaDoption - VanillaDoption
-vanillaDoptionTx status=0x1 Success gas=4000000 gasUsed=1151415 costETH=0.005757075 costUSD=0.835956075375 @ ETH/USD=145.205 gasPrice=5 gwei block=10135 txIx=3 txId=0xb194f813386d355d7c512b5d6ce06b2bf5d3ff310cdba2795aa6753f6d4d2f03 @ 1579068433 Wed, 15 Jan 2020 06:07:13 UTC
+PASS Deploy Group #1 - Contracts - PriceFeed
+priceFeedTx status=0x1 Success gas=4000000 gasUsed=319719 costETH=0.001598595 costUSD=0.232123986975 @ ETH/USD=145.205 gasPrice=5 gwei block=11784 txIx=0 txId=0x63cee2c4ed9d44aeb7cf81b8bf1e223ae7b6046ef3aa77be39eda598b20c7b41 @ 1579073713 Wed, 15 Jan 2020 07:35:13 UTC
+PASS Deploy Group #1 - Contracts - WETH9
+weth9Tx status=0x1 Success gas=4000000 gasUsed=505987 costETH=0.002529935 costUSD=0.367359211675 @ ETH/USD=145.205 gasPrice=5 gwei block=11784 txIx=1 txId=0x7f05997be83adf802761c64bd58f705a5e159b9d97950a15e202f964af506c27 @ 1579073713 Wed, 15 Jan 2020 07:35:13 UTC
+PASS Deploy Group #1 - Contracts - DAI
+daiTx status=0x1 Success gas=4000000 gasUsed=904542 costETH=0.00452271 costUSD=0.65672010555 @ ETH/USD=145.205 gasPrice=5 gwei block=11784 txIx=2 txId=0x104d048fee0bc64fae87e8bdc1a9f859188d308410b936a583cda54809e500f8 @ 1579073713 Wed, 15 Jan 2020 07:35:13 UTC
+PASS Deploy Group #1 - Contracts - VanillaDoption
+vanillaDoptionTx status=0x1 Success gas=4000000 gasUsed=1151415 costETH=0.005757075 costUSD=0.835956075375 @ ETH/USD=145.205 gasPrice=5 gwei block=11784 txIx=3 txId=0xcb502e055da3edf9325cd4e1872d31a38ed840d696973896f49723c291f3ddbe @ 1579073713 Wed, 15 Jan 2020 07:35:13 UTC
 
-_priceFeedContractAddress=PriceFeed:0x9fbf
-priceFeed.owner=Deployer:0xa11a
+priceFeedContractAddress=PriceFeed:0x60c8
+priceFeed.owner=deployer:0xa11a
 priceFeed.newOwner=Null:0x0000
 priceFeed.peek=0x000000000000000000000000000000000000000000000007df1fca2bc2988000,true
 priceFeed.value=145.205 ETH/USD
 priceFeed.hasValue=true
-SetValue 0 #10135 value=145.205 hasValue=true
+SetValue 0 #11784 value=145.205 hasValue=true
 
 
-_vanillaDoptionContractAddress=VanillaDoption:0x2e49
-vanillaDoption.owner=Deployer:0xa11a
+vanillaDoptionContractAddress=VanillaDoption:0xcba3
+vanillaDoption.owner=deployer:0xa11a
 vanillaDoption.newOwner=Null:0x0000
 vanillaDoption.configsLength=0
+---------- Distribute Tokens ----------
+ # Account                                             EtherBalanceChange                          WETH9                            DAI Name
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.016220855000000000           0.000000000000000000           0.000000000000000000 miner
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.015352515000000000           0.000000000000000000           0.000000000000000000 deployer
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976    -1000.000217085000000000        1000.000000000000000000     1000000.000000000000000000 maker1
+ 3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0    -1000.000217085000000000        1000.000000000000000000     1000000.000000000000000000 maker2
+ 4 0xa44a08d3f6933c69212114bb66e2df1813651844    -1000.000217085000000000        1000.000000000000000000     1000000.000000000000000000 taker1
+ 5 0xa55a151eb00fded1634d27d1127b4be4627079ea    -1000.000217085000000000        1000.000000000000000000     1000000.000000000000000000 taker2
+ 6 0x60c8e00dafb889136ebd2dc558d0d00a69b7a84b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
+ 7 0x3529089fbacf865e6771ddb8a76ac997963a5393     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH9
+ 8 0xee0ec07598ed3d84fc4ff0ad4a6d70300f79d812        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
+ 9 0xcba3446221eaad5f03a413e070be7978bcf5beb9        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaDoption
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+                                                                                 4000.000000000000000000     4000000.000000000000000000 Total Token Balances
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+
+PASS Distribute Tokens 1,000 ETH -> weth9.mint(maker1, 1,000)
+PASS Distribute Tokens 1,000 ETH -> weth9.mint(maker2, 1,000)
+PASS Distribute Tokens 1,000 ETH -> weth9.mint(taker1, 1,000)
+PASS Distribute Tokens 1,000 ETH -> weth9.mint(taker2, 1,000)
+PASS Distribute Tokens dai.transfer(maker1, 1,000,000)
+PASS Distribute Tokens dai.transfer(maker2, 1,000,000)
+PASS Distribute Tokens dai.transfer(taker1, 1,000,000)
+PASS Distribute Tokens dai.transfer(taker2, 1,000,000)
+distributeTokens_1Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.000217085 costUSD=0.031521827425 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=7 txId=0x36d8451b546dbc52ac8e88cd10a9075f1109e7a30d4025422bf001003b90a130 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_2Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.000217085 costUSD=0.031521827425 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=6 txId=0x70078007522eb16a33f300dc206f673cb66e4ee99ee439346d5e4c44524ed1b4 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_3Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.000217085 costUSD=0.031521827425 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=5 txId=0xabeaf6ec4b52b9566c2cf92d527b1044ba2fcb6c3df4290855fa78d77b0ea861 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_4Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.000217085 costUSD=0.031521827425 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=4 txId=0x19a4a0b5be567e1f8e13189db9d791aba213770d92cdfc52cec755fd503be3b6 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_5Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.0002548 costUSD=0.036998234 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=0 txId=0x42311f2a70fc98cf01e2ea0722cd23076269bd822594d49117091c19986b8bf6 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_6Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.0002548 costUSD=0.036998234 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=1 txId=0x9ecf32e358b3812daac754556026c3a716fce73e7de0de97b4e3193804912e56 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_7Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.0002548 costUSD=0.036998234 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=2 txId=0x8f8e5e31883de3283f63ac8551cfb1d3db4c21f870142566baccb3b6c524262d @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+distributeTokens_8Tx status=0x1 Success gas=100000 gasUsed=35960 costETH=0.0001798 costUSD=0.026107859 @ ETH/USD=145.205 gasPrice=5 gwei block=11787 txIx=3 txId=0x455cd4db0ff89f9f247c2442563149d43dd9b930f8e461645530577a3e938f93 @ 1579073716 Wed, 15 Jan 2020 07:35:16 UTC
+

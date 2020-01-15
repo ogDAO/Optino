@@ -99,7 +99,7 @@ console.log("RESULT: ");
 
 
 // -----------------------------------------------------------------------------
-var deployGroup1Message = "Deploy Group #1 - PriceFeed, WETH, DAI, VanillaDoption";
+var deployGroup1Message = "Deploy Group #1 - Contracts";
 var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
 console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
 console.log("DATA: deployer=" + deployer);
@@ -110,7 +110,7 @@ var symbol = "DAI";
 var name = "Mintable ERC20 token";
 var decimals = 18;
 var tokenOwner = deployer;
-var initialSupply = new BigNumber("1000000").shift(18);
+var initialSupply = new BigNumber("4000000").shift(18);
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup1Message + " ----------");
 var priceFeedContract = web3.eth.contract(priceFeedAbi);
@@ -213,10 +213,51 @@ console.log("RESULT: ");
 console.log("RESULT: ");
 printVanillaDoptionContractDetails();
 
+
+// -----------------------------------------------------------------------------
+var distributeTokens_Message = "Distribute Tokens";
+var wethTokens = new BigNumber("1000").shift(18)
+var daiTokens = new BigNumber("1000000").shift(18)
+// -----------------------------------------------------------------------------
+console.log("RESULT: ---------- " + distributeTokens_Message + " ----------");
+var distributeTokens_1Tx = web3.eth.sendTransaction({from: maker1, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_2Tx = web3.eth.sendTransaction({from: maker2, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_3Tx = web3.eth.sendTransaction({from: taker1, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_4Tx = web3.eth.sendTransaction({from: taker2, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var distributeTokens_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+while (txpool.status.pending > 0) {
+}
+printBalances();
+failIfTxStatusError(distributeTokens_1Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(maker1, 1,000)");
+failIfTxStatusError(distributeTokens_2Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(maker2, 1,000)");
+failIfTxStatusError(distributeTokens_3Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(taker1, 1,000)");
+failIfTxStatusError(distributeTokens_4Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(taker2, 1,000)");
+failIfTxStatusError(distributeTokens_5Tx, distributeTokens_Message + " dai.transfer(maker1, 1,000,000)");
+failIfTxStatusError(distributeTokens_6Tx, distributeTokens_Message + " dai.transfer(maker2, 1,000,000)");
+failIfTxStatusError(distributeTokens_7Tx, distributeTokens_Message + " dai.transfer(taker1, 1,000,000)");
+failIfTxStatusError(distributeTokens_8Tx, distributeTokens_Message + " dai.transfer(taker2, 1,000,000)");
+printTxData("distributeTokens_1Tx", distributeTokens_1Tx);
+printTxData("distributeTokens_2Tx", distributeTokens_2Tx);
+printTxData("distributeTokens_3Tx", distributeTokens_3Tx);
+printTxData("distributeTokens_4Tx", distributeTokens_4Tx);
+printTxData("distributeTokens_5Tx", distributeTokens_5Tx);
+printTxData("distributeTokens_6Tx", distributeTokens_6Tx);
+printTxData("distributeTokens_7Tx", distributeTokens_7Tx);
+printTxData("distributeTokens_8Tx", distributeTokens_8Tx);
+// printTokenAContractDetails();
+// printTokenBContractDetails();
+console.log("RESULT: ");
+
+
+
+
 exit;
 
 // -----------------------------------------------------------------------------
-var deployGroup2Message = "Deploy Group #2 - VanillaDoption";
+var deployGroup2Message = "Deploy Group #2 - Setup";
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2Message + " ----------");
 while (txpool.status.pending > 0) {

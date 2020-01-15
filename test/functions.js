@@ -8,19 +8,19 @@ var defaultGasPrice = web3.toWei(5, "gwei");
 var accounts = [];
 var accountNames = {};
 
-addAccount(eth.accounts[0], "Miner");
-addAccount(eth.accounts[1], "Deployer");
-addAccount(eth.accounts[2], "User1");
-addAccount(eth.accounts[3], "User2");
-addAccount(eth.accounts[4], "User3");
-addAccount(eth.accounts[5], "UI Fee Account");
+addAccount(eth.accounts[0], "miner");
+addAccount(eth.accounts[1], "deployer");
+addAccount(eth.accounts[2], "maker1");
+addAccount(eth.accounts[3], "maker2");
+addAccount(eth.accounts[4], "taker1");
+addAccount(eth.accounts[5], "taker2");
 
 var miner = eth.accounts[0];
 var deployer = eth.accounts[1];
-var user1 = eth.accounts[2];
-var user2 = eth.accounts[3];
-var user3 = eth.accounts[4];
-var uiFeeAccount = eth.accounts[5];
+var maker1 = eth.accounts[2];
+var maker2 = eth.accounts[3];
+var taker1 = eth.accounts[4];
+var taker2 = eth.accounts[5];
 
 console.log("DATA: var miner=\"" + eth.accounts[0] + "\";");
 console.log("DATA: var deployer=\"" + eth.accounts[1] + "\";");
@@ -439,8 +439,8 @@ function addPriceFeedContractAddressAndAbi(address, abi) {
 var priceFeedFromBlock = 0;
 
 function printPriceFeedContractDetails() {
-  console.log("RESULT: _priceFeedContractAddress=" + getShortAddressName(_priceFeedContractAddress));
-  // console.log("RESULT: _priceFeedContractAbi=" + JSON.stringify(_priceFeedContractAbi));
+  console.log("RESULT: priceFeedContractAddress=" + getShortAddressName(_priceFeedContractAddress));
+  // console.log("RESULT: priceFeedContractAbi=" + JSON.stringify(_priceFeedContractAbi));
   if (_priceFeedContractAddress != null && _priceFeedContractAbi != null) {
     var contract = web3.eth.contract(_priceFeedContractAbi).at(_priceFeedContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
@@ -488,8 +488,8 @@ function addVanillaDoptionContractAddressAndAbi(address, abi) {
 var vanillaDoptionFromBlock = 0;
 
 function printVanillaDoptionContractDetails() {
-  console.log("RESULT: _vanillaDoptionContractAddress=" + getShortAddressName(_vanillaDoptionContractAddress));
-  // console.log("RESULT: _vanillaDoptionContractAbi=" + JSON.stringify(_vanillaDoptionContractAbi));
+  console.log("RESULT: vanillaDoptionContractAddress=" + getShortAddressName(_vanillaDoptionContractAddress));
+  // console.log("RESULT: vanillaDoptionContractAbi=" + JSON.stringify(_vanillaDoptionContractAbi));
   if (_vanillaDoptionContractAddress != null && _vanillaDoptionContractAbi != null) {
     var contract = web3.eth.contract(_vanillaDoptionContractAbi).at(_vanillaDoptionContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
