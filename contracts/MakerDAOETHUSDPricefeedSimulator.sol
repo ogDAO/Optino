@@ -15,12 +15,13 @@ pragma solidity ^0.6.0;
 // ----------------------------------------------------------------------------
 
 import "Owned.sol";
+import "MakerDAOETHUSDPriceFeed.sol";
 
 
 // ----------------------------------------------------------------------------
 // MakerDAO ETH/USD PricefeedSimulator
 // ----------------------------------------------------------------------------
-contract MakerDAOETHUSDPricefeedSimulator is Owned {
+contract MakerDAOETHUSDPricefeedSimulator is Owned, MakerDAOETHUSDPriceFeed {
     uint public value;
     bool public hasValue;
 
@@ -37,7 +38,7 @@ contract MakerDAOETHUSDPricefeedSimulator is Owned {
         hasValue = _hasValue;
         emit SetValue(value, hasValue);
     }
-    function peek() public view returns (bytes32 _value, bool _hasValue) {
+    function peek() override public view returns (bytes32 _value, bool _hasValue) {
         _value = bytes32(value);
         _hasValue = hasValue;
     }

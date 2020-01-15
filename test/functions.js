@@ -60,20 +60,20 @@ addAddressNames("0x0000000000000000000000000000000000000000", "Null");
 var _tokenContractAddresses = [];
 var _tokenContractAbis = [];
 var _tokens = [null, null, null, null];
-var _symbols = ["WETH9", "DAI", "2", "3"];
+var _symbols = ["0", "1", "2", "3"];
 var _decimals = [18, 18, 18, 18];
 
 function addTokenContractAddressAndAbi(i, address, abi) {
   _tokenContractAddresses[i] = address;
   _tokenContractAbis[i] = abi;
   _tokens[i] = web3.eth.contract(abi).at(address);
-  // if (i == 0) {
-  //   _symbols[i] = "WETH9";
-  //   _decimals[i] = 18;
-  // } else {
-  //   _symbols[i] = _tokens[i].symbol();
-  //   _decimals[i] = _tokens[i].decimals();
-  // }
+  if (i == 0) {
+    _symbols[i] = "WETH9";
+    _decimals[i] = 18;
+  } else {
+    _symbols[i] = _tokens[i].symbol.call();
+    _decimals[i] = _tokens[i].decimals.call();
+  }
 }
 
 
@@ -439,13 +439,13 @@ function addPriceFeedContractAddressAndAbi(address, abi) {
 var priceFeedFromBlock = 0;
 
 function printPriceFeedContractDetails() {
-  console.log("RESULT: _priceFeedContractAddress=" + _priceFeedContractAddress);
-  console.log("RESULT: _priceFeedContractAbi=" + JSON.stringify(_priceFeedContractAbi));
+  console.log("RESULT: _priceFeedContractAddress=" + getShortAddressName(_priceFeedContractAddress));
+  // console.log("RESULT: _priceFeedContractAbi=" + JSON.stringify(_priceFeedContractAbi));
   if (_priceFeedContractAddress != null && _priceFeedContractAbi != null) {
     var contract = web3.eth.contract(_priceFeedContractAbi).at(_priceFeedContractAddress);
-    console.log("RESULT: contract=" + JSON.stringify(contract));
-    console.log("RESULT: priceFeed.owner=" + contract.owner.call());
-    console.log("RESULT: priceFeed.newOwner=" + contract.newOwner.call());
+    // console.log("RESULT: contract=" + JSON.stringify(contract));
+    console.log("RESULT: priceFeed.owner=" + getShortAddressName(contract.owner.call()));
+    console.log("RESULT: priceFeed.newOwner=" + getShortAddressName(contract.newOwner.call()));
     var peek = contract.peek.call();
     console.log("RESULT: priceFeed.peek=" + contract.peek.call());
     console.log("RESULT: priceFeed.value=" + contract.value.call().shift(-18) + " ETH/USD");
@@ -470,5 +470,64 @@ function printPriceFeedContractDetails() {
     setValueEvents.stopWatching();
 
     priceFeedFromBlock = latestBlock + 1;
+  }
+}
+
+
+// -----------------------------------------------------------------------------
+// Feed Contract
+// -----------------------------------------------------------------------------
+var _vanillaDoptionContractAddress = null;
+var _vanillaDoptionContractAbi = null;
+
+function addVanillaDoptionContractAddressAndAbi(address, abi) {
+  _vanillaDoptionContractAddress = address;
+  _vanillaDoptionContractAbi = abi;
+}
+
+var vanillaDoptionFromBlock = 0;
+
+function printVanillaDoptionContractDetails() {
+  console.log("RESULT: _vanillaDoptionContractAddress=" + getShortAddressName(_vanillaDoptionContractAddress));
+  // console.log("RESULT: _vanillaDoptionContractAbi=" + JSON.stringify(_vanillaDoptionContractAbi));
+  if (_vanillaDoptionContractAddress != null && _vanillaDoptionContractAbi != null) {
+    var contract = web3.eth.contract(_vanillaDoptionContractAbi).at(_vanillaDoptionContractAddress);
+    // console.log("RESULT: contract=" + JSON.stringify(contract));
+    console.log("RESULT: vanillaDoption.owner=" + getShortAddressName(contract.owner.call()));
+    console.log("RESULT: vanillaDoption.newOwner=" + getShortAddressName(contract.newOwner.call()));
+
+    var latestBlock = eth.blockNumber;
+    var i;
+
+    var configsLength = contract.configsLength.call();
+    console.log("RESULT: vanillaDoption.configsLength=" + configsLength);
+    for (i = 0; i < configsLength; i++) {
+        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + ")=" + contract.getConfigByIndex.call(i));
+    }
+//     console.log("RESULT: vanillaDoption.base=" + getShortAddressName(contract.base.call()));
+    // console.log("RESULT: vanillaDoption.quote=" + getShortAddressName(contract.quote.call()));
+    // console.log("RESULT: vanillaDoption.pricefeed=" + getShortAddressName(contract.pricefeed.call()));
+    // var peek = contract.peek.call();
+    // console.log("RESULT: priceFeed.peek=" + contract.peek.call());
+    // console.log("RESULT: priceFeed.value=" + contract.value.call().shift(-18) + " ETH/USD");
+    // console.log("RESULT: priceFeed.hasValue=" + contract.hasValue.call());
+
+
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: vanillaDoptionFromBlock, toBlock: latestBlock });
+    i = 0;
+    ownershipTransferredEvents.watch(function (error, result) {
+      console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    });
+    ownershipTransferredEvents.stopWatching();
+
+    // var setValueEvents = contract.SetValue({}, { fromBlock: vanillaDoptionFromBlock, toBlock: latestBlock });
+    // i = 0;
+    // setValueEvents.watch(function (error, result) {
+    //   console.log("RESULT: SetValue " + i++ + " #" + result.blockNumber + " value=" + result.args.value.shift(-18) +
+    //     " hasValue=" + result.args.hasValue);
+    // });
+    // setValueEvents.stopWatching();
+
+    vanillaDoptionFromBlock = latestBlock + 1;
   }
 }
