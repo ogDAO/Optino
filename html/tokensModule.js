@@ -82,7 +82,7 @@ const tokensModule = {
   mutations: {
     updateBalance(state, {index, balance}) {
       Vue.set(state.balances, index, balance);
-      logInfo("tokensModule", "updateBalances(" + index + ", " + balance + ")")
+      logDebug("tokensModule", "updateBalances(" + index + ", " + balance + ")")
     },
     updateParams(state, params) {
       state.params = params;
@@ -96,7 +96,7 @@ const tokensModule = {
   actions: {
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-      logInfo("tokensModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
+      logDebug("tokensModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
       if (!state.executing) {
         commit('updateExecuting', true);
         logDebug("tokensModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
@@ -113,7 +113,7 @@ const tokensModule = {
             var contract = web3.eth.contract(TOKENABI).at(state.addresses[i]);
             var _balanceOf = promisify(cb => contract.balanceOf.call(store.getters['connection/coinbase'], cb));
             var balanceOf = new BigNumber(await _balanceOf).shift(-state.decimals[i]);
-            console.log(state.addresses[i] + ".balanceOf(" + store.getters['connection/coinbase'] + ")=" + balanceOf);
+            logDebug(state.addresses[i] + ".balanceOf(" + store.getters['connection/coinbase'] + ")=" + balanceOf);
             if (!balanceOf.eq(state.balances[i])) {
               commit('updateBalance', { index: i, balance: balanceOf });
             }
