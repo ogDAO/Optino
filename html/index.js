@@ -2,6 +2,7 @@ Vue.use(Vuex);
 
 Vue.component('connection', Connection);
 Vue.component('tokenContract', TokenContract);
+Vue.component('tokens', Tokens);
 Vue.component('priceFeed', PriceFeed);
 Vue.component('dataService', DataService);
 Vue.component('ipfsService', IpfsService);
@@ -47,6 +48,7 @@ const store = new Vuex.Store({
   modules: {
     connection: connectionModule,
     tokenContract: tokenContractModule,
+    tokens: tokensModule,
     priceFeed: priceFeedModule,
     dataService: dataServiceModule,
     ipfsService: ipfsServiceModule,

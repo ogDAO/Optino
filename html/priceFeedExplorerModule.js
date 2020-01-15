@@ -36,6 +36,8 @@ const PriceFeedExplorer = {
         <b-col cols="12" md="3">
           <connection></connection>
           <br />
+          <tokens></tokens>
+          <br />
           <priceFeed></priceFeed>
           <!--
           <br />
