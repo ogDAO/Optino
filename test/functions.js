@@ -24,10 +24,10 @@ var taker2 = eth.accounts[5];
 
 console.log("DATA: var miner=\"" + eth.accounts[0] + "\";");
 console.log("DATA: var deployer=\"" + eth.accounts[1] + "\";");
-console.log("DATA: var user1=\"" + eth.accounts[2] + "\";");
-console.log("DATA: var user2=\"" + eth.accounts[3] + "\";");
-console.log("DATA: var user3=\"" + eth.accounts[4] + "\";");
-console.log("DATA: var uiFeeAccount=\"" + eth.accounts[5] + "\";");
+console.log("DATA: var maker1=\"" + eth.accounts[2] + "\";");
+console.log("DATA: var maker2=\"" + eth.accounts[3] + "\";");
+console.log("DATA: var taker1=\"" + eth.accounts[4] + "\";");
+console.log("DATA: var taker2=\"" + eth.accounts[5] + "\";");
 
 var baseBlock = eth.blockNumber;
 
@@ -49,7 +49,7 @@ function addAccount(account, accountName) {
   addAddressNames(account, accountName);
 }
 
-addAddressNames("0x0000000000000000000000000000000000000000", "Null");
+addAddressNames("0x0000000000000000000000000000000000000000", "null");
 
 // -----------------------------------------------------------------------------
 // Token Contract
@@ -302,9 +302,17 @@ function printTokenContractDetails(j) {
   if (_tokenContractAddresses[j] != null) {
     var contract = _tokens[j];
     var decimals = _decimals[j];
-    console.log("RESULT: token" + j + ".owner/new=" + getShortAddressName(contract.owner()) + "/" + getShortAddressName(contract.newOwner()));
-    console.log("RESULT: token" + j + ".details='" + contract.symbol() + "' '" + contract.name() + "' " + decimals + " dp");
-    console.log("RESULT: token" + j + ".totalSupply=" + contract.totalSupply().shift(-decimals));
+    try {
+      console.log("RESULT: token" + j + ".owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
+    } catch (error) {
+      console.log("RESULT: token" + j + ".owner/new - Function call failed");
+    }
+    try {
+      console.log("RESULT: token" + j + ".details='" + contract.symbol.call() + "' '" + contract.name.call() + "' " + decimals + " dp");
+    } catch (error) {
+      console.log("RESULT: token" + j + ".details - Function call failed");
+    }
+    console.log("RESULT: token" + j + ".totalSupply=" + contract.totalSupply.call().shift(-decimals));
 
     var latestBlock = eth.blockNumber;
     var i;
@@ -444,8 +452,7 @@ function printPriceFeedContractDetails() {
   if (_priceFeedContractAddress != null && _priceFeedContractAbi != null) {
     var contract = web3.eth.contract(_priceFeedContractAbi).at(_priceFeedContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
-    console.log("RESULT: priceFeed.owner=" + getShortAddressName(contract.owner.call()));
-    console.log("RESULT: priceFeed.newOwner=" + getShortAddressName(contract.newOwner.call()));
+    console.log("RESULT: priceFeed.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
     var peek = contract.peek.call();
     console.log("RESULT: priceFeed.peek=" + contract.peek.call());
     console.log("RESULT: priceFeed.value=" + contract.value.call().shift(-18) + " ETH/USD");
@@ -493,8 +500,7 @@ function printVanillaDoptionContractDetails() {
   if (_vanillaDoptionContractAddress != null && _vanillaDoptionContractAbi != null) {
     var contract = web3.eth.contract(_vanillaDoptionContractAbi).at(_vanillaDoptionContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
-    console.log("RESULT: vanillaDoption.owner=" + getShortAddressName(contract.owner.call()));
-    console.log("RESULT: vanillaDoption.newOwner=" + getShortAddressName(contract.newOwner.call()));
+    console.log("RESULT: vanillaDoption.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
 
     var latestBlock = eth.blockNumber;
     var i;
@@ -502,7 +508,14 @@ function printVanillaDoptionContractDetails() {
     var configsLength = contract.configsLength.call();
     console.log("RESULT: vanillaDoption.configsLength=" + configsLength);
     for (i = 0; i < configsLength; i++) {
-        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + ")=" + contract.getConfigByIndex.call(i));
+        var config = contract.getConfigByIndex.call(i);
+        var baseToken = getShortAddressName(config[0]);
+        var quoteToken = getShortAddressName(config[1]);
+        var priceFeed = getShortAddressName(config[2]);
+        var maxTerm = config[3];
+        var takerFee = config[4];
+        var description = config[5];
+        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + "). baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "'");
     }
 //     console.log("RESULT: vanillaDoption.base=" + getShortAddressName(contract.base.call()));
     // console.log("RESULT: vanillaDoption.quote=" + getShortAddressName(contract.quote.call()));

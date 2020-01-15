@@ -36,8 +36,8 @@ cp $SOURCEDIR/$WETH9SOL .
 # --- Modify parameters ---
 # `perl -pi -e "s/openzeppelin-solidity/\.\.\/\.\.\/openzeppelin-solidity/" token/dataStorage/*.sol`
 
-../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$PRICEFEEDSOL --outputsol=$PRICEFEEDFLATTENED --verbose | tee -a $TEST1OUTPUT
 ../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$MINTABLETOKENSOL --outputsol=$MINTABLETOKENFLATTENED --verbose | tee -a $TEST1OUTPUT
+../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$PRICEFEEDSOL --outputsol=$PRICEFEEDFLATTENED --verbose | tee -a $TEST1OUTPUT
 ../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$VANILLADOPTIONSOL --outputsol=$VANILLADOPTIONFLATTENED --verbose | tee -a $TEST1OUTPUT
 
 #VANILLADOPTIONNAME=VanillaDoption
@@ -52,9 +52,9 @@ cp $SOURCEDIR/$WETH9SOL .
 
 solc_0.6.0 --version | tee -a $TEST1OUTPUT
 
-echo "var priceFeedOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
 echo "var weth9Output=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
 echo "var tokenOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
+echo "var priceFeedOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
 echo "var vanillaDoptionOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $VANILLADOPTIONFLATTENED`;" > $VANILLADOPTIONJS
 # echo "var daiOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
 # ../scripts/solidityFlattener.pl --contractsdir=../contracts --mainsol=$TOKENFACTORYSOL --outputsol=$TOKENFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
@@ -66,30 +66,30 @@ if [ "$MODE" = "compile" ]; then
 fi
 
 geth --verbosity 3 attach $GETHATTACHPOINT << EOF | tee -a $TEST1OUTPUT
-loadScript("$PRICEFEEDJS");
 loadScript("$WETH9JS");
 loadScript("$MINTABLETOKENJS");
+loadScript("$PRICEFEEDJS");
 loadScript("$VANILLADOPTIONJS");
 loadScript("lookups.js");
 loadScript("functions.js");
 
 // console.log(JSON.stringify(priceFeedOutput));
 
-var priceFeedAbi = JSON.parse(priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].abi);
-var priceFeedBin = "0x" + priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].bin;
 var weth9Abi = JSON.parse(weth9Output.contracts["$WETH9SOL:$WETH9NAME"].abi);
 var weth9Bin = "0x" + weth9Output.contracts["$WETH9SOL:$WETH9NAME"].bin;
 var tokenAbi = JSON.parse(tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].abi);
 var tokenBin = "0x" + tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].bin;
+var priceFeedAbi = JSON.parse(priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].abi);
+var priceFeedBin = "0x" + priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].bin;
 var vanillaDoptionAbi = JSON.parse(vanillaDoptionOutput.contracts["$VANILLADOPTIONFLATTENED:$VANILLADOPTIONNAME"].abi);
 var vanillaDoptionBin = "0x" + vanillaDoptionOutput.contracts["$VANILLADOPTIONFLATTENED:$VANILLADOPTIONNAME"].bin;
 
-// console.log("DATA: priceFeedAbi=" + JSON.stringify(priceFeedAbi));
-// console.log("DATA: priceFeedBin=" + JSON.stringify(priceFeedBin));
 // console.log("DATA: weth9Abi=" + JSON.stringify(weth9Abi));
 // console.log("DATA: weth9Bin=" + JSON.stringify(weth9Bin));
 // console.log("DATA: tokenAbi=" + JSON.stringify(tokenAbi));
 // console.log("DATA: tokenBin=" + JSON.stringify(tokenBin));
+// console.log("DATA: priceFeedAbi=" + JSON.stringify(priceFeedAbi));
+// console.log("DATA: priceFeedBin=" + JSON.stringify(priceFeedBin));
 // console.log("DATA: vanillaDoptionAbi=" + JSON.stringify(vanillaDoptionAbi));
 // console.log("DATA: vanillaDoptionBin=" + JSON.stringify(vanillaDoptionBin));
 
@@ -99,40 +99,20 @@ console.log("RESULT: ");
 
 
 // -----------------------------------------------------------------------------
-var deployGroup1Message = "Deploy Group #1 - Contracts";
-var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
-console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
-console.log("DATA: deployer=" + deployer);
-console.log("DATA: defaultGasPrice=" + defaultGasPrice);
-console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
-
+var deployGroup1_Message = "Deploy Group #1 - Contracts";
 var symbol = "DAI";
 var name = "Mintable ERC20 token";
 var decimals = 18;
 var tokenOwner = deployer;
 var initialSupply = new BigNumber("4000000").shift(18);
+
+var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
+console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
+
+console.log("DATA: deployer=" + deployer);
+console.log("DATA: defaultGasPrice=" + defaultGasPrice);
 // -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + deployGroup1Message + " ----------");
-var priceFeedContract = web3.eth.contract(priceFeedAbi);
-// console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
-var priceFeedTx = null;
-var priceFeedAddress = null;
-var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
-  function(e, contract) {
-    if (!e) {
-      if (!contract.address) {
-        priceFeedTx = contract.transactionHash;
-      } else {
-        priceFeedAddress = contract.address;
-        addAccount(priceFeedAddress, "PriceFeed");
-        addPriceFeedContractAddressAndAbi(priceFeedAddress, priceFeedAbi);
-        console.log("DATA: var priceFeedAddress=\"" + priceFeedAddress + "\";");
-        console.log("DATA: var priceFeedAbi=" + JSON.stringify(priceFeedAbi) + ";");
-        console.log("DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);");
-      }
-    }
-  }
-);
+console.log("RESULT: ---------- " + deployGroup1_Message + " ----------");
 var weth9Contract = web3.eth.contract(weth9Abi);
 console.log("DATA: weth9Contract=" + JSON.stringify(weth9Contract));
 var weth9Tx = null;
@@ -175,6 +155,26 @@ var dai = daiContract.new(symbol, name, decimals, tokenOwner, initialSupply, {fr
     }
   }
 );
+var priceFeedContract = web3.eth.contract(priceFeedAbi);
+// console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
+var priceFeedTx = null;
+var priceFeedAddress = null;
+var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
+  function(e, contract) {
+    if (!e) {
+      if (!contract.address) {
+        priceFeedTx = contract.transactionHash;
+      } else {
+        priceFeedAddress = contract.address;
+        addAccount(priceFeedAddress, "PriceFeed");
+        addPriceFeedContractAddressAndAbi(priceFeedAddress, priceFeedAbi);
+        console.log("DATA: var priceFeedAddress=\"" + priceFeedAddress + "\";");
+        console.log("DATA: var priceFeedAbi=" + JSON.stringify(priceFeedAbi) + ";");
+        console.log("DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);");
+      }
+    }
+  }
+);
 var vanillaDoptionContract = web3.eth.contract(vanillaDoptionAbi);
 // console.log("DATA: vanillaDoptionContract=" + JSON.stringify(vanillaDoptionContract));
 var vanillaDoptionTx = null;
@@ -199,58 +199,66 @@ var vanillaDoption = vanillaDoptionContract.new({from: deployer, data: vanillaDo
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(priceFeedTx, deployGroup1Message + " - PriceFeed");
-printTxData("priceFeedTx", priceFeedTx);
-failIfTxStatusError(weth9Tx, deployGroup1Message + " - WETH9");
+failIfTxStatusError(weth9Tx, deployGroup1_Message + " - WETH9");
 printTxData("weth9Tx", weth9Tx);
-failIfTxStatusError(daiTx, deployGroup1Message + " - DAI");
+failIfTxStatusError(daiTx, deployGroup1_Message + " - DAI");
 printTxData("daiTx", daiTx);
-failIfTxStatusError(vanillaDoptionTx, deployGroup1Message + " - VanillaDoption");
+failIfTxStatusError(priceFeedTx, deployGroup1_Message + " - PriceFeed");
+printTxData("priceFeedTx", priceFeedTx);
+failIfTxStatusError(vanillaDoptionTx, deployGroup1_Message + " - VanillaDoption");
 printTxData("vanillaDoptionTx", vanillaDoptionTx);
 console.log("RESULT: ");
 printPriceFeedContractDetails();
 console.log("RESULT: ");
+printTokenContractDetails(0);
+console.log("RESULT: ");
+printTokenContractDetails(1);
 console.log("RESULT: ");
 printVanillaDoptionContractDetails();
 
 
 // -----------------------------------------------------------------------------
-var distributeTokens_Message = "Distribute Tokens";
+var deployGroup2_Message = "Deploy Group #2 - Setup";
 var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
 // -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + distributeTokens_Message + " ----------");
-var distributeTokens_1Tx = web3.eth.sendTransaction({from: maker1, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_2Tx = web3.eth.sendTransaction({from: maker2, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_3Tx = web3.eth.sendTransaction({from: taker1, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_4Tx = web3.eth.sendTransaction({from: taker2, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var distributeTokens_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
+var deployGroup2_1Tx = web3.eth.sendTransaction({from: maker1, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_2Tx = web3.eth.sendTransaction({from: maker2, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_3Tx = web3.eth.sendTransaction({from: taker1, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_4Tx = web3.eth.sendTransaction({from: taker2, to: weth9Address, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaDoption.addConfig(weth9Address, daiAddress, priceFeedAddress, 1, 2, "WETH9/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(distributeTokens_1Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(maker1, 1,000)");
-failIfTxStatusError(distributeTokens_2Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(maker2, 1,000)");
-failIfTxStatusError(distributeTokens_3Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(taker1, 1,000)");
-failIfTxStatusError(distributeTokens_4Tx, distributeTokens_Message + " 1,000 ETH -> weth9.mint(taker2, 1,000)");
-failIfTxStatusError(distributeTokens_5Tx, distributeTokens_Message + " dai.transfer(maker1, 1,000,000)");
-failIfTxStatusError(distributeTokens_6Tx, distributeTokens_Message + " dai.transfer(maker2, 1,000,000)");
-failIfTxStatusError(distributeTokens_7Tx, distributeTokens_Message + " dai.transfer(taker1, 1,000,000)");
-failIfTxStatusError(distributeTokens_8Tx, distributeTokens_Message + " dai.transfer(taker2, 1,000,000)");
-printTxData("distributeTokens_1Tx", distributeTokens_1Tx);
-printTxData("distributeTokens_2Tx", distributeTokens_2Tx);
-printTxData("distributeTokens_3Tx", distributeTokens_3Tx);
-printTxData("distributeTokens_4Tx", distributeTokens_4Tx);
-printTxData("distributeTokens_5Tx", distributeTokens_5Tx);
-printTxData("distributeTokens_6Tx", distributeTokens_6Tx);
-printTxData("distributeTokens_7Tx", distributeTokens_7Tx);
-printTxData("distributeTokens_8Tx", distributeTokens_8Tx);
-// printTokenAContractDetails();
-// printTokenBContractDetails();
+failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - 1,000 ETH -> weth9.mint(maker1, 1,000)");
+failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - 1,000 ETH -> weth9.mint(maker2, 1,000)");
+failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - 1,000 ETH -> weth9.mint(taker1, 1,000)");
+failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - 1,000 ETH -> weth9.mint(taker2, 1,000)");
+failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - dai.transfer(maker1, 1,000,000)");
+failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - dai.transfer(maker2, 1,000,000)");
+failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - dai.transfer(taker1, 1,000,000)");
+failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - dai.transfer(taker2, 1,000,000)");
+failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - vanillaDoption.addConfig(WETH9, DAI, priceFeed, 1, 2, '3')");
+printTxData("deployGroup2_1Tx", deployGroup2_1Tx);
+printTxData("deployGroup2_2Tx", deployGroup2_2Tx);
+printTxData("deployGroup2_3Tx", deployGroup2_3Tx);
+printTxData("deployGroup2_4Tx", deployGroup2_4Tx);
+printTxData("deployGroup2_5Tx", deployGroup2_5Tx);
+printTxData("deployGroup2_6Tx", deployGroup2_6Tx);
+printTxData("deployGroup2_7Tx", deployGroup2_7Tx);
+printTxData("deployGroup2_8Tx", deployGroup2_8Tx);
+printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
 console.log("RESULT: ");
-
+printTokenContractDetails(0);
+console.log("RESULT: ");
+printTokenContractDetails(1);
+console.log("RESULT: ");
+printVanillaDoptionContractDetails();
 
 
 
