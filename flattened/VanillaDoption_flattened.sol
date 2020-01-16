@@ -200,30 +200,49 @@ contract VanillaDoption is Orders {
     // ----------------------------------------------------------------------------
 
     struct TradeInfo {
+        // Key
         address account;
         address baseToken;
         address quoteToken;
         address priceFeed;
+        // Series
         uint buySell;
         uint callPut;
-        uint settlement;
+        uint europeanAmerican;
         uint expiry;
+        // Orders sorted by premium
         uint premium;
         uint baseTokens;
+        uint settlement;
     }
 
     using Configs for Configs.Config;
 
+    TradeInfo[] trades;
+
     constructor() public  Orders(){
     }
 
-    function trade(address baseToken, address quoteToken, address priceFeed, uint buySell, uint callPut, uint settlement, uint expiry, uint premium, uint baseTokens) public {
-        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, buySell, callPut, settlement, expiry, premium, baseTokens));
+    function trade(address baseToken, address quoteToken, address priceFeed, uint buySell, uint callPut, uint europeanAmerican, uint expiry, uint premium, uint baseTokens, uint settlement) public {
+        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, buySell, callPut, europeanAmerican, expiry, premium, baseTokens, settlement));
     }
 
     function trade(TradeInfo memory tradeInfo) internal {
         Configs.Config memory config = _getConfig(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed);
-        require(config.timestamp > 0, "getConfig: Config not found");
+        require(config.timestamp > 0, "trade: Invalid config");
+        require(tradeInfo.expiry > block.timestamp, "trade: expiry must be in the future");
+        require(tradeInfo.settlement <= tradeInfo.expiry, "trade: settlement must be before or at expiry");
+        require(tradeInfo.premium > 0, "trade: premium must be non-zero");
+        require(tradeInfo.baseTokens > 0, "trade: baseTokens must be non-zero");
+        trades.push(tradeInfo);
+    }
 
+    function tradesLength() public view returns (uint) {
+        return trades.length;
+    }
+
+    function getTrade(uint i) public view returns (address, address, address, address, uint, uint, uint, uint, uint, uint, uint) {
+        TradeInfo memory t = trades[i];
+        return (t.account, t.baseToken, t.quoteToken, t.priceFeed, t.buySell, t.callPut, t.europeanAmerican, t.expiry, t.premium, t.baseTokens, t.settlement);
     }
 }

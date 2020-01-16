@@ -26,6 +26,7 @@ library Configs {
     struct Config {
         uint timestamp;
         uint index;
+        bytes32 key;
         address baseToken;
         address quoteToken;
         address priceFeed;
@@ -60,7 +61,7 @@ library Configs {
         bytes32 key = generateKey(self, baseToken, quoteToken, priceFeed);
         require(self.entries[key].timestamp == 0, "Config.add: Cannot add duplicate");
         self.index.push(key);
-        self.entries[key] = Config(block.timestamp, self.index.length - 1, baseToken, quoteToken, priceFeed, maxTerm, takerFee, description);
+        self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, maxTerm, takerFee, description);
         emit ConfigAdded(baseToken, quoteToken, priceFeed, maxTerm, takerFee, description);
     }
     function remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
@@ -131,16 +132,16 @@ contract DoptionBase is Owned {
     function configsLength() public view returns (uint) {
         return configs.length();
     }
-    function getConfigByIndex(uint i) public view returns (address, address, address, uint, uint, string memory, uint) {
+    function getConfigByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, string memory, uint) {
         require(i < configs.length(), "getConfigByIndex: Invalid config index");
         Configs.Config memory config = configs.entries[configs.index[i]];
-        return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
+        return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
     }
-    function getConfig(address baseToken, address quoteToken, address priceFeed) public view returns (address, address, address, uint, uint, string memory, uint) {
+    function getConfig(address baseToken, address quoteToken, address priceFeed) public view returns (bytes32, address, address, address, uint, uint, string memory, uint) {
         bytes32 key = Configs.generateKey(configs, baseToken, quoteToken, priceFeed);
         Configs.Config memory config = configs.entries[key];
         require(config.timestamp > 0, "getConfig: Config not found");
-        return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
+        return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
     }
     function _getConfig(address baseToken, address quoteToken, address priceFeed) internal view returns (Configs.Config memory) {
         bytes32 key = Configs.generateKey(configs, baseToken, quoteToken, priceFeed);
@@ -169,30 +170,55 @@ contract VanillaDoption is Orders {
     // ----------------------------------------------------------------------------
 
     struct TradeInfo {
+        // Key
         address account;
         address baseToken;
         address quoteToken;
         address priceFeed;
+        // Series
         uint buySell;
         uint callPut;
-        uint settlement;
+        uint europeanAmerican;
         uint expiry;
+        // Orders sorted by premium
         uint premium;
         uint baseTokens;
+        uint settlement;
     }
 
     using Configs for Configs.Config;
 
+    TradeInfo[] trades;
+
     constructor() public  Orders(){
     }
 
-    function trade(address baseToken, address quoteToken, address priceFeed, uint buySell, uint callPut, uint settlement, uint expiry, uint premium, uint baseTokens) public {
-        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, buySell, callPut, settlement, expiry, premium, baseTokens));
+    function trade(address baseToken, address quoteToken, address priceFeed, uint buySell, uint callPut, uint europeanAmerican, uint expiry, uint premium, uint baseTokens, uint settlement) public {
+        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, buySell, callPut, europeanAmerican, expiry, premium, baseTokens, settlement));
     }
 
     function trade(TradeInfo memory tradeInfo) internal {
+        // Check config registered
         Configs.Config memory config = _getConfig(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed);
-        require(config.timestamp > 0, "getConfig: Config not found");
+        require(config.timestamp > 0, "trade: Invalid config");
 
+        // Check parameters
+        require(tradeInfo.buySell < 2, "trade: buySell must be 0 (buy) or 1 (sell)");
+        require(tradeInfo.callPut < 2, "trade: callPut must be 0 (call) or 1 (callPut)");
+        require(tradeInfo.europeanAmerican < 2, "trade: europeanAmerican must be 0 (european) or 1 (american)");
+        require(tradeInfo.expiry > block.timestamp, "trade: expiry must be in the future");
+        require(tradeInfo.settlement <= tradeInfo.expiry, "trade: settlement must be before or at expiry");
+        require(tradeInfo.premium > 0, "trade: premium must be non-zero");
+        require(tradeInfo.baseTokens > 0, "trade: baseTokens must be non-zero");
+        trades.push(tradeInfo);
+    }
+
+    function tradesLength() public view returns (uint) {
+        return trades.length;
+    }
+
+    function getTrade(uint i) public view returns (address, address, address, address, uint, uint, uint, uint, uint, uint, uint) {
+        TradeInfo memory t = trades[i];
+        return (t.account, t.baseToken, t.quoteToken, t.priceFeed, t.buySell, t.callPut, t.europeanAmerican, t.expiry, t.premium, t.baseTokens, t.settlement);
     }
 }

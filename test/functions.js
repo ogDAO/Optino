@@ -509,14 +509,15 @@ function printVanillaDoptionContractDetails() {
     console.log("RESULT: vanillaDoption.configsLength=" + configsLength);
     for (i = 0; i < configsLength; i++) {
         var config = contract.getConfigByIndex.call(i);
-        var baseToken = getShortAddressName(config[0]);
-        var quoteToken = getShortAddressName(config[1]);
-        var priceFeed = getShortAddressName(config[2]);
-        var maxTerm = config[3];
-        var takerFee = config[4];
-        var description = config[5];
-        var timestamp = config[6];
-        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + "). baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "', timestamp=" + timestamp);
+        var key = config[0];
+        var baseToken = getShortAddressName(config[1]);
+        var quoteToken = getShortAddressName(config[2]);
+        var priceFeed = getShortAddressName(config[3]);
+        var maxTerm = config[4];
+        var takerFee = config[5];
+        var description = config[6];
+        var timestamp = config[7];
+        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "', timestamp=" + timestamp);
     }
 //     console.log("RESULT: vanillaDoption.base=" + getShortAddressName(contract.base.call()));
     // console.log("RESULT: vanillaDoption.quote=" + getShortAddressName(contract.quote.call()));
