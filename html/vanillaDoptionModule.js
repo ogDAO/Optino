@@ -39,7 +39,7 @@ const VanillaDoption = {
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• maxTerm</b-col>
-                <b-col class="small truncate">{{ config.maxTermString }} ({{ config.maxTerm }} seconds)</b-col>
+                <b-col class="small truncate">{{ config.maxTermString }} ({{ config.maxTerm }}s)</b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• takerFee</b-col>

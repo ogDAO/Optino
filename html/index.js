@@ -55,6 +55,7 @@ const store = new Vuex.Store({
     dataService: dataServiceModule,
     ipfsService: ipfsServiceModule,
     tokenContractExplorer: tokenContractExplorerModule,
+    vanillaDoptionExplorer: vanillaDoptionExplorerModule,
     priceFeedExplorer: priceFeedExplorerModule,
     goblokIpfsExplorer: goblokIpfsExplorerModule,
     goblokApi: apiReferenceModule,

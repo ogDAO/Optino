@@ -36,6 +36,7 @@
     <script src="vanillaDoptionModule.js"></script>
     <script src="ipfsServiceModule.js"></script>
     <script src="tokenContractExplorerModule.js"></script>
+    <script src="vanillaDoptionExplorerModule.js"></script>
     <script src="priceFeedExplorerModule.js"></script>
     <script src="apiReferenceModule.js"></script>
     <script src="ipfsExplorerModule.js"></script>
@@ -75,11 +76,14 @@
               Doptions - Decentralised Options
             </b-navbar-brand>
             <b-navbar-nav class="ml-auto">
+              <b-nav-item to="/vanillaDoptionExplorer/all" v-b-popover.hover="'View and create options'">Vanilla Doption Explorer</b-nav-item>
               <b-nav-item to="/priceFeedExplorer/all" v-b-popover.hover="'View and set price feed'">Price Feed Explorer</b-nav-item>
+              <!--
               <b-nav-item to="/tokenContractExplorer/all" v-b-popover.hover="'Mint your ERC721 Non-Fungible Tokens; view and set token attributes'">Token Contract Explorer</b-nav-item>
               <b-nav-item to="/dataServiceExplorer/all" v-b-popover.hover="'State and media held on Data Server'">Data Service Explorer</b-nav-item>
               <b-nav-item to="/ipfsExplorer/all" v-b-popover.hover="'IPFS Explorer'">IPFS Explorer</b-nav-item>
               <b-nav-item to="/apiReference/all" v-b-popover.hover="'API Reference'">API Reference</b-nav-item>
+              -->
             </b-navbar-nav>
           </b-navbar>
         </div>
