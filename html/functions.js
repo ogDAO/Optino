@@ -158,3 +158,37 @@ function buildFilterUrl(baseUrl, filter, fields) {
   })
   return encodeURI(url);
 }
+
+
+function getTermFromSeconds(term) {
+  if (term > 0) {
+    console.log("term: " + term);
+    var secs = parseInt(term);
+    var mins = parseInt(secs / 60);
+    secs = secs % 60;
+    console.log("secs: " + secs);
+    var hours = parseInt(mins / 60);
+    mins = mins % 60;
+    console.log("mins: " + secs);
+    var days = parseInt(hours / 24);
+    console.log("days: " + days);
+    hours = hours % 24;
+    console.log("hours: " + hours);
+    var s = "";
+    if (days > 0) {
+      s += days + "d ";
+    }
+    if (hours > 0) {
+      s += hours + "h ";
+    }
+    if (mins > 0) {
+      s += mins + "m ";
+    }
+    if (secs > 0) {
+      s += secs + "s";
+    }
+    return s;
+  } else {
+    return "";
+  }
+}

@@ -68,8 +68,6 @@ loadScript("$VANILLADOPTIONJS");
 loadScript("lookups.js");
 loadScript("functions.js");
 
-// console.log(JSON.stringify(priceFeedOutput));
-
 var wethAbi = JSON.parse(wethOutput.contracts["$WETH9SOL:$WETH9NAME"].abi);
 var wethBin = "0x" + wethOutput.contracts["$WETH9SOL:$WETH9NAME"].bin;
 var tokenAbi = JSON.parse(tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].abi);
@@ -216,6 +214,8 @@ printVanillaDoptionContractDetails();
 var deployGroup2_Message = "Deploy Group #2 - Setup";
 var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
+var maxTerm = 60 * 60 * 24 + 60 * 60 * 2 + 60 * 3; // 1 day 2 hours and 3 minute
+var takerFee = new BigNumber("1").shift(14);
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
 var deployGroup2_1Tx = web3.eth.sendTransaction({from: maker1, to: wethAddress, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
@@ -226,7 +226,7 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaDoption.addConfig(wethAddress, daiAddress, priceFeedAddress, 1, 2, "WETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaDoption.addConfig(wethAddress, daiAddress, priceFeedAddress, maxTerm, takerFee.toString(), "WETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();

@@ -18,8 +18,38 @@ const VanillaDoption = {
           <b-row>
             <b-col cols="4" class="small">Owner</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + owner" class="card-link" target="_blank">{{ owner }}</b-link></b-col>
           </b-row>
-          <b-row v-for="config in configs">
-            <b-col cols="4" class="small truncate">{{ 'Config ' + config.index }}</b-col><b-col class="small truncate">{{ config.description }}</b-col>
+          <b-row v-for="config in configs" v-bind:key="config.index">
+            <b-col>
+              <b-row>
+                <b-col colspan="2" class="small truncate">
+                  Config {{ config.index }} - <em>{{ config.description }}</em>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• baseToken</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.baseToken" class="card-link" target="_blank">{{ config.baseToken }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• quoteToken</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.quoteToken" class="card-link" target="_blank">{{ config.quoteToken }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• priceFeed</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.priceFeed" class="card-link" target="_blank">{{ config.priceFeed }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• maxTerm</b-col>
+                <b-col class="small truncate">{{ config.maxTerm + ' = ' + config.maxTermString }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• takerFee</b-col>
+                <b-col class="small truncate">{{ config.takerFee.shift(-16) }}%</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• timestamp</b-col>
+                <b-col class="small truncate">{{ config.timestamp }}</b-col>
+              </b-row>
+            </b-col>
           </b-row>
         </b-card>
       </b-collapse>
@@ -68,7 +98,7 @@ const vanillaDoptionModule = {
   mutations: {
     updateConfig(state, {index, config}) {
       Vue.set(state.configs, index, config);
-      logInfo("vanillaDoptionModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
+      logDebug("vanillaDoptionModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
     },
     updateOwner(state, owner) {
       state.owner = owner;
@@ -86,7 +116,7 @@ const vanillaDoptionModule = {
   actions: {
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-      logInfo("vanillaDoptionModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
+      logDebug("vanillaDoptionModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
       if (!state.executing) {
         commit('updateExecuting', true);
         logDebug("vanillaDoptionModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
@@ -102,7 +132,7 @@ const vanillaDoptionModule = {
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
           var _configsLength = promisify(cb => contract.configsLength(cb));
           var configsLength = await _configsLength;
-          logInfo("vanillaDoptionModule", "execWeb3() configsLength: " + configsLength);
+          logDebug("vanillaDoptionModule", "execWeb3() configsLength: " + configsLength);
           for (var i = 0; i < configsLength; i++) {
             var _config = promisify(cb => contract.getConfigByIndex(i, cb));
             var config = await _config;
@@ -113,10 +143,11 @@ const vanillaDoptionModule = {
             var takerFee = config[4];
             var description = config[5];
             var timestamp = config[6];
-            logInfo("vanillaDoptionModule", "execWeb3() config: " + JSON.stringify(config));
+            var maxTermString = getTermFromSeconds(maxTerm);
+            logDebug("vanillaDoptionModule", "execWeb3() config: " + JSON.stringify(config));
             // TODO: Check timestamp for updated info
             if (i >= state.configs.length) {
-              commit('updateConfig', { index: i, config: { index: i, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, maxTerm: maxTerm, takerFee: takerFee, description: description, timestamp: timestamp } });
+              commit('updateConfig', { index: i, config: { index: i, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, maxTerm: maxTerm, takerFee: takerFee, description: description, timestamp: timestamp, maxTermString: maxTermString } });
             }
           }
           var _owner = promisify(cb => contract.owner(cb));
