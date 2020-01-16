@@ -341,6 +341,8 @@ const Connection = {
           await store.dispatch('deployTokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         } else if (this.$route.name == "TokenContractExplorer" /* || this.$route.name == "GoblokStatus" */) {
           await store.dispatch('tokenContractExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        } else if (this.$route.name == "VanillaDoptionExplorer") {
+          await store.dispatch('vanillaDoptionExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         } else if (this.$route.name == "PriceFeedExplorer") {
           await store.dispatch('priceFeedExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         }

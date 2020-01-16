@@ -109,6 +109,9 @@ contract DoptionBase is Owned {
         initOwned(msg.sender);
     }
 
+    function generateKey(address baseToken, address quoteToken, address priceFeed) internal view returns (bytes32) {
+        return Configs.generateKey(configs, baseToken, quoteToken, priceFeed);
+    }
     function addConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint takerFee, string memory description) public onlyOwner {
         require(baseToken != address(0), "addConfig: cannot add null baseToken");
         require(quoteToken != address(0), "addConfig: cannot add null quoteToken");
@@ -139,14 +142,57 @@ contract DoptionBase is Owned {
         require(config.timestamp > 0, "getConfig: Config not found");
         return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
     }
+    function _getConfig(address baseToken, address quoteToken, address priceFeed) internal view returns (Configs.Config memory) {
+        bytes32 key = Configs.generateKey(configs, baseToken, quoteToken, priceFeed);
+        return configs.entries[key];
+    }
 }
 
+
+contract Orders is DoptionBase {
+    constructor() public DoptionBase() {
+    }
+    // function trade1() public {
+
+    // }
+
+}
 
 // ----------------------------------------------------------------------------
 // Covered Options Factory
 // ----------------------------------------------------------------------------
-contract VanillaDoption is DoptionBase {
-    constructor() public {
-        DoptionBase(msg.sender);
+contract VanillaDoption is Orders {
+
+    // ----------------------------------------------------------------------------
+    // Config Info - [baseToken, quoteToken, priceFeed] =>
+    // [baseToken, quoteToken, priceFeed, maxTerm, takerFee, Description]
+    // ----------------------------------------------------------------------------
+
+    struct TradeInfo {
+        address account;
+        address baseToken;
+        address quoteToken;
+        address priceFeed;
+        uint buySell;
+        uint callPut;
+        uint settlement;
+        uint expiry;
+        uint premium;
+        uint baseTokens;
+    }
+
+    using Configs for Configs.Config;
+
+    constructor() public  Orders(){
+    }
+
+    function trade(address baseToken, address quoteToken, address priceFeed, uint buySell, uint callPut, uint settlement, uint expiry, uint premium, uint baseTokens) public {
+        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, buySell, callPut, settlement, expiry, premium, baseTokens));
+    }
+
+    function trade(TradeInfo memory tradeInfo) internal {
+        Configs.Config memory config = _getConfig(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed);
+        require(config.timestamp > 0, "getConfig: Config not found");
+
     }
 }

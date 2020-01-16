@@ -214,7 +214,7 @@ printVanillaDoptionContractDetails();
 var deployGroup2_Message = "Deploy Group #2 - Setup";
 var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
-var maxTerm = 60 * 60 * 24 * 123 + 60 * 60 * 4 + 60 * 5 + 6; // 123d 4h 5m 6s
+var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
 var takerFee = new BigNumber("1").shift(14);
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
