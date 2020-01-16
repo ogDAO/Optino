@@ -1,4 +1,4 @@
-var weth9Output={
+var wethOutput={
   "contracts":
   {
     "WETH9.sol:WETH9":

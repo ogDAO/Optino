@@ -128,16 +128,16 @@ contract DoptionBase is Owned {
     function configsLength() public view returns (uint) {
         return configs.length();
     }
-    function getConfigByIndex(uint i) public view returns (address, address, address, uint, uint, string memory) {
+    function getConfigByIndex(uint i) public view returns (address, address, address, uint, uint, string memory, uint) {
         require(i < configs.length(), "getConfigByIndex: Invalid config index");
         Configs.Config memory config = configs.entries[configs.index[i]];
-        return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description);
+        return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
     }
-    function getConfig(address baseToken, address quoteToken, address priceFeed) public view returns (address, address, address, uint, uint, string memory) {
+    function getConfig(address baseToken, address quoteToken, address priceFeed) public view returns (address, address, address, uint, uint, string memory, uint) {
         bytes32 key = Configs.generateKey(configs, baseToken, quoteToken, priceFeed);
         Configs.Config memory config = configs.entries[key];
         require(config.timestamp > 0, "getConfig: Config not found");
-        return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description);
+        return (config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
     }
 }
 

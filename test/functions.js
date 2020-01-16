@@ -68,7 +68,7 @@ function addTokenContractAddressAndAbi(i, address, abi) {
   _tokenContractAbis[i] = abi;
   _tokens[i] = web3.eth.contract(abi).at(address);
   if (i == 0) {
-    _symbols[i] = "WETH9";
+    _symbols[i] = "WETH";
     _decimals[i] = 18;
   } else {
     _symbols[i] = _tokens[i].symbol.call();
@@ -515,7 +515,8 @@ function printVanillaDoptionContractDetails() {
         var maxTerm = config[3];
         var takerFee = config[4];
         var description = config[5];
-        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + "). baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "'");
+        var timestamp = config[6];
+        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + "). baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "', timestamp=" + timestamp);
     }
 //     console.log("RESULT: vanillaDoption.base=" + getShortAddressName(contract.base.call()));
     // console.log("RESULT: vanillaDoption.quote=" + getShortAddressName(contract.quote.call()));

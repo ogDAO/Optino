@@ -9,8 +9,8 @@ const Tokens = {
           Please switch to the Geth Devnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
-      <b-button v-b-toggle.tokens size="sm" block variant="outline-info">Tokens</b-button>
-      <b-collapse id="tokens" visible class="mt-2">
+      <b-button v-b-toggle.tokens size="sm" block variant="outline-info">Tokens: {{ balances[0] + ' ' + symbols[0] + ' / ' + balances[1] + ' ' + symbols[1] }}</b-button>
+      <b-collapse id="tokens" class="mt-2">
         <b-card no-body class="border-0" v-if="network == 1337">
           <b-row>
             <b-col cols="4" class="small">
@@ -34,7 +34,7 @@ const Tokens = {
   `,
   data: function () {
     return {
-      count: 0,
+      // count: 0,
     }
   },
   computed: {
@@ -67,7 +67,7 @@ const tokensModule = {
   namespaced: true,
   state: {
     addresses: TOKENADDRESSES,
-    symbols: ["WETH9", "DAI"],
+    symbols: ["WETH", "DAI"],
     decimals: [18, 18],
     balances: [new BigNumber(0), new BigNumber(0)],
     params: null,

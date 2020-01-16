@@ -39,6 +39,8 @@ const PriceFeedExplorer = {
           <tokens></tokens>
           <br />
           <priceFeed></priceFeed>
+          <br />
+          <vanillaDoption></vanillaDoption>
           <!--
           <br />
           <tokenContract></tokenContract>

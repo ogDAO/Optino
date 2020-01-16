@@ -9,8 +9,8 @@ const PriceFeed = {
           Please switch to the Geth Devnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
-      <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Price Feed {{ address.substring(0, 6) + ' ' + value }}</b-button>
-      <b-collapse id="priceFeed" visible class="mt-2">
+      <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Price Feed: {{ address.substring(0, 6) + ' ' + value }}</b-button>
+      <b-collapse id="priceFeed" class="mt-2">
         <b-card no-body class="border-0" v-if="network == 1337">
           <b-row>
             <b-col cols="4" class="small">Contract</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'token/' + address" class="card-link" target="_blank">{{ address }}</b-link></b-col>
@@ -30,7 +30,7 @@ const PriceFeed = {
   `,
   data: function () {
     return {
-      count: 0,
+      // count: 0,
     }
   },
   computed: {
