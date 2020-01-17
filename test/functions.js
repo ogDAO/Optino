@@ -524,9 +524,6 @@ function printVanillaOptinoContractDetails() {
     console.log("RESULT: vanillaOptino.seriesDataLength=" + seriesDataLength);
     for (i = 0; i < seriesDataLength; i++) {
         var config = contract.getSeriesByIndex.call(i);
-        console.log("RESULT: vanillaOptino.getConfigByIndex(" + i + "). config=" + config);
-        // series.key, series.baseToken, series.quoteToken, series.priceFeed, series.callPut, series.europeanAmerican, series.expiry,
-        // series.takerFee, series.description, series.timestamp);
         var key = config[0];
         var baseToken = getShortAddressName(config[1]);
         var quoteToken = getShortAddressName(config[2]);
@@ -534,10 +531,11 @@ function printVanillaOptinoContractDetails() {
         var callPut = config[4];
         var europeanAmerican = config[5];
         var expiry = config[6];
-        var takerFee = config[7];
-        var description = config[8];
-        var timestamp = config[9];
-        console.log("RESULT: vanillaOptino.getSeriesByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", callPut=" + callPut + ", europeanAmerican=" + europeanAmerican + ", takerFee=" + takerFee.shift(-16) + "%, description='" + description + "', timestamp=" + timestamp);
+        var strike = config[7];
+        var takerFee = config[8];
+        var description = config[9];
+        var timestamp = config[10];
+        console.log("RESULT: vanillaOptino.getSeriesByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", callPut=" + callPut + ", europeanAmerican=" + europeanAmerican + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", takerFee=" + takerFee.shift(-16) + "%, description='" + description + "', timestamp=" + timestamp);
     }
 //     console.log("RESULT: vanillaOptino.base=" + getShortAddressName(contract.base.call()));
     // console.log("RESULT: vanillaOptino.quote=" + getShortAddressName(contract.quote.call()));

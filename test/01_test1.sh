@@ -263,6 +263,7 @@ var tradeGroup1_Message = "Trade Group #1";
 var callPut = "0";
 var europeanAmerican = "0";
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
+var strike = new BigNumber("200").shift(18);
 var buySell = "0";
 var premium = new BigNumber("1").shift(16);
 var baseTokens = new BigNumber("100").shift(18);
@@ -270,9 +271,9 @@ var settlement = parseInt(new Date()/1000) + 1 * 60*60;
 
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + tradeGroup1_Message + " ----------");
-var tradeGroup1_1Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var tradeGroup1_2Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var tradeGroup1_1Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var tradeGroup1_2Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();

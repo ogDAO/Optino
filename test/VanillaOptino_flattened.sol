@@ -143,6 +143,7 @@ library SeriesLibrary {
         uint callPut;
         uint europeanAmerican;
         uint expiry;
+        uint strike;
         // From Config when series first created
         uint takerFee;
         string description;
@@ -153,39 +154,40 @@ library SeriesLibrary {
         bytes32[] index;
     }
 
-    event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string description);
-    event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry);
-    event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string description);
+    event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string description);
+    event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike);
+    event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string description);
 
     function init(Data storage self) internal {
         require(!self.initialised);
         self.initialised = true;
     }
-    function generateKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry) internal pure returns (bytes32 hash) {
-        return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry));
+    function generateKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal pure returns (bytes32 hash) {
+        return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike));
     }
     function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
         return self.entries[key].timestamp > 0;
     }
-    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string memory description) internal {
+    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
         require(baseToken != address(0), "SeriesLibrary.add: baseToken cannot be null");
         require(quoteToken != address(0), "SeriesLibrary.add: quoteToken cannot be null");
         require(priceFeed != address(0), "SeriesLibrary.add: priceFeed cannot be null");
         require(callPut < 2, "SeriesLibrary.add: callPut must be 0 (call) or 1 (callPut)");
         require(europeanAmerican < 2, "SeriesLibrary.add: europeanAmerican must be 0 (european) or 1 (american)");
         require(expiry > block.timestamp, "SeriesLibrary.add: expiry must be in the future");
+        require(strike > 0, "SeriesLibrary.add: strike must be non-zero");
 
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
         require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
         self.index.push(key);
-        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, takerFee, description);
-        emit SeriesAdded(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, takerFee, description);
+        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
+        emit SeriesAdded(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
     }
-    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal {
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
         require(self.entries[key].timestamp > 0);
         uint removeIndex = self.entries[key].index;
-        emit SeriesRemoved(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+        emit SeriesRemoved(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
         uint lastIndex = self.index.length - 1;
         bytes32 lastIndexKey = self.index[lastIndex];
         self.index[removeIndex] = lastIndexKey;
@@ -195,14 +197,14 @@ library SeriesLibrary {
             self.index.pop();
         }
     }
-    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string memory description) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0);
         _value.timestamp = block.timestamp;
         _value.takerFee = takerFee;
         _value.description = description;
-        emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, takerFee, description);
+        emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
     }
     function length(Data storage self) internal view returns (uint) {
         return self.index.length;
@@ -224,9 +226,9 @@ contract OptinoBase is Owned {
     event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
     event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint takerFee, string description);
     // SeriesLibrary copy of events to be generated in the ABI
-    event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string description);
-    event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry);
-    event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string description);
+    event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string description);
+    event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike);
+    event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string description);
 
     constructor() public {
         initOwned(msg.sender);
@@ -269,39 +271,39 @@ contract OptinoBase is Owned {
     }
 
 
-    function generateSeriesKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry) internal pure returns (bytes32) {
-        return SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+    function generateSeriesKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal pure returns (bytes32) {
+        return SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
     }
-    function addSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string memory description) internal {
+    function addSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
         if (!seriesData.initialised) {
             seriesData.init();
         }
-        seriesData.add(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, takerFee, description);
+        seriesData.add(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
     }
-    function updateSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint takerFee, string memory description) internal {
+    function updateSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
         require(seriesData.initialised);
-        seriesData.update(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, takerFee, description);
+        seriesData.update(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
     }
-    function _removeSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry) internal {
+    function _removeSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal {
         require(seriesData.initialised);
-        seriesData.remove(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+        seriesData.remove(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
     }
     function seriesDataLength() public view returns (uint) {
         return seriesData.length();
     }
-    function getSeriesByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, uint, uint, string memory, uint) {
+    function getSeriesByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, uint, uint, uint, string memory, uint) {
         require(i < configData.length(), "getSeriesByIndex: Invalid config index");
         SeriesLibrary.Series memory series = seriesData.entries[seriesData.index[i]];
-        return (series.key, series.baseToken, series.quoteToken, series.priceFeed, series.callPut, series.europeanAmerican, series.expiry, series.takerFee, series.description, series.timestamp);
+        return (series.key, series.baseToken, series.quoteToken, series.priceFeed, series.callPut, series.europeanAmerican, series.expiry, series.strike, series.takerFee, series.description, series.timestamp);
     }
-    function getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry) public view returns (bytes32, uint, string memory, uint) {
-        bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+    function getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) public view returns (bytes32, uint, string memory, uint) {
+        bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
         SeriesLibrary.Series memory series = seriesData.entries[key];
         require(series.timestamp > 0, "getSeries: Series not found");
         return (series.key, series.takerFee, series.description, series.timestamp);
     }
-    function _getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry) internal view returns (SeriesLibrary.Series storage) {
-        bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry);
+    function _getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal view returns (SeriesLibrary.Series storage) {
+        bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
         return seriesData.entries[key];
     }
 
@@ -332,6 +334,7 @@ contract VanillaOptino is Orders {
         uint callPut;
         uint europeanAmerican;
         uint expiry;
+        uint strike;
         // Orders sorted by premium
         uint buySell;
         uint premium;
@@ -365,12 +368,12 @@ contract VanillaOptino is Orders {
         return keccak256(abi.encodePacked(config, callPut, europeanAmerican, expiry));
     }
 
-    function trade(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint buySell, uint premium, uint baseTokens, uint settlement) public {
-        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, buySell, premium, baseTokens, settlement));
+    function trade(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint buySell, uint premium, uint baseTokens, uint settlement) public {
+        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement));
     }
 
     function trade(TradeInfo memory tradeInfo) internal {
-        SeriesLibrary.Series storage series = _getSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry);
+        SeriesLibrary.Series storage series = _getSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, tradeInfo.strike);
 
         // Series has not been created yet
         if (series.timestamp == 0) {
@@ -378,8 +381,8 @@ contract VanillaOptino is Orders {
             ConfigLibrary.Config memory config = _getConfig(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed);
             require(config.timestamp > 0, "trade: Invalid config");
             require(tradeInfo.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
-            addSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, config.takerFee, config.description);
-            series = _getSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry);
+            addSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, tradeInfo.strike, config.takerFee, config.description);
+            series = _getSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, tradeInfo.strike);
         }
 
         // Check parameters
