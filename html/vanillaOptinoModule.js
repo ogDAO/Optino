@@ -141,11 +141,11 @@ const vanillaOptinoModule = {
           }
           var _configDataLength = promisify(cb => contract.configDataLength(cb));
           var configDataLength = await _configDataLength;
-          logInfo("vanillaOptinoModule", "execWeb3() configDataLength: " + configDataLength);
+          logDebug("vanillaOptinoModule", "execWeb3() configDataLength: " + configDataLength);
           for (var i = 0; i < configDataLength; i++) {
             var _config = promisify(cb => contract.getConfigByIndex(new BigNumber(i).toString(), cb));
             var config = await _config;
-            logInfo("vanillaOptinoModule", "execWeb3() config: " + JSON.stringify(config));
+            logDebug("vanillaOptinoModule", "execWeb3() config: " + JSON.stringify(config));
             var configKey = config[0];
             var baseToken = config[1];
             var quoteToken = config[2];
