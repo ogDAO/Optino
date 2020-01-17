@@ -4,7 +4,7 @@ Vue.component('connection', Connection);
 Vue.component('tokenContract', TokenContract);
 Vue.component('tokens', Tokens);
 Vue.component('priceFeed', PriceFeed);
-Vue.component('vanillaDoption', VanillaDoption);
+Vue.component('vanillaOptino', VanillaOptino);
 Vue.component('dataService', DataService);
 Vue.component('ipfsService', IpfsService);
 
@@ -51,11 +51,11 @@ const store = new Vuex.Store({
     tokenContract: tokenContractModule,
     tokens: tokensModule,
     priceFeed: priceFeedModule,
-    vanillaDoption: vanillaDoptionModule,
+    vanillaOptino: vanillaOptinoModule,
     dataService: dataServiceModule,
     ipfsService: ipfsServiceModule,
     tokenContractExplorer: tokenContractExplorerModule,
-    vanillaDoptionExplorer: vanillaDoptionExplorerModule,
+    vanillaOptinoExplorer: vanillaOptinoExplorerModule,
     priceFeedExplorer: priceFeedExplorerModule,
     goblokIpfsExplorer: goblokIpfsExplorerModule,
     goblokApi: apiReferenceModule,

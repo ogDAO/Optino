@@ -1,5 +1,4 @@
-# Doptions
-Decentralised Options
+# Optino - Crypto Options
 
 ## MakerDAO Price Feed
 

@@ -1,10 +1,10 @@
-const VanillaDoptionExplorer = {
+const VanillaOptinoExplorer = {
   template: `
   <div>
     <div>
       <b-row>
         <b-col cols="12" md="9">
-          <b-card no-body header="Vanilla Doption Explorer" class="border-0">
+          <b-card no-body header="Vanilla Optino Explorer" class="border-0">
             <br />
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
@@ -40,7 +40,7 @@ const VanillaDoptionExplorer = {
           <br />
           <priceFeed></priceFeed>
           <br />
-          <vanillaDoption></vanillaDoption>
+          <vanillaOptino></vanillaOptino>
           <!--
           <br />
           <tokenContract></tokenContract>
@@ -87,7 +87,7 @@ const VanillaDoptionExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("VanillaDoptionExplorer", "updateValue(" + this.value + ", " + this.hasValue + ")");
+            logInfo("VanillaOptinoExplorer", "updateValue(" + this.value + ", " + this.hasValue + ")");
             this.$store.commit('priceFeedExplorer/setValue', { value: this.value, hasValue: this.hasValue });
             event.preventDefault();
           }
@@ -99,7 +99,7 @@ const VanillaDoptionExplorer = {
   },
 };
 
-const vanillaDoptionExplorerModule = {
+const vanillaOptinoExplorerModule = {
   namespaced: true,
   state: {
     params: null,
@@ -112,31 +112,31 @@ const vanillaDoptionExplorerModule = {
   },
   mutations: {
     setValue(state, { value, hasValue }) {
-      logInfo("vanillaDoptionExplorerModule", "updateValue(" + value + ", " + hasValue + ")");
+      logInfo("vanillaOptinoExplorerModule", "updateValue(" + value + ", " + hasValue + ")");
       state.executionQueue.push({ value: value, hasValue: hasValue });
     },
     deQueue (state) {
-      logDebug("vanillaDoptionExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
+      logDebug("vanillaOptinoExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
       state.executionQueue.shift();
     },
     updateParams (state, params) {
       state.params = params;
-      logDebug("vanillaDoptionExplorerModule", "updateParams('" + params + "')")
+      logDebug("vanillaOptinoExplorerModule", "updateParams('" + params + "')")
     },
     updateExecuting (state, executing) {
       state.executing = executing;
-      logDebug("vanillaDoptionExplorerModule", "updateExecuting(" + executing + ")")
+      logDebug("vanillaOptinoExplorerModule", "updateExecuting(" + executing + ")")
     },
   },
   actions: {
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
       if (!state.executing) {
         commit('updateExecuting', true);
-        logInfo("vanillaDoptionExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logInfo("vanillaOptinoExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
 
         var paramsChanged = false;
         if (state.params != rootState.route.params.param) {
-          logDebug("vanillaDoptionExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
+          logDebug("vanillaOptinoExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
           paramsChanged = true;
           commit('updateParams', rootState.route.params.param);
         }
@@ -148,13 +148,13 @@ const vanillaDoptionExplorerModule = {
             var request = state.executionQueue[0];
             var value = new BigNumber(request.value).shift(18).toString();
             var hasValue = request.hasValue;
-            logDebug("vanillaDoptionExplorerModule", "execWeb3() priceFeed.setValue(" + value + ", " + hasValue + ")");
+            logDebug("vanillaOptinoExplorerModule", "execWeb3() priceFeed.setValue(" + value + ", " + hasValue + ")");
             priceFeedContract.setValue(value, hasValue, { from: store.getters['connection/coinbase'] }, function(error, tx) {
               if (!error) {
-                logDebug("vanillaDoptionExplorerModule", "execWeb3() priceFeed.setValue() tx: " + tx);
+                logDebug("vanillaOptinoExplorerModule", "execWeb3() priceFeed.setValue() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logDebug("vanillaDoptionExplorerModule", "execWeb3() priceFeed.setValue() error: ");
+                logDebug("vanillaOptinoExplorerModule", "execWeb3() priceFeed.setValue() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
@@ -163,9 +163,9 @@ const vanillaDoptionExplorerModule = {
           }
         }
         commit('updateExecuting', false);
-        logDebug("vanillaDoptionExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("vanillaOptinoExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       } else {
-        logDebug("vanillaDoptionExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("vanillaOptinoExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       }
     }
   },

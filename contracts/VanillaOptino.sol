@@ -1,9 +1,9 @@
 pragma solidity ^0.6.0;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah's Decentralised Options v0.10 - Vanilla Doption
+// BokkyPooBah's Decentralised Options v0.10 - Vanilla Optino
 //
-// https://github.com/bokkypoobah/Doptions
+// https://github.com/bokkypoobah/Optinos
 //
 //
 // Enjoy.
@@ -210,7 +210,7 @@ library SeriesLibrary {
 }
 
 
-contract DoptionBase is Owned {
+contract OptinoBase is Owned {
     using ConfigLibrary for ConfigLibrary.Data;
     using ConfigLibrary for ConfigLibrary.Config;
     using SeriesLibrary for SeriesLibrary.Data;
@@ -308,8 +308,8 @@ contract DoptionBase is Owned {
 }
 
 
-contract Orders is DoptionBase {
-    constructor() public DoptionBase() {
+contract Orders is OptinoBase {
+    constructor() public OptinoBase() {
     }
     // function trade1() public {
 
@@ -320,7 +320,7 @@ contract Orders is DoptionBase {
 // ----------------------------------------------------------------------------
 // Covered Options Factory
 // ----------------------------------------------------------------------------
-contract VanillaDoption is Orders {
+contract VanillaOptino is Orders {
 
     struct TradeInfo {
         address account;

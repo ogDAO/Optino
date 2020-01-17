@@ -6,7 +6,7 @@ pragma solidity ^0.6.0;
 // NOTE: This token contract allows the owner to mint and burn tokens for any
 // account, and is used for testing
 //
-// https://github.com/bokkypoobah/Doptions
+// https://github.com/bokkypoobah/Optino
 //
 //
 // Enjoy.

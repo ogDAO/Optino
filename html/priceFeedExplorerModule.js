@@ -40,7 +40,7 @@ const PriceFeedExplorer = {
           <br />
           <priceFeed></priceFeed>
           <br />
-          <vanillaDoption></vanillaDoption>
+          <vanillaOptino></vanillaOptino>
           <!--
           <br />
           <tokenContract></tokenContract>

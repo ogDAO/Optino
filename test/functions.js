@@ -484,29 +484,29 @@ function printPriceFeedContractDetails() {
 // -----------------------------------------------------------------------------
 // Feed Contract
 // -----------------------------------------------------------------------------
-var _vanillaDoptionContractAddress = null;
-var _vanillaDoptionContractAbi = null;
+var _vanillaOptinoContractAddress = null;
+var _vanillaOptinoContractAbi = null;
 
-function addVanillaDoptionContractAddressAndAbi(address, abi) {
-  _vanillaDoptionContractAddress = address;
-  _vanillaDoptionContractAbi = abi;
+function addVanillaOptinoContractAddressAndAbi(address, abi) {
+  _vanillaOptinoContractAddress = address;
+  _vanillaOptinoContractAbi = abi;
 }
 
-var vanillaDoptionFromBlock = 0;
+var vanillaOptinoFromBlock = 0;
 
-function printVanillaDoptionContractDetails() {
-  console.log("RESULT: vanillaDoptionContractAddress=" + getShortAddressName(_vanillaDoptionContractAddress));
-  // console.log("RESULT: vanillaDoptionContractAbi=" + JSON.stringify(_vanillaDoptionContractAbi));
-  if (_vanillaDoptionContractAddress != null && _vanillaDoptionContractAbi != null) {
-    var contract = web3.eth.contract(_vanillaDoptionContractAbi).at(_vanillaDoptionContractAddress);
+function printVanillaOptinoContractDetails() {
+  console.log("RESULT: vanillaOptinoContractAddress=" + getShortAddressName(_vanillaOptinoContractAddress));
+  // console.log("RESULT: vanillaOptinoContractAbi=" + JSON.stringify(_vanillaOptinoContractAbi));
+  if (_vanillaOptinoContractAddress != null && _vanillaOptinoContractAbi != null) {
+    var contract = web3.eth.contract(_vanillaOptinoContractAbi).at(_vanillaOptinoContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
-    console.log("RESULT: vanillaDoption.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
+    console.log("RESULT: vanillaOptino.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
 
     var latestBlock = eth.blockNumber;
     var i;
 
     var configsLength = contract.configsLength.call();
-    console.log("RESULT: vanillaDoption.configsLength=" + configsLength);
+    console.log("RESULT: vanillaOptino.configsLength=" + configsLength);
     for (i = 0; i < configsLength; i++) {
         var config = contract.getConfigByIndex.call(i);
         var key = config[0];
@@ -517,25 +517,25 @@ function printVanillaDoptionContractDetails() {
         var takerFee = config[5];
         var description = config[6];
         var timestamp = config[7];
-        console.log("RESULT: vanillaDoption.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "', timestamp=" + timestamp);
+        console.log("RESULT: vanillaOptino.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "', timestamp=" + timestamp);
     }
-//     console.log("RESULT: vanillaDoption.base=" + getShortAddressName(contract.base.call()));
-    // console.log("RESULT: vanillaDoption.quote=" + getShortAddressName(contract.quote.call()));
-    // console.log("RESULT: vanillaDoption.pricefeed=" + getShortAddressName(contract.pricefeed.call()));
+//     console.log("RESULT: vanillaOptino.base=" + getShortAddressName(contract.base.call()));
+    // console.log("RESULT: vanillaOptino.quote=" + getShortAddressName(contract.quote.call()));
+    // console.log("RESULT: vanillaOptino.pricefeed=" + getShortAddressName(contract.pricefeed.call()));
     // var peek = contract.peek.call();
     // console.log("RESULT: priceFeed.peek=" + contract.peek.call());
     // console.log("RESULT: priceFeed.value=" + contract.value.call().shift(-18) + " ETH/USD");
     // console.log("RESULT: priceFeed.hasValue=" + contract.hasValue.call());
 
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: vanillaDoptionFromBlock, toBlock: latestBlock });
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: vanillaOptinoFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
       console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     ownershipTransferredEvents.stopWatching();
 
-    // var setValueEvents = contract.SetValue({}, { fromBlock: vanillaDoptionFromBlock, toBlock: latestBlock });
+    // var setValueEvents = contract.SetValue({}, { fromBlock: vanillaOptinoFromBlock, toBlock: latestBlock });
     // i = 0;
     // setValueEvents.watch(function (error, result) {
     //   console.log("RESULT: SetValue " + i++ + " #" + result.blockNumber + " value=" + result.args.value.shift(-18) +
@@ -543,6 +543,6 @@ function printVanillaDoptionContractDetails() {
     // });
     // setValueEvents.stopWatching();
 
-    vanillaDoptionFromBlock = latestBlock + 1;
+    vanillaOptinoFromBlock = latestBlock + 1;
   }
 }
