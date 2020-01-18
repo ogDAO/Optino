@@ -218,6 +218,24 @@ contract OptinoBase is Owned {
     using SeriesLibrary for SeriesLibrary.Data;
     using SeriesLibrary for SeriesLibrary.Series;
 
+    struct TradeData {
+        address account;
+        // Composite key
+        address baseToken;
+        address quoteToken;
+        address priceFeed;
+        // Series
+        uint callPut;
+        uint europeanAmerican;
+        uint expiry;
+        uint strike;
+        // Orders sorted by premium
+        uint buySell;
+        uint premium;
+        uint baseTokens;
+        uint settlement;
+    }
+
     ConfigLibrary.Data private configData;
     SeriesLibrary.Data private seriesData;
 
@@ -259,14 +277,18 @@ contract OptinoBase is Owned {
         ConfigLibrary.Config memory config = configData.entries[configData.index[i]];
         return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
     }
-    function getConfig(address baseToken, address quoteToken, address priceFeed) public view returns (bytes32, address, address, address, uint, uint, string memory, uint) {
-        bytes32 key = ConfigLibrary.generateKey(baseToken, quoteToken, priceFeed);
-        ConfigLibrary.Config memory config = configData.entries[key];
-        require(config.timestamp > 0, "getConfig: Config not found");
-        return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
-    }
-    function _getConfig(address baseToken, address quoteToken, address priceFeed) internal view returns (ConfigLibrary.Config memory) {
-        bytes32 key = ConfigLibrary.generateKey(baseToken, quoteToken, priceFeed);
+    // function getConfig(address baseToken, address quoteToken, address priceFeed) public view returns (bytes32, address, address, address, uint, uint, string memory, uint) {
+    //     bytes32 key = ConfigLibrary.generateKey(baseToken, quoteToken, priceFeed);
+    //     ConfigLibrary.Config memory config = configData.entries[key];
+    //     require(config.timestamp > 0, "getConfig: Config not found");
+    //     return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.maxTerm, config.takerFee, config.description, config.timestamp);
+    // }
+    // function _getConfig(address baseToken, address quoteToken, address priceFeed) internal view returns (ConfigLibrary.Config memory) {
+    //     bytes32 key = ConfigLibrary.generateKey(baseToken, quoteToken, priceFeed);
+    //     return configData.entries[key];
+    // }
+    function _getConfig(TradeData memory tradeData) internal view returns (ConfigLibrary.Config memory) {
+        bytes32 key = ConfigLibrary.generateKey(tradeData.baseToken, tradeData.quoteToken, tradeData.priceFeed);
         return configData.entries[key];
     }
 
@@ -274,20 +296,26 @@ contract OptinoBase is Owned {
     function generateSeriesKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal pure returns (bytes32) {
         return SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
     }
-    function addSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
+    // function addSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
+    //     if (!seriesData.initialised) {
+    //         seriesData.init();
+    //     }
+    //     seriesData.add(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
+    // }
+    function addSeries(TradeData memory tradeData, uint takerFee, string memory description) internal {
         if (!seriesData.initialised) {
             seriesData.init();
         }
-        seriesData.add(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
+        seriesData.add(tradeData.baseToken, tradeData.quoteToken, tradeData.priceFeed, tradeData.callPut, tradeData.europeanAmerican, tradeData.expiry, tradeData.strike, takerFee, description);
     }
-    function updateSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
-        require(seriesData.initialised);
-        seriesData.update(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
-    }
-    function _removeSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal {
-        require(seriesData.initialised);
-        seriesData.remove(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
-    }
+    // function updateSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint takerFee, string memory description) internal {
+    //     require(seriesData.initialised);
+    //     seriesData.update(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, takerFee, description);
+    // }
+    // function _removeSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal {
+    //     require(seriesData.initialised);
+    //     seriesData.remove(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
+    // }
     function seriesDataLength() public view returns (uint) {
         return seriesData.length();
     }
@@ -296,14 +324,18 @@ contract OptinoBase is Owned {
         SeriesLibrary.Series memory series = seriesData.entries[seriesData.index[i]];
         return (series.key, series.baseToken, series.quoteToken, series.priceFeed, series.callPut, series.europeanAmerican, series.expiry, series.strike, series.takerFee, series.description, series.timestamp);
     }
-    function getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) public view returns (bytes32, uint, string memory, uint) {
-        bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
-        SeriesLibrary.Series memory series = seriesData.entries[key];
-        require(series.timestamp > 0, "getSeries: Series not found");
-        return (series.key, series.takerFee, series.description, series.timestamp);
-    }
-    function _getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal view returns (SeriesLibrary.Series storage) {
-        bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
+    // function getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) public view returns (bytes32, uint, string memory, uint) {
+    //     bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
+    //     SeriesLibrary.Series memory series = seriesData.entries[key];
+    //     require(series.timestamp > 0, "getSeries: Series not found");
+    //     return (series.key, series.takerFee, series.description, series.timestamp);
+    // }
+    // function _getSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike) internal view returns (SeriesLibrary.Series storage) {
+    //     bytes32 key = SeriesLibrary.generateKey(baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike);
+    //     return seriesData.entries[key];
+    // }
+    function _getSeries(TradeData memory tradeData) internal view returns (SeriesLibrary.Series storage) {
+        bytes32 key = SeriesLibrary.generateKey(tradeData.baseToken, tradeData.quoteToken, tradeData.priceFeed, tradeData.callPut, tradeData.europeanAmerican, tradeData.expiry, tradeData.strike);
         return seriesData.entries[key];
     }
 
@@ -324,24 +356,6 @@ contract Orders is OptinoBase {
 // ----------------------------------------------------------------------------
 contract VanillaOptino is Orders {
 
-    struct TradeInfo {
-        address account;
-        // Composite key
-        address baseToken;
-        address quoteToken;
-        address priceFeed;
-        // Series
-        uint callPut;
-        uint europeanAmerican;
-        uint expiry;
-        uint strike;
-        // Orders sorted by premium
-        uint buySell;
-        uint premium;
-        uint baseTokens;
-        uint settlement;
-    }
-
     struct Series {
         // Composite key
         address baseToken;
@@ -356,57 +370,53 @@ contract VanillaOptino is Orders {
 
     using ConfigLibrary for ConfigLibrary.Config;
 
-    TradeInfo[] tradeData;
+    TradeData[] trades;
 
     // Series.key => Series [baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry]
     mapping(bytes32 => mapping(bytes32 => Series)) data;
 
-    constructor() public  Orders(){
-    }
-
-    function generateSeriesKey(bytes32 config, uint callPut, uint europeanAmerican, uint expiry) internal pure returns (bytes32 hash) {
-        return keccak256(abi.encodePacked(config, callPut, europeanAmerican, expiry));
+    constructor() public Orders() {
     }
 
     function trade(address baseToken, address quoteToken, address priceFeed, uint callPut, uint europeanAmerican, uint expiry, uint strike, uint buySell, uint premium, uint baseTokens, uint settlement) public {
-        trade(TradeInfo(msg.sender, baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement));
+        trade(TradeData(msg.sender, baseToken, quoteToken, priceFeed, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement));
     }
 
-    function trade(TradeInfo memory tradeInfo) internal {
-        SeriesLibrary.Series storage series = _getSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, tradeInfo.strike);
+    function trade(TradeData memory tradeData) internal {
+        SeriesLibrary.Series storage series = _getSeries(tradeData);
 
         // Series has not been created yet
         if (series.timestamp == 0) {
             // Check config registered
-            ConfigLibrary.Config memory config = _getConfig(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed);
+            ConfigLibrary.Config memory config = _getConfig(tradeData);
             require(config.timestamp > 0, "trade: Invalid config");
-            require(tradeInfo.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
-            addSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, tradeInfo.strike, config.takerFee, config.description);
-            series = _getSeries(tradeInfo.baseToken, tradeInfo.quoteToken, tradeInfo.priceFeed, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry, tradeInfo.strike);
+            require(tradeData.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
+            addSeries(tradeData, config.takerFee, config.description);
+            series = _getSeries(tradeData);
         }
 
         // Check parameters
-        require(tradeInfo.expiry > block.timestamp, "trade: expiry must be in the future");
-        require(tradeInfo.settlement <= tradeInfo.expiry, "trade: settlement must be before or at expiry");
+        require(tradeData.expiry > block.timestamp, "trade: expiry must be in the future");
+        require(tradeData.settlement <= tradeData.expiry, "trade: settlement must be before or at expiry");
 
-        require(tradeInfo.buySell < 2, "trade: buySell must be 0 (buy) or 1 (sell)");
-        require(tradeInfo.premium > 0, "trade: premium must be non-zero");
-        require(tradeInfo.baseTokens > 0, "trade: baseTokens must be non-zero");
+        require(tradeData.buySell < 2, "trade: buySell must be 0 (buy) or 1 (sell)");
+        require(tradeData.premium > 0, "trade: premium must be non-zero");
+        require(tradeData.baseTokens > 0, "trade: baseTokens must be non-zero");
 
         // Series
         // bytes32 seriesKey = generateSeriesKey(config.key, tradeInfo.callPut, tradeInfo.europeanAmerican, tradeInfo.expiry);
 
         // Series storage series = data[config.key][seriesKey];
 
-        tradeData.push(tradeInfo);
+        trades.push(tradeData);
     }
 
     function tradeDataLength() public view returns (uint) {
-        return tradeData.length;
+        return trades.length;
     }
 
     function getTrade(uint i) public view returns (address, address, address, address, uint, uint, uint, uint, uint, uint, uint) {
-        TradeInfo memory t = tradeData[i];
+        TradeData memory t = trades[i];
         return (t.account, t.baseToken, t.quoteToken, t.priceFeed, t.buySell, t.callPut, t.europeanAmerican, t.expiry, t.premium, t.baseTokens, t.settlement);
     }
 }

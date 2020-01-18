@@ -1,5 +1,5 @@
 var VANILLAOPTINOADDRESS = "0xe6ada9beed6e24be4c0259383db61b52bfca85f3";
-var VANILLAOPTINOABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"maxTerm","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"ConfigAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"}],"name":"ConfigRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"maxTerm","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"ConfigUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"SeriesAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"}],"name":"SeriesRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"SeriesUpdated","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"maxTerm","type":"uint256"},{"internalType":"uint256","name":"takerFee","type":"uint256"},{"internalType":"string","name":"description","type":"string"}],"name":"addConfig","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"configDataLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"}],"name":"getConfig","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getConfigByIndex","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"callPut","type":"uint256"},{"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"}],"name":"getSeries","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getSeriesByIndex","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getTrade","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"}],"name":"removeConfig","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"seriesDataLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"callPut","type":"uint256"},{"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"uint256","name":"buySell","type":"uint256"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"uint256","name":"baseTokens","type":"uint256"},{"internalType":"uint256","name":"settlement","type":"uint256"}],"name":"trade","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"tradeDataLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"maxTerm","type":"uint256"},{"internalType":"uint256","name":"takerFee","type":"uint256"},{"internalType":"string","name":"description","type":"string"}],"name":"updateConfig","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+var VANILLAOPTINOABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"maxTerm","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"ConfigAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"}],"name":"ConfigRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"maxTerm","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"ConfigUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"SeriesAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"}],"name":"SeriesRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":true,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"takerFee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"SeriesUpdated","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"maxTerm","type":"uint256"},{"internalType":"uint256","name":"takerFee","type":"uint256"},{"internalType":"string","name":"description","type":"string"}],"name":"addConfig","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"configDataLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getConfigByIndex","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getSeriesByIndex","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getTrade","outputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"}],"name":"removeConfig","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"seriesDataLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"callPut","type":"uint256"},{"internalType":"uint256","name":"europeanAmerican","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"uint256","name":"strike","type":"uint256"},{"internalType":"uint256","name":"buySell","type":"uint256"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"uint256","name":"baseTokens","type":"uint256"},{"internalType":"uint256","name":"settlement","type":"uint256"}],"name":"trade","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"tradeDataLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"maxTerm","type":"uint256"},{"internalType":"uint256","name":"takerFee","type":"uint256"},{"internalType":"string","name":"description","type":"string"}],"name":"updateConfig","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 const VanillaOptino = {
   template: `
@@ -18,7 +18,7 @@ const VanillaOptino = {
           <b-row>
             <b-col cols="4" class="small">Owner</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + owner" class="card-link" target="_blank">{{ owner }}</b-link></b-col>
           </b-row>
-          <b-row v-for="config in configs" v-bind:key="config.index">
+          <b-row v-for="config in configData" v-bind:key="config.index">
             <b-col>
               <b-row>
                 <b-col colspan="2" class="small truncate">
@@ -55,6 +55,62 @@ const VanillaOptino = {
               </b-row>
             </b-col>
           </b-row>
+          <b-row v-for="series in seriesData" v-bind:key="series.index">
+            <b-col>
+              <b-row>
+                <b-col colspan="2" class="small truncate">
+                  Series {{ series.index }} - <em>{{ series.description }}</em>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• key</b-col>
+                <b-col class="small truncate">{{ series.seriesKey }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• baseToken</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.baseToken" class="card-link" target="_blank">{{ config.baseToken }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• quoteToken</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.quoteToken" class="card-link" target="_blank">{{ config.quoteToken }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• priceFeed</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.priceFeed" class="card-link" target="_blank">{{ config.priceFeed }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• callPut</b-col>
+                <b-col class="small truncate">{{ config.callPut }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• europeanAmerican</b-col>
+                <b-col class="small truncate">{{ config.europeanAmerican }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• callPut</b-col>
+                <b-col class="small truncate">{{ config.callPut }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• takerFee</b-col>
+                <b-col class="small truncate">{{ config.takerFee.shift(-16) }}%</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• timestamp</b-col>
+                <b-col class="small truncate">{{ config.timestamp }}</b-col>
+              </b-row>
+
+
+              var priceFeed = series[3];
+              var callPut = series[4];
+              var europeanAmerican = series[5];
+              var expiry = series[6];
+              var strike = series[7];
+              var takerFee = series[8];
+              var description = series[9];
+              var timestamp = series[10];
+
+            </b-col>
+          </b-row>
         </b-card>
       </b-collapse>
     </div>
@@ -77,8 +133,11 @@ const VanillaOptino = {
     owner() {
       return store.getters['vanillaOptino/owner'];
     },
-    configs() {
-      return store.getters['vanillaOptino/configs'];
+    configData() {
+      return store.getters['vanillaOptino/configData'];
+    },
+    seriesData() {
+      return store.getters['vanillaOptino/seriesData'];
     },
   },
 };
@@ -89,20 +148,26 @@ const vanillaOptinoModule = {
   state: {
     address: VANILLAOPTINOADDRESS,
     owner: "(loading)",
-    configs: [],
+    configData: [],
+    seriesData: [],
     params: null,
     executing: false,
   },
   getters: {
     address: state => state.address,
     owner: state => state.owner,
-    configs: state => state.configs,
+    configData: state => state.configData,
+    seriesData: state => state.seriesData,
     params: state => state.params,
   },
   mutations: {
     updateConfig(state, {index, config}) {
-      Vue.set(state.configs, index, config);
+      Vue.set(state.configData, index, config);
       logDebug("vanillaOptinoModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
+    },
+    updateSeries(state, {index, series}) {
+      Vue.set(state.seriesData, index, series);
+      logDebug("vanillaOptinoModule", "updateSeries(" + index + ", " + JSON.stringify(series) + ")")
     },
     updateOwner(state, owner) {
       state.owner = owner;
@@ -156,8 +221,31 @@ const vanillaOptinoModule = {
             var timestamp = config[7];
             var maxTermString = getTermFromSeconds(maxTerm);
             // TODO: Check timestamp for updated info
-            if (i >= state.configs.length) {
+            if (i >= state.configData.length) {
               commit('updateConfig', { index: i, config: { index: i, configKey: configKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, maxTerm: maxTerm, takerFee: takerFee, description: description, timestamp: timestamp, maxTermString: maxTermString } });
+            }
+          }
+          var _seriesDataLength = promisify(cb => contract.seriesDataLength(cb));
+          var seriesDataLength = await _seriesDataLength;
+          logDebug("vanillaOptinoModule", "execWeb3() seriesDataLength: " + seriesDataLength);
+          for (var i = 0; i < seriesDataLength; i++) {
+            var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(i).toString(), cb));
+            var series = await _series;
+            logDebug("vanillaOptinoModule", "execWeb3() config: " + JSON.stringify(series));
+            var seriesKey = series[0];
+            var baseToken = series[1];
+            var quoteToken = series[2];
+            var priceFeed = series[3];
+            var callPut = series[4];
+            var europeanAmerican = series[5];
+            var expiry = series[6];
+            var strike = series[7];
+            var takerFee = series[8];
+            var description = series[9];
+            var timestamp = series[10];
+            // TODO: Check timestamp for updated info
+            if (i >= state.seriesData.length) {
+              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, callPut: callPut, europeanAmerican: europeanAmerican, expiry: expiry, strike: strike, takerFee: takerFee, description: description, timestamp: timestamp } });
             }
           }
         }

@@ -523,18 +523,18 @@ function printVanillaOptinoContractDetails() {
     var seriesDataLength = contract.seriesDataLength.call();
     console.log("RESULT: vanillaOptino.seriesDataLength=" + seriesDataLength);
     for (i = 0; i < seriesDataLength; i++) {
-        var config = contract.getSeriesByIndex.call(i);
-        var key = config[0];
-        var baseToken = getShortAddressName(config[1]);
-        var quoteToken = getShortAddressName(config[2]);
-        var priceFeed = getShortAddressName(config[3]);
-        var callPut = config[4];
-        var europeanAmerican = config[5];
-        var expiry = config[6];
-        var strike = config[7];
-        var takerFee = config[8];
-        var description = config[9];
-        var timestamp = config[10];
+        var series = contract.getSeriesByIndex.call(i);
+        var key = series[0];
+        var baseToken = getShortAddressName(series[1]);
+        var quoteToken = getShortAddressName(series[2]);
+        var priceFeed = getShortAddressName(series[3]);
+        var callPut = series[4];
+        var europeanAmerican = series[5];
+        var expiry = series[6];
+        var strike = series[7];
+        var takerFee = series[8];
+        var description = series[9];
+        var timestamp = series[10];
         console.log("RESULT: vanillaOptino.getSeriesByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", callPut=" + callPut + ", europeanAmerican=" + europeanAmerican + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", takerFee=" + takerFee.shift(-16) + "%, description='" + description + "', timestamp=" + timestamp);
     }
 //     console.log("RESULT: vanillaOptino.base=" + getShortAddressName(contract.base.call()));
