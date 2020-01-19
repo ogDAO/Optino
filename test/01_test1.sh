@@ -216,7 +216,7 @@ var deployGroup2_Message = "Deploy Group #2 - Setup";
 var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
-var takerFee = new BigNumber("1").shift(14);
+var fee = new BigNumber("1").shift(14);
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
 var deployGroup2_1Tx = web3.eth.sendTransaction({from: maker1, to: wethAddress, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
@@ -227,7 +227,7 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAddress, maxTerm, takerFee.toString(), "WETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAddress, maxTerm, fee.toString(), "WETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
@@ -272,6 +272,12 @@ var tradeGroup1_1Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddr
 // var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
+
+var optinos = getVanillaOptinos();
+console.log("RESULT: optinos=" + JSON.stringify(optinos));
+addTokenContractAddressAndAbi(2, optinos[0], tokenAbi);
+addTokenContractAddressAndAbi(3, optinos[1], tokenAbi);
+
 printBalances();
 failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(tradeGroup1_2Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
@@ -282,7 +288,6 @@ printTxData("tradeGroup1_1Tx", tradeGroup1_1Tx);
 console.log("RESULT: ");
 printVanillaOptinoFactoryContractDetails();
 console.log("RESULT: ");
-
 
 exit;
 

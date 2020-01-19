@@ -85,25 +85,25 @@ function printBalances() {
   var j;
   var totalTokenBalances = [new BigNumber(0), new BigNumber(0), new BigNumber(0), new BigNumber(0)];
   console.log("RESULT:  # Account                                             EtherBalanceChange               " + padLeft(_symbols[0], 16) + "               " + padLeft(_symbols[1], 16) + " Name");
-  // console.log("RESULT:                                                                                         " + padLeft(_symbols[2], 16) + "               " + padLeft(_symbols[3], 16));
+  console.log("RESULT:                                                                                         " + padLeft(_symbols[2], 16) + "               " + padLeft(_symbols[3], 16));
   console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------");
   accounts.forEach(function(e) {
     var etherBalanceBaseBlock = eth.getBalance(e, baseBlock);
     var etherBalance = web3.fromWei(eth.getBalance(e).minus(etherBalanceBaseBlock), "ether");
     var tokenBalances = [];
-    for (j = 0; j < 2; j++) {
+    for (j = 0; j < 4; j++) {
       tokenBalances[j] = _tokens[j] == null ? new BigNumber(0) : _tokens[j].balanceOf.call(e).shift(-_decimals[j]);
       totalTokenBalances[j] = totalTokenBalances[j].add(tokenBalances[j]);
     }
     console.log("RESULT: " + pad2(i) + " " + e  + " " + pad(etherBalance) + " " +
       padToken(tokenBalances[0], _decimals[0]) + " " + padToken(tokenBalances[1], _decimals[1]) + " " + accountNames[e]);
-    // console.log("RESULT:                                                                           " +
-      // padToken(tokenBalances[2], _decimals[2]) + " " + padToken(tokenBalances[3], _decimals[3]));
+    console.log("RESULT:                                                                           " +
+      padToken(tokenBalances[2], _decimals[2]) + " " + padToken(tokenBalances[3], _decimals[3]));
     i++;
   });
   console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------");
   console.log("RESULT:                                                                           " + padToken(totalTokenBalances[0], _decimals[0]) + " " + padToken(totalTokenBalances[1], _decimals[1]) + " Total Token Balances");
-  // console.log("RESULT:                                                                           " + padToken(totalTokenBalances[2], _decimals[2]) + " " + padToken(totalTokenBalances[3], _decimals[3]));
+  console.log("RESULT:                                                                           " + padToken(totalTokenBalances[2], _decimals[2]) + " " + padToken(totalTokenBalances[3], _decimals[3]));
   console.log("RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------");
   console.log("RESULT: ");
 }
@@ -495,7 +495,31 @@ function addVanillaOptinoFactoryContractAddressAndAbi(address, abi) {
   _vanillaOptinoFactoryContractAbi = abi;
 }
 
-var vanillaOptinoFromBlock = 0;
+var vanillaOptinoFactoryFromBlock = 0;
+
+function getVanillaOptinos() {
+  if (vanillaOptinoFactoryFromBlock == 0) {
+    vanillaOptinoFactoryFromBlock = baseBlock;
+  }
+  var optinos = [];
+  console.log("RESULT: vanillaOptinoFactoryContractAddress=" + getShortAddressName(_vanillaOptinoFactoryContractAddress));
+  if (_vanillaOptinoFactoryContractAddress != null && _vanillaOptinoFactoryContractAbi != null) {
+    var contract = web3.eth.contract(_vanillaOptinoFactoryContractAbi).at(_vanillaOptinoFactoryContractAddress);
+
+    var latestBlock = eth.blockNumber;
+    var i;
+
+    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
+    i = 0;
+    seriesAddedEvents.watch(function (error, result) {
+      console.log("RESULT: got SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      optinos.push(result.args.optinoToken);
+      optinos.push(result.args.optinoCollateralToken);
+    });
+    seriesAddedEvents.stopWatching();
+  }
+  return optinos;
+}
 
 function printVanillaOptinoFactoryContractDetails() {
   console.log("RESULT: vanillaOptinoFactoryContractAddress=" + getShortAddressName(_vanillaOptinoFactoryContractAddress));
@@ -549,21 +573,20 @@ function printVanillaOptinoFactoryContractDetails() {
     // console.log("RESULT: priceFeed.hasValue=" + contract.hasValue.call());
 
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: vanillaOptinoFromBlock, toBlock: latestBlock });
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
       console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     ownershipTransferredEvents.stopWatching();
 
-    // var setValueEvents = contract.SetValue({}, { fromBlock: vanillaOptinoFromBlock, toBlock: latestBlock });
-    // i = 0;
-    // setValueEvents.watch(function (error, result) {
-    //   console.log("RESULT: SetValue " + i++ + " #" + result.blockNumber + " value=" + result.args.value.shift(-18) +
-    //     " hasValue=" + result.args.hasValue);
-    // });
-    // setValueEvents.stopWatching();
+    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
+    i = 0;
+    seriesAddedEvents.watch(function (error, result) {
+      console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    });
+    seriesAddedEvents.stopWatching();
 
-    vanillaOptinoFromBlock = latestBlock + 1;
+    vanillaOptinoFactoryFromBlock = latestBlock + 1;
   }
 }
