@@ -317,12 +317,15 @@ function printTokenContractDetails(j) {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: tokenFromBlock[j], toBlock: latestBlock });
-    i = 0;
-    ownershipTransferredEvents.watch(function (error, result) {
-      console.log("RESULT: token" + j + ".OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    ownershipTransferredEvents.stopWatching();
+    // WETH has no OwnershipTransferred event
+    if (j > 0) {
+      var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: tokenFromBlock[j], toBlock: latestBlock });
+      i = 0;
+      ownershipTransferredEvents.watch(function (error, result) {
+        console.log("RESULT: token" + j + ".OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      });
+      ownershipTransferredEvents.stopWatching();
+    }
 
     var approvalEvents = contract.Approval({}, { fromBlock: tokenFromBlock[j], toBlock: latestBlock });
     i = 0;
@@ -484,29 +487,29 @@ function printPriceFeedContractDetails() {
 // -----------------------------------------------------------------------------
 // Feed Contract
 // -----------------------------------------------------------------------------
-var _vanillaOptinoContractAddress = null;
-var _vanillaOptinoContractAbi = null;
+var _vanillaOptinoFactoryContractAddress = null;
+var _vanillaOptinoFactoryContractAbi = null;
 
-function addVanillaOptinoContractAddressAndAbi(address, abi) {
-  _vanillaOptinoContractAddress = address;
-  _vanillaOptinoContractAbi = abi;
+function addVanillaOptinoFactoryContractAddressAndAbi(address, abi) {
+  _vanillaOptinoFactoryContractAddress = address;
+  _vanillaOptinoFactoryContractAbi = abi;
 }
 
 var vanillaOptinoFromBlock = 0;
 
-function printVanillaOptinoContractDetails() {
-  console.log("RESULT: vanillaOptinoContractAddress=" + getShortAddressName(_vanillaOptinoContractAddress));
-  // console.log("RESULT: vanillaOptinoContractAbi=" + JSON.stringify(_vanillaOptinoContractAbi));
-  if (_vanillaOptinoContractAddress != null && _vanillaOptinoContractAbi != null) {
-    var contract = web3.eth.contract(_vanillaOptinoContractAbi).at(_vanillaOptinoContractAddress);
+function printVanillaOptinoFactoryContractDetails() {
+  console.log("RESULT: vanillaOptinoFactoryContractAddress=" + getShortAddressName(_vanillaOptinoFactoryContractAddress));
+  // console.log("RESULT: vanillaOptinoFactoryContractAbi=" + JSON.stringify(_vanillaOptinoFactoryContractAbi));
+  if (_vanillaOptinoFactoryContractAddress != null && _vanillaOptinoFactoryContractAbi != null) {
+    var contract = web3.eth.contract(_vanillaOptinoFactoryContractAbi).at(_vanillaOptinoFactoryContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
-    console.log("RESULT: vanillaOptino.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
+    console.log("RESULT: vanillaOptinoFactory.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
 
     var latestBlock = eth.blockNumber;
     var i;
 
     var configDataLength = contract.configDataLength.call();
-    console.log("RESULT: vanillaOptino.configDataLength=" + configDataLength);
+    console.log("RESULT: vanillaOptinoFactory.configDataLength=" + configDataLength);
     for (i = 0; i < configDataLength; i++) {
         var config = contract.getConfigByIndex.call(i);
         var key = config[0];
@@ -514,14 +517,14 @@ function printVanillaOptinoContractDetails() {
         var quoteToken = getShortAddressName(config[2]);
         var priceFeed = getShortAddressName(config[3]);
         var maxTerm = config[4];
-        var takerFee = config[5];
+        var fee = config[5];
         var description = config[6];
         var timestamp = config[7];
-        console.log("RESULT: vanillaOptino.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", takerFee=" + takerFee + ", description='" + description + "', timestamp=" + timestamp);
+        console.log("RESULT: vanillaOptino.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", maxTerm=" + maxTerm + ", fee=" + fee + ", description='" + description + "', timestamp=" + timestamp);
     }
 
     var seriesDataLength = contract.seriesDataLength.call();
-    console.log("RESULT: vanillaOptino.seriesDataLength=" + seriesDataLength);
+    console.log("RESULT: vanillaOptinoFactory.seriesDataLength=" + seriesDataLength);
     for (i = 0; i < seriesDataLength; i++) {
         var series = contract.getSeriesByIndex.call(i);
         var key = series[0];
@@ -529,13 +532,13 @@ function printVanillaOptinoContractDetails() {
         var quoteToken = getShortAddressName(series[2]);
         var priceFeed = getShortAddressName(series[3]);
         var callPut = series[4];
-        var europeanAmerican = series[5];
-        var expiry = series[6];
-        var strike = series[7];
-        var takerFee = series[8];
-        var description = series[9];
-        var timestamp = series[10];
-        console.log("RESULT: vanillaOptino.getSeriesByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", callPut=" + callPut + ", europeanAmerican=" + europeanAmerican + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", takerFee=" + takerFee.shift(-16) + "%, description='" + description + "', timestamp=" + timestamp);
+        var expiry = series[5];
+        var strike = series[6];
+        var description = series[7];
+        var timestamp = series[8];
+        var optionToken = series[9];
+        var optionCollateralToken = series[10];
+        console.log("RESULT: vanillaOptino.getSeriesByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", description='" + description + "', timestamp=" + timestamp + ", optionToken=" + optionToken + ", optionCollateralToken=" + optionCollateralToken);
     }
 //     console.log("RESULT: vanillaOptino.base=" + getShortAddressName(contract.base.call()));
     // console.log("RESULT: vanillaOptino.quote=" + getShortAddressName(contract.quote.call()));

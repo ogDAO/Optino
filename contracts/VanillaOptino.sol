@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah's Decentralised Options v0.10 - Vanilla Optino
+// BokkyPooBah's Decentralised Options v0.10 - Vanilla Optino 📈
 //
 // https://github.com/bokkypoobah/Optinos
 //

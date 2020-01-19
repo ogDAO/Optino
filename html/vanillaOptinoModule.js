@@ -18,7 +18,7 @@ const VanillaOptino = {
           <b-row>
             <b-col cols="4" class="small">Owner</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + owner" class="card-link" target="_blank">{{ owner }}</b-link></b-col>
           </b-row>
-          <b-row v-for="config in configData" v-bind:key="config.index">
+          <b-row v-for="(config, index) in configData" v-bind:key="index">
             <b-col>
               <b-row>
                 <b-col colspan="2" class="small truncate">
@@ -55,7 +55,8 @@ const VanillaOptino = {
               </b-row>
             </b-col>
           </b-row>
-          <b-row v-for="series in seriesData" v-bind:key="series.index">
+          <b-row v-for="(series, index) in seriesData" v-bind:key="'a' + index">
+          <!--
             <b-col>
               <b-row>
                 <b-col colspan="2" class="small truncate">
@@ -68,48 +69,38 @@ const VanillaOptino = {
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• baseToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.baseToken" class="card-link" target="_blank">{{ config.baseToken }}</b-link></b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.baseToken" class="card-link" target="_blank">{{ series.baseToken }}</b-link></b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• quoteToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.quoteToken" class="card-link" target="_blank">{{ config.quoteToken }}</b-link></b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.quoteToken" class="card-link" target="_blank">{{ series.quoteToken }}</b-link></b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• priceFeed</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.priceFeed" class="card-link" target="_blank">{{ config.priceFeed }}</b-link></b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.priceFeed" class="card-link" target="_blank">{{ series.priceFeed }}</b-link></b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• callPut</b-col>
-                <b-col class="small truncate">{{ config.callPut }}</b-col>
+                <b-col class="small truncate">{{ series.callPut }}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• europeanAmerican</b-col>
-                <b-col class="small truncate">{{ config.europeanAmerican }}</b-col>
+                <b-col class="small truncate">{{ series.europeanAmerican }}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• callPut</b-col>
-                <b-col class="small truncate">{{ config.callPut }}</b-col>
+                <b-col class="small truncate">{{ series.callPut }}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• takerFee</b-col>
-                <b-col class="small truncate">{{ config.takerFee.shift(-16) }}%</b-col>
+                <b-col class="small truncate">{{ series.takerFee.shift(-16) }}%</b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• timestamp</b-col>
-                <b-col class="small truncate">{{ config.timestamp }}</b-col>
+                <b-col class="small truncate">{{ series.timestamp }}</b-col>
               </b-row>
-
-
-              var priceFeed = series[3];
-              var callPut = series[4];
-              var europeanAmerican = series[5];
-              var expiry = series[6];
-              var strike = series[7];
-              var takerFee = series[8];
-              var description = series[9];
-              var timestamp = series[10];
-
             </b-col>
+            -->
           </b-row>
         </b-card>
       </b-collapse>

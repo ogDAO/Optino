@@ -38,7 +38,7 @@ cp $SOURCEDIR/$WETH9SOL .
 
 ../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$MINTABLETOKENSOL --outputsol=$MINTABLETOKENFLATTENED --verbose | tee -a $TEST1OUTPUT
 ../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$PRICEFEEDSOL --outputsol=$PRICEFEEDFLATTENED --verbose | tee -a $TEST1OUTPUT
-../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$VANILLAOPTINOSOL --outputsol=$VANILLAOPTINOFLATTENED --verbose | tee -a $TEST1OUTPUT
+../scripts/solidityFlattener.pl --contractsdir=$SOURCEDIR --mainsol=$VANILLAOPTINOFACTORYSOL --outputsol=$VANILLAOPTINOFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
 
 
 # DIFFS1=`diff -r -x '*.js' -x '*.json' -x '*.txt' -x 'testchain' -x '*.md' -x '*.sh' -x 'settings' -x 'modifiedContracts' $SOURCEDIR .`
@@ -50,7 +50,7 @@ solc_0.6.0 --version | tee -a $TEST1OUTPUT
 echo "var wethOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
 echo "var tokenOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
 echo "var priceFeedOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
-echo "var vanillaOptinoOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $VANILLAOPTINOFLATTENED`;" > $VANILLAOPTINOJS
+echo "var vanillaOptinoFactoryOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $VANILLAOPTINOFACTORYFLATTENED`;" > $VANILLAOPTINOFACTORYJS
 # echo "var daiOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
 # ../scripts/solidityFlattener.pl --contractsdir=../contracts --mainsol=$TOKENFACTORYSOL --outputsol=$TOKENFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
 
@@ -64,7 +64,7 @@ geth --verbosity 3 attach $GETHATTACHPOINT << EOF | tee -a $TEST1OUTPUT
 loadScript("$WETH9JS");
 loadScript("$MINTABLETOKENJS");
 loadScript("$PRICEFEEDJS");
-loadScript("$VANILLAOPTINOJS");
+loadScript("$VANILLAOPTINOFACTORYJS");
 loadScript("lookups.js");
 loadScript("functions.js");
 
@@ -74,8 +74,8 @@ var tokenAbi = JSON.parse(tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTAB
 var tokenBin = "0x" + tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].bin;
 var priceFeedAbi = JSON.parse(priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].abi);
 var priceFeedBin = "0x" + priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].bin;
-var vanillaOptinoAbi = JSON.parse(vanillaOptinoOutput.contracts["$VANILLAOPTINOFLATTENED:$VANILLAOPTINONAME"].abi);
-var vanillaOptinoBin = "0x" + vanillaOptinoOutput.contracts["$VANILLAOPTINOFLATTENED:$VANILLAOPTINONAME"].bin;
+var vanillaOptinoFactoryAbi = JSON.parse(vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:$VANILLAOPTINOFACTORYNAME"].abi);
+var vanillaOptinoFactoryBin = "0x" + vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:$VANILLAOPTINOFACTORYNAME"].bin;
 
 // console.log("DATA: wethAbi=" + JSON.stringify(wethAbi));
 // console.log("DATA: wethBin=" + JSON.stringify(wethBin));
@@ -83,8 +83,8 @@ var vanillaOptinoBin = "0x" + vanillaOptinoOutput.contracts["$VANILLAOPTINOFLATT
 // console.log("DATA: tokenBin=" + JSON.stringify(tokenBin));
 // console.log("DATA: priceFeedAbi=" + JSON.stringify(priceFeedAbi));
 // console.log("DATA: priceFeedBin=" + JSON.stringify(priceFeedBin));
-// console.log("DATA: vanillaOptinoAbi=" + JSON.stringify(vanillaOptinoAbi));
-// console.log("DATA: vanillaOptinoBin=" + JSON.stringify(vanillaOptinoBin));
+// console.log("DATA: vanillaOptinoFactoryAbi=" + JSON.stringify(vanillaOptinoFactoryAbi));
+// console.log("DATA: vanillaOptinoFactoryBin=" + JSON.stringify(vanillaOptinoFactoryBin));
 
 unlockAccounts("$PASSWORD");
 // printBalances();
@@ -168,23 +168,23 @@ var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deploy
     }
   }
 );
-var vanillaOptinoContract = web3.eth.contract(vanillaOptinoAbi);
-// console.log("DATA: vanillaOptinoContract=" + JSON.stringify(vanillaOptinoContract));
-var vanillaOptinoTx = null;
-var vanillaOptinoAddress = null;
-var vanillaOptino = vanillaOptinoContract.new({from: deployer, data: vanillaOptinoBin, gas: 4000000, gasPrice: defaultGasPrice},
+var vanillaOptinoFactoryContract = web3.eth.contract(vanillaOptinoFactoryAbi);
+// console.log("DATA: vanillaOptinoFactoryContract=" + JSON.stringify(vanillaOptinoFactoryContract));
+var vanillaOptinoFactoryTx = null;
+var vanillaOptinoFactoryAddress = null;
+var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, data: vanillaOptinoFactoryBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
-        vanillaOptinoTx = contract.transactionHash;
+        vanillaOptinoFactoryTx = contract.transactionHash;
       } else {
-        vanillaOptinoAddress = contract.address;
-        addAccount(vanillaOptinoAddress, "VanillaOptino");
-        addAddressSymbol(vanillaOptinoAddress, "VanillaOptino");
-        addVanillaOptinoContractAddressAndAbi(vanillaOptinoAddress, vanillaOptinoAbi);
-        console.log("DATA: var vanillaOptinoAddress=\"" + vanillaOptinoAddress + "\";");
-        console.log("DATA: var vanillaOptinoAbi=" + JSON.stringify(vanillaOptinoAbi) + ";");
-        console.log("DATA: var vanillaOptino=eth.contract(vanillaOptinoAbi).at(vanillaOptinoAddress);");
+        vanillaOptinoFactoryAddress = contract.address;
+        addAccount(vanillaOptinoFactoryAddress, "VanillaOptinoFactory");
+        addAddressSymbol(vanillaOptinoFactoryAddress, "VanillaOptinoFactory");
+        addVanillaOptinoFactoryContractAddressAndAbi(vanillaOptinoFactoryAddress, vanillaOptinoFactoryAbi);
+        console.log("DATA: var vanillaOptinoFactoryAddress=\"" + vanillaOptinoFactoryAddress + "\";");
+        console.log("DATA: var vanillaOptinoFactoryAbi=" + JSON.stringify(vanillaOptinoFactoryAbi) + ";");
+        console.log("DATA: var vanillaOptino=eth.contract(vanillaOptinoFactoryAbi).at(vanillaOptinoFactoryAddress);");
       }
     }
   }
@@ -198,8 +198,8 @@ failIfTxStatusError(daiTx, deployGroup1_Message + " - DAI");
 printTxData("daiTx", daiTx);
 failIfTxStatusError(priceFeedTx, deployGroup1_Message + " - PriceFeed");
 printTxData("priceFeedTx", priceFeedTx);
-failIfTxStatusError(vanillaOptinoTx, deployGroup1_Message + " - VanillaOptino");
-printTxData("vanillaOptinoTx", vanillaOptinoTx);
+failIfTxStatusError(vanillaOptinoFactoryTx, deployGroup1_Message + " - VanillaOptino");
+printTxData("vanillaOptinoFactoryTx", vanillaOptinoFactoryTx);
 console.log("RESULT: ");
 printPriceFeedContractDetails();
 console.log("RESULT: ");
@@ -207,7 +207,7 @@ printTokenContractDetails(0);
 console.log("RESULT: ");
 printTokenContractDetails(1);
 console.log("RESULT: ");
-printVanillaOptinoContractDetails();
+printVanillaOptinoFactoryContractDetails();
 console.log("RESULT: ");
 
 
@@ -227,7 +227,7 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaOptino.addConfig(wethAddress, daiAddress, priceFeedAddress, maxTerm, takerFee.toString(), "WETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAddress, maxTerm, takerFee.toString(), "WETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
@@ -239,7 +239,7 @@ failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - dai.transfer(ma
 failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - dai.transfer(maker2, 1,000,000)");
 failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - dai.transfer(taker1, 1,000,000)");
 failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - dai.transfer(taker2, 1,000,000)");
-failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - vanillaOptino.addConfig(WETH, DAI, priceFeed, 1, 2, 'WETH/DAI MakerDAO PriceFeed')");
+failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - vanillaOptinoFactory.addConfig(WETH, DAI, priceFeed, 1, 2, 'WETH/DAI MakerDAO PriceFeed')");
 printTxData("deployGroup2_1Tx", deployGroup2_1Tx);
 printTxData("deployGroup2_2Tx", deployGroup2_2Tx);
 printTxData("deployGroup2_3Tx", deployGroup2_3Tx);
@@ -254,37 +254,33 @@ printTokenContractDetails(0);
 console.log("RESULT: ");
 printTokenContractDetails(1);
 console.log("RESULT: ");
-printVanillaOptinoContractDetails();
+printVanillaOptinoFactoryContractDetails();
 console.log("RESULT: ");
 
 
 // -----------------------------------------------------------------------------
 var tradeGroup1_Message = "Trade Group #1";
 var callPut = "0";
-var europeanAmerican = "0";
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
 var strike = new BigNumber("200").shift(18);
-var buySell = "0";
-var premium = new BigNumber("1").shift(16);
 var baseTokens = new BigNumber("100").shift(18);
-var settlement = parseInt(new Date()/1000) + 1 * 60*60;
 
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + tradeGroup1_Message + " ----------");
-var tradeGroup1_1Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var tradeGroup1_2Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var tradeGroup1_1Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: deployer, gas: 4000000, gasPrice: defaultGasPrice});
+// var tradeGroup1_2Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+// var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
 failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
-failIfTxStatusError(tradeGroup1_2Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
-failIfTxStatusError(tradeGroup1_3Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
+// failIfTxStatusError(tradeGroup1_2Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
+// failIfTxStatusError(tradeGroup1_3Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
 printTxData("tradeGroup1_1Tx", tradeGroup1_1Tx);
-printTxData("tradeGroup1_2Tx", tradeGroup1_2Tx);
-printTxData("tradeGroup1_3Tx", tradeGroup1_3Tx);
+// printTxData("tradeGroup1_2Tx", tradeGroup1_2Tx);
+// printTxData("tradeGroup1_3Tx", tradeGroup1_3Tx);
 console.log("RESULT: ");
-printVanillaOptinoContractDetails();
+printVanillaOptinoFactoryContractDetails();
 console.log("RESULT: ");
 
 
