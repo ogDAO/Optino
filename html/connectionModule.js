@@ -351,7 +351,7 @@ const Connection = {
     },
     timeoutCallback() {
       var t = this;
-      if (this.count++ % 10 == 0 || store.getters['tokenContractExplorer/executionQueue'].length > 0  || store.getters['priceFeedExplorer/executionQueue'].length > 0) {
+      if (this.count++ % 10 == 0 || store.getters['tokenContractExplorer/executionQueue'].length > 0  || store.getters['priceFeedExplorer/executionQueue'].length > 0 || store.getters['vanillaOptinoExplorer/executionQueue'].length > 0) {
         t.execWeb3();
       }
       if (store.getters['connection/block'] != null) {
