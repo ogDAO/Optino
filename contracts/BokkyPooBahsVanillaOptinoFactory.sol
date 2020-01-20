@@ -194,6 +194,83 @@ contract Token is TokenInterface, ERC20Interface, Owned {
 }
 
 
+// ----------------------------------------------------------------------------
+// Vanilla Optino Formula
+//
+// Call optino - 10 units with strike 200, using spot of [150, 200, 250], collateral of 10 ETH
+// - 10 OptinoToken created
+//   - payoffInQuoteTokenPerUnitBaseToken = max(0, spot-strike) = [0, 0, 50] DAI
+//   - payoffInQuoteToken = 10 * [0, 0, 500] DAI
+//   * payoffInBaseTokenPerUnitBaseToken = payoffInQuoteTokenPerUnitBaseToken / [150, 200, 250] = [0, 0, 50/250] = [0, 0, 0.2] ETH
+//   * payoffInBaseToken = payoffInBaseTokenPerUnitBaseToken * 10 = [0 * 10, 0 * 10, 0.2 * 10] = [0, 0, 2] ETH
+// - 10 OptinoCollateralToken created
+//   - payoffInQuoteTokenPerUnitBaseToken = spot - max(0, spot-strike) = [150, 200, 200] DAI
+//   - payoffInQuoteToken = 10 * [1500, 2000, 2000] DAI
+//   * payoffInBaseTokenPerUnitBaseToken = payoffInQuoteTokenPerUnitBaseToken / [150, 200, 250] = [1, 1, 200/250] = [1, 1, 0.8] ETH
+//   * payoffInBaseToken = payoffInBaseTokenPerUnitBaseToken * 10 = [1 * 10, 1 * 10, 0.8 * 10] = [10, 10, 8] ETH
+//
+// Put optino - 10 units with strike 200, using spot of [150, 200, 250], collateral of 2000 DAI
+// - 10 OptinoToken created
+//   * payoffInQuoteTokenPerUnitBaseToken = max(0, strike-spot) = [50, 0, 0] DAI
+//   * payoffInQuoteToken = 10 * [500, 0, 0] DAI
+//   - payoffInBaseTokenPerUnitBaseToken = payoffInQuoteTokenPerUnitBaseToken / [150, 200, 250] = [50/150, 0/200, 0/250] = [0.333333333, 0, 0] ETH
+//   - payoffInBaseToken = payoffInBaseTokenPerUnitBaseToken * 10 = [0.333333333 * 10, 0 * 10, 0 * 10] = [3.333333333, 0, 0] ETH
+// - 10 OptinoCollateralToken created
+//   * payoffInQuoteTokenPerUnitBaseToken = strike - max(0, strike-spot) = [150, 200, 200] DAI
+//   * payoffInQuoteToken = 10 * [1500, 2000, 2000] DAI
+//   - payoffInBaseTokenPerUnitBaseToken = payoffInQuoteTokenPerUnitBaseToken / spot
+//   - payoffInBaseTokenPerUnitBaseToken = [150, 200, 200] / [150, 200, 250] = [1, 1, 200/250] = [1, 1, 0.8] ETH
+//   - payoffInBaseToken = payoffInBaseTokenPerUnitBaseToken * 10 = [1 * 10, 1 * 10, 0.8 * 10] = [10, 10, 8] ETH
+//
+//
+// ----------------------------------------------------------------------------
+library VanillaOptinoFormulae {
+    using SafeMath for uint;
+
+    // ------------------------------------------------------------------------
+    // Payoff for ETH/USD, first currency ETH and second currency USD
+    //   OptionToken:
+    //     Call
+    //       payoffInSecondToken = max(0, spot - strike)
+    //       payoffInFirstToken = payoffInSecondToken x nominal / spot
+    //     Put
+    //       payoffInSecondToken = max(0, strike - spot)
+    //       payoffInFirstToken = payoffInSecondToken x nominal / 1 ether
+    //   OptionCollateralToken:
+    //     Call
+    //       payoffInSecondToken = spot - max(0, spot - strike)
+    //       payoffInFirstToken = payoffInSecondToken x nominal / spot
+    //     Put
+    //       payoffInSecondToken = strike - max(0, strike - spot)
+    //       payoffInFirstToken = payoffInSecondToken x nominal / 1 ether
+    //
+    // NOTE: strike and spot are to 18 decimals
+    // ------------------------------------------------------------------------
+    function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
+        if (_callPut == 0) {
+            if (_spot <= _strike) {
+                _payoffInQuoteToken = 0;
+            } else {
+                _payoffInQuoteToken = _spot.sub(_strike);
+            }
+            _collateralPayoffInQuoteToken = _spot.sub(_payoffInQuoteToken);
+        } else {
+            if (_spot >= _strike) {
+                _payoffInQuoteToken = 0;
+            } else {
+                _payoffInQuoteToken = _strike.sub(_spot);
+            }
+            _collateralPayoffInQuoteToken = _strike.sub(_payoffInQuoteToken);
+        }
+        _payoffInBaseToken = _payoffInQuoteToken * 10 ** 18 / _spot;
+        _collateralPayoffInBaseToken = _collateralPayoffInQuoteToken * 10 ** 18 / _spot;
+
+        _payoffInBaseToken = _payoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
+        _payoffInQuoteToken = _payoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
+        _collateralPayoffInBaseToken = _collateralPayoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
+        _collateralPayoffInQuoteToken = _collateralPayoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
+    }
+}
 
 // ----------------------------------------------------------------------------
 // Config - [baseToken, quoteToken, priceFeed] => [maxTerm, fee, description]
@@ -495,6 +572,10 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
         return (series.optinoToken, series.optinoCollateralToken);
     }
 
+
+    function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) public pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
+        return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    }
 
 
     // function numberOfChildren() public view returns (uint) {

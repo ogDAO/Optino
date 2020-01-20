@@ -8,7 +8,7 @@ const VanillaOptinoExplorer = {
             <br />
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.updatevalue variant="outline-info">Update Value</b-button>
+                <b-button href="#" v-b-toggle.updatevalue variant="outline-info">Payoff Calculator</b-button>
               </b-card-header>
               <b-collapse id="updatevalue" visible class="border-0">
                 <b-card-body>
