@@ -288,6 +288,10 @@ printTxData("tradeGroup1_1Tx", tradeGroup1_1Tx);
 console.log("RESULT: ");
 printVanillaOptinoFactoryContractDetails();
 console.log("RESULT: ");
+printTokenContractDetails(2);
+console.log("RESULT: ");
+printTokenContractDetails(3);
+console.log("RESULT: ");
 
 exit;
 

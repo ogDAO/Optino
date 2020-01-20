@@ -355,26 +355,24 @@ function printTokenContractDetails(j) {
 //-----------------------------------------------------------------------------
 // Factory Contract
 //-----------------------------------------------------------------------------
-var factoryContractAddress = null;
-var factoryContractAbi = null;
-
+var _factoryContractAddress = null;
+var _factoryContractAbi = null;
 function addFactoryContractAddressAndAbi(address, tokenAbi) {
-  factoryContractAddress = address;
-  factoryContractAbi = tokenAbi;
+  _factoryContractAddress = address;
+  _factoryContractAbi = tokenAbi;
 }
 
-var factoryFromBlock = 0;
-
+var _factoryFromBlock = 0;
 function getTokenContractDeployed() {
   var addresses = [];
-  console.log("RESULT: factoryContractAddress=" + factoryContractAddress);
-  if (factoryContractAddress != null && factoryContractAbi != null) {
-    var contract = eth.contract(factoryContractAbi).at(factoryContractAddress);
+  console.log("RESULT: factoryContractAddress=" + _factoryContractAddress);
+  if (_factoryContractAddress != null && _factoryContractAbi != null) {
+    var contract = eth.contract(_factoryContractAbi).at(_factoryContractAddress);
 
     var latestBlock = eth.blockNumber;
     var i;
 
-    var tokenDeployedEvents = contract.TokenDeployed({}, { fromBlock: factoryFromBlock, toBlock: latestBlock });
+    var tokenDeployedEvents = contract.TokenDeployed({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
     i = 0;
     tokenDeployedEvents.watch(function (error, result) {
       console.log("RESULT: get TokenDeployed " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
@@ -384,12 +382,10 @@ function getTokenContractDeployed() {
   }
   return addresses;
 }
-
-
 function printFactoryContractDetails() {
-  console.log("RESULT: factoryContractAddress=" + factoryContractAddress);
-  if (factoryContractAddress != null && factoryContractAbi != null) {
-    var contract = eth.contract(factoryContractAbi).at(factoryContractAddress);
+  console.log("RESULT: factoryContractAddress=" + _factoryContractAddress);
+  if (_factoryContractAddress != null && _factoryContractAbi != null) {
+    var contract = eth.contract(_factoryContractAbi).at(factoryContractAddress);
     console.log("RESULT: factory.owner=" + contract.owner());
     console.log("RESULT: factory.newOwner=" + contract.newOwner());
     console.log("RESULT: factory.minimumFee=" + contract.minimumFee().shift(-18) + " ETH");
@@ -402,38 +398,37 @@ function printFactoryContractDetails() {
 
     var latestBlock = eth.blockNumber;
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: factoryFromBlock, toBlock: latestBlock });
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
       console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     ownershipTransferredEvents.stopWatching();
 
-    var factoryDeprecatedEvents = contract.FactoryDeprecated({}, { fromBlock: factoryFromBlock, toBlock: latestBlock });
+    var factoryDeprecatedEvents = contract.FactoryDeprecated({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
     i = 0;
     factoryDeprecatedEvents.watch(function (error, result) {
       console.log("RESULT: FactoryDeprecated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     factoryDeprecatedEvents.stopWatching();
 
-    var minimumFeeUpdatedEvents = contract.MinimumFeeUpdated({}, { fromBlock: factoryFromBlock, toBlock: latestBlock });
+    var minimumFeeUpdatedEvents = contract.MinimumFeeUpdated({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
     i = 0;
     minimumFeeUpdatedEvents.watch(function (error, result) {
       console.log("RESULT: MinimumFeeUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     minimumFeeUpdatedEvents.stopWatching();
 
-    var tokenDeployedEvents = contract.TokenDeployed({}, { fromBlock: factoryFromBlock, toBlock: latestBlock });
+    var tokenDeployedEvents = contract.TokenDeployed({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
     i = 0;
     tokenDeployedEvents.watch(function (error, result) {
       console.log("RESULT: TokenDeployed " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     tokenDeployedEvents.stopWatching();
 
-    factoryFromBlock = latestBlock + 1;
+    _factoryFromBlock = latestBlock + 1;
   }
 }
-
 
 
 // -----------------------------------------------------------------------------
@@ -441,14 +436,12 @@ function printFactoryContractDetails() {
 // -----------------------------------------------------------------------------
 var _priceFeedContractAddress = null;
 var _priceFeedContractAbi = null;
-
 function addPriceFeedContractAddressAndAbi(address, abi) {
   _priceFeedContractAddress = address;
   _priceFeedContractAbi = abi;
 }
 
-var priceFeedFromBlock = 0;
-
+var _priceFeedFromBlock = 0;
 function printPriceFeedContractDetails() {
   console.log("RESULT: priceFeedContractAddress=" + getShortAddressName(_priceFeedContractAddress));
   // console.log("RESULT: priceFeedContractAbi=" + JSON.stringify(_priceFeedContractAbi));
@@ -464,14 +457,14 @@ function printPriceFeedContractDetails() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: priceFeedFromBlock, toBlock: latestBlock });
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _priceFeedFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
       console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     ownershipTransferredEvents.stopWatching();
 
-    var setValueEvents = contract.SetValue({}, { fromBlock: priceFeedFromBlock, toBlock: latestBlock });
+    var setValueEvents = contract.SetValue({}, { fromBlock: _priceFeedFromBlock, toBlock: latestBlock });
     i = 0;
     setValueEvents.watch(function (error, result) {
       console.log("RESULT: SetValue " + i++ + " #" + result.blockNumber + " value=" + result.args.value.shift(-18) +
@@ -479,27 +472,25 @@ function printPriceFeedContractDetails() {
     });
     setValueEvents.stopWatching();
 
-    priceFeedFromBlock = latestBlock + 1;
+    _priceFeedFromBlock = latestBlock + 1;
   }
 }
 
 
 // -----------------------------------------------------------------------------
-// Feed Contract
+// Vanilla Optino Factory
 // -----------------------------------------------------------------------------
 var _vanillaOptinoFactoryContractAddress = null;
 var _vanillaOptinoFactoryContractAbi = null;
-
 function addVanillaOptinoFactoryContractAddressAndAbi(address, abi) {
   _vanillaOptinoFactoryContractAddress = address;
   _vanillaOptinoFactoryContractAbi = abi;
 }
 
-var vanillaOptinoFactoryFromBlock = 0;
-
+var _vanillaOptinoFactoryFromBlock = 0;
 function getVanillaOptinos() {
-  if (vanillaOptinoFactoryFromBlock == 0) {
-    vanillaOptinoFactoryFromBlock = baseBlock;
+  if (_vanillaOptinoFactoryFromBlock == 0) {
+    _vanillaOptinoFactoryFromBlock = baseBlock;
   }
   var optinos = [];
   console.log("RESULT: vanillaOptinoFactoryContractAddress=" + getShortAddressName(_vanillaOptinoFactoryContractAddress));
@@ -509,7 +500,7 @@ function getVanillaOptinos() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
+    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     seriesAddedEvents.watch(function (error, result) {
       console.log("RESULT: got SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
@@ -573,20 +564,20 @@ function printVanillaOptinoFactoryContractDetails() {
     // console.log("RESULT: priceFeed.hasValue=" + contract.hasValue.call());
 
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
+    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
       console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     ownershipTransferredEvents.stopWatching();
 
-    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
+    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     seriesAddedEvents.watch(function (error, result) {
       console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     seriesAddedEvents.stopWatching();
 
-    vanillaOptinoFactoryFromBlock = latestBlock + 1;
+    _vanillaOptinoFactoryFromBlock = latestBlock + 1;
   }
 }
