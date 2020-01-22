@@ -272,7 +272,8 @@ console.log("RESULT: ");
 var tradeGroup1_Message = "Trade Group #1";
 var callPut = "0";
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
-var strike = new BigNumber("200").shift(18);
+var strike = new BigNumber("200.1234567890123456789").shift(18);
+// var strike1 = new BigNumber("201").shift(18);
 var baseTokens = new BigNumber("10").shift(18);
 var value = web3.toWei("100", "ether").toString();
 // -----------------------------------------------------------------------------
