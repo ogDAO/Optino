@@ -161,11 +161,11 @@ contract CloneFactory {
 // Utils
 // ----------------------------------------------------------------------------
 library Utils {
-    bytes constant CALL = "CALL";
-    bytes constant PUT = "PUT";
+    bytes constant CALL = "VCO";
+    bytes constant PUT = "VPO";
     bytes constant CALLNAME = "Vanilla Call Optino";
     bytes constant PUTNAME = "Vanilla Put Optino";
-    bytes constant COLLATERAL = "COLLAT";
+    bytes constant COLLATERAL = "C";
     bytes constant COLLATERALNAME = "Collateral";
     uint8 constant SPACE = 32;
     uint8 constant DOT = 46;
@@ -251,7 +251,7 @@ library Utils {
                 b[j++] = COLLATERAL[i];
             }
         }
-        i = 6;
+        i = 8;
         do {
             i--;
             num = id / 10 ** i;
