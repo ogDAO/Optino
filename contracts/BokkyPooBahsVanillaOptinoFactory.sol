@@ -543,7 +543,7 @@ library SeriesLibrary {
         bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
         require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
         self.index.push(key);
-        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken, 123);
+        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken, 0);
         emit SeriesAdded(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
     }
     function remove(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike) internal {
@@ -591,6 +591,14 @@ library SeriesLibrary {
 // ----------------------------------------------------------------------------
 interface ApproveAndCallFallback {
     function receiveApproval(address from, uint256 tokens, address token, bytes calldata data) external;
+}
+
+
+// ----------------------------------------------------------------------------
+// PriceFeedAdaptor
+// ----------------------------------------------------------------------------
+interface PriceFeedAdaptor {
+    function spot() external view returns (uint value, bool hasValue);
 }
 
 
@@ -841,6 +849,9 @@ contract OptinoToken is Token {
     function spot() public view returns (uint) {
         return BokkyPooBahsVanillaOptinoFactory(factory).getSeriesSpot(seriesKey);
     }
+    function currentSpot() public view returns (uint) {
+        return BokkyPooBahsVanillaOptinoFactory(factory).getSeriesCurrentSpot(seriesKey);
+    }
 }
 
 
@@ -949,6 +960,14 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     //     require(seriesData.initialised);
     //     seriesData.update(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
     // }
+    function getSeriesCurrentSpot(bytes32 seriesKey) public view returns (uint) {
+        SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
+        (uint _spot, bool hasValue) = PriceFeedAdaptor(series.priceFeed).spot();
+        if (hasValue) {
+            return _spot;
+        }
+        return 0;
+    }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint) {
         SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
         return series.spot;

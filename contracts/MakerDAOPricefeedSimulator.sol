@@ -15,13 +15,13 @@ pragma solidity ^0.6.0;
 // ----------------------------------------------------------------------------
 
 import "Owned.sol";
-import "MakerDAOETHUSDPriceFeed.sol";
+import "MakerDAOPriceFeed.sol";
 
 
 // ----------------------------------------------------------------------------
-// MakerDAO ETH/USD PricefeedSimulator
+// MakerDAO ETH/USD Pricefeed Simulator
 // ----------------------------------------------------------------------------
-contract MakerDAOETHUSDPricefeedSimulator is Owned, MakerDAOETHUSDPriceFeed {
+contract MakerDAOPricefeedSimulator is Owned, MakerDAOPriceFeed {
     uint public value;
     bool public hasValue;
 

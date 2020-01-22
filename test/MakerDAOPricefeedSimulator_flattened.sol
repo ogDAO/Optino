@@ -49,15 +49,15 @@ contract Owned {
 // ----------------------------------------------------------------------------
 // MakerDAO ETH/USD "pip" Pricefeed
 // ----------------------------------------------------------------------------
-interface MakerDAOETHUSDPriceFeed {
+interface MakerDAOPriceFeed {
     function peek() external view returns (bytes32 _value, bool _hasValue);
 }
 
 
 // ----------------------------------------------------------------------------
-// MakerDAO ETH/USD PricefeedSimulator
+// MakerDAO ETH/USD Pricefeed Simulator
 // ----------------------------------------------------------------------------
-contract MakerDAOETHUSDPricefeedSimulator is Owned, MakerDAOETHUSDPriceFeed {
+contract MakerDAOPricefeedSimulator is Owned, MakerDAOPriceFeed {
     uint public value;
     bool public hasValue;
 

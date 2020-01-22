@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// MakerDAO ETH/USD "pip" Pricefeed
+// PriceFeedAdaptor
 // ----------------------------------------------------------------------------
-interface MakerDAOETHUSDPriceFeed {
-    function peek() external view returns (bytes32 _value, bool _hasValue);
+interface PriceFeedAdaptor {
+    function spot() external view returns (uint value, bool hasValue);
 }
