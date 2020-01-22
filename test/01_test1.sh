@@ -272,7 +272,7 @@ console.log("RESULT: ");
 
 
 // -----------------------------------------------------------------------------
-var tradeGroup1_Message = "Trade Group #1";
+var mintOptinoGroup1_Message = "Trade Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
 var strike = new BigNumber("200").shift(18);
@@ -282,13 +282,12 @@ var value = web3.toWei("100", "ether").toString();
 // var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
 var _uiFeeAccount = uiFeeAccount;
 // -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + tradeGroup1_Message + " ----------");
+console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount);
 console.log("RESULT: data: " + data);
-var tradeGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: deployer, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
-// var tradeGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
-// var tradeGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
-// var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: deployer, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
+var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+var mintOptinoGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
 }
@@ -301,14 +300,12 @@ addAccount(optinos[1], "optinoCollateralToken");
 addTokenContractAddressAndAbi(3, optinos[1], tokenAbi);
 
 printBalances();
-failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.trade(ETH, DAI, priceFeed, ...)");
-// failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.testReceiveEther()");
-// failIfTxStatusError(tradeGroup1_2Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
-// failIfTxStatusError(tradeGroup1_3Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
-printTxData("tradeGroup1_1Tx", tradeGroup1_1Tx);
-// printTxData("tradeGroup1_2Tx", tradeGroup1_2Tx);
-// printTxData("tradeGroup1_3Tx", tradeGroup1_3Tx);
-// printTxData("tradeGroup1_3Tx", tradeGroup1_3Tx);
+failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
+failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
+failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
+printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
+printTxData("mintOptinoGroup1_2Tx", mintOptinoGroup1_2Tx);
+printTxData("mintOptinoGroup1_3Tx", mintOptinoGroup1_3Tx);
 console.log("RESULT: ");
 printVanillaOptinoFactoryContractDetails();
 console.log("RESULT: ");
