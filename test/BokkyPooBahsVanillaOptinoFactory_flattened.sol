@@ -789,7 +789,7 @@ contract OptinoToken is Token {
 //
 // Note: If `newAddress` is not null, it will point to the upgraded contract
 // ----------------------------------------------------------------------------
-contract BokkyPooBahsVanillaOptinoFactory is Owned {
+contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     using SafeMath for uint;
     using ConfigLibrary for ConfigLibrary.Data;
     using ConfigLibrary for ConfigLibrary.Config;
@@ -812,6 +812,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
 
     address public newAddress;
 
+    OptinoToken public optinoTokenTemplate;
+
     ConfigLibrary.Data private configData;
     SeriesLibrary.Data private seriesData;
 
@@ -829,6 +831,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
 
     constructor () public {
         super.init(msg.sender);
+        optinoTokenTemplate = new OptinoToken();
     }
     function deprecateFactory(address _newAddress) public onlyOwner {
         require(newAddress == address(0));
@@ -920,8 +923,10 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
         // Series has not been created yet
         if (series.timestamp == 0) {
             require(optinoData.expiry < (block.timestamp + config.maxTerm), "mintOptinoTokens: expiry > config.maxTerm");
-            optinoToken = new OptinoToken();
-            optinoCollateralToken = new OptinoToken();
+            // optinoToken = new OptinoToken();
+            // optinoCollateralToken = new OptinoToken();
+            optinoToken = OptinoToken(payable(createClone(address(optinoTokenTemplate))));
+            optinoCollateralToken = OptinoToken(payable(createClone(address(optinoTokenTemplate))));
             addSeries(optinoData, config.description, address(optinoToken), address(optinoCollateralToken));
             series = _getSeries(optinoData);
 

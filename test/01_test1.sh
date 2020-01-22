@@ -174,7 +174,7 @@ var vanillaOptinoFactoryContract = web3.eth.contract(vanillaOptinoFactoryAbi);
 // console.log("DATA: vanillaOptinoFactoryContract=" + JSON.stringify(vanillaOptinoFactoryContract));
 var vanillaOptinoFactoryTx = null;
 var vanillaOptinoFactoryAddress = null;
-var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, data: vanillaOptinoFactoryBin, gas: 5000000, gasPrice: defaultGasPrice},
+var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, data: vanillaOptinoFactoryBin, gas: 7000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
