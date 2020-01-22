@@ -13,7 +13,255 @@ pragma solidity ^0.6.0;
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
 
-import "BokkyPooBahsDateTimeLibrary.sol";
+// import "BokkyPooBahsDateTimeLibrary.sol";
+pragma solidity ^0.6.0;
+
+// ----------------------------------------------------------------------------
+// BokkyPooBah's DateTime Library v1.01
+//
+// A gas-efficient Solidity date and time library
+//
+// https://github.com/bokkypoobah/BokkyPooBahsDateTimeLibrary
+//
+// Tested date range 1970/01/01 to 2345/12/31
+//
+// Conventions:
+// Unit      | Range         | Notes
+// :-------- |:-------------:|:-----
+// timestamp | >= 0          | Unix timestamp, number of seconds since 1970/01/01 00:00:00 UTC
+// year      | 1970 ... 2345 |
+// month     | 1 ... 12      |
+// day       | 1 ... 31      |
+// hour      | 0 ... 23      |
+// minute    | 0 ... 59      |
+// second    | 0 ... 59      |
+// dayOfWeek | 1 ... 7       | 1 = Monday, ..., 7 = Sunday
+//
+//
+// Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2018-2019. The MIT Licence.
+// ----------------------------------------------------------------------------
+
+// Cut down version
+library BokkyPooBahsDateTimeLibrary {
+
+    uint constant SECONDS_PER_DAY = 24 * 60 * 60;
+    uint constant SECONDS_PER_HOUR = 60 * 60;
+    uint constant SECONDS_PER_MINUTE = 60;
+    int constant OFFSET19700101 = 2440588;
+
+    // ------------------------------------------------------------------------
+    // Calculate year/month/day from the number of days since 1970/01/01 using
+    // the date conversion algorithm from
+    //   http://aa.usno.navy.mil/faq/docs/JD_Formula.php
+    // and adding the offset 2440588 so that 1970/01/01 is day 0
+    //
+    // int L = days + 68569 + offset
+    // int N = 4 * L / 146097
+    // L = L - (146097 * N + 3) / 4
+    // year = 4000 * (L + 1) / 1461001
+    // L = L - 1461 * year / 4 + 31
+    // month = 80 * L / 2447
+    // dd = L - 2447 * month / 80
+    // L = month / 11
+    // month = month + 2 - 12 * L
+    // year = 100 * (N - 49) + year + L
+    // ------------------------------------------------------------------------
+    function _daysToDate(uint _days) internal pure returns (uint year, uint month, uint day) {
+        int __days = int(_days);
+
+        int L = __days + 68569 + OFFSET19700101;
+        int N = 4 * L / 146097;
+        L = L - (146097 * N + 3) / 4;
+        int _year = 4000 * (L + 1) / 1461001;
+        L = L - 1461 * _year / 4 + 31;
+        int _month = 80 * L / 2447;
+        int _day = L - 2447 * _month / 80;
+        L = _month / 11;
+        _month = _month + 2 - 12 * L;
+        _year = 100 * (N - 49) + _year + L;
+
+        year = uint(_year);
+        month = uint(_month);
+        day = uint(_day);
+    }
+
+    function timestampToDate(uint timestamp) internal pure returns (uint year, uint month, uint day) {
+        (year, month, day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    }
+
+}
+
+
+pragma solidity ^0.6.0;
+
+// ----------------------------------------------------------------------------
+// Utils
+// ----------------------------------------------------------------------------
+library Utils {
+    bytes constant CALL = "CALL";
+    bytes constant PUT = "PUT";
+    bytes constant CALLNAME = "Call";
+    bytes constant PUTNAME = "Put";
+    bytes constant COVER = "COVER";
+    bytes constant COVERNAME = "Cover";
+    uint8 constant SPACE = 32;
+    uint8 constant DOT = 46;
+    uint8 constant SLASH = 47;
+    uint8 constant ZERO = 48;
+
+    function numToBytes(uint strike, uint decimals) internal pure returns (bytes memory b) {
+        uint i;
+        uint j;
+        uint result;
+        b = new bytes(40);
+        if (strike == 0) {
+            b[j++] = byte(ZERO);
+        } else {
+            i = decimals + 18;
+            do {
+                uint num = strike / 10 ** i;
+                result = result * 10 + num % 10;
+                if (result > 0) {
+                    b[j++] = byte(uint8(num % 10 + ZERO));
+                    if (j > 1 && (strike % num) == 0 && i <= decimals) {
+                        break;
+                    }
+                } else {
+                    if (i == decimals) {
+                        b[j++] = byte(ZERO);
+                        b[j++] = byte(DOT);
+                    }
+                    if (i < decimals) {
+                        b[j++] = byte(ZERO);
+                    }
+                }
+                if (decimals != 0 && decimals == i && result > 0 && i > 0) {
+                    b[j++] = byte(DOT);
+                }
+                i--;
+            } while (i >= 0);
+        }
+    }
+    function dateToBytes(uint year, uint month, uint day) internal pure returns (bytes memory b) {
+        b = new bytes(10);
+        uint i;
+        uint j;
+        uint num;
+
+        i = 4;
+        do {
+            i--;
+            num = year / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+        b[j++] = byte(SLASH);
+        i = 2;
+        do {
+            i--;
+            num = month / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+        b[j++] = byte(SLASH);
+        i = 2;
+        do {
+            i--;
+            num = day / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+    }
+    function toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
+        bytes memory b = new bytes(64);
+        uint i;
+        uint j;
+        uint num;
+        if (callPut == 0) {
+            for (i = 0; i < CALL.length; i++) {
+                b[j++] = CALL[i];
+            }
+        } else {
+            for (i = 0; i < PUT.length; i++) {
+                b[j++] = PUT[i];
+            }
+        }
+        if (cover) {
+            for (i = 0; i < COVER.length; i++) {
+                b[j++] = COVER[i];
+            }
+        }
+        i = 6;
+        do {
+            i--;
+            num = id / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+        s = string(b);
+    }
+    function toName(bool cover, uint callPut, uint year, uint month, uint day, uint strike, uint decimals) internal pure returns (string memory s) {
+        bytes memory b = new bytes(64);
+        uint i;
+        uint j;
+        if (callPut == 0) {
+            for (i = 0; i < CALLNAME.length; i++) {
+                b[j++] = CALLNAME[i];
+            }
+        } else {
+             for (i = 0; i < PUTNAME.length; i++) {
+                b[j++] = PUTNAME[i];
+            }
+        }
+        b[j++] = byte(SPACE);
+        if (cover) {
+            for (i = 0; i < COVERNAME.length; i++) {
+                b[j++] = COVERNAME[i];
+            }
+            b[j++] = byte(SPACE);
+        }
+
+        bytes memory b1 = dateToBytes(year, month, day);
+        for (i = 0; i < b1.length; i++) {
+            b[j++] = b1[i];
+        }
+        b[j++] = byte(SPACE);
+
+        bytes memory b2 = numToBytes(strike, decimals);
+        for (i = 0; i < b2.length; i++) {
+            b[j++] = b2[i];
+        }
+        s = string(b);
+    }
+    /*
+    function numToBytesTest() internal pure returns (string s) {
+        uint8 decimals = 18;
+        uint strike = 576123456789012345678 * 10**uint(decimals - 18); // 576.123456789012345678
+        bytes memory b = numToBytes(strike, decimals);
+        s = string(b);
+    }
+    function dateToStringTest() internal pure returns (string s) {
+        uint year = 2018;
+        uint month = 10;
+        uint day = 5;
+
+        bytes memory b = dateToBytes(year, month, day);
+        s = string(b);
+    }
+    function toNameTest() internal pure returns (string name) {
+        bool isCall = true;
+        uint year = 2018;
+        uint month = 10;
+        uint day = 5;
+        uint8 decimals = 18;
+        uint strike = 576123456789012345678 * 10**uint(decimals - 18); // 576.123456789012345678
+
+        name = toName(isCall, year, month, day, strike, decimals);
+    }
+    function toSymbolTest() internal pure returns (string symbol) {
+        bool isCall = true;
+        uint id = 1234567;
+
+        symbol = toSymbol(isCall, id);
+    }
+    */
+}
 
 
 // ----------------------------------------------------------------------------
@@ -68,6 +316,170 @@ contract Owned {
         }
     }
 }
+
+
+// ----------------------------------------------------------------------------
+// Config - [baseToken, quoteToken, priceFeed] => [maxTerm, fee, description]
+// ----------------------------------------------------------------------------
+library ConfigLibrary {
+    struct Config {
+        uint timestamp;
+        uint index;
+        bytes32 key;
+        address baseToken;
+        address quoteToken;
+        address priceFeed;
+        uint maxTerm;
+        uint fee;
+        string description;
+    }
+    struct Data {
+        bool initialised;
+        mapping(bytes32 => Config) entries;
+        bytes32[] index;
+    }
+
+    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
+    event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
+    event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
+
+    function init(Data storage self) internal {
+        require(!self.initialised);
+        self.initialised = true;
+    }
+    function generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
+        return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed));
+    }
+    function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
+        return self.entries[key].timestamp > 0;
+    }
+    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
+        require(baseToken != quoteToken, "Config.add: baseToken cannot be the same as quoteToken");
+        require(priceFeed != address(0), "Config.add: priceFeed cannot be null");
+        require(maxTerm > 0, "Config.add: maxTerm must be > 0");
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
+        require(self.entries[key].timestamp == 0, "Config.add: Cannot add duplicate");
+        self.index.push(key);
+        self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, maxTerm, fee, description);
+        emit ConfigAdded(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
+    }
+    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
+        require(self.entries[key].timestamp > 0);
+        uint removeIndex = self.entries[key].index;
+        emit ConfigRemoved(baseToken, quoteToken, priceFeed);
+        uint lastIndex = self.index.length - 1;
+        bytes32 lastIndexKey = self.index[lastIndex];
+        self.index[removeIndex] = lastIndexKey;
+        self.entries[lastIndexKey].index = removeIndex;
+        delete self.entries[key];
+        if (self.index.length > 0) {
+            self.index.pop();
+        }
+    }
+    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
+        Config storage _value = self.entries[key];
+        require(_value.timestamp > 0);
+        _value.timestamp = block.timestamp;
+        _value.maxTerm = maxTerm;
+        _value.fee = fee;
+        _value.description = description;
+        emit ConfigUpdated(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
+    }
+    function length(Data storage self) internal view returns (uint) {
+        return self.index.length;
+    }
+}
+
+
+
+// ----------------------------------------------------------------------------
+// Series - [baseToken, quoteToken, priceFeed, callPut, expiry, strike] =>
+// [description, optinoToken, optinoCollateralToken]
+// ----------------------------------------------------------------------------
+library SeriesLibrary {
+    struct Series {
+        uint timestamp;
+        uint index;
+        bytes32 key;
+        address baseToken;
+        address quoteToken;
+        address priceFeed;
+        uint callPut;
+        uint expiry;
+        uint strike;
+        string description;
+        address optinoToken;
+        address optinoCollateralToken;
+    }
+    struct Data {
+        bool initialised;
+        mapping(bytes32 => Series) entries;
+        bytes32[] index;
+    }
+
+    // Config copy of events to be generated in the ABI
+    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
+    event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
+    event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
+    // SeriesLibrary copy of events to be generated in the ABI
+    event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description, address optinoToken, address optinoCollateralToken);
+    event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike);
+    event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description);
+
+    function init(Data storage self) internal {
+        require(!self.initialised);
+        self.initialised = true;
+    }
+    function generateKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike) internal pure returns (bytes32 hash) {
+        return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed, callPut, expiry, strike));
+    }
+    function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
+        return self.entries[key].timestamp > 0;
+    }
+    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, string memory description, address optinoToken, address optinoCollateralToken) internal {
+        require(baseToken != quoteToken, "SeriesLibrary.add: baseToken cannot be the same as quoteToken");
+        require(priceFeed != address(0), "SeriesLibrary.add: priceFeed cannot be null");
+        require(callPut < 2, "SeriesLibrary.add: callPut must be 0 (call) or 1 (callPut)");
+        require(expiry > block.timestamp, "SeriesLibrary.add: expiry must be in the future");
+        require(strike > 0, "SeriesLibrary.add: strike must be non-zero");
+        require(optinoToken != address(0), "SeriesLibrary.add: optinoToken cannot be null");
+        require(optinoCollateralToken != address(0), "SeriesLibrary.add: optinoCollateralToken cannot be null");
+
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
+        require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
+        self.index.push(key);
+        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
+        emit SeriesAdded(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
+    }
+    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike) internal {
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
+        require(self.entries[key].timestamp > 0);
+        uint removeIndex = self.entries[key].index;
+        emit SeriesRemoved(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
+        uint lastIndex = self.index.length - 1;
+        bytes32 lastIndexKey = self.index[lastIndex];
+        self.index[removeIndex] = lastIndexKey;
+        self.entries[lastIndexKey].index = removeIndex;
+        delete self.entries[key];
+        if (self.index.length > 0) {
+            self.index.pop();
+        }
+    }
+    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, string memory description) internal {
+        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
+        Series storage _value = self.entries[key];
+        require(_value.timestamp > 0);
+        _value.timestamp = block.timestamp;
+        _value.description = description;
+        emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
+    }
+    function length(Data storage self) internal view returns (uint) {
+        return self.index.length;
+    }
+}
+
 
 
 // ----------------------------------------------------------------------------
@@ -278,181 +690,52 @@ library VanillaOptinoFormulae {
 // OptinoToken 📈 = Token + payoff
 // ----------------------------------------------------------------------------
 contract OptinoToken is Token {
-    bool public isCollateral;
-    address public pair;
+    using SeriesLibrary for SeriesLibrary.Series;
+    uint8 public constant OPTIONDECIMALS = 18;
 
-    function initOptinoToken(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint initialSupply, bool _isCollateral) public {
-        super.initToken(tokenOwner, symbol, name, decimals, initialSupply);
+    address public factory;
+    address public baseToken;
+    address public quoteToken;
+    address public priceFeed;
+    uint public callPut;
+    uint public expiry;
+    uint public strike;
+    // string public description;
+    address public pair;
+    uint public seriesNumber;
+    bool public isCollateral;
+
+
+    function initOptinoToken(address _factory, address _baseToken, address _quoteToken, address _priceFeed, uint _callPut, uint _expiry, uint _strike, /* string memory _description, */ address _pair, uint _seriesNumber, bool _isCollateral) public {
+        (uint year, uint month, uint day) = BokkyPooBahsDateTimeLibrary.timestampToDate(_expiry);
+        string memory _symbol = Utils.toSymbol(_isCollateral, _callPut, _seriesNumber);
+        string memory _name = Utils.toName(_isCollateral, _callPut, year, month, day, _strike, OPTIONDECIMALS);
+        super.initToken(_factory, _symbol, _name, OPTIONDECIMALS, 0);
+
+        factory = _factory;
+        baseToken = _baseToken;
+        quoteToken = _quoteToken;
+        priceFeed = _priceFeed;
+        callPut = _callPut;
+        expiry = _expiry;
+        strike = _strike;
+        // description = _description;
+        pair = _pair;
+        seriesNumber = _seriesNumber;
         isCollateral = _isCollateral;
     }
-    function setPair(address _pair) public onlyOwner {
-        pair = _pair;
-    }
+
+    // function initOptinoToken(address _factory, address _pair, bool _isCollateral) public {
+    //     // (uint year, uint month, uint day) = BokkyPooBahsDateTimeLibrary.timestampToDate(expiry);
+    //     // string memory _symbol = Utils.toSymbol(isCollateral, callPut, seriesNumber);
+    //     // string memory _name = Utils.toName(isCollateral, callPut, year, month, day, strike, OPTIONDECIMALS);
+    //     super.initToken(_factory, "_symbol", "_name", OPTIONDECIMALS, 0);
+
+    //     factory = _factory;
+    //     pair = _pair;
+    //     isCollateral = _isCollateral;
+    // }
 }
-
-
-// ----------------------------------------------------------------------------
-// Config - [baseToken, quoteToken, priceFeed] => [maxTerm, fee, description]
-// ----------------------------------------------------------------------------
-library ConfigLibrary {
-    struct Config {
-        uint timestamp;
-        uint index;
-        bytes32 key;
-        address baseToken;
-        address quoteToken;
-        address priceFeed;
-        uint maxTerm;
-        uint fee;
-        string description;
-    }
-    struct Data {
-        bool initialised;
-        mapping(bytes32 => Config) entries;
-        bytes32[] index;
-    }
-
-    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
-    event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
-    event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
-
-    function init(Data storage self) internal {
-        require(!self.initialised);
-        self.initialised = true;
-    }
-    function generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
-        return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed));
-    }
-    function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
-        return self.entries[key].timestamp > 0;
-    }
-    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
-        require(baseToken != quoteToken, "Config.add: baseToken cannot be the same as quoteToken");
-        require(priceFeed != address(0), "Config.add: priceFeed cannot be null");
-        require(maxTerm > 0, "Config.add: maxTerm must be > 0");
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
-        require(self.entries[key].timestamp == 0, "Config.add: Cannot add duplicate");
-        self.index.push(key);
-        self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, maxTerm, fee, description);
-        emit ConfigAdded(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
-    }
-    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
-        require(self.entries[key].timestamp > 0);
-        uint removeIndex = self.entries[key].index;
-        emit ConfigRemoved(baseToken, quoteToken, priceFeed);
-        uint lastIndex = self.index.length - 1;
-        bytes32 lastIndexKey = self.index[lastIndex];
-        self.index[removeIndex] = lastIndexKey;
-        self.entries[lastIndexKey].index = removeIndex;
-        delete self.entries[key];
-        if (self.index.length > 0) {
-            self.index.pop();
-        }
-    }
-    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
-        Config storage _value = self.entries[key];
-        require(_value.timestamp > 0);
-        _value.timestamp = block.timestamp;
-        _value.maxTerm = maxTerm;
-        _value.fee = fee;
-        _value.description = description;
-        emit ConfigUpdated(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
-    }
-    function length(Data storage self) internal view returns (uint) {
-        return self.index.length;
-    }
-}
-
-
-
-// ----------------------------------------------------------------------------
-// Series - [baseToken, quoteToken, priceFeed, callPut, expiry, strike] =>
-// [description, optinoToken, optinoCollateralToken]
-// ----------------------------------------------------------------------------
-library SeriesLibrary {
-    struct Series {
-        uint timestamp;
-        uint index;
-        bytes32 key;
-        address baseToken;
-        address quoteToken;
-        address priceFeed;
-        uint callPut;
-        uint expiry;
-        uint strike;
-        string description;
-        address optinoToken;
-        address optinoCollateralToken;
-    }
-    struct Data {
-        bool initialised;
-        mapping(bytes32 => Series) entries;
-        bytes32[] index;
-    }
-
-    // Config copy of events to be generated in the ABI
-    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
-    event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
-    event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
-    // SeriesLibrary copy of events to be generated in the ABI
-    event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description, address optinoToken, address optinoCollateralToken);
-    event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike);
-    event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description);
-
-    function init(Data storage self) internal {
-        require(!self.initialised);
-        self.initialised = true;
-    }
-    function generateKey(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike) internal pure returns (bytes32 hash) {
-        return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed, callPut, expiry, strike));
-    }
-    function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
-        return self.entries[key].timestamp > 0;
-    }
-    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, string memory description, address optinoToken, address optinoCollateralToken) internal {
-        require(baseToken != quoteToken, "SeriesLibrary.add: baseToken cannot be the same as quoteToken");
-        require(priceFeed != address(0), "SeriesLibrary.add: priceFeed cannot be null");
-        require(callPut < 2, "SeriesLibrary.add: callPut must be 0 (call) or 1 (callPut)");
-        require(expiry > block.timestamp, "SeriesLibrary.add: expiry must be in the future");
-        require(strike > 0, "SeriesLibrary.add: strike must be non-zero");
-        require(optinoToken != address(0), "SeriesLibrary.add: optinoToken cannot be null");
-        require(optinoCollateralToken != address(0), "SeriesLibrary.add: optinoCollateralToken cannot be null");
-
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
-        require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
-        self.index.push(key);
-        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
-        emit SeriesAdded(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
-    }
-    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
-        require(self.entries[key].timestamp > 0);
-        uint removeIndex = self.entries[key].index;
-        emit SeriesRemoved(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
-        uint lastIndex = self.index.length - 1;
-        bytes32 lastIndexKey = self.index[lastIndex];
-        self.index[removeIndex] = lastIndexKey;
-        self.entries[lastIndexKey].index = removeIndex;
-        delete self.entries[key];
-        if (self.index.length > 0) {
-            self.index.pop();
-        }
-    }
-    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, string memory description) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
-        Series storage _value = self.entries[key];
-        require(_value.timestamp > 0);
-        _value.timestamp = block.timestamp;
-        _value.description = description;
-        emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
-    }
-    function length(Data storage self) internal view returns (uint) {
-        return self.index.length;
-    }
-}
-
 
 
 // ----------------------------------------------------------------------------
@@ -480,7 +763,6 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
 
     address public constant ETH = 0x0000000000000000000000000000000000000000;
     uint public constant RATEDECIMALS = 18;
-    uint public constant OPTIONDECIMALS = 18;
 
     address public newAddress;
 
@@ -488,8 +770,6 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
     SeriesLibrary.Data private seriesData;
 
     // uint public minimumFee = 0.1 ether;
-    // mapping(address => bool) public isChild;
-    // address[] public children;
 
     event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description, address optinoToken, address optinoCollateralToken);
     event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike);
@@ -585,16 +865,17 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
         if (series.timestamp == 0) {
             // Check config registered
             ConfigLibrary.Config memory config = _getConfig(optinoData);
-            require(config.timestamp > 0, "mintOptinoTokens: Invalid config");
-            require(optinoData.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
+            require(config.timestamp > 0, "mintOptinoTokens: invalid config");
+            require(optinoData.expiry < (block.timestamp + config.maxTerm), "mintOptinoTokens: expiry > config.maxTerm");
             optinoToken = new OptinoToken();
-            optinoToken.initOptinoToken(address(this), "Optino", "OptinoName", uint8(OPTIONDECIMALS), 0, false);
             optinoCollateralToken = new OptinoToken();
-            optinoCollateralToken.initOptinoToken(address(this), "OptinoCollateral", "OptinoCollateralName", uint8(OPTIONDECIMALS), 0, true);
-            optinoToken.setPair(address(optinoCollateralToken));
-            optinoCollateralToken.setPair(address(optinoToken));
             addSeries(optinoData, config.description, address(optinoToken), address(optinoCollateralToken));
             series = _getSeries(optinoData);
+
+            optinoToken.initOptinoToken(address(this), config.baseToken, config.quoteToken, config.priceFeed, optinoData.callPut, optinoData.expiry, optinoData.strike, /* config.description, */ address(optinoCollateralToken), seriesData.length(), false);
+            optinoCollateralToken.initOptinoToken(address(this), config.baseToken, config.quoteToken, config.priceFeed, optinoData.callPut, optinoData.expiry, optinoData.strike, /* config.description, */ address(optinoToken), seriesData.length(), true);
+            // optinoToken.initOptinoToken(address(this), address(optinoCollateralToken), false);
+            // optinoCollateralToken.initOptinoToken(address(this), address(optinoToken), true);
         } else {
             optinoToken = OptinoToken(payable(series.optinoToken));
             optinoCollateralToken = OptinoToken(payable(series.optinoCollateralToken));
@@ -604,7 +885,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
 
         if (optinoData.callPut == 0) {
             if (optinoData.baseToken == ETH) {
-                require(msg.value >= optinoData.baseTokens, "mintOptinoTokens: Insufficient ETH sent");
+                require(msg.value >= optinoData.baseTokens, "mintOptinoTokens: insufficient ETH sent");
                 payable(address(optinoCollateralToken)).transfer(optinoData.baseTokens);
                 uint refund = msg.value - optinoData.baseTokens;
                 if (refund > 0) {
@@ -618,7 +899,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
         } else {
             uint quoteTokens = optinoData.baseTokens * optinoData.strike / 10 ** RATEDECIMALS;
             if (optinoData.quoteToken == ETH) {
-                require(msg.value >= quoteTokens, "mintOptinoTokens: Insufficient ETH sent");
+                require(msg.value >= quoteTokens, "mintOptinoTokens: insufficient ETH sent");
                 payable(address(optinoCollateralToken)).transfer(quoteTokens);
                 uint refund = msg.value - quoteTokens;
                 if (refund > 0) {
@@ -640,29 +921,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
     }
 
 
-    // function numberOfChildren() public view returns (uint) {
-    //     return children.length;
-    // }
-    // function setMinimumFee(uint _minimumFee) public onlyOwner {
-    //     emit MinimumFeeUpdated(minimumFee, _minimumFee);
-    //     minimumFee = _minimumFee;
-    // }
-    // function deployTokenContract(
-    //     string memory symbol,
-    //     string memory name,
-    //     uint8 decimals,
-    //     uint totalSupply,
     //     address payable uiFeeAccount
-    // ) public payable returns (
-    //     Token token
-    // ) {
-    //     require(msg.value >= minimumFee);
-    //     require(decimals <= 27);
-    //     require(totalSupply > 0);
-    //     token = new Token();
-    //     token.init(msg.sender, symbol, name, decimals, totalSupply);
-    //     isChild[address(token)] = true;
-    //     children.push(address(token));
+    // ...
     //     uint uiFee;
     //     uint ownerFee;
     //     if (uiFeeAccount == address(0) || uiFeeAccount == owner) {
@@ -679,9 +939,5 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
     //         owner.transfer(ownerFee);
     //     }
     //     emit TokenDeployed(owner, address(token), symbol, name, decimals, totalSupply, uiFeeAccount, ownerFee, uiFee);
-    // }
-
-    // function () external payable {
-    //     revert();
     // }
 }

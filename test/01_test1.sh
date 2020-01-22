@@ -172,7 +172,7 @@ var vanillaOptinoFactoryContract = web3.eth.contract(vanillaOptinoFactoryAbi);
 // console.log("DATA: vanillaOptinoFactoryContract=" + JSON.stringify(vanillaOptinoFactoryContract));
 var vanillaOptinoFactoryTx = null;
 var vanillaOptinoFactoryAddress = null;
-var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, data: vanillaOptinoFactoryBin, gas: 4000000, gasPrice: defaultGasPrice},
+var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, data: vanillaOptinoFactoryBin, gas: 5000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -281,8 +281,8 @@ var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress,
 // console.log("RESULT: data: " + data);
 // var tradeGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: deployer, data: data, value: value, gas: 4000000, gasPrice: defaultGasPrice });
 
-var tradeGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: maker1, gas: 4000000, gasPrice: defaultGasPrice});
-var tradeGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: maker1, gas: 4000000, gasPrice: defaultGasPrice});
+var tradeGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: maker1, gas: 7000000, gasPrice: defaultGasPrice});
+var tradeGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: maker1, gas: 7000000, gasPrice: defaultGasPrice});
 // var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
