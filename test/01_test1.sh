@@ -270,7 +270,7 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var tradeGroup1_Message = "Trade Group #1";
-var callPut = "1";
+var callPut = "0";
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
 var strike = new BigNumber("200").shift(18);
 var baseTokens = new BigNumber("10").shift(18);
@@ -282,6 +282,7 @@ var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress,
 // var tradeGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: deployer, data: data, value: value, gas: 4000000, gasPrice: defaultGasPrice });
 
 var tradeGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: maker1, gas: 4000000, gasPrice: defaultGasPrice});
+var tradeGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAddress, callPut, expiry, strike, baseTokens, {from: maker1, gas: 4000000, gasPrice: defaultGasPrice});
 // var tradeGroup1_3Tx = vanillaOptino.trade(wethAddress, daiAddress, priceFeedAddress, callPut, europeanAmerican, expiry, strike, buySell, premium, baseTokens, settlement, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
@@ -296,11 +297,12 @@ addTokenContractAddressAndAbi(3, optinos[1], tokenAbi);
 
 printBalances();
 // failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.trade(ETH, DAI, priceFeed, ...)");
-failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.testReceiveEther()");
-// failIfTxStatusError(tradeGroup1_2Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
-// failIfTxStatusError(tradeGroup1_3Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
+// failIfTxStatusError(tradeGroup1_1Tx, tradeGroup1_Message + " - vanillaOptino.testReceiveEther()");
+failIfTxStatusError(tradeGroup1_2Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
+failIfTxStatusError(tradeGroup1_3Tx, tradeGroup1_Message + " - vanillaOptino.trade(WETH, DAI, priceFeed, ...)");
 // printTxData("tradeGroup1_1Tx", tradeGroup1_1Tx);
 printTxData("tradeGroup1_2Tx", tradeGroup1_2Tx);
+printTxData("tradeGroup1_3Tx", tradeGroup1_3Tx);
 // printTxData("tradeGroup1_3Tx", tradeGroup1_3Tx);
 console.log("RESULT: ");
 printVanillaOptinoFactoryContractDetails();

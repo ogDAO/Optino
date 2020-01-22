@@ -13,6 +13,8 @@ pragma solidity ^0.6.0;
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
 
+import "BokkyPooBahsDateTimeLibrary.sol";
+
 
 // ----------------------------------------------------------------------------
 // Safe maths
@@ -276,8 +278,15 @@ library VanillaOptinoFormulae {
 // OptinoToken 📈 = Token + payoff
 // ----------------------------------------------------------------------------
 contract OptinoToken is Token {
-    function init(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint initialSupply) public {
+    bool public isCollateral;
+    address public pair;
+
+    function initOptinoToken(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint initialSupply, bool _isCollateral) public {
         super.initToken(tokenOwner, symbol, name, decimals, initialSupply);
+        isCollateral = _isCollateral;
+    }
+    function setPair(address _pair) public onlyOwner {
+        pair = _pair;
     }
 }
 
@@ -579,12 +588,19 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
             require(config.timestamp > 0, "mintOptinoTokens: Invalid config");
             require(optinoData.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
             optinoToken = new OptinoToken();
-            optinoToken.init(msg.sender, "Optino", "OptinoName", uint8(OPTIONDECIMALS), optinoData.baseTokens);
+            optinoToken.initOptinoToken(address(this), "Optino", "OptinoName", uint8(OPTIONDECIMALS), 0, false);
             optinoCollateralToken = new OptinoToken();
-            optinoCollateralToken.init(msg.sender, "OptinoCollateral", "OptinoCollateralName", uint8(OPTIONDECIMALS), optinoData.baseTokens);
+            optinoCollateralToken.initOptinoToken(address(this), "OptinoCollateral", "OptinoCollateralName", uint8(OPTIONDECIMALS), 0, true);
+            optinoToken.setPair(address(optinoCollateralToken));
+            optinoCollateralToken.setPair(address(optinoToken));
             addSeries(optinoData, config.description, address(optinoToken), address(optinoCollateralToken));
             series = _getSeries(optinoData);
+        } else {
+            optinoToken = OptinoToken(payable(series.optinoToken));
+            optinoCollateralToken = OptinoToken(payable(series.optinoCollateralToken));
         }
+        optinoToken.mint(msg.sender, optinoData.baseTokens);
+        optinoCollateralToken.mint(msg.sender, optinoData.baseTokens);
 
         if (optinoData.callPut == 0) {
             if (optinoData.baseToken == ETH) {
