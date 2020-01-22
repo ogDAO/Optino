@@ -294,10 +294,11 @@ while (txpool.status.pending > 0) {
 
 var optinos = getVanillaOptinos();
 console.log("RESULT: optinos=" + JSON.stringify(optinos));
-addAccount(optinos[0], "optinoToken");
-addTokenContractAddressAndAbi(2, optinos[0], tokenAbi);
-addAccount(optinos[1], "optinoCollateralToken");
-addTokenContractAddressAndAbi(3, optinos[1], tokenAbi);
+for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
+  console.log(optinos[optinosIndex]);
+  addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "optinoToken" : "optinoCollateralToken");
+  addTokenContractAddressAndAbi(optinosIndex + 2, optinos[optinosIndex], tokenAbi);
+}
 
 printBalances();
 failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
