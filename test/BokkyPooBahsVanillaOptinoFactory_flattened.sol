@@ -110,9 +110,6 @@ interface TokenInterface {
 }
 
 
-// ----------------------------------------------------------------------------
-// Token 👊 = ERC20 + symbol + name + decimals + approveAndCall + mint + burn
-// ----------------------------------------------------------------------------
 contract Token is TokenInterface, ERC20Interface, Owned {
     using SafeMath for uint;
 
@@ -124,12 +121,12 @@ contract Token is TokenInterface, ERC20Interface, Owned {
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
 
-    function init(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint fixedSupply) public {
+    function initToken(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint initialSupply) internal {
         super.init(tokenOwner);
         _symbol = symbol;
         _name = name;
         _decimals = decimals;
-        _totalSupply = fixedSupply;
+        _totalSupply = initialSupply;
         balances[tokenOwner] = _totalSupply;
         emit Transfer(address(0), tokenOwner, _totalSupply);
     }
@@ -273,6 +270,17 @@ library VanillaOptinoFormulae {
         _collateralPayoffInQuoteToken = _collateralPayoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
     }
 }
+
+
+// ----------------------------------------------------------------------------
+// OptinoToken 📈 = Token + payoff
+// ----------------------------------------------------------------------------
+contract OptinoToken is Token {
+    function init(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint initialSupply) public {
+        super.initToken(tokenOwner, symbol, name, decimals, initialSupply);
+    }
+}
+
 
 // ----------------------------------------------------------------------------
 // Config - [baseToken, quoteToken, priceFeed] => [maxTerm, fee, description]
@@ -462,6 +470,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
     }
 
     address public constant ETH = 0x0000000000000000000000000000000000000000;
+    uint public constant RATEDECIMALS = 18;
+    uint public constant OPTIONDECIMALS = 18;
 
     address public newAddress;
 
@@ -560,18 +570,18 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
 
         SeriesLibrary.Series storage series = _getSeries(optinoData);
 
-        Token optinoToken;
-        Token optinoCollateralToken;
+        OptinoToken optinoToken;
+        OptinoToken optinoCollateralToken;
         // Series has not been created yet
         if (series.timestamp == 0) {
             // Check config registered
             ConfigLibrary.Config memory config = _getConfig(optinoData);
             require(config.timestamp > 0, "mintOptinoTokens: Invalid config");
             require(optinoData.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
-            optinoToken = new Token();
-            optinoToken.init(msg.sender, "Optino", "OptinoName", 18, optinoData.baseTokens);
-            optinoCollateralToken = new Token();
-            optinoCollateralToken.init(msg.sender, "OptinoCollateral", "OptinoCollateralName", 18, optinoData.baseTokens);
+            optinoToken = new OptinoToken();
+            optinoToken.init(msg.sender, "Optino", "OptinoName", uint8(OPTIONDECIMALS), optinoData.baseTokens);
+            optinoCollateralToken = new OptinoToken();
+            optinoCollateralToken.init(msg.sender, "OptinoCollateral", "OptinoCollateralName", uint8(OPTIONDECIMALS), optinoData.baseTokens);
             addSeries(optinoData, config.description, address(optinoToken), address(optinoCollateralToken));
             series = _getSeries(optinoData);
         }
@@ -590,7 +600,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
                 ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens);
             }
         } else {
-            uint quoteTokens = optinoData.baseTokens * optinoData.strike / 10 ** 18;
+            uint quoteTokens = optinoData.baseTokens * optinoData.strike / 10 ** RATEDECIMALS;
             if (optinoData.quoteToken == ETH) {
                 require(msg.value >= quoteTokens, "mintOptinoTokens: Insufficient ETH sent");
                 payable(address(optinoCollateralToken)).transfer(quoteTokens);
