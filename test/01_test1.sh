@@ -76,6 +76,7 @@ var priceFeedAbi = JSON.parse(priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PR
 var priceFeedBin = "0x" + priceFeedOutput.contracts["$PRICEFEEDFLATTENED:$PRICEFEEDNAME"].bin;
 var vanillaOptinoFactoryAbi = JSON.parse(vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:$VANILLAOPTINOFACTORYNAME"].abi);
 var vanillaOptinoFactoryBin = "0x" + vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:$VANILLAOPTINOFACTORYNAME"].bin;
+var vanillaOptinoAbi = JSON.parse(vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:OptinoToken"].abi);
 
 // console.log("DATA: wethAbi=" + JSON.stringify(wethAbi));
 // console.log("DATA: wethBin=" + JSON.stringify(wethBin));
@@ -85,6 +86,7 @@ var vanillaOptinoFactoryBin = "0x" + vanillaOptinoFactoryOutput.contracts["$VANI
 // console.log("DATA: priceFeedBin=" + JSON.stringify(priceFeedBin));
 // console.log("DATA: vanillaOptinoFactoryAbi=" + JSON.stringify(vanillaOptinoFactoryAbi));
 // console.log("DATA: vanillaOptinoFactoryBin=" + JSON.stringify(vanillaOptinoFactoryBin));
+// console.log("DATA: vanillaOptinoAbi=" + JSON.stringify(vanillaOptinoAbi));
 
 unlockAccounts("$PASSWORD");
 // printBalances();
@@ -181,9 +183,10 @@ var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, dat
         vanillaOptinoFactoryAddress = contract.address;
         addAccount(vanillaOptinoFactoryAddress, "VanillaOptinoFactory");
         addAddressSymbol(vanillaOptinoFactoryAddress, "VanillaOptinoFactory");
-        addVanillaOptinoFactoryContractAddressAndAbi(vanillaOptinoFactoryAddress, vanillaOptinoFactoryAbi);
+        addVanillaOptinoFactoryContractAddressAndAbi(vanillaOptinoFactoryAddress, vanillaOptinoFactoryAbi, vanillaOptinoAbi);
         console.log("DATA: var vanillaOptinoFactoryAddress=\"" + vanillaOptinoFactoryAddress + "\";");
         console.log("DATA: var vanillaOptinoFactoryAbi=" + JSON.stringify(vanillaOptinoFactoryAbi) + ";");
+        console.log("DATA: var vanillaOptinoAbi=" + JSON.stringify(vanillaOptinoAbi) + ";");
         console.log("DATA: var vanillaOptino=eth.contract(vanillaOptinoFactoryAbi).at(vanillaOptinoFactoryAddress);");
       }
     }
