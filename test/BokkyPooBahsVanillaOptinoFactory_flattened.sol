@@ -85,8 +85,13 @@ library BokkyPooBahsDateTimeLibrary {
         day = uint(_day);
     }
 
-    function timestampToDate(uint timestamp) internal pure returns (uint year, uint month, uint day) {
+    function timestampToDateTime(uint timestamp) internal pure returns (uint year, uint month, uint day, uint hour, uint minute, uint second) {
         (year, month, day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+        uint secs = timestamp % SECONDS_PER_DAY;
+        hour = secs / SECONDS_PER_HOUR;
+        secs = secs % SECONDS_PER_HOUR;
+        minute = secs / SECONDS_PER_MINUTE;
+        second = secs % SECONDS_PER_MINUTE;
     }
 
 }
@@ -168,9 +173,12 @@ library Utils {
     bytes constant COLLATERAL = "C";
     bytes constant COLLATERALNAME = "Collateral";
     uint8 constant SPACE = 32;
+    uint8 constant DASH = 45;
     uint8 constant DOT = 46;
-    uint8 constant SLASH = 47;
     uint8 constant ZERO = 48;
+    uint8 constant COLON = 58;
+    uint8 constant CHAR_T = 84;
+    uint8 constant CHAR_Z = 90;
 
     function numToBytes(uint strike, uint decimals) internal pure returns (bytes memory b) {
         uint i;
@@ -205,8 +213,10 @@ library Utils {
             } while (i >= 0);
         }
     }
-    function dateToBytes(uint year, uint month, uint day) internal pure returns (bytes memory b) {
-        b = new bytes(10);
+    function dateTimeToBytes(uint timestamp) internal pure returns (bytes memory b) {
+        (uint year, uint month, uint day, uint hour, uint min, uint sec) = BokkyPooBahsDateTimeLibrary.timestampToDateTime(timestamp);
+
+        b = new bytes(20);
         uint i;
         uint j;
         uint num;
@@ -217,20 +227,42 @@ library Utils {
             num = year / 10 ** i;
             b[j++] = byte(uint8(num % 10 + ZERO));
         } while (i > 0);
-        b[j++] = byte(SLASH);
+        b[j++] = byte(DASH);
         i = 2;
         do {
             i--;
             num = month / 10 ** i;
             b[j++] = byte(uint8(num % 10 + ZERO));
         } while (i > 0);
-        b[j++] = byte(SLASH);
+        b[j++] = byte(DASH);
         i = 2;
         do {
             i--;
             num = day / 10 ** i;
             b[j++] = byte(uint8(num % 10 + ZERO));
         } while (i > 0);
+        b[j++] = byte(CHAR_T);
+        i = 2;
+        do {
+            i--;
+            num = hour / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+        b[j++] = byte(COLON);
+        i = 2;
+        do {
+            i--;
+            num = min / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+        b[j++] = byte(COLON);
+        i = 2;
+        do {
+            i--;
+            num = sec / 10 ** i;
+            b[j++] = byte(uint8(num % 10 + ZERO));
+        } while (i > 0);
+        b[j++] = byte(CHAR_Z);
     }
     function toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
         bytes memory b = new bytes(64);
@@ -259,7 +291,8 @@ library Utils {
         } while (i > 0);
         s = string(b);
     }
-    function toName(bool cover, uint callPut, uint year, uint month, uint day, uint strike, uint decimals) internal pure returns (string memory s) {
+    function toName(bool cover, uint callPut, uint expiry, uint strike, uint decimals) internal pure returns (string memory s) {
+
         bytes memory b = new bytes(128);
         uint i;
         uint j;
@@ -280,7 +313,7 @@ library Utils {
             b[j++] = byte(SPACE);
         }
 
-        bytes memory b1 = dateToBytes(year, month, day);
+        bytes memory b1 = dateTimeToBytes(expiry);
         for (i = 0; i < b1.length; i++) {
             b[j++] = b1[i];
         }
@@ -475,6 +508,7 @@ library SeriesLibrary {
         string description;
         address optinoToken;
         address optinoCollateralToken;
+        uint spot;
     }
     struct Data {
         bool initialised;
@@ -482,14 +516,10 @@ library SeriesLibrary {
         bytes32[] index;
     }
 
-    // Config copy of events to be generated in the ABI
-    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
-    event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
-    event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
-    // SeriesLibrary copy of events to be generated in the ABI
     event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description, address optinoToken, address optinoCollateralToken);
     event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike);
     event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description);
+    event SeriesSpotUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, uint spot);
 
     function init(Data storage self) internal {
         require(!self.initialised);
@@ -513,7 +543,7 @@ library SeriesLibrary {
         bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
         require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
         self.index.push(key);
-        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
+        self.entries[key] = Series(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken, 123);
         emit SeriesAdded(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, optinoToken, optinoCollateralToken);
     }
     function remove(Data storage self, address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike) internal {
@@ -537,6 +567,14 @@ library SeriesLibrary {
         _value.timestamp = block.timestamp;
         _value.description = description;
         emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
+    }
+    function updateSpot(Data storage self, bytes32 key, uint spot) internal {
+        Series storage _value = self.entries[key];
+        require(_value.timestamp > 0);
+        require(_value.expiry <= block.timestamp);
+        _value.timestamp = block.timestamp;
+        _value.spot = spot;
+        emit SeriesSpotUpdated(_value.baseToken, _value.quoteToken, _value.priceFeed, _value.callPut, _value.expiry, _value.strike, spot);
     }
     function length(Data storage self) internal view returns (uint) {
         return self.index.length;
@@ -756,30 +794,52 @@ contract OptinoToken is Token {
     using SeriesLibrary for SeriesLibrary.Series;
     uint8 public constant OPTIONDECIMALS = 18;
 
+    bytes32 public seriesKey;
     address public factory;
-    address public baseToken;
-    address public quoteToken;
-    address public priceFeed;
-    uint public callPut;
-    uint public expiry;
-    uint public strike;
-    string public description;
     address public pair;
     uint public seriesNumber;
     bool public isCollateral;
 
 
     function initOptinoToken(address _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCollateral) public {
-        (, baseToken, quoteToken, priceFeed, callPut, expiry, strike, description, , ,) = BokkyPooBahsVanillaOptinoFactory(_factory).getSeriesByKey(_seriesKey);
-        (uint year, uint month, uint day) = BokkyPooBahsDateTimeLibrary.timestampToDate(expiry);
+        uint callPut;
+        uint expiry;
+        uint strike;
+        (, , , , callPut, expiry, strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(_factory).getSeriesByKey(_seriesKey);
         string memory _symbol = Utils.toSymbol(_isCollateral, callPut, _seriesNumber);
-        string memory _name = Utils.toName(_isCollateral, callPut, year, month, day, strike, OPTIONDECIMALS);
+        string memory _name = Utils.toName(_isCollateral, callPut, expiry, strike, OPTIONDECIMALS);
         super.initToken(_factory, _symbol, _name, OPTIONDECIMALS, 0);
 
+        seriesKey = _seriesKey;
         factory = _factory;
         pair = _pair;
         seriesNumber = _seriesNumber;
         isCollateral = _isCollateral;
+    }
+
+    function baseToken() public view returns (address _baseToken) {
+        (, _baseToken, , , , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function quoteToken() public view returns (address _quoteToken) {
+        (, , _quoteToken, , , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function priceFeed() public view returns (address _priceFeed) {
+        (, , _priceFeed, , , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function callPut() public view returns (uint _callPut) {
+        (, , , , _callPut, , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function expiry() public view returns (uint _expiry) {
+        (, , , , , _expiry, , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function strike() public view returns (uint _strike) {
+        (, , , , , , _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function description() public view returns (string memory _description) {
+        (, , , , , , , _description, , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    }
+    function spot() public view returns (uint) {
+        return BokkyPooBahsVanillaOptinoFactory(factory).getSeriesSpot(seriesKey);
     }
 }
 
@@ -819,9 +879,15 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
 
     // uint public minimumFee = 0.1 ether;
 
+    // Config copy of events to be generated in the ABI
+    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
+    event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
+    event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
+    // SeriesLibrary copy of events to be generated in the ABI
     event SeriesAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description, address optinoToken, address optinoCollateralToken);
     event SeriesRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike);
     event SeriesUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, string description);
+    event SeriesSpotUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint callPut, uint expiry, uint strike, uint spot);
 
     event FactoryDeprecated(address _newAddress);
     event EthersReceived(address indexed sender, uint ethers);
@@ -883,6 +949,15 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     //     require(seriesData.initialised);
     //     seriesData.update(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
     // }
+    function getSeriesSpot(bytes32 seriesKey) public view returns (uint) {
+        SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
+        return series.spot;
+    }
+    function setSeriesSpot(bytes32 seriesKey, uint spot) public returns (uint) {
+        require(seriesData.initialised);
+        // Following will throw if trying to set the spot before expiry
+        seriesData.updateSpot(seriesKey, spot);
+    }
     function seriesDataLength() public view returns (uint) {
         return seriesData.length();
     }
