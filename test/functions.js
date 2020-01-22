@@ -14,6 +14,7 @@ addAccount(eth.accounts[2], "maker1");
 addAccount(eth.accounts[3], "maker2");
 addAccount(eth.accounts[4], "taker1");
 addAccount(eth.accounts[5], "taker2");
+addAccount(eth.accounts[6], "uiFeeAccount");
 
 var miner = eth.accounts[0];
 var deployer = eth.accounts[1];
@@ -21,6 +22,8 @@ var maker1 = eth.accounts[2];
 var maker2 = eth.accounts[3];
 var taker1 = eth.accounts[4];
 var taker2 = eth.accounts[5];
+var uiFeeAccount = eth.accounts[6];
+
 
 console.log("DATA: var miner=\"" + eth.accounts[0] + "\";");
 console.log("DATA: var deployer=\"" + eth.accounts[1] + "\";");
@@ -28,6 +31,8 @@ console.log("DATA: var maker1=\"" + eth.accounts[2] + "\";");
 console.log("DATA: var maker2=\"" + eth.accounts[3] + "\";");
 console.log("DATA: var taker1=\"" + eth.accounts[4] + "\";");
 console.log("DATA: var taker2=\"" + eth.accounts[5] + "\";");
+console.log("DATA: var uiFeeAccount=\"" + eth.accounts[6] + "\";");
+
 
 var baseBlock = eth.blockNumber;
 
