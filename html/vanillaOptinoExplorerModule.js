@@ -34,17 +34,23 @@ const VanillaOptinoExplorer = {
                       </b-button-group>
                       <br />
                     </div>
-                    <b-form-group label="payoffInBaseToken: " label-cols="4">
+                    <b-form-group label="payoffInBaseToken (c): " label-cols="4">
                       <b-form-input type="text" v-model.trim="payoffInBaseToken" disabled></b-form-input>
                     </b-form-group>
-                    <b-form-group label="payoffInQuoteToken: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="payoffInQuoteToken" disabled></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="collateralPayoffInBaseToken: " label-cols="4">
+                    <b-form-group label="collateralPayoffInBaseToken (c): " label-cols="4">
                       <b-form-input type="text" v-model.trim="collateralPayoffInBaseToken" disabled></b-form-input>
                     </b-form-group>
-                    <b-form-group label="collateralPayoffInQuoteToken: " label-cols="4">
+                    <b-form-group label="totalPayoffInBaseToken (c): " label-cols="4">
+                      <b-form-input type="text" v-model.trim="totalPayoffInBaseToken" disabled></b-form-input>
+                    </b-form-group>
+                    <b-form-group label="payoffInQuoteToken (p): " label-cols="4">
+                      <b-form-input type="text" v-model.trim="payoffInQuoteToken" disabled></b-form-input>
+                    </b-form-group>
+                    <b-form-group label="collateralPayoffInQuoteToken (p): " label-cols="4">
                       <b-form-input type="text" v-model.trim="collateralPayoffInQuoteToken" disabled></b-form-input>
+                    </b-form-group>
+                    <b-form-group label="totalPayoffInQuoteToken (p): " label-cols="4">
+                      <b-form-input type="text" v-model.trim="totalPayoffInQuoteToken" disabled></b-form-input>
                     </b-form-group>
                   </b-form>
                 </b-card-body>
@@ -76,8 +82,6 @@ const VanillaOptinoExplorer = {
   data: function () {
     return {
       show: true,
-      value: "0",
-      hasValue: false,
       callPut: 0,
       callPutOptions: [
         { value: 0, text: '0 Call' },
@@ -87,10 +91,6 @@ const VanillaOptinoExplorer = {
       spot: 250,
       baseTokens: 10,
       baseDecimals: 18,
-      payoffInBaseToken: 123,
-      payoffInQuoteToken: 456,
-      collateralPayoffInBaseToken: 789,
-      collateralPayoffInQuoteToken: 1098,
     }
   },
   computed: {
@@ -103,33 +103,28 @@ const VanillaOptinoExplorer = {
     owner() {
       return store.getters['priceFeed/owner'];
     },
+    payoffInBaseToken() {
+      return store.getters['vanillaOptinoExplorer/payoffInBaseToken'];
+    },
+    payoffInQuoteToken() {
+      return store.getters['vanillaOptinoExplorer/payoffInQuoteToken'];
+    },
+    collateralPayoffInBaseToken() {
+      return store.getters['vanillaOptinoExplorer/collateralPayoffInBaseToken'];
+    },
+    collateralPayoffInQuoteToken() {
+      return store.getters['vanillaOptinoExplorer/collateralPayoffInQuoteToken'];
+    },
+    totalPayoffInBaseToken() {
+      return store.getters['vanillaOptinoExplorer/totalPayoffInBaseToken'];
+    },
+    totalPayoffInQuoteToken() {
+      return store.getters['vanillaOptinoExplorer/totalPayoffInQuoteToken'];
+    },
   },
   methods: {
     calculatePayoff() {
       this.$store.commit('vanillaOptinoExplorer/calculatePayoff', { callPut: this.callPut, strike: this.strike, spot: this.spot, baseTokens: this.baseTokens, baseDecimals: this.baseDecimals });
-    },
-    updateValue(event) {
-      this.$bvModal.msgBoxConfirm('Set value ' + this.value + '; hasValue ' + this.hasValue + '?', {
-          title: 'Please Confirm',
-          size: 'sm',
-          buttonSize: 'sm',
-          okVariant: 'danger',
-          okTitle: 'Yes',
-          cancelTitle: 'No',
-          footerClass: 'p-2',
-          hideHeaderClose: false,
-          centered: true
-        })
-        .then(value1 => {
-          if (value1) {
-            logInfo("VanillaOptinoExplorer", "updateValue(" + this.value + ", " + this.hasValue + ")");
-            this.$store.commit('priceFeedExplorer/setValue', { value: this.value, hasValue: this.hasValue });
-            event.preventDefault();
-          }
-        })
-        .catch(err => {
-          // An error occurred
-        });
     },
   },
 };
@@ -137,11 +132,23 @@ const VanillaOptinoExplorer = {
 const vanillaOptinoExplorerModule = {
   namespaced: true,
   state: {
+    payoffInBaseToken: "",
+    payoffInQuoteToken: "",
+    collateralPayoffInBaseToken: "",
+    collateralPayoffInQuoteToken: "",
+    totalPayoffInBaseToken: "",
+    totalPayoffInQuoteToken: "",
     params: null,
     executing: false,
     executionQueue: [],
   },
   getters: {
+    payoffInBaseToken: state => state.payoffInBaseToken,
+    payoffInQuoteToken: state => state.payoffInQuoteToken,
+    collateralPayoffInBaseToken: state => state.collateralPayoffInBaseToken,
+    collateralPayoffInQuoteToken: state => state.collateralPayoffInQuoteToken,
+    totalPayoffInBaseToken: state => state.totalPayoffInBaseToken,
+    totalPayoffInQuoteToken: state => state.totalPayoffInQuoteToken,
     params: state => state.params,
     executionQueue: state => state.executionQueue,
   },
@@ -149,6 +156,15 @@ const vanillaOptinoExplorerModule = {
     calculatePayoff(state, data) {
       logInfo("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
       state.executionQueue.push(data);
+    },
+    setPayoffResults(state, data) {
+      state.payoffInBaseToken = data.payoffInBaseToken;
+      state.payoffInQuoteToken = data.payoffInQuoteToken;
+      state.collateralPayoffInBaseToken = data.collateralPayoffInBaseToken;
+      state.collateralPayoffInQuoteToken = data.collateralPayoffInQuoteToken;
+      state.totalPayoffInBaseToken = data.totalPayoffInBaseToken;
+      state.totalPayoffInQuoteToken = data.totalPayoffInQuoteToken;
+      logInfo("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
     },
     deQueue (state) {
       logDebug("vanillaOptinoExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
@@ -189,21 +205,8 @@ const vanillaOptinoExplorerModule = {
 
             var _result = promisify(cb => vanillaOptinoFactoryContract.payoff(callPut, strike, spot, baseTokens, baseDecimals, cb));
             var result = await _result;
-            logInfo("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
-
-            // var value = new BigNumber(request.value).shift(18).toString();
-            // var hasValue = request.hasValue;
-            // logDebug("vanillaOptinoExplorerModule", "execWeb3() priceFeed.setValue(" + value + ", " + hasValue + ")");
-            // vanillaOptinoFactoryContract.setValue(value, hasValue, { from: store.getters['connection/coinbase'] }, function(error, tx) {
-            //   if (!error) {
-            //     logDebug("vanillaOptinoExplorerModule", "execWeb3() priceFeed.setValue() tx: " + tx);
-            //     store.dispatch('connection/addTx', tx);
-            //   } else {
-            //     logDebug("vanillaOptinoExplorerModule", "execWeb3() priceFeed.setValue() error: ");
-            //     console.table(error);
-            //     store.dispatch('connection/setTxError', error.message);
-            //   }
-            // });
+            logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
+            commit('setPayoffResults', { payoffInBaseToken: result[0].shift(-18).toString(), payoffInQuoteToken: result[1].shift(-18).toString(), collateralPayoffInBaseToken: result[2].shift(-18).toString(), collateralPayoffInQuoteToken: result[3].shift(-18).toString(), totalPayoffInBaseToken: result[0].add(result[2]).shift(-18).toString(), totalPayoffInQuoteToken: result[1].add(result[3]).shift(-18).toString() });
             commit('deQueue');
           }
         }

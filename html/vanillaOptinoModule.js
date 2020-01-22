@@ -239,7 +239,7 @@ const vanillaOptinoModule = {
 
             // TODO: Check timestamp for updated info
             if (i >= state.seriesData.length) {
-              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, callPut: callPut, expiry: expiry, strike: strike, description: description, timestamp: timestamp, optionToken: optionToken, optionCollateralToken: optionCollateralToken } });
+              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), description: description, timestamp: timestamp, optionToken: optionToken, optionCollateralToken: optionCollateralToken } });
             }
           }
         }

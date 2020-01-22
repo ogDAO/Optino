@@ -188,6 +188,8 @@ contract Token is TokenInterface, ERC20Interface, Owned {
         emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
+    receive() external payable {
+    }
     // function () external payable {
     //    revert();
     // }
@@ -228,23 +230,23 @@ library VanillaOptinoFormulae {
     using SafeMath for uint;
 
     // ------------------------------------------------------------------------
-    // Payoff for ETH/USD, first currency ETH and second currency USD
+    // Payoff for baseToken/quoteToken, e.g. ETH/DAI
     //   OptionToken:
     //     Call
-    //       payoffInSecondToken = max(0, spot - strike)
-    //       payoffInFirstToken = payoffInSecondToken x nominal / spot
+    //       payoffInQuoteToken = max(0, spot - strike)
+    //       payoffInBaseToken = payoffInQuoteToken / (spot / 10^rateDecimals)
     //     Put
-    //       payoffInSecondToken = max(0, strike - spot)
-    //       payoffInFirstToken = payoffInSecondToken x nominal / 1 ether
+    //       payoffInQuoteToken = max(0, strike - spot)
+    //       payoffInBaseToken = payoffInQuoteToken / (spot / 10^rateDecimals)
     //   OptionCollateralToken:
     //     Call
-    //       payoffInSecondToken = spot - max(0, spot - strike)
-    //       payoffInFirstToken = payoffInSecondToken x nominal / spot
+    //       payoffInQuoteToken = spot - max(0, spot - strike)
+    //       payoffInBaseToken = payoffInQuoteToken / (spot / 10^rateDecimals)
     //     Put
-    //       payoffInSecondToken = strike - max(0, strike - spot)
-    //       payoffInFirstToken = payoffInSecondToken x nominal / 1 ether
+    //       payoffInQuoteToken = strike - max(0, strike - spot)
+    //       payoffInBaseToken = payoffInQuoteToken / (spot / 10^rateDecimals)
     //
-    // NOTE: strike and spot are to 18 decimals
+    // NOTE: strike and spot at rateDecimals decimal places, 18 in this contract
     // ------------------------------------------------------------------------
     function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
         if (_callPut == 0) {
@@ -459,6 +461,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
         uint baseTokens;
     }
 
+    address public constant ETH = 0x0000000000000000000000000000000000000000;
+
     address public newAddress;
 
     ConfigLibrary.Data private configData;
@@ -546,29 +550,61 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned {
     // ----------------------------------------------------------------------------
     // Mint optino tokens
     // ----------------------------------------------------------------------------
-    function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens) public {
+    function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens) public payable {
         _mintOptinoTokens(OptinoData(msg.sender, baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens));
     }
     function _mintOptinoTokens(OptinoData memory optinoData) internal returns (address, address) {
         // Check parameters not checked in SeriesLibrary and ConfigLibrary
-        require(optinoData.expiry > block.timestamp, "trade: expiry must be in the future");
-        require(optinoData.baseTokens > 0, "trade: baseTokens must be non-zero");
+        require(optinoData.expiry > block.timestamp, "mintOptinoTokens: expiry must be in the future");
+        require(optinoData.baseTokens > 0, "mintOptinoTokens: baseTokens must be non-zero");
 
         SeriesLibrary.Series storage series = _getSeries(optinoData);
 
+        Token optinoToken;
+        Token optinoCollateralToken;
         // Series has not been created yet
         if (series.timestamp == 0) {
             // Check config registered
             ConfigLibrary.Config memory config = _getConfig(optinoData);
-            require(config.timestamp > 0, "trade: Invalid config");
+            require(config.timestamp > 0, "mintOptinoTokens: Invalid config");
             require(optinoData.expiry < (block.timestamp + config.maxTerm), "trade: expiry > config.maxTerm");
-            Token optinoToken = new Token();
-            optinoToken.init(msg.sender, "Optino", "OptinoName", 18, 10 ** 18);
-            Token optinoCollateralToken = new Token();
-            optinoCollateralToken.init(msg.sender, "OptinoCollateral", "OptinoCollateralName", 18, 10 ** 18);
+            optinoToken = new Token();
+            optinoToken.init(msg.sender, "Optino", "OptinoName", 18, optinoData.baseTokens);
+            optinoCollateralToken = new Token();
+            optinoCollateralToken.init(msg.sender, "OptinoCollateral", "OptinoCollateralName", 18, optinoData.baseTokens);
             addSeries(optinoData, config.description, address(optinoToken), address(optinoCollateralToken));
             series = _getSeries(optinoData);
         }
+
+        if (optinoData.callPut == 0) {
+            if (optinoData.baseToken == ETH) {
+                require(msg.value >= optinoData.baseTokens, "mintOptinoTokens: Insufficient ETH sent");
+                payable(address(optinoCollateralToken)).transfer(optinoData.baseTokens);
+                uint refund = msg.value - optinoData.baseTokens;
+                if (refund > 0) {
+                    msg.sender.transfer(refund);
+                }
+            } else {
+                require(ERC20Interface(optinoData.baseToken).balanceOf(msg.sender) >= optinoData.baseTokens);
+                require(ERC20Interface(optinoData.baseToken).allowance(msg.sender, address(this)) > optinoData.baseTokens);
+                ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens);
+            }
+        } else {
+            uint quoteTokens = optinoData.baseTokens * optinoData.strike / 10 ** 18;
+            if (optinoData.quoteToken == ETH) {
+                require(msg.value >= quoteTokens, "mintOptinoTokens: Insufficient ETH sent");
+                payable(address(optinoCollateralToken)).transfer(quoteTokens);
+                uint refund = msg.value - quoteTokens;
+                if (refund > 0) {
+                    msg.sender.transfer(refund);
+                }
+            } else {
+                require(ERC20Interface(optinoData.quoteToken).balanceOf(msg.sender) >= quoteTokens);
+                require(ERC20Interface(optinoData.quoteToken).allowance(msg.sender, address(this)) > quoteTokens);
+                ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens);
+            }
+        }
+
         return (series.optinoToken, series.optinoCollateralToken);
     }
 
