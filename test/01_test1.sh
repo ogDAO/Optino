@@ -314,10 +314,10 @@ printTokenContractDetails(0);
 console.log("RESULT: ");
 printTokenContractDetails(1);
 console.log("RESULT: ");
-printTokenContractDetails(2);
-console.log("RESULT: ");
-printTokenContractDetails(3);
-console.log("RESULT: ");
+// printTokenContractDetails(2);
+// console.log("RESULT: ");
+// printTokenContractDetails(3);
+// console.log("RESULT: ");
 
 exit;
 

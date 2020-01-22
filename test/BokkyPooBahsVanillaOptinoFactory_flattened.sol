@@ -923,8 +923,6 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         // Series has not been created yet
         if (series.timestamp == 0) {
             require(optinoData.expiry < (block.timestamp + config.maxTerm), "mintOptinoTokens: expiry > config.maxTerm");
-            // optinoToken = new OptinoToken();
-            // optinoCollateralToken = new OptinoToken();
             optinoToken = OptinoToken(payable(createClone(address(optinoTokenTemplate))));
             optinoCollateralToken = OptinoToken(payable(createClone(address(optinoTokenTemplate))));
             addSeries(optinoData, config.description, address(optinoToken), address(optinoCollateralToken));
