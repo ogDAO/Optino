@@ -253,6 +253,7 @@ console.log("RESULT: ");
 var deployGroup2_Message = "Deploy Group #2 - Setup";
 var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
+var baseDecimals = 18;
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
 var fee = new BigNumber("1").shift(14); // 0.01%, so 1 ETH = 0.0001 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
@@ -266,8 +267,8 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = weth.approve(vanillaOptinoFactoryAddress, wethTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = dai.approve(vanillaOptinoFactoryAddress, daiTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
