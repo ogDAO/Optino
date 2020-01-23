@@ -528,7 +528,7 @@ function getVanillaOptinos() {
     _vanillaOptinoFactoryFromBlock = baseBlock;
   }
   var optinos = [];
-  console.log("RESULT: vanillaOptinoFactoryContractAddress=" + getShortAddressName(_vanillaOptinoFactoryContractAddress));
+  // console.log("RESULT: vanillaOptinoFactoryContractAddress=" + getShortAddressName(_vanillaOptinoFactoryContractAddress));
   if (_vanillaOptinoFactoryContractAddress != null && _vanillaOptinoFactoryContractAbi != null) {
     var contract = web3.eth.contract(_vanillaOptinoFactoryContractAbi).at(_vanillaOptinoFactoryContractAddress);
 
@@ -538,7 +538,7 @@ function getVanillaOptinos() {
     var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _vanillaOptinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     seriesAddedEvents.watch(function (error, result) {
-      console.log("RESULT: got SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      // console.log("RESULT: got SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
       optinos.push(result.args.optinoToken);
       optinos.push(result.args.optinoCollateralToken);
     });

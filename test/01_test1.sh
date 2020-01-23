@@ -82,6 +82,7 @@ var priceFeedAdaptorBin = "0x" + priceFeedAdaptorOutput.contracts["$PRICEFEEDADA
 var vanillaOptinoFactoryAbi = JSON.parse(vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:$VANILLAOPTINOFACTORYNAME"].abi);
 var vanillaOptinoFactoryBin = "0x" + vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:$VANILLAOPTINOFACTORYNAME"].bin;
 var vanillaOptinoAbi = JSON.parse(vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:OptinoToken"].abi);
+var vanillaOptinoBin = "0x" + vanillaOptinoFactoryOutput.contracts["$VANILLAOPTINOFACTORYFLATTENED:OptinoToken"].bin;
 
 // console.log("DATA: wethAbi=" + JSON.stringify(wethAbi));
 // console.log("DATA: wethBin=" + JSON.stringify(wethBin));
@@ -94,6 +95,7 @@ var vanillaOptinoAbi = JSON.parse(vanillaOptinoFactoryOutput.contracts["$VANILLA
 // console.log("DATA: vanillaOptinoFactoryAbi=" + JSON.stringify(vanillaOptinoFactoryAbi));
 // console.log("DATA: vanillaOptinoFactoryBin=" + JSON.stringify(vanillaOptinoFactoryBin));
 // console.log("DATA: vanillaOptinoAbi=" + JSON.stringify(vanillaOptinoAbi));
+// console.log("DATA: vanillaOptinoBin=" + JSON.stringify(vanillaOptinoBin));
 
 
 unlockAccounts("$PASSWORD");
@@ -174,6 +176,26 @@ var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deploy
         console.log("DATA: var priceFeedAddress=\"" + priceFeedAddress + "\";");
         console.log("DATA: var priceFeedAbi=" + JSON.stringify(priceFeedAbi) + ";");
         console.log("DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);");
+      }
+    }
+  }
+);
+var vanillaOptinoContract = web3.eth.contract(vanillaOptinoAbi);
+// console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
+var vanillaOptinoTx = null;
+var vanillaOptinoAddress = null;
+var vanillaOptino = vanillaOptinoContract.new({from: deployer, data: vanillaOptinoBin, gas: 4000000, gasPrice: defaultGasPrice},
+  function(e, contract) {
+    if (!e) {
+      if (!contract.address) {
+        vanillaOptinoTx = contract.transactionHash;
+      } else {
+        vanillaOptinoAddress = contract.address;
+        addAccount(vanillaOptinoAddress, "OptinoToken Template");
+        // addPriceFeedContractAddressAndAbi(vanillaOptinoAddress, vanillaOptinoAbi);
+        console.log("DATA: var vanillaOptinoAddress=\"" + vanillaOptinoAddress + "\";");
+        console.log("DATA: var vanillaOptinoAbi=" + JSON.stringify(priceFeedAbi) + ";");
+        console.log("DATA: var vanillaOptino=eth.contract(vanillaOptinoAbi).at(vanillaOptinoAddress);");
       }
     }
   }
@@ -320,7 +342,7 @@ var _uiFeeAccount = uiFeeAccount;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount);
-console.log("RESULT: data: " + data);
+// console.log("RESULT: data: " + data);
 var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
 // var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});

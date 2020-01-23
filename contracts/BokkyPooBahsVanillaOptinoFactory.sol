@@ -820,35 +820,27 @@ contract OptinoToken is Token {
 
     function baseToken() public view returns (address _baseToken) {
         (/*key*/, _baseToken, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, /*callPut*/, /*expiry*/, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, _baseToken, , , , , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function quoteToken() public view returns (address _quoteToken) {
         (/*key*/, /*baseToken*/, _quoteToken, /*priceFeed*/, /*baseDecimals*/, /*callPut*/, /*expiry*/, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , _quoteToken, , , , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function priceFeed() public view returns (address _priceFeed) {
         (/*key*/, /*baseToken*/, /*quoteToken*/, _priceFeed, /*baseDecimals*/, /*callPut*/, /*expiry*/, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , _priceFeed, , , , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function baseDecimals() public view returns (uint _baseDecimals) {
         (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, _baseDecimals, /*callPut*/, /*expiry*/, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , , , , _callPut, , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function callPut() public view returns (uint _callPut) {
         (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, _callPut, /*expiry*/, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , , , , _callPut, , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function expiry() public view returns (uint _expiry) {
         (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, /*callPut*/, _expiry, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , , , , , _expiry, , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function strike() public view returns (uint _strike) {
         (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, /*callPut*/, /*expiry*/, _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , , , , , , _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
     function description() public view returns (string memory _description) {
         (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, /*callPut*/, /*expiry*/, /*strike*/, _description, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        // (, , , , , , , , _description, ,, ) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
 
     function spot() public view returns (uint) {
@@ -861,21 +853,19 @@ contract OptinoToken is Token {
         BokkyPooBahsVanillaOptinoFactory(factory).setSeriesSpot(seriesKey);
     }
     function payoffInBaseOrQuote() public view returns (uint) {
-        (, , , , uint _callPut, , , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, uint _callPut, /*expiry*/, /*strike*/, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
 
     function payoff(uint _spot, uint _baseTokens) public view returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
-        // TODO: Move into Config
-        uint _baseDecimals = 18;
-        (, , , , uint _callPut, , uint _strike, , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, uint _baseDecimals, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
     }
 
     function currentPayoff() public view returns (uint) {
         uint _spot = currentSpot();
         uint _baseTokens = _totalSupply;
-        (, , , , uint _baseDecimals, uint _callPut, , uint _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, uint _baseDecimals, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
             if (isCollateral) {
                 return _callPut == 0 ? _collateralPayoffInBaseToken : _collateralPayoffInQuoteToken;
@@ -890,7 +880,7 @@ contract OptinoToken is Token {
             return 0;
         } else {
             uint _baseTokens = _totalSupply;
-            (, , , , uint _baseDecimals, uint _callPut, , uint _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, uint _baseDecimals, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
             if (isCollateral) {
                 return _callPut == 0 ? _collateralPayoffInBaseToken : _collateralPayoffInQuoteToken;
