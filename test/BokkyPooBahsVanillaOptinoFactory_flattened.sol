@@ -571,7 +571,8 @@ library SeriesLibrary {
     function updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0);
-        require(_value.expiry <= block.timestamp);
+        // TODO require(_value.expiry <= block.timestamp);
+        require(_value.spot == 0);
         _value.timestamp = block.timestamp;
         _value.spot = spot;
         emit SeriesSpotUpdated(_value.baseToken, _value.quoteToken, _value.priceFeed, _value.callPut, _value.expiry, _value.strike, spot);
@@ -846,11 +847,48 @@ contract OptinoToken is Token {
     function description() public view returns (string memory _description) {
         (, , , , , , , _description, , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
+
     function spot() public view returns (uint) {
         return BokkyPooBahsVanillaOptinoFactory(factory).getSeriesSpot(seriesKey);
     }
     function currentSpot() public view returns (uint) {
         return BokkyPooBahsVanillaOptinoFactory(factory).getSeriesCurrentSpot(seriesKey);
+    }
+    function setSpot() public {
+        BokkyPooBahsVanillaOptinoFactory(factory).setSeriesSpot(seriesKey);
+    }
+    function payoffInBaseOrQuote() public view returns (uint) {
+        (, , , , uint _callPut, , , , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
+    }
+
+    function payoff(uint _spot, uint _baseTokens) public view returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
+        // TODO: Move into Config
+        uint _baseDecimals = 18;
+        (, , , , uint _callPut, , uint _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    }
+
+    function currentPayoff() public view returns (uint) {
+        // TODO: Move into Config
+        uint _baseDecimals = 18;
+        uint _spot = currentSpot();
+        uint _baseTokens = _totalSupply;
+        (, , , , uint _callPut, , uint _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+        if (isCollateral) {
+            if (_callPut == 0) {
+                return _collateralPayoffInBaseToken;
+            } else {
+                return _collateralPayoffInQuoteToken;
+            }
+        } else {
+            if (_callPut == 0) {
+                return _payoffInBaseToken;
+            } else {
+                return _payoffInQuoteToken;
+            }
+        }
     }
 }
 
@@ -972,10 +1010,10 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
         return series.spot;
     }
-    function setSeriesSpot(bytes32 seriesKey, uint spot) public returns (uint) {
+    function setSeriesSpot(bytes32 seriesKey) public returns (uint) {
         require(seriesData.initialised);
-        // Following will throw if trying to set the spot before expiry
-        seriesData.updateSpot(seriesKey, spot);
+        // Following will throw if trying to set the spot before expiry, or if already set
+        seriesData.updateSpot(seriesKey, getSeriesCurrentSpot(seriesKey));
     }
     function seriesDataLength() public view returns (uint) {
         return seriesData.length();

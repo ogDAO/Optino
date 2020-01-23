@@ -307,7 +307,7 @@ console.log("RESULT: ");
 
 
 // -----------------------------------------------------------------------------
-var mintOptinoGroup1_Message = "Trade Group #1";
+var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
 var strike = new BigNumber("200.123456789012345678").shift(18);
@@ -353,6 +353,43 @@ console.log("RESULT: ");
 // console.log("RESULT: ");
 // printTokenContractDetails(3);
 // console.log("RESULT: ");
+
+
+
+// -----------------------------------------------------------------------------
+var payoffCalcsGroup1_Message = "Payoff Calcs #1";
+var rate = new BigNumber("250.123456789012345678").shift(18);
+var optinoAddress = optinos[0];
+var optino = web3.eth.contract(vanillaOptinoAbi).at(optinoAddress);
+// -----------------------------------------------------------------------------
+console.log("RESULT: ---------- " + payoffCalcsGroup1_Message + " ----------");
+var payoffCalcsGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+while (txpool.status.pending > 0) {
+}
+var payoffCalcsGroup1_2Tx = optino.setSpot({from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+while (txpool.status.pending > 0) {
+}
+printBalances();
+failIfTxStatusError(payoffCalcsGroup1_1Tx, payoffCalcsGroup1_Message + " - priceFeed.setValue()");
+failIfTxStatusError(payoffCalcsGroup1_2Tx, payoffCalcsGroup1_Message + " - optino.setSpot()");
+printTxData("payoffCalcsGroup1_1Tx", payoffCalcsGroup1_1Tx);
+printTxData("payoffCalcsGroup1_2Tx", payoffCalcsGroup1_2Tx);
+console.log("RESULT: ");
+printPriceFeedContractDetails();
+console.log("RESULT: ");
+printPriceFeedAdaptorContractDetails();
+console.log("RESULT: ");
+printVanillaOptinoFactoryContractDetails();
+console.log("RESULT: ");
+printTokenContractDetails(0);
+console.log("RESULT: ");
+printTokenContractDetails(1);
+console.log("RESULT: ");
+// printTokenContractDetails(2);
+// console.log("RESULT: ");
+// printTokenContractDetails(3);
+// console.log("RESULT: ");
+
 
 exit;
 
