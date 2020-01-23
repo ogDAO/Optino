@@ -901,21 +901,21 @@ contract OptinoToken is Token {
         } else {
             require(_baseTokens <= ERC20Interface(this).balanceOf(tokenOwner));
             require(_baseTokens <= ERC20Interface(pair).balanceOf(tokenOwner));
-            OptinoToken(payable(this)).burn(tokenOwner, _baseTokens);
-            OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens);
+            require(OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens));
+            require(OptinoToken(payable(this)).burn(tokenOwner, _baseTokens));
             (/*key*/, address _baseToken, /*quoteToken*/, /*priceFeed*/, /*uint _baseDecimals*/, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
                     payable(address(tokenOwner)).transfer(_baseTokens);
                 } else {
-                    ERC20Interface(this).transfer(tokenOwner, _baseTokens);
+                    require(this.transfer(tokenOwner, _baseTokens));
                 }
             } else {
                 uint quoteTokens = _baseTokens * _strike / 10 ** RATEDECIMALS;
                 if (_baseToken == ETH) {
                     payable(address(tokenOwner)).transfer(quoteTokens);
                 } else {
-                    ERC20Interface(this).transfer(tokenOwner, quoteTokens);
+                    require(this.transfer(tokenOwner, quoteTokens));
                 }
             }
         }
@@ -928,33 +928,23 @@ contract OptinoToken is Token {
         if (!isCollateral) {
             OptinoToken(payable(pair))._settle(tokenOwner);
         } else {
-            uint optionTokens = ERC20Interface(pair).balanceOf(tokenOwner);
-            uint optionCollateralTokens = ERC20Interface(this).balanceOf(tokenOwner);
-            require (optionTokens > 0 || optionCollateralTokens > 0);
+            uint optinoTokens = ERC20Interface(pair).balanceOf(tokenOwner);
+            uint optinoCollateralTokens = ERC20Interface(this).balanceOf(tokenOwner);
+            require (optinoTokens > 0 || optinoCollateralTokens > 0);
             uint _spot = spot();
             if (_spot == 0) {
                 setSpot();
                 _spot = spot();
             }
             require(_spot > 0);
-            // require(_baseTokens <= ERC20Interface(this).balanceOf(tokenOwner));
-            // require(_baseTokens <= ERC20Interface(pair).balanceOf(tokenOwner));
-            // Token(payable(this)).burn(tokenOwner, _baseTokens);
-            // Token(payable(pair)).burn(tokenOwner, _baseTokens);
-            // (, address _baseToken, , , , uint _callPut, , uint _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            (/*key*/, /*address _baseToken*/, /*quoteToken*/, /*priceFeed*/, uint _baseDecimals, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            // Optino
+            (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, optinoTokens, _baseDecimals);
+            require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             // if (_callPut == 0) {
-            //     if (_baseToken == ETH) {
-            //         payable(address(tokenOwner)).transfer(_baseTokens);
-            //     } else {
-            //         ERC20Interface(this).transfer(tokenOwner, _baseTokens);
-            //     }
+            //     return _callPut == 0 ? _collateralPayoffInBaseToken : _collateralPayoffInQuoteToken;
             // } else {
-            //     uint quoteTokens = _baseTokens * _strike / 10 ** RATEDECIMALS;
-            //     if (_baseToken == ETH) {
-            //         payable(address(tokenOwner)).transfer(quoteTokens);
-            //     } else {
-            //         ERC20Interface(this).transfer(tokenOwner, quoteTokens);
-            //     }
+            //     return _callPut == 0 ? _payoffInBaseToken : _payoffInQuoteToken;
             // }
         }
     }
@@ -1210,11 +1200,11 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
     }
 
-    function withdrawFees(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
+    function withdrawFees(address tokenAddress, uint tokens) public onlyOwner {
         if (tokenAddress == address(0)) {
             payable(owner).transfer(tokens);
         } else {
-            return ERC20Interface(tokenAddress).transfer(owner, tokens);
+            require(ERC20Interface(tokenAddress).transfer(owner, tokens));
         }
     }
 }
