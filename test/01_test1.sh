@@ -160,26 +160,6 @@ var dai = daiContract.new(symbol, name, decimals, tokenOwner, initialSupply, {fr
     }
   }
 );
-var priceFeedContract = web3.eth.contract(priceFeedAbi);
-// console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
-var priceFeedTx = null;
-var priceFeedAddress = null;
-var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
-  function(e, contract) {
-    if (!e) {
-      if (!contract.address) {
-        priceFeedTx = contract.transactionHash;
-      } else {
-        priceFeedAddress = contract.address;
-        addAccount(priceFeedAddress, "PriceFeed");
-        addPriceFeedContractAddressAndAbi(priceFeedAddress, priceFeedAbi);
-        console.log("DATA: var priceFeedAddress=\"" + priceFeedAddress + "\";");
-        console.log("DATA: var priceFeedAbi=" + JSON.stringify(priceFeedAbi) + ";");
-        console.log("DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);");
-      }
-    }
-  }
-);
 var vanillaOptinoContract = web3.eth.contract(vanillaOptinoAbi);
 // console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
 var vanillaOptinoTx = null;
@@ -196,6 +176,26 @@ var vanillaOptino = vanillaOptinoContract.new({from: deployer, data: vanillaOpti
         console.log("DATA: var vanillaOptinoAddress=\"" + vanillaOptinoAddress + "\";");
         console.log("DATA: var vanillaOptinoAbi=" + JSON.stringify(priceFeedAbi) + ";");
         console.log("DATA: var vanillaOptino=eth.contract(vanillaOptinoAbi).at(vanillaOptinoAddress);");
+      }
+    }
+  }
+);
+var priceFeedContract = web3.eth.contract(priceFeedAbi);
+// console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
+var priceFeedTx = null;
+var priceFeedAddress = null;
+var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
+  function(e, contract) {
+    if (!e) {
+      if (!contract.address) {
+        priceFeedTx = contract.transactionHash;
+      } else {
+        priceFeedAddress = contract.address;
+        addAccount(priceFeedAddress, "PriceFeed");
+        addPriceFeedContractAddressAndAbi(priceFeedAddress, priceFeedAbi);
+        console.log("DATA: var priceFeedAddress=\"" + priceFeedAddress + "\";");
+        console.log("DATA: var priceFeedAbi=" + JSON.stringify(priceFeedAbi) + ";");
+        console.log("DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);");
       }
     }
   }
@@ -227,7 +227,7 @@ var vanillaOptinoFactoryContract = web3.eth.contract(vanillaOptinoFactoryAbi);
 // console.log("DATA: vanillaOptinoFactoryContract=" + JSON.stringify(vanillaOptinoFactoryContract));
 var vanillaOptinoFactoryTx = null;
 var vanillaOptinoFactoryAddress = null;
-var vanillaOptinoFactory = vanillaOptinoFactoryContract.new({from: deployer, data: vanillaOptinoFactoryBin, gas: 7000000, gasPrice: defaultGasPrice},
+var vanillaOptinoFactory = vanillaOptinoFactoryContract.new(vanillaOptinoAddress, {from: deployer, data: vanillaOptinoFactoryBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -252,6 +252,8 @@ failIfTxStatusError(wethTx, deployGroup1_Message + " - WETH9");
 printTxData("wethTx", wethTx);
 failIfTxStatusError(daiTx, deployGroup1_Message + " - DAI");
 printTxData("daiTx", daiTx);
+failIfTxStatusError(vanillaOptinoTx, deployGroup1_Message + " - VanillaOptino");
+printTxData("vanillaOptinoTx", vanillaOptinoTx);
 failIfTxStatusError(priceFeedTx, deployGroup1_Message + " - PriceFeed");
 printTxData("priceFeedTx", priceFeedTx);
 failIfTxStatusError(priceFeedAdaptorTx, deployGroup1_Message + " - PriceFeedAdaptor");
@@ -277,7 +279,7 @@ var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
 var baseDecimals = 18;
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
-var fee = new BigNumber("1").shift(14); // 0.01%, so 1 ETH = 0.0001 fee
+var fee = new BigNumber("2").shift(14); // 0.02%, so 1 ETH = 0.0002 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
@@ -378,6 +380,67 @@ console.log("RESULT: ");
 // console.log("RESULT: ");
 
 
+if (true) {
+// -----------------------------------------------------------------------------
+var netOffGroup1_Message = "Net off Optino & OptinoCollateral";
+var netOffBaseTokens = new BigNumber("2").shift(18);
+var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
+// -----------------------------------------------------------------------------
+console.log("RESULT: ---------- " + netOffGroup1_Message + " ----------");
+var netOffGroup1_1Tx = optino.netOff(netOffBaseTokens, {from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
+while (txpool.status.pending > 0) {
+}
+printBalances();
+failIfTxStatusError(netOffGroup1_1Tx, netOffGroup1_Message + " - optino.netOff()");
+printTxData("netOffGroup1_1Tx", netOffGroup1_1Tx);
+console.log("RESULT: ");
+printPriceFeedContractDetails();
+console.log("RESULT: ");
+printPriceFeedAdaptorContractDetails();
+console.log("RESULT: ");
+printVanillaOptinoFactoryContractDetails();
+console.log("RESULT: ");
+printTokenContractDetails(0);
+console.log("RESULT: ");
+printTokenContractDetails(1);
+console.log("RESULT: ");
+// printTokenContractDetails(2);
+// console.log("RESULT: ");
+// printTokenContractDetails(3);
+// console.log("RESULT: ");
+}
+
+
+if (false) {
+  // -----------------------------------------------------------------------------
+  var settleGroup1_Message = "Settle";
+  var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
+  // -----------------------------------------------------------------------------
+  console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
+  var settleGroup1_1Tx = optino.settle(netOffBaseTokens, {from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  printBalances();
+  failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - optino.settle()");
+  printTxData("settleGroup1_1Tx", settleGroup1_1Tx);
+  console.log("RESULT: ");
+  printPriceFeedContractDetails();
+  console.log("RESULT: ");
+  printPriceFeedAdaptorContractDetails();
+  console.log("RESULT: ");
+  printVanillaOptinoFactoryContractDetails();
+  console.log("RESULT: ");
+  printTokenContractDetails(0);
+  console.log("RESULT: ");
+  printTokenContractDetails(1);
+  console.log("RESULT: ");
+  // printTokenContractDetails(2);
+  // console.log("RESULT: ");
+  // printTokenContractDetails(3);
+  // console.log("RESULT: ");
+}
+
+exit;
 
 // -----------------------------------------------------------------------------
 var payoffCalcsGroup1_Message = "Payoff Calcs #1";
