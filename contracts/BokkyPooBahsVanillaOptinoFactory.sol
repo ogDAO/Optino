@@ -903,7 +903,7 @@ contract OptinoToken is Token {
             require(_baseTokens <= ERC20Interface(pair).balanceOf(tokenOwner));
             OptinoToken(payable(this)).burn(tokenOwner, _baseTokens);
             OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens);
-            (, address _baseToken, , , , uint _callPut, , uint _strike, , , ,) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            (/*key*/, address _baseToken, /*quoteToken*/, /*priceFeed*/, /*uint _baseDecimals*/, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
                     payable(address(tokenOwner)).transfer(_baseTokens);
@@ -1161,14 +1161,14 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                     msg.sender.transfer(refund);
                 }
             } else {
-                require(ERC20Interface(optinoData.baseToken).balanceOf(msg.sender) >= optinoData.baseTokens);
-                require(ERC20Interface(optinoData.baseToken).allowance(msg.sender, address(this)) > optinoData.baseTokens);
-                ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens);
+                // require(ERC20Interface(optinoData.baseToken).balanceOf(msg.sender) >= optinoData.baseTokens);
+                // require(ERC20Interface(optinoData.baseToken).allowance(msg.sender, address(this)) > optinoData.baseTokens);
+                require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens));
                 if (uiFee > 0) {
-                    ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, uiFeeAccount, uiFee);
+                    require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, uiFeeAccount, uiFee));
                 }
                 if (devFee > 0) {
-                    ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(this), devFee);
+                    require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(this), devFee));
                 }
             }
         } else {
@@ -1191,14 +1191,14 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                     msg.sender.transfer(refund);
                 }
             } else {
-                require(ERC20Interface(optinoData.quoteToken).balanceOf(msg.sender) >= quoteTokens);
-                require(ERC20Interface(optinoData.quoteToken).allowance(msg.sender, address(this)) > quoteTokens);
-                ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens);
+                // require(ERC20Interface(optinoData.quoteToken).balanceOf(msg.sender) >= quoteTokens);
+                // require(ERC20Interface(optinoData.quoteToken).allowance(msg.sender, address(this)) > quoteTokens);
+                require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens));
                 if (uiFee > 0) {
-                    ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, uiFeeAccount, uiFee);
+                    require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, uiFeeAccount, uiFee));
                 }
                 if (devFee > 0) {
-                    ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(this), devFee);
+                    require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(this), devFee));
                 }
             }
         }
