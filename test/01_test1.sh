@@ -345,8 +345,8 @@ var _uiFeeAccount = uiFeeAccount;
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
-var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
-// var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
+var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
@@ -361,11 +361,11 @@ for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
 }
 
 printBalances();
-failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
-// failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
+// failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
+failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
-printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
-// printTxData("mintOptinoGroup1_2Tx", mintOptinoGroup1_2Tx);
+// printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
+printTxData("mintOptinoGroup1_2Tx", mintOptinoGroup1_2Tx);
 // printTxData("mintOptinoGroup1_3Tx", mintOptinoGroup1_3Tx);
 console.log("RESULT: ");
 printVanillaOptinoFactoryContractDetails();
@@ -380,7 +380,7 @@ console.log("RESULT: ");
 // console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
 // -----------------------------------------------------------------------------
 var netOffGroup1_Message = "Net off Optino & OptinoCollateral";
 var netOffBaseTokens = new BigNumber("2").shift(18);
@@ -411,13 +411,17 @@ console.log("RESULT: ");
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle";
+  var rate = new BigNumber("250.123456789012345678").shift(18);
   var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
-  var settleGroup1_1Tx = optino.settle(netOffBaseTokens, {from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
+  var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  var settleGroup1_1Tx = optino.settle({from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
