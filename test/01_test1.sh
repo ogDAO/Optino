@@ -164,7 +164,7 @@ var vanillaOptinoContract = web3.eth.contract(vanillaOptinoAbi);
 // console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
 var vanillaOptinoTx = null;
 var vanillaOptinoAddress = null;
-var vanillaOptino = vanillaOptinoContract.new({from: deployer, data: vanillaOptinoBin, gas: 4000000, gasPrice: defaultGasPrice},
+var vanillaOptino = vanillaOptinoContract.new({from: deployer, data: vanillaOptinoBin, gas: 5000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -278,6 +278,7 @@ var deployGroup2_Message = "Deploy Group #2 - Setup";
 var wethTokens = new BigNumber("1000").shift(18)
 var daiTokens = new BigNumber("1000000").shift(18)
 var baseDecimals = 18;
+var quoteDecimals = 18;
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
 var fee = new BigNumber("2").shift(14); // 0.02%, so 1 ETH = 0.0002 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
@@ -291,8 +292,8 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = weth.approve(vanillaOptinoFactoryAddress, wethTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = dai.approve(vanillaOptinoFactoryAddress, daiTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -335,7 +336,7 @@ console.log("RESULT: ");
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
-var strike = new BigNumber("200.123456789012345678").shift(18);
+var strike = new BigNumber("200").shift(18);
 // var strike1 = new BigNumber("201").shift(18);
 var baseTokens = new BigNumber("10").shift(18);
 var value = web3.toWei("100", "ether").toString();
@@ -345,8 +346,8 @@ var _uiFeeAccount = uiFeeAccount;
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
-// var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
-var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
+// var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
@@ -361,11 +362,11 @@ for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
 }
 
 printBalances();
-// failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
-failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
+failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
+// failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - vanillaOptinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
-// printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
-printTxData("mintOptinoGroup1_2Tx", mintOptinoGroup1_2Tx);
+printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
+// printTxData("mintOptinoGroup1_2Tx", mintOptinoGroup1_2Tx);
 // printTxData("mintOptinoGroup1_3Tx", mintOptinoGroup1_3Tx);
 console.log("RESULT: ");
 printVanillaOptinoFactoryContractDetails();
@@ -414,7 +415,7 @@ console.log("RESULT: ");
 if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle";
-  var rate = new BigNumber("250.123456789012345678").shift(18);
+  var rate = new BigNumber("300").shift(18);
   var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");

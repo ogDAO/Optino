@@ -95,7 +95,6 @@ library BokkyPooBahsDateTimeLibrary {
         minute = secs / SECONDS_PER_MINUTE;
         second = secs % SECONDS_PER_MINUTE;
     }
-
 }
 
 
@@ -428,6 +427,7 @@ library ConfigLibrary {
         address quoteToken;
         address priceFeed;
         uint baseDecimals;
+        uint quoteDecimals;
         uint maxTerm;
         uint fee;
         string description;
@@ -438,7 +438,7 @@ library ConfigLibrary {
         bytes32[] index;
     }
 
-    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint baseDecimals, uint maxTerm, uint fee, string description);
+    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string description);
     event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
     event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
 
@@ -452,15 +452,15 @@ library ConfigLibrary {
     function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
         return self.entries[key].timestamp > 0;
     }
-    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint maxTerm, uint fee, string memory description) internal {
+    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string memory description) internal {
         require(baseToken != quoteToken, "Config.add: baseToken cannot be the same as quoteToken");
         require(priceFeed != address(0), "Config.add: priceFeed cannot be null");
         require(maxTerm > 0, "Config.add: maxTerm must be > 0");
         bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
         require(self.entries[key].timestamp == 0, "Config.add: Cannot add duplicate");
         self.index.push(key);
-        self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, baseDecimals, maxTerm, fee, description);
-        emit ConfigAdded(baseToken, quoteToken, priceFeed, baseDecimals, maxTerm, fee, description);
+        self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
+        emit ConfigAdded(baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
     }
     function remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
         bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
@@ -571,8 +571,10 @@ library SeriesLibrary {
     function updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0);
-        // TODO require(_value.expiry <= block.timestamp);
+        // TODO: Remove after testing
+        // require(_value.expiry <= block.timestamp);
         require(_value.spot == 0);
+        require(spot > 0);
         _value.timestamp = block.timestamp;
         _value.spot = spot;
         emit SeriesSpotUpdated(key, _value.configKey, _value.callPut, _value.expiry, _value.strike, spot);
@@ -773,6 +775,16 @@ library VanillaOptinoFormulae {
         _collateralPayoffInBaseToken = _collateralPayoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
         _collateralPayoffInQuoteToken = _collateralPayoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
     }
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoff, uint _collateral) {
+        (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+        if (_callPut == 0) {
+            _payoff = _payoffInBaseToken;
+            _collateral = _collateralPayoffInBaseToken;
+        } else {
+            _payoff = _payoffInQuoteToken;
+            _collateral = _collateralPayoffInQuoteToken;
+        }
+    }
 }
 
 
@@ -783,7 +795,11 @@ contract OptinoToken is Token {
     using SeriesLibrary for SeriesLibrary.Series;
     uint8 public constant OPTIONDECIMALS = 18;
     address private constant ETH = 0x0000000000000000000000000000000000000000;
-    uint private constant RATEDECIMALS = 18;
+    uint public constant RATEDECIMALS = 18;
+    // TODO: Testing
+    // uint public constant SHRAPNELMINIMUMDECIMALS = 10; // Shrapnel accounting only if baseDecimals > 10
+    uint public constant SHRAPNELMINIMUMDECIMALS = 10; // Shrapnel accounting only if baseDecimals > 10
+    uint public constant SHRAPNELDECIMALS = 2; // 10**2 = 100
 
     bytes32 public seriesKey;
     address public factory;
@@ -887,6 +903,14 @@ contract OptinoToken is Token {
             }
         }
     }
+    function handleShrapnel(uint amount, uint balance, uint decimals) pure internal returns (uint) {
+        if (decimals > SHRAPNELMINIMUMDECIMALS) {
+            if (amount + 10**SHRAPNELDECIMALS > balance) {
+                return balance;
+            }
+        }
+        return amount;
+    }
     function netOff(uint _baseTokens) public {
         _netOff(msg.sender, _baseTokens);
     }
@@ -933,49 +957,56 @@ contract OptinoToken is Token {
                 _spot = spot();
             }
             require(_spot > 0);
-            (/*key*/, address _baseToken, address _quoteToken, /*priceFeed*/, uint _baseDecimals, uint _callPut, /*expiry*/, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-            uint _payoffInBaseToken;
-            uint _payoffInQuoteToken;
-            uint _collateralPayoffInBaseToken;
-            uint _collateralPayoffInQuoteToken;
-            // Optino
-            (_payoffInBaseToken, _payoffInQuoteToken, _collateralPayoffInBaseToken, _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, optinoTokens, _baseDecimals);
+            uint _payoff;
+            uint _collateral;
+
+            (address _baseToken, address _quoteToken, /*priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _callPut, /*expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesCalcDataByKey(seriesKey);
+
+            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, optinoTokens, _baseDecimals);
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
-                    payable(tokenOwner).transfer(_payoffInBaseToken);
-                    emit Payoff(pair, _baseToken, tokenOwner, _payoffInBaseToken);
+                    _payoff = handleShrapnel(_payoff, address(this).balance, _baseDecimals);
+                    payable(tokenOwner).transfer(_payoff);
+                    emit Payoff(pair, _baseToken, tokenOwner, _payoff);
                 } else {
-                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _payoffInBaseToken));
-                    emit Payoff(pair, _baseToken, tokenOwner, _payoffInBaseToken);
+                    _payoff = handleShrapnel(_payoff, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
+                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _payoff));
+                    emit Payoff(pair, _baseToken, tokenOwner, _payoff);
                 }
             } else {
                 if (_quoteToken == ETH) {
-                    payable(tokenOwner).transfer(_payoffInQuoteToken);
-                    emit Payoff(pair, _quoteToken, tokenOwner, _payoffInQuoteToken);
+                    _payoff = handleShrapnel(_payoff, address(this).balance, _quoteDecimals);
+                    payable(tokenOwner).transfer(_payoff);
+                    emit Payoff(pair, _quoteToken, tokenOwner, _payoff);
                 } else {
-                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _payoffInQuoteToken));
-                    emit Payoff(pair, _quoteToken, tokenOwner, _payoffInQuoteToken);
+                    _payoff = handleShrapnel(_payoff, ERC20Interface(_quoteToken).balanceOf(address(this)), _quoteDecimals);
+                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _payoff));
+                    emit Payoff(pair, _quoteToken, tokenOwner, _payoff);
                 }
             }
 
-            (_payoffInBaseToken, _payoffInQuoteToken, _collateralPayoffInBaseToken, _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, optinoCollateralTokens, _baseDecimals);
+            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, optinoCollateralTokens, _baseDecimals);
             require(OptinoToken(payable(this)).burn(tokenOwner, optinoCollateralTokens));
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
-                    payable(tokenOwner).transfer(_collateralPayoffInBaseToken);
-                    emit Payoff(address(this), _baseToken, tokenOwner, _collateralPayoffInBaseToken);
+                    _collateral = handleShrapnel(_collateral, address(this).balance, _baseDecimals);
+                    payable(tokenOwner).transfer(_collateral);
+                    emit Payoff(address(this), _baseToken, tokenOwner, _collateral);
                 } else {
-                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _collateralPayoffInBaseToken));
-                    emit Payoff(address(this), _baseToken, tokenOwner, _collateralPayoffInBaseToken);
+                    _collateral = handleShrapnel(_collateral, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
+                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _collateral));
+                    emit Payoff(address(this), _baseToken, tokenOwner, _collateral);
                 }
             } else {
-                if (_baseToken == ETH) {
-                    payable(tokenOwner).transfer(_collateralPayoffInQuoteToken);
-                    emit Payoff(address(this), _quoteToken, tokenOwner, _collateralPayoffInQuoteToken);
+                if (_quoteToken == ETH) {
+                    _collateral = handleShrapnel(_collateral, address(this).balance, _quoteDecimals);
+                    payable(tokenOwner).transfer(_collateral);
+                    emit Payoff(address(this), _quoteToken, tokenOwner, _collateral);
                 } else {
-                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _collateralPayoffInQuoteToken));
-                    emit Payoff(address(this), _quoteToken, tokenOwner, _collateralPayoffInQuoteToken);
+                    _collateral = handleShrapnel(_collateral, ERC20Interface(_quoteToken).balanceOf(address(this)), _quoteDecimals);
+                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _collateral));
+                    emit Payoff(address(this), _quoteToken, tokenOwner, _collateral);
                 }
             }
         }
@@ -1007,6 +1038,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
 
     address private constant ETH = 0x0000000000000000000000000000000000000000;
     uint private constant RATEDECIMALS = 18;
+     // Can manually set spot 30 days after expiry, if priceFeed fails (spot = 0)
+    uint public constant SETSPOTIFPRICEFEEDFAILSAFTER = 60 * 60 * 24 * 30;
 
     address public newAddress;
 
@@ -1018,7 +1051,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     // uint public minimumFee = 0.1 ether;
 
     // Config copy of events to be generated in the ABI
-    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint baseDecimals, uint maxTerm, uint fee, string description);
+    event ConfigAdded(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string description);
     event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
     event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
     // SeriesLibrary copy of events to be generated in the ABI
@@ -1045,11 +1078,11 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     // Config
     // ----------------------------------------------------------------------------
-    function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint maxTerm, uint fee, string memory description) public onlyOwner {
+    function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string memory description) public onlyOwner {
         if (!configData.initialised) {
             configData.init();
         }
-        configData.add(baseToken, quoteToken, priceFeed, baseDecimals, maxTerm, fee, description);
+        configData.add(baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
     }
     function updateConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) public onlyOwner {
         require(configData.initialised);
@@ -1104,6 +1137,13 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         // Following will throw if trying to set the spot before expiry, or if already set
         seriesData.updateSpot(seriesKey, getSeriesCurrentSpot(seriesKey));
     }
+    function setSeriesSpotIfPriceFeedFails(bytes32 seriesKey, uint spot) public onlyOwner returns (uint) {
+        require(seriesData.initialised);
+        SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
+        require(block.timestamp >= series.expiry + SETSPOTIFPRICEFEEDFAILSAFTER);
+        // Following will throw if trying to set the spot before expiry + failperiod, or if already set
+        seriesData.updateSpot(seriesKey, spot);
+    }
     function seriesDataLength() public view returns (uint) {
         return seriesData.length();
     }
@@ -1124,6 +1164,11 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         SeriesLibrary.Series memory series = seriesData.entries[key];
         ConfigLibrary.Config memory config = configData.entries[series.configKey];
         return (series.key, config.baseToken, config.quoteToken, config.priceFeed, config.baseDecimals, series.callPut, series.expiry, series.strike, config.description, series.timestamp, series.optinoToken, series.optinoCollateralToken);
+    }
+    function getSeriesCalcDataByKey(bytes32 key) public view returns (address, address, address, uint, uint, uint, uint, uint, address, address) {
+        SeriesLibrary.Series memory series = seriesData.entries[key];
+        ConfigLibrary.Config memory config = configData.entries[series.configKey];
+        return (config.baseToken, config.quoteToken, config.priceFeed, config.baseDecimals, config.quoteDecimals, series.callPut, series.expiry, series.strike, series.optinoToken, series.optinoCollateralToken);
     }
 
 
@@ -1182,8 +1227,6 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                     msg.sender.transfer(refund);
                 }
             } else {
-                // require(ERC20Interface(optinoData.baseToken).balanceOf(msg.sender) >= optinoData.baseTokens);
-                // require(ERC20Interface(optinoData.baseToken).allowance(msg.sender, address(this)) > optinoData.baseTokens);
                 require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens));
                 if (uiFee > 0) {
                     require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, uiFeeAccount, uiFee));
@@ -1212,8 +1255,6 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                     msg.sender.transfer(refund);
                 }
             } else {
-                // require(ERC20Interface(optinoData.quoteToken).balanceOf(msg.sender) >= quoteTokens);
-                // require(ERC20Interface(optinoData.quoteToken).allowance(msg.sender, address(this)) > quoteTokens);
                 require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens));
                 if (uiFee > 0) {
                     require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, uiFeeAccount, uiFee));
