@@ -188,7 +188,7 @@ library Utils {
     uint8 constant CHAR_T = 84;
     uint8 constant CHAR_Z = 90;
 
-    function numToBytes(uint strike, uint decimals) internal pure returns (bytes memory b) {
+    function _numToBytes(uint strike, uint decimals) internal pure returns (bytes memory b) {
         uint i;
         uint j;
         uint result;
@@ -221,7 +221,7 @@ library Utils {
             } while (i >= 0);
         }
     }
-    function dateTimeToBytes(uint timestamp) internal pure returns (bytes memory b) {
+    function _dateTimeToBytes(uint timestamp) internal pure returns (bytes memory b) {
         (uint year, uint month, uint day, uint hour, uint min, uint sec) = BokkyPooBahsDateTimeLibrary.timestampToDateTime(timestamp);
 
         b = new bytes(20);
@@ -272,7 +272,7 @@ library Utils {
         } while (i > 0);
         b[j++] = byte(CHAR_Z);
     }
-    function toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
+    function _toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
         bytes memory b = new bytes(64);
         uint i;
         uint j;
@@ -299,7 +299,7 @@ library Utils {
         } while (i > 0);
         s = string(b);
     }
-    function toName(bool cover, uint callPut, uint expiry, uint strike, uint decimals) internal pure returns (string memory s) {
+    function _toName(bool cover, uint callPut, uint expiry, uint strike, uint decimals) internal pure returns (string memory s) {
 
         bytes memory b = new bytes(128);
         uint i;
@@ -321,34 +321,34 @@ library Utils {
             b[j++] = byte(SPACE);
         }
 
-        bytes memory b1 = dateTimeToBytes(expiry);
+        bytes memory b1 = _dateTimeToBytes(expiry);
         for (i = 0; i < b1.length; i++) {
             b[j++] = b1[i];
         }
         b[j++] = byte(SPACE);
 
-        bytes memory b2 = numToBytes(strike, decimals);
+        bytes memory b2 = _numToBytes(strike, decimals);
         for (i = 0; i < b2.length; i++) {
             b[j++] = b2[i];
         }
         s = string(b);
     }
     /*
-    function numToBytesTest() internal pure returns (string s) {
+    function _numToBytesTest() internal pure returns (string s) {
         uint8 decimals = 18;
         uint strike = 576123456789012345678 * 10**uint(decimals - 18); // 576.123456789012345678
-        bytes memory b = numToBytes(strike, decimals);
+        bytes memory b = _numToBytes(strike, decimals);
         s = string(b);
     }
-    function dateToStringTest() internal pure returns (string s) {
+    function _dateToStringTest() internal pure returns (string s) {
         uint year = 2018;
         uint month = 10;
         uint day = 5;
 
-        bytes memory b = dateToBytes(year, month, day);
+        bytes memory b = _dateToBytes(year, month, day);
         s = string(b);
     }
-    function toNameTest() internal pure returns (string name) {
+    function _toNameTest() internal pure returns (string name) {
         bool isCall = true;
         uint year = 2018;
         uint month = 10;
@@ -356,13 +356,13 @@ library Utils {
         uint8 decimals = 18;
         uint strike = 576123456789012345678 * 10**uint(decimals - 18); // 576.123456789012345678
 
-        name = toName(isCall, year, month, day, strike, decimals);
+        name = _toName(isCall, year, month, day, strike, decimals);
     }
-    function toSymbolTest() internal pure returns (string symbol) {
+    function _toSymbolTest() internal pure returns (string symbol) {
         bool isCall = true;
         uint id = 1234567;
 
-        symbol = toSymbol(isCall, id);
+        symbol = _toSymbol(isCall, id);
     }
     */
 }
@@ -372,11 +372,11 @@ library Utils {
 // Safe maths
 // ----------------------------------------------------------------------------
 library SafeMath {
-    function add(uint a, uint b) internal pure returns (uint c) {
+    function _add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
         require(c >= a);
     }
-    function sub(uint a, uint b) internal pure returns (uint c) {
+    function _sub(uint a, uint b) internal pure returns (uint c) {
         require(b <= a);
         c = a - b;
     }
@@ -449,28 +449,28 @@ library ConfigLibrary {
     event ConfigRemoved(address indexed baseToken, address indexed quoteToken, address indexed priceFeed);
     event ConfigUpdated(address indexed baseToken, address indexed quoteToken, address indexed priceFeed, uint maxTerm, uint fee, string description);
 
-    function init(Data storage self) internal {
+    function _init(Data storage self) internal {
         require(!self.initialised);
         self.initialised = true;
     }
-    function generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
+    function _generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
         return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed));
     }
-    function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
+    function _hasKey(Data storage self, bytes32 key) internal view returns (bool) {
         return self.entries[key].timestamp > 0;
     }
-    function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string memory description) internal {
+    function _add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string memory description) internal {
         require(baseToken != quoteToken, "Config.add: baseToken cannot be the same as quoteToken");
         require(priceFeed != address(0), "Config.add: priceFeed cannot be null");
         require(maxTerm > 0, "Config.add: maxTerm must be > 0");
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
+        bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
         require(self.entries[key].timestamp == 0, "Config.add: Cannot add duplicate");
         self.index.push(key);
         self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
         emit ConfigAdded(baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
     }
-    function remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
+    function _remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
+        bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
         require(self.entries[key].timestamp > 0);
         uint removeIndex = self.entries[key].index;
         emit ConfigRemoved(baseToken, quoteToken, priceFeed);
@@ -483,8 +483,8 @@ library ConfigLibrary {
             self.index.pop();
         }
     }
-    function update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
-        bytes32 key = generateKey(baseToken, quoteToken, priceFeed);
+    function _update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
+        bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
         Config storage _value = self.entries[key];
         require(_value.timestamp > 0);
         _value.timestamp = block.timestamp;
@@ -493,7 +493,7 @@ library ConfigLibrary {
         _value.description = description;
         emit ConfigUpdated(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
     }
-    function length(Data storage self) internal view returns (uint) {
+    function _length(Data storage self) internal view returns (uint) {
         return self.index.length;
     }
 }
@@ -528,17 +528,17 @@ library SeriesLibrary {
     event SeriesUpdated(bytes32 indexed key, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, string description);
     event SeriesSpotUpdated(bytes32 indexed key, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint spot);
 
-    function init(Data storage self) internal {
+    function _init(Data storage self) internal {
         require(!self.initialised);
         self.initialised = true;
     }
-    function generateKey(bytes32 configKey, uint callPut, uint expiry, uint strike) internal pure returns (bytes32 hash) {
+    function _generateKey(bytes32 configKey, uint callPut, uint expiry, uint strike) internal pure returns (bytes32 hash) {
         return keccak256(abi.encodePacked(configKey, callPut, expiry, strike));
     }
-    function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
+    function _hasKey(Data storage self, bytes32 key) internal view returns (bool) {
         return self.entries[key].timestamp > 0;
     }
-    function add(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, address optinoToken, address optinoCollateralToken) internal {
+    function _add(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, address optinoToken, address optinoCollateralToken) internal {
         // require(baseToken != quoteToken, "SeriesLibrary.add: baseToken cannot be the same as quoteToken");
         // require(priceFeed != address(0), "SeriesLibrary.add: priceFeed cannot be null");
         require(callPut < 2, "SeriesLibrary.add: callPut must be 0 (call) or 1 (callPut)");
@@ -547,14 +547,14 @@ library SeriesLibrary {
         require(optinoToken != address(0), "SeriesLibrary.add: optinoToken cannot be null");
         require(optinoCollateralToken != address(0), "SeriesLibrary.add: optinoCollateralToken cannot be null");
 
-        bytes32 key = generateKey(configKey, callPut, expiry, strike);
+        bytes32 key = _generateKey(configKey, callPut, expiry, strike);
         require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
         self.index.push(key);
         self.entries[key] = Series(block.timestamp, self.index.length - 1, key, configKey, callPut, expiry, strike, optinoToken, optinoCollateralToken, 0);
         emit SeriesAdded(key, configKey, callPut, expiry, strike, optinoToken, optinoCollateralToken);
     }
-    function remove(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike) internal {
-        bytes32 key = generateKey(configKey, callPut, expiry, strike);
+    function _remove(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike) internal {
+        bytes32 key = _generateKey(configKey, callPut, expiry, strike);
         require(self.entries[key].timestamp > 0);
         uint removeIndex = self.entries[key].index;
         emit SeriesRemoved(key, configKey, callPut, expiry, strike);
@@ -575,7 +575,7 @@ library SeriesLibrary {
     //     _value.description = description;
     //     emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
     // }
-    function updateSpot(Data storage self, bytes32 key, uint spot) internal {
+    function _updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0);
         // TODO: Remove after testing
@@ -586,7 +586,7 @@ library SeriesLibrary {
         _value.spot = spot;
         emit SeriesSpotUpdated(key, _value.configKey, _value.callPut, _value.expiry, _value.strike, spot);
     }
-    function length(Data storage self) internal view returns (uint) {
+    function _length(Data storage self) internal view returns (uint) {
         return self.index.length;
     }
 }
@@ -654,7 +654,7 @@ contract Token is TokenInterface, Owned {
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
 
-    function initToken(address tokenOwner, string memory symbol, string memory name, uint8 decimals) internal {
+    function _initToken(address tokenOwner, string memory symbol, string memory name, uint8 decimals) internal {
         super.init(tokenOwner);
         _symbol = symbol;
         _name = name;
@@ -670,14 +670,14 @@ contract Token is TokenInterface, Owned {
         return _decimals;
     }
     function totalSupply() override external view returns (uint) {
-        return _totalSupply.sub(balances[address(0)]);
+        return _totalSupply._sub(balances[address(0)]);
     }
     function balanceOf(address tokenOwner) override external view returns (uint balance) {
         return balances[tokenOwner];
     }
     function transfer(address to, uint tokens) override external returns (bool success) {
-        balances[msg.sender] = balances[msg.sender].sub(tokens);
-        balances[to] = balances[to].add(tokens);
+        balances[msg.sender] = balances[msg.sender]._sub(tokens);
+        balances[to] = balances[to]._add(tokens);
         emit Transfer(msg.sender, to, tokens);
         return true;
     }
@@ -687,9 +687,9 @@ contract Token is TokenInterface, Owned {
         return true;
     }
     function transferFrom(address from, address to, uint tokens) override external returns (bool success) {
-        balances[from] = balances[from].sub(tokens);
-        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
-        balances[to] = balances[to].add(tokens);
+        balances[from] = balances[from]._sub(tokens);
+        allowed[from][msg.sender] = allowed[from][msg.sender]._sub(tokens);
+        balances[to] = balances[to]._add(tokens);
         emit Transfer(from, to, tokens);
         return true;
     }
@@ -704,8 +704,8 @@ contract Token is TokenInterface, Owned {
         return true;
     }
     function mint(address tokenOwner, uint tokens) override external onlyOwner returns (bool success) {
-        balances[tokenOwner] = balances[tokenOwner].add(tokens);
-        _totalSupply = _totalSupply.add(tokens);
+        balances[tokenOwner] = balances[tokenOwner]._add(tokens);
+        _totalSupply = _totalSupply._add(tokens);
         emit Transfer(address(0), tokenOwner, tokens);
         return true;
     }
@@ -768,11 +768,11 @@ library VanillaOptinoFormulae {
     // ------------------------------------------------------------------------
     function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
         if (_callPut == 0) {
-            _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot.sub(_strike);
-            _collateralPayoffInQuoteToken = _spot.sub(_payoffInQuoteToken);
+            _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
+            _collateralPayoffInQuoteToken = _spot._sub(_payoffInQuoteToken);
         } else {
-            _payoffInQuoteToken = (_spot >= _strike) ? 0 : _strike.sub(_spot);
-            _collateralPayoffInQuoteToken = _strike.sub(_payoffInQuoteToken);
+            _payoffInQuoteToken = (_spot >= _strike) ? 0 : _strike._sub(_spot);
+            _collateralPayoffInQuoteToken = _strike._sub(_payoffInQuoteToken);
         }
         _payoffInBaseToken = _payoffInQuoteToken * 10 ** 18 / _spot;
         _collateralPayoffInBaseToken = _collateralPayoffInQuoteToken * 10 ** 18 / _spot;
@@ -825,16 +825,16 @@ contract OptinoToken is Token {
 
         (/*key*/, /*baseToken*/, /*quoteToken*/, /*priceFeed*/, /*baseDecimals*/, uint _callPut, uint _expiry, uint _strike, /*description*/, /*timestamp*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
 
-        string memory _symbol = Utils.toSymbol(_isCollateral, _callPut, _seriesNumber);
-        string memory _name = Utils.toName(_isCollateral, _callPut, _expiry, _strike, OPTIONDECIMALS);
-        super.initToken(factory, _symbol, _name, OPTIONDECIMALS);
+        string memory _symbol = Utils._toSymbol(_isCollateral, _callPut, _seriesNumber);
+        string memory _name = Utils._toName(_isCollateral, _callPut, _expiry, _strike, OPTIONDECIMALS);
+        super._initToken(factory, _symbol, _name, OPTIONDECIMALS);
 
     }
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
-        balances[tokenOwner] = balances[tokenOwner].sub(tokens);
-        _totalSupply = _totalSupply.sub(tokens);
+        balances[tokenOwner] = balances[tokenOwner]._sub(tokens);
+        _totalSupply = _totalSupply._sub(tokens);
         emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
@@ -1087,28 +1087,28 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint maxTerm, uint fee, string memory description) public onlyOwner {
         if (!configData.initialised) {
-            configData.init();
+            configData._init();
         }
-        configData.add(baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
+        configData._add(baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, maxTerm, fee, description);
     }
     function updateConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) public onlyOwner {
         require(configData.initialised);
-        configData.update(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
+        configData._update(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
     }
     function removeConfig(address baseToken, address quoteToken, address priceFeed) public onlyOwner {
         require(configData.initialised);
-        configData.remove(baseToken, quoteToken, priceFeed);
+        configData._remove(baseToken, quoteToken, priceFeed);
     }
     function configDataLength() public view returns (uint) {
-        return configData.length();
+        return configData._length();
     }
     function getConfigByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, uint, string memory, uint) {
-        require(i < configData.length(), "getConfigByIndex: Invalid config index");
+        require(i < configData._length(), "getConfigByIndex: Invalid config index");
         ConfigLibrary.Config memory config = configData.entries[configData.index[i]];
         return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.baseDecimals, config.maxTerm, config.fee, config.description, config.timestamp);
     }
     function _getConfig(OptinoData memory optinoData) internal view returns (ConfigLibrary.Config memory) {
-        bytes32 key = ConfigLibrary.generateKey(optinoData.baseToken, optinoData.quoteToken, optinoData.priceFeed);
+        bytes32 key = ConfigLibrary._generateKey(optinoData.baseToken, optinoData.quoteToken, optinoData.priceFeed);
         return configData.entries[key];
     }
 
@@ -1118,9 +1118,9 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     function addSeries(OptinoData memory optinoData,bytes32 configKey, address optinoToken, address optinoCollateralToken) internal {
         if (!seriesData.initialised) {
-            seriesData.init();
+            seriesData._init();
         }
-        seriesData.add(configKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoToken, optinoCollateralToken);
+        seriesData._add(configKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoToken, optinoCollateralToken);
     }
     // function updateSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, string memory description) internal {
     //     require(seriesData.initialised);
@@ -1142,20 +1142,20 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     function setSeriesSpot(bytes32 seriesKey) public returns (uint) {
         require(seriesData.initialised);
         // Following will throw if trying to set the spot before expiry, or if already set
-        seriesData.updateSpot(seriesKey, getSeriesCurrentSpot(seriesKey));
+        seriesData._updateSpot(seriesKey, getSeriesCurrentSpot(seriesKey));
     }
     function setSeriesSpotIfPriceFeedFails(bytes32 seriesKey, uint spot) public onlyOwner returns (uint) {
         require(seriesData.initialised);
         SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
         require(block.timestamp >= series.expiry + SETSPOTIFPRICEFEEDFAILSAFTER);
         // Following will throw if trying to set the spot before expiry + failperiod, or if already set
-        seriesData.updateSpot(seriesKey, spot);
+        seriesData._updateSpot(seriesKey, spot);
     }
     function seriesDataLength() public view returns (uint) {
-        return seriesData.length();
+        return seriesData._length();
     }
     function getSeriesByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, uint, string memory, uint, address, address) {
-        require(i < configData.length(), "getSeriesByIndex: Invalid config index");
+        require(i < configData._length(), "getSeriesByIndex: Invalid config index");
         SeriesLibrary.Series memory series = seriesData.entries[seriesData.index[i]];
         ConfigLibrary.Config memory config = configData.entries[series.configKey];
         return (series.key, config.baseToken, config.quoteToken, config.priceFeed, series.callPut, series.expiry, series.strike, config.description, series.timestamp, series.optinoToken, series.optinoCollateralToken);
@@ -1164,7 +1164,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         ConfigLibrary.Config memory config = _getConfig(optinoData);
         require(config.timestamp > 0, "mintOptinoTokens: invalid config");
 
-        bytes32 key = SeriesLibrary.generateKey(config.key, optinoData.callPut, optinoData.expiry, optinoData.strike);
+        bytes32 key = SeriesLibrary._generateKey(config.key, optinoData.callPut, optinoData.expiry, optinoData.strike);
         return seriesData.entries[key];
     }
     function getSeriesByKey(bytes32 key) public view returns (bytes32, address, address, address, uint, uint, uint, uint, string memory, uint, address, address) {
@@ -1206,8 +1206,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
             addSeries(optinoData, config.key, address(optinoToken), address(optinoCollateralToken));
             series = _getSeries(optinoData);
 
-            optinoToken.initOptinoToken(address(this), series.key, address(optinoCollateralToken), seriesData.length(), false);
-            optinoCollateralToken.initOptinoToken(address(this), series.key, address(optinoToken), seriesData.length(), true);
+            optinoToken.initOptinoToken(address(this), series.key, address(optinoCollateralToken), seriesData._length(), false);
+            optinoCollateralToken.initOptinoToken(address(this), series.key, address(optinoToken), seriesData._length(), true);
         } else {
             optinoToken = OptinoToken(payable(series.optinoToken));
             optinoCollateralToken = OptinoToken(payable(series.optinoCollateralToken));
