@@ -1,7 +1,9 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.2;
 
 // ----------------------------------------------------------------------------
 // BokkyPooBah's Vanilla Optino 📈 + Factory v0.90-pre-release
+//
+// Status: Work in progress
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
@@ -11,6 +13,11 @@ pragma solidity ^0.6.0;
 // https://optino.xyz
 //
 // https://github.com/bokkypoobah/Optino
+//
+// TODO:
+// * shrapnel calcs for netOff(...)
+// * optimise
+// * test/check
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
@@ -626,7 +633,7 @@ interface ERC20Interface {
 // Token Interface = symbol + name + decimals + approveAndCall + mint + burn
 // Use with ERC20Interface
 // ----------------------------------------------------------------------------
-interface TokenInterface {
+interface TokenInterface is ERC20Interface {
     function symbol() external view returns (string memory);
     function name() external view returns (string memory);
     function decimals() external view returns (uint8);
@@ -636,7 +643,7 @@ interface TokenInterface {
 }
 
 
-contract Token is TokenInterface, ERC20Interface, Owned {
+contract Token is TokenInterface, Owned {
     using SafeMath for uint;
 
     string _symbol;
