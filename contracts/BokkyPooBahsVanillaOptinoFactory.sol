@@ -1105,10 +1105,10 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     function configDataLength() public view returns (uint) {
         return configData._length();
     }
-    function getConfigByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, uint, string memory, uint) {
+    function getConfigByIndex(uint i) public view returns (bytes32, address, address, address, uint, uint, uint, uint, string memory, uint) {
         require(i < configData._length(), "getConfigByIndex: Invalid config index");
         ConfigLibrary.Config memory config = configData.entries[configData.index[i]];
-        return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.baseDecimals, config.maxTerm, config.fee, config.description, config.timestamp);
+        return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.baseDecimals, config.quoteDecimals, config.maxTerm, config.fee, config.description, config.timestamp);
     }
     function _getConfig(OptinoData memory optinoData) internal view returns (ConfigLibrary.Config memory) {
         bytes32 key = ConfigLibrary._generateKey(optinoData.baseToken, optinoData.quoteToken, optinoData.priceFeed);
