@@ -8,7 +8,9 @@ pragma solidity ^0.6.1;
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// Factory deployment address: 0x{something}
+// OptinoToken deployment on Ropsten: 0x7C8b880B985ebBADEaaF68f93468dA5B93385137
+//
+// Factory deployment on Ropsten: 0xcAa45227f1FdfcF17584eA54f39Bef6012D9eF0F
 //
 // https://optino.xyz
 //
