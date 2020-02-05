@@ -1,4 +1,4 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.6.1;
 
 // ----------------------------------------------------------------------------
 // BokkyPooBah's Vanilla Optino 📈 + Factory v0.90-pre-release
@@ -18,6 +18,9 @@ pragma solidity ^0.6.2;
 // * shrapnel calcs for netOff(...)
 // * optimise
 // * test/check
+//
+// Note: If you deploy this contract, or derivatives of this contract, please
+// forward 50% of the fees you earned from this code to bokkypoobbah.eth
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
@@ -633,7 +636,7 @@ interface ERC20Interface {
 // Token Interface = symbol + name + decimals + approveAndCall + mint + burn
 // Use with ERC20Interface
 // ----------------------------------------------------------------------------
-interface TokenInterface is ERC20Interface {
+interface TokenInterface {
     function symbol() external view returns (string memory);
     function name() external view returns (string memory);
     function decimals() external view returns (uint8);
@@ -643,7 +646,7 @@ interface TokenInterface is ERC20Interface {
 }
 
 
-contract Token is TokenInterface, Owned {
+contract Token is TokenInterface, ERC20Interface, Owned {
     using SafeMath for uint;
 
     string _symbol;
@@ -1182,8 +1185,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     // Mint optino tokens
     // ----------------------------------------------------------------------------
-    function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable {
-        _mintOptinoTokens(OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens), uiFeeAccount);
+    function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable returns (address, address) {
+        return _mintOptinoTokens(OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens), uiFeeAccount);
     }
     function _mintOptinoTokens(OptinoData memory optinoData, address uiFeeAccount) internal returns (address, address) {
         // Check parameters not checked in SeriesLibrary and ConfigLibrary

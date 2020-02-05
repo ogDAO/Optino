@@ -1,4 +1,4 @@
-# BokkyPooBah's Optino Crypto Options
+# BokkyPooBah's Optino(tm) Crypto Options
 
 
 
@@ -15,7 +15,9 @@ https://etherscan.io/address/0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763
 
 ## Vanilla Optino Payoff Formula
 
-* `callPut`
+Example: ETH/DAI Optinos
+
+* `callPut` - `0` for call, `1` for put
 * `strike`
 * `spot`
 * `rateDecimals` - `strike` and `spot` decimal places

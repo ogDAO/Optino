@@ -16,7 +16,13 @@ pragma solidity ^0.6.1;
 // (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
 
-import "MakerDAOPriceFeed.sol";
+// import "MakerDAOPriceFeed.sol";
+// ----------------------------------------------------------------------------
+// MakerDAO ETH/USD "pip" Pricefeed
+// ----------------------------------------------------------------------------
+interface MakerDAOPriceFeed {
+    function peek() external view returns (bytes32 _value, bool _hasValue);
+}
 
 
 // ----------------------------------------------------------------------------
