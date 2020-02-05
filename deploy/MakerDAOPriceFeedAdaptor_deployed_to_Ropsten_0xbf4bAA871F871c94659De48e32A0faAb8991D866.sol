@@ -8,14 +8,28 @@ pragma solidity ^0.6.1;
 //
 // https://github.com/bokkypoobah/Optino
 //
+// Linked to simulation pricefeed at https://ropsten.etherscan.io/address/0x217fe95b0877f59bbc5fd6e7d87fde0889da81f5
 //
 // Enjoy.
 //
 // (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
 
-import "MakerDAOPriceFeed.sol";
-import "PriceFeedAdaptor.sol";
+// import "MakerDAOPriceFeed.sol";
+// ----------------------------------------------------------------------------
+// MakerDAO ETH/USD "pip" Pricefeed
+// ----------------------------------------------------------------------------
+interface MakerDAOPriceFeed {
+    function peek() external view returns (bytes32 _value, bool _hasValue);
+}
+
+// import "PriceFeedAdaptor.sol";
+// ----------------------------------------------------------------------------
+// PriceFeedAdaptor
+// ----------------------------------------------------------------------------
+interface PriceFeedAdaptor {
+    function spot() external view returns (uint value, bool hasValue);
+}
 
 
 // ----------------------------------------------------------------------------
