@@ -1029,6 +1029,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
 
     address private constant ETH = 0x0000000000000000000000000000000000000000;
     uint private constant RATEDECIMALS = 18;
+    uint public constant FEEDECIMALS = 18;
      // Can manually set spot 30 days after expiry, if priceFeed fails (spot = 0)
     uint public constant SETSPOTIFPRICEFEEDFAILSAFTER = 60 * 60 * 24 * 30;
 
@@ -1200,7 +1201,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         optinoCollateralToken.mint(msg.sender, optinoData.baseTokens);
 
         if (optinoData.callPut == 0) {
-            uint devFee = optinoData.baseTokens * config.fee / 10 ** 18;
+            uint devFee = optinoData.baseTokens * config.fee / (10 ** FEEDECIMALS);
             uint uiFee;
             if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
                 uiFee = devFee / 2;
@@ -1227,8 +1228,8 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 }
             }
         } else {
-            uint quoteTokens = optinoData.baseTokens * optinoData.strike / 10 ** RATEDECIMALS;
-            uint devFee = quoteTokens * config.fee / 10 ** 18;
+            uint quoteTokens = optinoData.baseTokens * optinoData.strike / (10 ** RATEDECIMALS);
+            uint devFee = quoteTokens * config.fee / (10 ** FEEDECIMALS);
             uint uiFee;
             if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
                 uiFee = devFee / 2;
