@@ -739,30 +739,50 @@ library VanillaOptinoFormulae {
     //
     // NOTE: strike and spot at rateDecimals decimal places, 18 in this contract
     // ------------------------------------------------------------------------
-    function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
-        if (_callPut == 0) {
-            _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
-            _collateralPayoffInQuoteToken = _spot._sub(_payoffInQuoteToken);
-        } else {
-            _payoffInQuoteToken = (_spot >= _strike) ? 0 : _strike._sub(_spot);
-            _collateralPayoffInQuoteToken = _strike._sub(_payoffInQuoteToken);
-        }
-        _payoffInBaseToken = _payoffInQuoteToken * 10 ** 18 / _spot;
-        _collateralPayoffInBaseToken = _collateralPayoffInQuoteToken * 10 ** 18 / _spot;
+    // function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
+    //     if (_callPut == 0) {
+    //         _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
+    //         _collateralPayoffInQuoteToken = _spot._sub(_payoffInQuoteToken);
+    //     } else {
+    //         _payoffInQuoteToken = (_spot >= _strike) ? 0 : _strike._sub(_spot);
+    //         _collateralPayoffInQuoteToken = _strike._sub(_payoffInQuoteToken);
+    //     }
+    //     _payoffInBaseToken = _payoffInQuoteToken * 10 ** 18 / _spot;
+    //     _collateralPayoffInBaseToken = _collateralPayoffInQuoteToken * 10 ** 18 / _spot;
 
-        _payoffInBaseToken = _payoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
-        _payoffInQuoteToken = _payoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
-        _collateralPayoffInBaseToken = _collateralPayoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
-        _collateralPayoffInQuoteToken = _collateralPayoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
-    }
-    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoff, uint _collateral) {
-        (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    //     _payoffInBaseToken = _payoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
+    //     _payoffInQuoteToken = _payoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
+    //     _collateralPayoffInBaseToken = _collateralPayoffInBaseToken * _baseTokens / 10 ** _baseDecimals;
+    //     _collateralPayoffInQuoteToken = _collateralPayoffInQuoteToken * _baseTokens / 10 ** _baseDecimals;
+    // }
+    // function payoffInDeliveryTokenOld(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) internal pure returns (uint _payoff, uint _collateral) {
+    //     (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    //     if (_callPut == 0) {
+    //         _payoff = _payoffInBaseToken;
+    //         _collateral = _collateralPayoffInBaseToken;
+    //     } else {
+    //         _payoff = _payoffInQuoteToken;
+    //         _collateral = _collateralPayoffInQuoteToken;
+    //     }
+    // }
+    // Deliver baseToken for call and quoteToken for put
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _collateral) {
         if (_callPut == 0) {
-            _payoff = _payoffInBaseToken;
-            _collateral = _collateralPayoffInBaseToken;
+            uint _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
+            uint _collateralPayoffInQuoteToken = _spot._sub(_payoffInQuoteToken);
+
+            _payoff = _payoffInQuoteToken * (10 ** _rateDecimals) / _spot;
+            _collateral = _collateralPayoffInQuoteToken * (10 ** _rateDecimals) / _spot;
+
+            _payoff = _payoff * _baseTokens / 10 ** _baseDecimals;
+            _collateral = _collateral * _baseTokens / 10 ** _baseDecimals;
         } else {
-            _payoff = _payoffInQuoteToken;
-            _collateral = _collateralPayoffInQuoteToken;
+            // Payoff calculated on quote token, delivery of quoteToken
+            _payoff = (_spot >= _strike) ? 0 : _strike._sub(_spot);
+            _collateral = _strike._sub(_payoff);
+
+            _payoff = _payoff * _baseTokens / 10 ** _baseDecimals;
+            _collateral = _collateral * _baseTokens / 10 ** _baseDecimals;
         }
     }
 }
@@ -830,41 +850,40 @@ contract OptinoToken is Token {
     function setSpot() public {
         BokkyPooBahsVanillaOptinoFactory(factory).setSeriesSpot(seriesKey);
     }
-    function payoffInBaseOrQuote() public view returns (uint) {
+    function payoffDeliveryInBaseOrQuote() public view returns (uint) {
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, /*_baseDecimals*/, /*_quoteDecimals*/, /*_rateDecimals*/, uint _callPut, /*_expiry*/, /*_strike*/, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
 
-    function payoff(uint _spot, uint _baseTokens) public view returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
-        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, /*_rateDecimals*/, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    // function payoff(uint _spot, uint _baseTokens) public view returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
+    //     (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, /*_rateDecimals*/, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+    //     return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    // }
+
+    function payoffInDeliveryToken(uint _spot, uint _baseTokens) public view returns (uint _payoff, uint _collateral) {
+        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        return VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, _baseTokens, _baseDecimals, _rateDecimals);
     }
 
-    function currentPayoff() public view returns (uint) {
+    function currentPayoffPerBaseToken() public view returns (uint) {
         uint _spot = currentSpot();
-        uint _baseTokens = _totalSupply;
-        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, /*_rateDecimals*/, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-        (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
-            if (isCollateral) {
-                return _callPut == 0 ? _collateralPayoffInBaseToken : _collateralPayoffInQuoteToken;
-            } else {
-                return _callPut == 0 ? _payoffInBaseToken : _payoffInQuoteToken;
-            }
+        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+        // uint _baseTokens = _totalSupply;
+        uint _baseTokens = 10 ** _baseDecimals;
+        (uint _payoff, uint _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+        return isCollateral ? _collateral : _payoff;
     }
-    function payoff() public view returns (uint) {
+    function payoffPerBaseToken() public view returns (uint) {
         uint _spot = spot();
         // Not set
         if (_spot == 0) {
             return 0;
         } else {
-            uint _baseTokens = _totalSupply;
-            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, /*_rateDecimals*/, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
-            (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) = VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
-            if (isCollateral) {
-                return _callPut == 0 ? _collateralPayoffInBaseToken : _collateralPayoffInQuoteToken;
-            } else {
-                return _callPut == 0 ? _payoffInBaseToken : _payoffInQuoteToken;
-            }
+            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            // uint _baseTokens = _totalSupply;
+            uint _baseTokens = 10 ** _baseDecimals;
+            (uint _payoff, uint _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+            return isCollateral ? _collateral : _payoff;
         }
     }
     function handleShrapnel(uint amount, uint balance, uint decimals) pure internal returns (uint) {
@@ -932,9 +951,9 @@ contract OptinoToken is Token {
             uint _payoff;
             uint _collateral;
 
-            (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, /*_rateDecimals*/, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
 
-            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, optinoTokens, _baseDecimals);
+            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, optinoTokens, _baseDecimals, _rateDecimals);
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
@@ -958,7 +977,7 @@ contract OptinoToken is Token {
                 }
             }
 
-            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, optinoCollateralTokens, _baseDecimals);
+            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, optinoCollateralTokens, _baseDecimals, _rateDecimals);
             require(OptinoToken(payable(this)).burn(tokenOwner, optinoCollateralTokens));
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
@@ -1239,7 +1258,16 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         return (series.optinoToken, series.optinoCollateralToken);
     }
 
-    function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) public pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
-        return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    // function payoff(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals) public pure returns (uint _payoffInBaseToken, uint _payoffInQuoteToken, uint _collateralPayoffInBaseToken, uint _collateralPayoffInQuoteToken) {
+    //     return VanillaOptinoFormulae.payoff(_callPut, _strike, _spot, _baseTokens, _baseDecimals);
+    // }
+
+    function payoffDeliveryInBaseOrQuote(uint _callPut) public pure returns (uint) {
+        return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
+
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _collateral) {
+        return VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+    }
+
 }
