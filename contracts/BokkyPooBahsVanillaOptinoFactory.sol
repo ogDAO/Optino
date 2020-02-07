@@ -795,7 +795,6 @@ contract OptinoToken is Token {
     using SeriesLibrary for SeriesLibrary.Series;
     uint8 public constant OPTIONDECIMALS = 18;
     address private constant ETH = 0x0000000000000000000000000000000000000000;
-    uint public constant RATEDECIMALS = 18;
     // TODO: Testing
     // uint public constant SHRAPNELMINIMUMDECIMALS = 10; // Shrapnel accounting only if baseDecimals > 10
     uint public constant SHRAPNELMINIMUMDECIMALS = 10; // Shrapnel accounting only if baseDecimals > 10
@@ -906,7 +905,7 @@ contract OptinoToken is Token {
             require(_baseTokens <= ERC20Interface(pair).balanceOf(tokenOwner));
             require(OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, _baseTokens));
-            (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, /*_rateDecimals*/, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, uint _callPut, /*_expiry*/, uint _strike, /*optinoToken*/, /*optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
                     _baseTokens = handleShrapnel(_baseTokens, address(this).balance, _baseDecimals);
@@ -918,7 +917,7 @@ contract OptinoToken is Token {
                     emit Close(pair, _baseToken, tokenOwner, _baseTokens);
                 }
             } else {
-                uint _quoteTokens = _baseTokens * _strike / 10 ** RATEDECIMALS;
+                uint _quoteTokens = _baseTokens * _strike / (10 ** _rateDecimals);
                 if (_quoteToken == ETH) {
                     _quoteTokens = handleShrapnel(_quoteTokens, address(this).balance, _quoteDecimals);
                     payable(tokenOwner).transfer(_quoteTokens);
