@@ -280,7 +280,7 @@ var daiTokens = new BigNumber("1000000").shift(18)
 var baseDecimals = 18;
 var quoteDecimals = 18;
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
-var fee = new BigNumber("2").shift(14); // 0.02%, so 1 ETH = 0.0002 fee
+var fee = new BigNumber("1").shift(15); // 0.1%, so 1 ETH = 0.001 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");

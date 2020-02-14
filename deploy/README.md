@@ -39,7 +39,20 @@ baseDecimals 18
 quoteDecimals 18
 maxTerm 30d * 24h * 60m * 60s = 2592000 s
 fee new BigNumber("1").shift(15) = 1000000000000000
-description ETH/WEENUS(DAI) MakerDAO ETH/DAI Simulator
+description ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator
+
+https://ropsten.etherscan.io/address/0xcaa45227f1fdfcf17584ea54f39bef6012d9ef0f#readContract
+
+getConfigByIndex 0
+bytes32 :  0x1ae23de191c978874e8c75ebed31a20173ae09e540d1c05c140cc2f7347683f9
+address :  0x0000000000000000000000000000000000000000
+address :  0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA
+address :  0xbf4bAA871F871c94659De48e32A0faAb8991D866
+uint256 :  18
+uint256 :  2592000
+uint256 :  1000000000000000
+string :  ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator
+uint256 :  1580890643
 
 
 

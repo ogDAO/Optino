@@ -774,15 +774,15 @@ library VanillaOptinoFormulae {
             _payoff = _payoffInQuoteToken * (10 ** _rateDecimals) / _spot;
             _collateral = _collateralPayoffInQuoteToken * (10 ** _rateDecimals) / _spot;
 
-            _payoff = _payoff * _baseTokens / 10 ** _baseDecimals;
-            _collateral = _collateral * _baseTokens / 10 ** _baseDecimals;
+            _payoff = _payoff * _baseTokens / (10 ** _baseDecimals);
+            _collateral = _collateral * _baseTokens / (10 ** _baseDecimals);
         } else {
             // Payoff calculated on quote token, delivery of quoteToken
             _payoff = (_spot >= _strike) ? 0 : _strike._sub(_spot);
             _collateral = _strike._sub(_payoff);
 
-            _payoff = _payoff * _baseTokens / 10 ** _baseDecimals;
-            _collateral = _collateral * _baseTokens / 10 ** _baseDecimals;
+            _payoff = _payoff * _baseTokens / (10 ** _baseDecimals);
+            _collateral = _collateral * _baseTokens / (10 ** _baseDecimals);
         }
     }
 }
