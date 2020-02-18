@@ -1,3 +1,5 @@
+var ADDRESS0 = "0x0000000000000000000000000000000000000000";
+
 function formatNumber(n) {
     return n == null ? "" : n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

@@ -61,7 +61,15 @@ const VanillaOptinoExplorer = {
               <b-collapse id="mintOptino" visible class="border-0">
                 <b-card-body>
                   <b-form>
-
+                    <b-form-group label="Config: " label-cols="4">
+                      <b-form-select v-model="selectedConfig" :options="configOptions" size="sm" class="mt-3">></b-form-select>
+                    </b-form-group>
+                    <b-form-group label="Expired: " label-cols="4">
+                      <b-form-checkbox v-model="expired">Display</b-form-checkbox>
+                    </b-form-group>
+                    <b-form-group label="Series: " label-cols="4">
+                      <b-form-select v-model="selectedSeries" :options="seriesOptions" size="sm" class="mt-3">></b-form-select>
+                    </b-form-group>
                   </b-form>
                 </b-card-body>
               </b-collapse>
@@ -131,7 +139,11 @@ const VanillaOptinoExplorer = {
   `,
   data: function () {
     return {
-      show: true,
+      expired: false,
+
+      selectedConfig: null,
+      selectedSeries: null,
+
       callPut: 0,
       callPutOptions: [
         { value: 0, text: '0 Call' },
@@ -165,8 +177,26 @@ const VanillaOptinoExplorer = {
     configData() {
       return store.getters['vanillaOptinoFactory/configData'];
     },
+    configOptions() {
+      var configData = store.getters['vanillaOptinoFactory/configData'];
+      var results = [];
+      results.push({ value: null, text: "(none)" });
+      configData.forEach(function(e) {
+        results.push({ value: e.configKey, text: e.description });
+      });
+      return results;
+    },
     seriesData() {
       return store.getters['vanillaOptinoFactory/seriesData'];
+    },
+    seriesOptions() {
+      var seriesData = store.getters['vanillaOptinoFactory/seriesData'];
+      var results = [];
+      results.push({ value: null, text: "(none)" });
+      seriesData.forEach(function(e) {
+        results.push({ value: e.seriesKey, text: e.description });
+      });
+      return results;
     },
   },
   methods: {
@@ -241,7 +271,6 @@ const vanillaOptinoExplorerModule = {
             var baseDecimals = request.baseDecimals;
             var baseTokens = new BigNumber(request.baseTokens).shift(baseDecimals).toString();
 
-            // function payoffInDeliveryToken(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _collateral) {
             var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, spot, baseTokens, baseDecimals, 18, cb));
             var result = await _result;
             logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
