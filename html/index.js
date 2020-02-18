@@ -4,9 +4,10 @@ Vue.component('connection', Connection);
 Vue.component('tokenContract', TokenContract);
 Vue.component('tokens', Tokens);
 Vue.component('priceFeed', PriceFeed);
-Vue.component('vanillaOptino', VanillaOptino);
+Vue.component('vanillaOptinoFactory', VanillaOptinoFactory);
 Vue.component('dataService', DataService);
 Vue.component('ipfsService', IpfsService);
+Vue.component('flat-pickr', VueFlatpickr);
 
 const router = new VueRouter({
   routes,
@@ -51,7 +52,7 @@ const store = new Vuex.Store({
     tokenContract: tokenContractModule,
     tokens: tokensModule,
     priceFeed: priceFeedModule,
-    vanillaOptino: vanillaOptinoModule,
+    vanillaOptinoFactory: vanillaOptinoFactoryModule,
     dataService: dataServiceModule,
     ipfsService: ipfsServiceModule,
     tokenContractExplorer: tokenContractExplorerModule,

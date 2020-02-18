@@ -16,13 +16,13 @@ https://ropsten.etherscan.io/address/0xbf4baa871f871c94659de48e32a0faab8991d866#
 
 <br />
 
-## OptinoToken
+## OptinoToken (old)
 
 https://ropsten.etherscan.io/address/0x7c8b880b985ebbadeaaf68f93468da5b93385137#code
 
 <br />
 
-## BokkyPooBahsVanillaOptinoFactory
+## BokkyPooBahsVanillaOptinoFactory (old)
 
 https://ropsten.etherscan.io/address/0xcaa45227f1fdfcf17584ea54f39bef6012d9ef0f#code
 
@@ -37,9 +37,12 @@ quoteToken 0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA
 priceFeed 0xbf4baa871f871c94659de48e32a0faab8991d866
 baseDecimals 18
 quoteDecimals 18
+rateDecimals 18
 maxTerm 30d * 24h * 60m * 60s = 2592000 s
-fee new BigNumber("1").shift(15) = 1000000000000000
+fee new BigNumber("1").shift(15) = 1000000000000000 // 0.1%, so 1 ETH = 0.001 fee
 description ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator
+
+0x0000000000000000000000000000000000000000, 0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA, 0xbf4baa871f871c94659de48e32a0faab8991d866, 18, 18, 18, "2592000", "1000000000000000", "ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator"
 
 https://ropsten.etherscan.io/address/0xcaa45227f1fdfcf17584ea54f39bef6012d9ef0f#readContract
 
@@ -54,14 +57,19 @@ uint256 :  1000000000000000
 string :  ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator
 uint256 :  1580890643
 
-
+WETH9 https://ropsten.etherscan.io/address/0xb603cea165119701b58d56d10d2060fbfb3efad8#code
 
 WEENUS https://ropsten.etherscan.io/address/0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA#code
 
 
 XEENUS https://ropsten.etherscan.io/address/0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5#code
 
+## v0.90-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x2e744fc5881373622c04ac365cfd866225ab8c3c#code
 
+Factory https://ropsten.etherscan.io/address/0x6957f467d606099b22a3fc275d1d762c9b1f0d60#code
+
+## v0.91-pre-release
 OptinoToken https://ropsten.etherscan.io/address/0x2e744fc5881373622c04ac365cfd866225ab8c3c#code
 
 Factory https://ropsten.etherscan.io/address/0x6957f467d606099b22a3fc275d1d762c9b1f0d60#code

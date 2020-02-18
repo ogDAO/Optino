@@ -1,22 +1,19 @@
-var PRICEFEEDADDRESS = "0xe6ada9beed6e24be4c0259383db61b52bfca85f3";
-var PRICEFEEDABI = [{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+var PRICEFEEDADDRESS = "0x217fe95b0877f59bbc5fd6e7d87fde0889da81f5";
+var PRICEFEEDABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
 const PriceFeed = {
   template: `
     <div>
-      <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337">
+      <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337 && network != 3">
         <b-card-text>
           Please switch to the Geth Devnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
       <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Price Feed: {{ address.substring(0, 6) + ' ' + value }}</b-button>
-      <b-collapse id="priceFeed" class="mt-2">
-        <b-card no-body class="border-0" v-if="network == 1337">
+      <b-collapse id="priceFeed" visible class="mt-2">
+        <b-card no-body class="border-0" v-if="network == 1337 || network == 3">
           <b-row>
             <b-col cols="4" class="small">Contract</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'token/' + address" class="card-link" target="_blank">{{ address }}</b-link></b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="4" class="small">Owner</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + owner" class="card-link" target="_blank">{{ owner }}</b-link></b-col>
           </b-row>
           <b-row>
             <b-col cols="4" class="small">Value</b-col><b-col class="small truncate" cols="8">{{ value }}</b-link></b-col>
@@ -43,9 +40,6 @@ const PriceFeed = {
     address() {
       return store.getters['priceFeed/address'];
     },
-    owner() {
-      return store.getters['priceFeed/owner'];
-    },
     value() {
       return store.getters['priceFeed/value'];
     },
@@ -60,7 +54,6 @@ const priceFeedModule = {
   namespaced: true,
   state: {
     address: PRICEFEEDADDRESS,
-    owner: "(loading)",
     value: 0,
     hasValue: false,
     params: null,
@@ -68,7 +61,6 @@ const priceFeedModule = {
   },
   getters: {
     address: state => state.address,
-    owner: state => state.owner,
     value: state => state.value,
     hasValue: state => state.hasValue,
     params: state => state.params,
@@ -78,10 +70,6 @@ const priceFeedModule = {
       state.value = value;
       state.hasValue = hasValue;
       logDebug("priceFeedModule", "updateValue('" + value + "', " + hasValue + ")")
-    },
-    updateOwner(state, owner) {
-      state.owner = owner;
-      logDebug("priceFeedModule", "updateOwner('" + owner + "')")
     },
     updateParams(state, params) {
       state.params = params;
@@ -122,11 +110,6 @@ const priceFeedModule = {
           }
           if (_value !== state.value) {
             commit('updateValue', { value: _value, hasValue: _hasValue });
-          }
-          var _owner = promisify(cb => contract.owner(cb));
-          var owner = await _owner;
-          if (owner !== state.owner) {
-            commit('updateOwner', owner);
           }
         }
         commit('updateExecuting', false);

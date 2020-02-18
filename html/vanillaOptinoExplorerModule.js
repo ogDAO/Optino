@@ -8,9 +8,68 @@ const VanillaOptinoExplorer = {
             <br />
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.updatevalue variant="outline-info">Payoff Calculator</b-button>
+                <b-button href="#" v-b-toggle.factoryConfig variant="outline-info">Factory Config</b-button>
               </b-card-header>
-              <b-collapse id="updatevalue" visible class="border-0">
+              <b-collapse id="factoryConfig" visible class="border-0">
+                <b-card-body>
+                  <b-form>
+                    <b-row v-for="(config, index) in configData" v-bind:key="index">
+                      <b-col>
+                        <b-row>
+                          <b-col colspan="2" class="small truncate">
+                            Config {{ config.index }} - <em>{{ config.description }}</em>
+                          </b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• key</b-col>
+                          <b-col class="small truncate">{{ config.configKey }}</b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• baseToken</b-col>
+                          <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.baseToken" class="card-link" target="_blank">{{ config.baseToken }}</b-link></b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• quoteToken</b-col>
+                          <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.quoteToken" class="card-link" target="_blank">{{ config.quoteToken }}</b-link></b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• priceFeed</b-col>
+                          <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.priceFeed" class="card-link" target="_blank">{{ config.priceFeed }}</b-link></b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• maxTerm</b-col>
+                          <b-col class="small truncate">{{ config.maxTermString }} ({{ config.maxTerm }}s)</b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• fee</b-col>
+                          <b-col class="small truncate">{{ config.fee.shift(-16) }}%</b-col>
+                        </b-row>
+                        <b-row>
+                          <b-col cols="4" class="small truncate">• timestamp</b-col>
+                          <b-col class="small truncate">{{ new Date(config.timestamp*1000).toLocaleString() }}</b-col>
+                        </b-row>
+                      </b-col>
+                    </b-row>
+                  </b-form>
+                </b-card-body>
+              </b-collapse>
+
+
+              <b-card-header header-tag="header" class="p-1">
+                <b-button href="#" v-b-toggle.mintOptino variant="outline-info">Mint Optino</b-button>
+              </b-card-header>
+              <b-collapse id="mintOptino" visible class="border-0">
+                <b-card-body>
+                  <b-form>
+
+                  </b-form>
+                </b-card-body>
+              </b-collapse>
+
+              <b-card-header header-tag="header" class="p-1">
+                <b-button href="#" v-b-toggle.payoffCalculator variant="outline-info">Payoff Calculator</b-button>
+              </b-card-header>
+              <b-collapse id="payoffCalculator" class="border-0">
                 <b-card-body>
                   <b-form>
                     <b-form-group label="Call or Put: " label-cols="4">
@@ -34,23 +93,14 @@ const VanillaOptinoExplorer = {
                       </b-button-group>
                       <br />
                     </div>
-                    <b-form-group label="payoffInBaseToken (c): " label-cols="4">
-                      <b-form-input type="text" v-model.trim="payoffInBaseToken" disabled></b-form-input>
+                    <b-form-group label="payoff: " label-cols="4">
+                      <b-form-input type="text" v-model.trim="payoff" disabled></b-form-input>
                     </b-form-group>
-                    <b-form-group label="collateralPayoffInBaseToken (c): " label-cols="4">
-                      <b-form-input type="text" v-model.trim="collateralPayoffInBaseToken" disabled></b-form-input>
+                    <b-form-group label="collateralPayoff: " label-cols="4">
+                      <b-form-input type="text" v-model.trim="collateralPayoff" disabled></b-form-input>
                     </b-form-group>
-                    <b-form-group label="totalPayoffInBaseToken (c): " label-cols="4">
-                      <b-form-input type="text" v-model.trim="totalPayoffInBaseToken" disabled></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="payoffInQuoteToken (p): " label-cols="4">
-                      <b-form-input type="text" v-model.trim="payoffInQuoteToken" disabled></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="collateralPayoffInQuoteToken (p): " label-cols="4">
-                      <b-form-input type="text" v-model.trim="collateralPayoffInQuoteToken" disabled></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="totalPayoffInQuoteToken (p): " label-cols="4">
-                      <b-form-input type="text" v-model.trim="totalPayoffInQuoteToken" disabled></b-form-input>
+                    <b-form-group label="totalPayoff: " label-cols="4">
+                      <b-form-input type="text" v-model.trim="totalPayoff" disabled></b-form-input>
                     </b-form-group>
                   </b-form>
                 </b-card-body>
@@ -65,7 +115,7 @@ const VanillaOptinoExplorer = {
           <br />
           <priceFeed></priceFeed>
           <br />
-          <vanillaOptino></vanillaOptino>
+          <vanillaOptinoFactory></vanillaOptinoFactory>
           <!--
           <br />
           <tokenContract></tokenContract>
@@ -103,23 +153,20 @@ const VanillaOptinoExplorer = {
     owner() {
       return store.getters['priceFeed/owner'];
     },
-    payoffInBaseToken() {
-      return store.getters['vanillaOptinoExplorer/payoffInBaseToken'];
+    payoff() {
+      return store.getters['vanillaOptinoExplorer/payoff'];
     },
-    payoffInQuoteToken() {
-      return store.getters['vanillaOptinoExplorer/payoffInQuoteToken'];
+    collateralPayoff() {
+      return store.getters['vanillaOptinoExplorer/collateralPayoff'];
     },
-    collateralPayoffInBaseToken() {
-      return store.getters['vanillaOptinoExplorer/collateralPayoffInBaseToken'];
+    totalPayoff() {
+      return store.getters['vanillaOptinoExplorer/totalPayoff'];
     },
-    collateralPayoffInQuoteToken() {
-      return store.getters['vanillaOptinoExplorer/collateralPayoffInQuoteToken'];
+    configData() {
+      return store.getters['vanillaOptinoFactory/configData'];
     },
-    totalPayoffInBaseToken() {
-      return store.getters['vanillaOptinoExplorer/totalPayoffInBaseToken'];
-    },
-    totalPayoffInQuoteToken() {
-      return store.getters['vanillaOptinoExplorer/totalPayoffInQuoteToken'];
+    seriesData() {
+      return store.getters['vanillaOptinoFactory/seriesData'];
     },
   },
   methods: {
@@ -132,23 +179,17 @@ const VanillaOptinoExplorer = {
 const vanillaOptinoExplorerModule = {
   namespaced: true,
   state: {
-    payoffInBaseToken: "",
-    payoffInQuoteToken: "",
-    collateralPayoffInBaseToken: "",
-    collateralPayoffInQuoteToken: "",
-    totalPayoffInBaseToken: "",
-    totalPayoffInQuoteToken: "",
+    payoff: "",
+    collateralPayoff: "",
+    totalPayoff: "",
     params: null,
     executing: false,
     executionQueue: [],
   },
   getters: {
-    payoffInBaseToken: state => state.payoffInBaseToken,
-    payoffInQuoteToken: state => state.payoffInQuoteToken,
-    collateralPayoffInBaseToken: state => state.collateralPayoffInBaseToken,
-    collateralPayoffInQuoteToken: state => state.collateralPayoffInQuoteToken,
-    totalPayoffInBaseToken: state => state.totalPayoffInBaseToken,
-    totalPayoffInQuoteToken: state => state.totalPayoffInQuoteToken,
+    payoff: state => state.payoff,
+    collateralPayoff: state => state.collateralPayoff,
+    totalPayoff: state => state.totalPayoff,
     params: state => state.params,
     executionQueue: state => state.executionQueue,
   },
@@ -158,12 +199,9 @@ const vanillaOptinoExplorerModule = {
       state.executionQueue.push(data);
     },
     setPayoffResults(state, data) {
-      state.payoffInBaseToken = data.payoffInBaseToken;
-      state.payoffInQuoteToken = data.payoffInQuoteToken;
-      state.collateralPayoffInBaseToken = data.collateralPayoffInBaseToken;
-      state.collateralPayoffInQuoteToken = data.collateralPayoffInQuoteToken;
-      state.totalPayoffInBaseToken = data.totalPayoffInBaseToken;
-      state.totalPayoffInQuoteToken = data.totalPayoffInQuoteToken;
+      state.payoff = data.payoff;
+      state.collateralPayoff = data.collateralPayoff;
+      state.totalPayoff = data.totalPayoff;
       logInfo("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
     },
     deQueue (state) {
@@ -192,7 +230,7 @@ const vanillaOptinoExplorerModule = {
           commit('updateParams', rootState.route.params.param);
         }
 
-        var vanillaOptinoFactoryAddress = store.getters['vanillaOptino/address']
+        var vanillaOptinoFactoryAddress = store.getters['vanillaOptinoFactory/address']
         var vanillaOptinoFactoryContract = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(vanillaOptinoFactoryAddress);
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged || state.executionQueue.length > 0) {
           if (state.executionQueue.length > 0) {
@@ -203,10 +241,11 @@ const vanillaOptinoExplorerModule = {
             var baseDecimals = request.baseDecimals;
             var baseTokens = new BigNumber(request.baseTokens).shift(baseDecimals).toString();
 
-            var _result = promisify(cb => vanillaOptinoFactoryContract.payoff(callPut, strike, spot, baseTokens, baseDecimals, cb));
+            // function payoffInDeliveryToken(uint _callPut, uint _strike, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _collateral) {
+            var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, spot, baseTokens, baseDecimals, 18, cb));
             var result = await _result;
             logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
-            commit('setPayoffResults', { payoffInBaseToken: result[0].shift(-18).toString(), payoffInQuoteToken: result[1].shift(-18).toString(), collateralPayoffInBaseToken: result[2].shift(-18).toString(), collateralPayoffInQuoteToken: result[3].shift(-18).toString(), totalPayoffInBaseToken: result[0].add(result[2]).shift(-18).toString(), totalPayoffInQuoteToken: result[1].add(result[3]).shift(-18).toString() });
+            commit('setPayoffResults', { payoff: result[0].shift(-18).toString(), collateralPayoff: result[1].shift(-18).toString(), totalPayoff: result[0].add(result[1]).shift(-18).toString() });
             commit('deQueue');
           }
         }

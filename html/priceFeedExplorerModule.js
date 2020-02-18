@@ -14,18 +14,15 @@ const PriceFeedExplorer = {
                 <b-card-body>
                   <b-form>
                     <b-form-group label="Has Value: " label-cols="4">
-                      <b-form-checkbox v-model="hasValue" :disabled="owner !== coinbase"></b-form-checkbox>
+                      <b-form-checkbox v-model="hasValue"></b-form-checkbox>
                     </b-form-group>
                     <b-form-group label="Value: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="value" :disabled="owner !== coinbase || !hasValue" placeholder="e.g. 104.25"></b-form-input>
+                      <b-form-input type="text" v-model.trim="value" :disabled="!hasValue" placeholder="e.g. 104.25"></b-form-input>
                     </b-form-group>
                     <div class="text-center">
                       <b-button-group>
-                        <b-button size="sm" @click="updateValue()" variant="primary" v-bind:disabled="owner === coinbase ? false : 'disabled'" v-b-popover.hover="'Update value'">Update Value</b-button>
+                        <b-button size="sm" @click="updateValue()" variant="primary" v-b-popover.hover="'Update value'">Update Value</b-button>
                       </b-button-group>
-                      <b-card-text v-if="owner !== coinbase">
-                        Price Feed values can only be updated by the contract owner <b-link :href="explorer + 'address/' + coinbase" class="card-link" target="_blank">{{ owner }}</b-link>
-                      </b-card-text>
                     </div>
                   </b-form>
                 </b-card-body>
@@ -40,7 +37,7 @@ const PriceFeedExplorer = {
           <br />
           <priceFeed></priceFeed>
           <br />
-          <vanillaOptino></vanillaOptino>
+          <vanillaOptinoFactory></vanillaOptinoFactory>
           <!--
           <br />
           <tokenContract></tokenContract>

@@ -454,7 +454,7 @@ function printPriceFeedContractDetails() {
   if (_priceFeedContractAddress != null && _priceFeedContractAbi != null) {
     var contract = web3.eth.contract(_priceFeedContractAbi).at(_priceFeedContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
-    console.log("RESULT: priceFeed.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
+    // console.log("RESULT: priceFeed.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
     var peek = contract.peek.call();
     console.log("RESULT: priceFeed.peek=" + contract.peek.call());
     console.log("RESULT: priceFeed.value=" + contract.value.call().shift(-18) + " ETH/USD");
@@ -463,12 +463,12 @@ function printPriceFeedContractDetails() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _priceFeedFromBlock, toBlock: latestBlock });
-    i = 0;
-    ownershipTransferredEvents.watch(function (error, result) {
-      console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    ownershipTransferredEvents.stopWatching();
+    // var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _priceFeedFromBlock, toBlock: latestBlock });
+    // i = 0;
+    // ownershipTransferredEvents.watch(function (error, result) {
+    //   console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    // });
+    // ownershipTransferredEvents.stopWatching();
 
     var setValueEvents = contract.SetValue({}, { fromBlock: _priceFeedFromBlock, toBlock: latestBlock });
     i = 0;
