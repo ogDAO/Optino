@@ -10,66 +10,172 @@ const VanillaOptinoExplorer = {
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.factoryConfig variant="outline-info">Factory Config</b-button>
               </b-card-header>
-              <b-collapse id="factoryConfig" visible class="border-0">
+              <b-collapse id="factoryConfig" class="border-0">
                 <b-card-body>
                   <b-form>
+
                     <b-row v-for="(config, index) in configData" v-bind:key="index">
-                      <b-col>
-                        <b-row>
-                          <b-col colspan="2" class="small truncate">
-                            Config {{ config.index }} - <em>{{ config.description }}</em>
-                          </b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• key</b-col>
-                          <b-col class="small truncate">{{ config.configKey }}</b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• baseToken</b-col>
-                          <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.baseToken" class="card-link" target="_blank">{{ config.baseToken }}</b-link></b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• quoteToken</b-col>
-                          <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.quoteToken" class="card-link" target="_blank">{{ config.quoteToken }}</b-link></b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• priceFeed</b-col>
-                          <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.priceFeed" class="card-link" target="_blank">{{ config.priceFeed }}</b-link></b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• maxTerm</b-col>
-                          <b-col class="small truncate">{{ config.maxTermString }} ({{ config.maxTerm }}s)</b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• fee</b-col>
-                          <b-col class="small truncate">{{ config.fee.shift(-16) }}%</b-col>
-                        </b-row>
-                        <b-row>
-                          <b-col cols="4" class="small truncate">• timestamp</b-col>
-                          <b-col class="small truncate">{{ new Date(config.timestamp*1000).toLocaleString() }}</b-col>
-                        </b-row>
-                      </b-col>
+                      <b-card no-body class="mb-1 w-100">
+                        <b-card-header header-tag="header" class="p-1">
+                          <b-button href="#" v-b-toggle="'factoryConfig-' + index" variant="outline-info">Config {{ config.index }} - {{ config.description }}</b-button>
+                        </b-card-header>
+                        <b-collapse :id="'factoryConfig-' + index" visible class="border-0">
+                          <b-card-body>
+                            <b-form-group label-cols="3" label="key">
+                              <b-form-input type="text" v-model.trim="config.configKey" readonly></b-form-input>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="baseToken">
+                              <b-input-group>
+                                <b-form-input type="text" v-model.trim="config.baseToken" readonly></b-form-input>
+                                <b-input-group-append>
+                                  <b-button :href="explorer + 'token/' + config.baseToken" target="_blank" variant="outline-info">🔗</b-button>
+                                </b-input-group-append>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="quoteToken">
+                              <b-input-group>
+                                <b-form-input type="text" v-model.trim="config.quoteToken" readonly></b-form-input>
+                                <b-input-group-append>
+                                  <b-button :href="explorer + 'token/' + config.quoteToken" target="_blank" variant="outline-info">🔗</b-button>
+                                </b-input-group-append>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="priceFeed">
+                              <b-input-group>
+                                <b-form-input type="text" v-model.trim="config.priceFeed" readonly></b-form-input>
+                                <b-input-group-append>
+                                  <b-button :href="explorer + 'address/' + config.priceFeed + '#code'" target="_blank" variant="outline-info">🔗</b-button>
+                                </b-input-group-append>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="maxTerm" description="2592000 = 30d * 24h * 60m * 60s">
+                              <b-input-group append="seconds">
+                                <b-form-input type="text" v-model.trim="config.maxTerm.toString()" readonly></b-form-input>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="fee">
+                              <b-input-group append="%">
+                                <b-form-input type="text" v-model.trim="config.fee.shift(-16).toString()" readonly></b-form-input>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="description">
+                              <b-form-input type="text" v-model.trim="config.description" readonly></b-form-input>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label="timestamp" :description="new Date(config.timestamp*1000).toLocaleString()">
+                              <b-form-input type="text" v-model.trim="config.timestamp.toString()" readonly></b-form-input>
+                              <!-- <b-form-input type="datetime-local" v-model.trim="new Date(config.timestamp*1000).toISOString().substring(0, 22)"></b-form-input> -->
+                            </b-form-group>
+                          </b-card-body>
+                        </b-collapse>
+                      </b-card>
                     </b-row>
                   </b-form>
                 </b-card-body>
               </b-collapse>
 
 
+              <!-- mintOptinoTokens(baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens, uiFeeAccount -->
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.mintOptino variant="outline-info">Mint Optino</b-button>
               </b-card-header>
               <b-collapse id="mintOptino" visible class="border-0">
                 <b-card-body>
                   <b-form>
-                    <b-form-group label="Config: " label-cols="4">
-                      <b-form-select v-model="selectedConfig" :options="configOptions" size="sm" class="mt-3">></b-form-select>
+                    <b-form-group label="Config: " label-cols="3" :description="configKey == '' ? 'Select a Config (or Series below)' : 'Config key ' + configKey">
+                      <b-form-select v-model="configKey" :options="configOptions" v-on:change="configSelected"></b-form-select>
                     </b-form-group>
-                    <b-form-group label="Expired: " label-cols="4">
+                    <b-form-group label="Expired: " label-cols="3">
                       <b-form-checkbox v-model="expired">Display</b-form-checkbox>
                     </b-form-group>
-                    <b-form-group label="Series: " label-cols="4">
-                      <b-form-select v-model="selectedSeries" :options="seriesOptions" size="sm" class="mt-3">></b-form-select>
+                    <b-form-group label="Series: " label-cols="3">
+                      <b-input-group>
+                        <b-form-select v-model="selectedSeries" :options="seriesOptions"></b-form-select>
+                        <b-input-group-append>
+                          <b-button @click="$bvModal.show('bv-modal-example')">Select</b-button>
+                          </b-input-group-append>
+                        </b-input-group>
                     </b-form-group>
+                    <b-modal id="bv-modal-example" hide-footer>
+                      <template v-slot:modal-title>
+                        Select <code>baseToken</code>
+                      </template>
+                      <div class="d-block text-center">
+                        <b-form-group label="Series: " label-cols="3">
+                          <b-form-select v-model="selectedSeries" :options="tokenOptions" size="sm" class="mt-3">></b-form-select>
+                        </b-form-group>
+                        <h3>Hello From This Modal!</h3>
+                      </div>
+                      <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
+                    </b-modal>
+
+                    <b-form-group label-cols="3" label="baseToken">
+                      <b-input-group>
+                        <b-form-select v-model="baseToken" :options="tokenOptions"></b-form-select>
+                        <b-input-group-append>
+                          <b-button v-bind:disabled="(baseToken !== '' && baseToken != '0x0000000000000000000000000000000000000000') ? false : 'disabled'" :href="explorer + 'token/' + baseToken" target="_blank" variant="outline-info">🔗</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+
+                    <b-form-group label-cols="3" label="quoteToken">
+                      <b-input-group>
+                        <b-form-select v-model="quoteToken" :options="tokenOptions"></b-form-select>
+                        <b-input-group-append>
+                          <b-button v-bind:disabled="(quoteToken !== '' && quoteToken != '0x0000000000000000000000000000000000000000') ? false : 'disabled'" :href="explorer + 'token/' + quoteToken" target="_blank" variant="outline-info">🔗</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="priceFeed">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="priceFeed" readonly></b-form-input>
+                        <b-input-group-append>
+                          <b-button v-bind:disabled="priceFeed !== '' ? false : 'disabled'" :href="explorer + 'address/' + priceFeed + '#readContract'" target="_blank" variant="outline-info">🔗</b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="callPut">
+                      <b-form-radio-group id="radio-group-callput" v-model="callPut">
+                        <b-form-radio value="0">Call</b-form-radio>
+                        <b-form-radio value="1">Put</b-form-radio>
+                      </b-form-radio-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="expiry">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="expiry"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="strike">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="strike"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="baseTokens">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="baseTokens"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+
+                    <!--
+                    if (call) {
+                      if (eth) {
+                        need to send value
+                      } else {
+                        need to have baseTokens approved
+                      }
+                      }
+                    } else {
+
+                    }
+                    -->
+
+
+
+                    <b-form-group label-cols="3" label="ethers">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="ethers"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+
                   </b-form>
                 </b-card-body>
               </b-collapse>
@@ -141,18 +247,25 @@ const VanillaOptinoExplorer = {
     return {
       expired: false,
 
-      selectedConfig: null,
       selectedSeries: null,
+
+      // mintOptinoTokens(baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens, uiFeeAccount
+      configKey: "",
+      baseToken: "",
+      quoteToken: "",
+      priceFeed: "",
+      expiry: parseInt(new Date().getTime()/1000) + (60 * 60 * 24 * 30),
 
       callPut: 0,
       callPutOptions: [
-        { value: 0, text: '0 Call' },
-        { value: 1, text: '1 Put' },
+        { value: 0, text: 'Call' },
+        { value: 1, text: 'Put' },
       ],
       strike: 200,
       spot: 250,
       baseTokens: 10,
       baseDecimals: 18,
+      ethers: "",
     }
   },
   computed: {
@@ -180,7 +293,7 @@ const VanillaOptinoExplorer = {
     configOptions() {
       var configData = store.getters['vanillaOptinoFactory/configData'];
       var results = [];
-      results.push({ value: null, text: "(none)" });
+      results.push({ value: "", text: "(select a Config or a Series)" });
       configData.forEach(function(e) {
         results.push({ value: e.configKey, text: e.description });
       });
@@ -198,10 +311,44 @@ const VanillaOptinoExplorer = {
       });
       return results;
     },
+    tokenOptions() {
+      var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
+      var results = [];
+      results.push({ value: "", text: "(select Config or Series above)", disabled: true });
+
+      Object.keys(tokenData).forEach(function(e) {
+        console.error(e + " => " + JSON.stringify(tokenData[e]));
+        var symbol = tokenData[e].symbol;
+        var name = tokenData[e].name;
+        var decimals = tokenData[e].decimals;
+        if (symbol !== undefined) {
+          results.push({ value: e, text: symbol + " '" + name + "' " + decimals, disabled: true });
+        } else {
+          results.push({ value: e, text: "Token at address " + e, disabled: true });
+        }
+      });
+      return results;
+    },
   },
   methods: {
     calculatePayoff() {
       this.$store.commit('vanillaOptinoExplorer/calculatePayoff', { callPut: this.callPut, strike: this.strike, spot: this.spot, baseTokens: this.baseTokens, baseDecimals: this.baseDecimals });
+    },
+    configSelected(config) {
+      logDebug("configSelected", "configSelected(" +JSON.stringify(config) + ")");
+      if (config != null) {
+        var configData = store.getters['vanillaOptinoFactory/configData'];
+        var t = this;
+        configData.forEach(function(e) {
+          if (config == e.configKey) {
+            logInfo("configSelected", "Applying " +JSON.stringify(e));
+            t.baseToken = e.baseToken;
+            t.quoteToken = e.quoteToken;
+            t.priceFeed = e.priceFeed;
+          }
+        });
+      }
+      event.preventDefault();
     },
   },
 };

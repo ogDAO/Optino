@@ -46,13 +46,13 @@ cp $SOURCEDIR/$WETH9SOL .
 # echo "--- Differences $SOURCEDIR/*.sol *.sol ---" | tee -a $TEST1OUTPUT
 # echo "$DIFFS1" | tee -a $TEST1OUTPUT
 
-solc_0.6.2 --version | tee -a $TEST1OUTPUT
+solc_0.6.3 --version | tee -a $TEST1OUTPUT
 
-echo "var wethOutput=`solc_0.6.2 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
-echo "var tokenOutput=`solc_0.6.2 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
-echo "var priceFeedOutput=`solc_0.6.2 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
-echo "var priceFeedAdaptorOutput=`solc_0.6.2 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDADAPTORFLATTENED`;" > $PRICEFEEDADAPTORJS
-echo "var vanillaOptinoFactoryOutput=`solc_0.6.2 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $VANILLAOPTINOFACTORYFLATTENED`;" > $VANILLAOPTINOFACTORYJS
+echo "var wethOutput=`solc_0.6.3 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
+echo "var tokenOutput=`solc_0.6.3 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
+echo "var priceFeedOutput=`solc_0.6.3 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
+echo "var priceFeedAdaptorOutput=`solc_0.6.3 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDADAPTORFLATTENED`;" > $PRICEFEEDADAPTORJS
+echo "var vanillaOptinoFactoryOutput=`solc_0.6.3 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $VANILLAOPTINOFACTORYFLATTENED`;" > $VANILLAOPTINOFACTORYJS
 # echo "var daiOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
 # ../scripts/solidityFlattener.pl --contractsdir=../contracts --mainsol=$TOKENFACTORYSOL --outputsol=$TOKENFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
 
@@ -376,10 +376,10 @@ printTokenContractDetails(0);
 console.log("RESULT: ");
 printTokenContractDetails(1);
 console.log("RESULT: ");
-// printTokenContractDetails(2);
-// console.log("RESULT: ");
-// printTokenContractDetails(3);
-// console.log("RESULT: ");
+printTokenContractDetails(2);
+console.log("RESULT: ");
+printTokenContractDetails(3);
+console.log("RESULT: ");
 
 
 if (false) {

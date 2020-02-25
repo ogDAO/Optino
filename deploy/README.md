@@ -42,7 +42,9 @@ maxTerm 30d * 24h * 60m * 60s = 2592000 s
 fee new BigNumber("1").shift(15) = 1000000000000000 // 0.1%, so 1 ETH = 0.001 fee
 description ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator
 
-0x0000000000000000000000000000000000000000, 0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA, 0xbf4baa871f871c94659de48e32a0faab8991d866, 18, 18, 18, "2592000", "1000000000000000", "ETH/DAI(WEENUS) MakerDAO ETH/DAI PriceFeed Simulator"
+0x0000000000000000000000000000000000000000, 0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA, 0xbf4baa871f871c94659de48e32a0faab8991d866, 18, 18, 18, "2592000", "1000000000000000", "ETH/DAI(WEENUS) MakerDAO PriceFeed Simulator"
+
+0xb603cea165119701b58d56d10d2060fbfb3efad8, 0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA, 0xbf4baa871f871c94659de48e32a0faab8991d866, 18, 18, 18, "2592000", "1000000000000000", "WETH/DAI(WEENUS) MakerDAO PriceFeed Simulator"
 
 https://ropsten.etherscan.io/address/0xcaa45227f1fdfcf17584ea54f39bef6012d9ef0f#readContract
 
@@ -83,3 +85,8 @@ Factory https://ropsten.etherscan.io/address/0x6957f467d606099b22a3fc275d1d762c9
 OptinoToken https://ropsten.etherscan.io/address/0xc3b248258eec23707e52ee6e78139a2cef2bf48d#code
 
 Factory https://ropsten.etherscan.io/address/0xea9478d977d9d722bc808e3662c94eb61c29e591#code
+
+## v0.94-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x42146c2F120d4E66500Af4ACb8Eb321955ff9e2f#code
+
+Factory https://ropsten.etherscan.io/address/0x688e276184432C68682feb9Eb4558Fcc844E18d2#code

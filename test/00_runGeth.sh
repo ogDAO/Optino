@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm -f ./testchain/geth/chaindata/ancient/*
+rmdir ./testchain/geth/chaindata/ancient
 rm -f ./testchain/geth/chaindata/*
 
 # geth --datadir ./testchain init genesis.json
