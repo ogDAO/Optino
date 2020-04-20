@@ -1,15 +1,15 @@
 pragma solidity ^0.6.3;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah's Vanilla Optino 📈 + Factory v0.94-pre-release
+// BokkyPooBah's Vanilla Optino ⚛️ + Factory v0.96-pre-release
 //
 // Status: Work in progress
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x42146c2F120d4E66500Af4ACb8Eb321955ff9e2f
-// BokkyPooBahsVanillaOptinoFactory deployment on Ropsten: 0x688e276184432C68682feb9Eb4558Fcc844E18d2
+// OptinoToken deployment on Ropsten:
+// BokkyPooBahsVanillaOptinoFactory deployment on Ropsten:
 //
 // https://optino.xyz
 //
@@ -352,10 +352,10 @@ library Utils {
 library SafeMath {
     function _add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c >= a);
+        require(c >= a, "SafeMath._add: Overflow");
     }
     function _sub(uint a, uint b) internal pure returns (uint c) {
-        require(b <= a);
+        require(b <= a, "SafeMath._sub: Underflow");
         c = a - b;
     }
 }
@@ -372,12 +372,12 @@ contract Owned {
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
     modifier onlyOwner {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Owned.onlyOwner: Not owner");
         _;
     }
 
     function init(address _owner) internal {
-        require(!initialised);
+        require(!initialised, "Owned.init: Already initialised");
         owner = address(uint160(_owner));
         initialised = true;
     }
@@ -385,7 +385,7 @@ contract Owned {
         newOwner = _newOwner;
     }
     function acceptOwnership() public {
-        require(msg.sender == newOwner);
+        require(msg.sender == newOwner, "Owned.acceptOwnership: Not new owner");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
         newOwner = address(0);
@@ -429,7 +429,7 @@ library ConfigLibrary {
     event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
 
     function _init(Data storage self) internal {
-        require(!self.initialised);
+        require(!self.initialised, "ConfigLibrary._init: Cannot re-initialise");
         self.initialised = true;
     }
     function _generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
@@ -439,20 +439,20 @@ library ConfigLibrary {
         return self.entries[key].timestamp > 0;
     }
     function _add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint fee, string memory description) internal {
-        require(baseToken != quoteToken, "Config.add: baseToken cannot be the same as quoteToken");
-        require(priceFeed != address(0), "Config.add: priceFeed cannot be null");
-        require(maxTerm > 0, "Config.add: maxTerm must be > 0");
+        require(baseToken != quoteToken, "ConfigLibrary.add: baseToken cannot be the same as quoteToken");
+        require(priceFeed != address(0), "ConfigLibrary.add: priceFeed cannot be null");
+        require(maxTerm > 0, "ConfigLibrary.add: maxTerm must be > 0");
         bytes memory _description = bytes(description);
-        require(_description.length <= 48, "Config.add: description length must be <= 48 characters");
+        require(_description.length <= 35, "ConfigLibrary.add: description length must be <= 35 characters");
         bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
-        require(self.entries[key].timestamp == 0, "Config.add: Cannot add duplicate");
+        require(self.entries[key].timestamp == 0, "ConfigLibrary.add: Cannot add duplicate");
         self.index.push(key);
         self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description);
         emit ConfigAdded(key, baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description);
     }
     function _remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
         bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
-        require(self.entries[key].timestamp > 0);
+        require(self.entries[key].timestamp > 0, "ConfigLibrary:_remove: Invalid key");
         uint removeIndex = self.entries[key].index;
         emit ConfigRemoved(key, baseToken, quoteToken, priceFeed);
         uint lastIndex = self.index.length - 1;
@@ -467,7 +467,7 @@ library ConfigLibrary {
     function _update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
         bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
         Config storage _value = self.entries[key];
-        require(_value.timestamp > 0);
+        require(_value.timestamp > 0, "ConfigLibrary._update: Invalid key");
         _value.timestamp = block.timestamp;
         _value.maxTerm = maxTerm;
         _value.fee = fee;
@@ -509,7 +509,7 @@ library SeriesLibrary {
     event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint spot);
 
     function _init(Data storage self) internal {
-        require(!self.initialised);
+        require(!self.initialised, "SeriesLibrary._init: Cannot re-initialise");
         self.initialised = true;
     }
     function _generateKey(bytes32 configKey, uint callPut, uint expiry, uint strike) internal pure returns (bytes32 hash) {
@@ -528,14 +528,14 @@ library SeriesLibrary {
         require(optinoCollateralToken != address(0), "SeriesLibrary.add: optinoCollateralToken cannot be null");
 
         bytes32 key = _generateKey(configKey, callPut, expiry, strike);
-        require(self.entries[key].timestamp == 0, "Series.add: Cannot add duplicate");
+        require(self.entries[key].timestamp == 0, "SeriesLibrary.add: Cannot add duplicate");
         self.index.push(key);
         self.entries[key] = Series(block.timestamp, self.index.length - 1, key, configKey, callPut, expiry, strike, optinoToken, optinoCollateralToken, 0);
         emit SeriesAdded(key, configKey, callPut, expiry, strike, optinoToken, optinoCollateralToken);
     }
     function _remove(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike) internal {
         bytes32 key = _generateKey(configKey, callPut, expiry, strike);
-        require(self.entries[key].timestamp > 0);
+        require(self.entries[key].timestamp > 0, "SeriesLibrary._remove: Invalid key");
         uint removeIndex = self.entries[key].index;
         emit SeriesRemoved(key, configKey, callPut, expiry, strike);
         uint lastIndex = self.index.length - 1;
@@ -550,17 +550,17 @@ library SeriesLibrary {
     // function _update(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, string memory description) internal {
     //     bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
     //     Series storage _value = self.entries[key];
-    //     require(_value.timestamp > 0);
+    //     require(_value.timestamp > 0, "SeriesLibrary._update: Invalid key");
     //     _value.timestamp = block.timestamp;
     //     _value.description = description;
     //     emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
     // }
     function _updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
-        require(_value.timestamp > 0);
-        require(_value.expiry <= block.timestamp);
-        require(_value.spot == 0);
-        require(spot > 0);
+        require(_value.timestamp > 0, "SeriesLibrary._updateSpot: Invalid key");
+        require(_value.expiry <= block.timestamp, "SeriesLibrary._updateSpot: Not expired yet");
+        require(_value.spot == 0, "SeriesLibrary._updateSpot: spot cannot be re-set");
+        require(spot > 0, "SeriesLibrary._updateSpot: spot cannot be 0");
         _value.timestamp = block.timestamp;
         _value.spot = spot;
         emit SeriesSpotUpdated(key, _value.configKey, _value.callPut, _value.expiry, _value.strike, spot);
@@ -803,7 +803,7 @@ contract OptinoToken is Token {
     }
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
-        require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
+        require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
         balances[tokenOwner] = balances[tokenOwner]._sub(tokens);
         _totalSupply = _totalSupply._sub(tokens);
         emit Transfer(tokenOwner, address(0), tokens);
@@ -1150,12 +1150,12 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     }
     function _mintOptinoTokens(OptinoData memory optinoData, address uiFeeAccount) internal returns (address _optinoToken, address _optionCollateralToken) {
         // Check parameters not checked in SeriesLibrary and ConfigLibrary
-        require(optinoData.expiry > block.timestamp, "mintOptinoTokens: expiry must be in the future");
-        require(optinoData.baseTokens > 0, "mintOptinoTokens: baseTokens must be non-zero");
+        require(optinoData.expiry > block.timestamp, "_mintOptinoTokens: expiry must be in the future");
+        require(optinoData.baseTokens > 0, "_mintOptinoTokens: baseTokens must be non-zero");
 
         // Check config registered
         ConfigLibrary.Config memory config = _getConfig(optinoData);
-        require(config.timestamp > 0, "mintOptinoTokens: invalid config");
+        require(config.timestamp > 0, "_mintOptinoTokens: Invalid config");
 
         SeriesLibrary.Series storage series = _getSeries(optinoData);
 
@@ -1163,7 +1163,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         OptinoToken optinoCollateralToken;
         // Series has not been created yet
         if (series.timestamp == 0) {
-            require(optinoData.expiry < (block.timestamp + config.maxTerm), "mintOptinoTokens: expiry > config.maxTerm");
+            require(optinoData.expiry < (block.timestamp + config.maxTerm), "_mintOptinoTokens: expiry > config.maxTerm");
             optinoToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             optinoCollateralToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             addSeries(optinoData, config.key, address(optinoToken), address(optinoCollateralToken));
@@ -1186,23 +1186,23 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 devFee = devFee - uiFee;
             }
             if (optinoData.baseToken == ETH) {
-                require(msg.value >= (optinoData.baseTokens + uiFee + devFee), "mintOptinoTokens: insufficient ETH sent");
-                payable(optinoCollateralToken).transfer(optinoData.baseTokens);
+                require(msg.value >= (optinoData.baseTokens + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
+                require(payable(optinoCollateralToken).send(optinoData.baseTokens), "_mintOptinoTokens: optinoCollateralToken.send(baseTokens) failure");
                 if (uiFee > 0) {
-                    payable(uiFeeAccount).transfer(uiFee);
+                    require(payable(uiFeeAccount).send(uiFee), "_mintOptinoTokens: uiFeeAccount.send(uiFee) failure");
                 }
                 // Dev fee left in this factory
                 uint refund = msg.value - optinoData.baseTokens - uiFee - devFee;
                 if (refund > 0) {
-                    msg.sender.transfer(refund);
+                    require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
                 }
             } else {
-                require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens));
+                require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, optinoCollateralToken, baseTokens) failure");
                 if (uiFee > 0) {
-                    require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, uiFeeAccount, uiFee));
+                    require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
                 }
                 if (devFee > 0) {
-                    require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(this), devFee));
+                    require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, factory, devFee) failure");
                 }
             }
         } else {
@@ -1214,23 +1214,23 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 devFee = devFee - uiFee;
             }
             if (optinoData.quoteToken == ETH) {
-                require(msg.value >= (quoteTokens + uiFee + devFee), "mintOptinoTokens: insufficient ETH sent");
-                payable(optinoCollateralToken).transfer(quoteTokens);
+                require(msg.value >= (quoteTokens + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
+                require(payable(optinoCollateralToken).send(quoteTokens), "_mintOptinoTokens: optinoCollateralToken.send(quoteTokens) failure");
                 if (uiFee > 0) {
-                    payable(uiFeeAccount).transfer(uiFee);
+                    require(payable(uiFeeAccount).send(uiFee), "_mintOptinoTokens: uiFeeAccount.send(uiFee) failure");
                 }
                 // Dev fee left in this factory
                 uint refund = msg.value - quoteTokens - uiFee - devFee;
                 if (refund > 0) {
-                    msg.sender.transfer(refund);
+                    require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
                 }
             } else {
-                require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens));
+                require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, optinoCollateralToken, quoteTokens) failure");
                 if (uiFee > 0) {
-                    require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, uiFeeAccount, uiFee));
+                    require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
                 }
                 if (devFee > 0) {
-                    require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(this), devFee));
+                    require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, factory, devFee) failure");
                 }
             }
         }

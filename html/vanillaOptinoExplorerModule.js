@@ -13,7 +13,6 @@ const VanillaOptinoExplorer = {
               <b-collapse id="factoryConfig" class="border-0">
                 <b-card-body>
                   <b-form>
-
                     <b-row v-for="(config, index) in configData" v-bind:key="index">
                       <b-card no-body class="mb-1 w-100">
                         <b-card-header header-tag="header" class="p-1">
@@ -95,6 +94,7 @@ const VanillaOptinoExplorer = {
                           </b-input-group-append>
                         </b-input-group>
                     </b-form-group>
+
                     <b-modal id="bv-modal-example" hide-footer>
                       <template v-slot:modal-title>
                         Select <code>baseToken</code>
@@ -112,7 +112,7 @@ const VanillaOptinoExplorer = {
                       <b-input-group>
                         <b-form-select v-model="baseToken" :options="tokenOptions"></b-form-select>
                         <b-input-group-append>
-                          <b-button v-bind:disabled="(baseToken !== '' && baseToken != '0x0000000000000000000000000000000000000000') ? false : 'disabled'" :href="explorer + 'token/' + baseToken" target="_blank" variant="outline-info">🔗</b-button>
+                          <b-button v-bind:disabled="(baseToken !== '' && baseToken != address0) ? false : 'disabled'" :href="explorer + 'token/' + baseToken" target="_blank" variant="outline-info">🔗</b-button>
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
@@ -121,7 +121,7 @@ const VanillaOptinoExplorer = {
                       <b-input-group>
                         <b-form-select v-model="quoteToken" :options="tokenOptions"></b-form-select>
                         <b-input-group-append>
-                          <b-button v-bind:disabled="(quoteToken !== '' && quoteToken != '0x0000000000000000000000000000000000000000') ? false : 'disabled'" :href="explorer + 'token/' + quoteToken" target="_blank" variant="outline-info">🔗</b-button>
+                          <b-button v-bind:disabled="(quoteToken !== '' && quoteToken != address0) ? false : 'disabled'" :href="explorer + 'token/' + quoteToken" target="_blank" variant="outline-info">🔗</b-button>
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
@@ -133,13 +133,45 @@ const VanillaOptinoExplorer = {
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
+
+                    <b-form-group label-cols="3" label="baseDecimals">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="baseDecimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="quoteDecimals">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="quoteDecimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="rateDecimals">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="rateDecimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="maxTerm">
+                      <b-input-group append="seconds">
+                        <b-form-input type="text" v-model.trim="maxTerm" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+
+                    <b-form-group label-cols="3" label="fee">
+                      <b-input-group append="%">
+                        <b-form-input type="text" v-model.trim="fee" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="description">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="description" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
                     <b-form-group label-cols="3" label="callPut">
                       <b-form-radio-group id="radio-group-callput" v-model="callPut">
                         <b-form-radio value="0">Call</b-form-radio>
                         <b-form-radio value="1">Put</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="expiry">
+                    <b-form-group label-cols="3" label="expiry" :description="new Date(expiry*1000).toLocaleString()">
                       <b-input-group>
                         <b-form-input type="text" v-model.trim="expiry"></b-form-input>
                       </b-input-group>
@@ -147,6 +179,11 @@ const VanillaOptinoExplorer = {
                     <b-form-group label-cols="3" label="strike">
                       <b-input-group>
                         <b-form-input type="text" v-model.trim="strike"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="bound" description="Cap for Capped Call or Floor for Floored Put">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="bound"></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="baseTokens">
@@ -157,25 +194,59 @@ const VanillaOptinoExplorer = {
 
                     <!--
                     if (call) {
-                      if (eth) {
-                        need to send value
+                      if (baseToken == eth) {
+                        need to send value + fee
                       } else {
-                        need to have baseTokens approved
-                      }
+                        need to have baseTokens + fee approved
                       }
                     } else {
-
+                      if (quoteToken == eth) {
+                        need to send value + fee
+                      } else {
+                        need to have quoteTokens + fee approved
+                      }
                     }
                     -->
 
-
-
-                    <b-form-group label-cols="3" label="ethers">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="ethers"></b-form-input>
+                    <b-form-group label-cols="3" label="baseTokensPlusFee (ETH)" v-if="callPut == 0 && baseToken == address0">
+                      <b-input-group :append="tokenData[baseToken].symbol">
+                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="baseTokensPlusFee (Tokens)" v-if="callPut == 0 && baseToken != '' && baseToken != address0" :description="'Allowance ' + tokenData[baseToken].allowance.shift(-baseDecimals).toString()">
+                      <b-input-group :append="tokenData[baseToken].symbol">
+                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
                       </b-input-group>
                     </b-form-group>
 
+                    <b-form-group label-cols="3" label="quoteTokensPlusFee (ETH)" v-if="callPut == 1 && quoteToken == address0">
+                      <b-input-group :append="tokenData[quoteToken].symbol">
+                        <b-form-input type="text" v-model.trim="quoteTokensPlusFee"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="quoteTokensPlusFee (Tokens)" v-if="callPut == 1 && quoteToken != '' && quoteToken != address0" :description="'Allowance ' + tokenData[quoteToken].allowance.shift(-quoteDecimals).toString()">
+                      <b-input-group :append="tokenData[quoteToken].symbol">
+                        <b-form-input type="text" v-model.trim="quoteTokensPlusFee"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <div class="text-center">
+                      <b-button-group>
+                        <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
+                      </b-button-group>
+                    </div>
+                    <br />
+
+                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals"></payoff>
+
+                    <div>
+                      <!-- <apexchart type="line" height="350" :options="options" :series="series"></apexchart> -->
+                    </div>
+
+                    <!--
+                    <div id="chart">
+                    <apexchart width="500" type="bar" :options="options" :series="series"></apexchart>
+                    </div>
+                    -->
                   </b-form>
                 </b-card-body>
               </b-collapse>
@@ -211,10 +282,10 @@ const VanillaOptinoExplorer = {
                       <b-form-input type="text" v-model.trim="payoff" disabled></b-form-input>
                     </b-form-group>
                     <b-form-group label="collateralPayoff: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="collateralPayoff" disabled></b-form-input>
+                      <b-form-input type="text" v-model.trim="collateralPayoff.toString()" disabled></b-form-input>
                     </b-form-group>
                     <b-form-group label="totalPayoff: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="totalPayoff" disabled></b-form-input>
+                      <b-form-input type="text" v-model.trim="totalPayoff.toString()" disabled></b-form-input>
                     </b-form-group>
                   </b-form>
                 </b-card-body>
@@ -243,17 +314,50 @@ const VanillaOptinoExplorer = {
     </div>
   </div>
   `,
+  // components: {
+  //   apexchart: VueApexCharts,
+  // },
   data: function () {
     return {
+      options: {
+        chart: {
+          id: 'vuechart-example'
+        },
+        xaxis: {
+          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+        }
+      },
+      series: [{
+        name: 'series-1',
+        data: [30, 40, 45, 50, 49, 60, 70, 91]
+      }],
+
+      address0: "0x0000000000000000000000000000000000000000",
       expired: false,
 
       selectedSeries: null,
 
       // mintOptinoTokens(baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens, uiFeeAccount
+      // address baseToken;
+      // address quoteToken;
+      // address priceFeed;
+      // uint baseDecimals;
+      // uint quoteDecimals;
+      // uint rateDecimals;
+      // uint maxTerm;
+      // uint fee;
+      // string description;
+
       configKey: "",
       baseToken: "",
       quoteToken: "",
       priceFeed: "",
+      baseDecimals: "18",
+      quoteDecimals: "18",
+      rateDecimals: "18",
+      maxTerm: "0",
+      fee: "0",
+      description: "",
       expiry: parseInt(new Date().getTime()/1000) + (60 * 60 * 24 * 30),
 
       callPut: 0,
@@ -261,10 +365,10 @@ const VanillaOptinoExplorer = {
         { value: 0, text: 'Call' },
         { value: 1, text: 'Put' },
       ],
-      strike: 200,
-      spot: 250,
-      baseTokens: 10,
-      baseDecimals: 18,
+      strike: "200",
+      bound: "300",
+      spot: "250",
+      baseTokens: "10",
       ethers: "",
     }
   },
@@ -311,13 +415,16 @@ const VanillaOptinoExplorer = {
       });
       return results;
     },
+    tokenData() {
+      return store.getters['vanillaOptinoFactory/tokenData'];
+    },
     tokenOptions() {
       var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
       var results = [];
       results.push({ value: "", text: "(select Config or Series above)", disabled: true });
 
       Object.keys(tokenData).forEach(function(e) {
-        console.error(e + " => " + JSON.stringify(tokenData[e]));
+        // console.error(e + " => " + JSON.stringify(tokenData[e]));
         var symbol = tokenData[e].symbol;
         var name = tokenData[e].name;
         var decimals = tokenData[e].decimals;
@@ -328,6 +435,25 @@ const VanillaOptinoExplorer = {
         }
       });
       return results;
+    },
+    baseTokensPlusFee() {
+      if (this.callPut == 0) {
+        var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
+        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+        // TESTING
+        n = n.mul(new BigNumber("10"));
+        return n.shift(-this.baseDecimals).toString();
+      }
+      return 0;
+    },
+    quoteTokensPlusFee() {
+      if (this.callPut == 1) {
+        var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
+        n = n.mul(new BigNumber(this.strike).shift(this.rateDecimals));
+        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+        return n.shift(-this.baseDecimals).shift(-this.rateDecimals).toString();
+      }
+      return 0;
     },
   },
   methods: {
@@ -345,10 +471,57 @@ const VanillaOptinoExplorer = {
             t.baseToken = e.baseToken;
             t.quoteToken = e.quoteToken;
             t.priceFeed = e.priceFeed;
+            t.baseDecimals = e.baseDecimals.toString();
+            t.quoteDecimals = e.quoteDecimals.toString();
+            t.rateDecimals = e.rateDecimals.toString();
+            t.maxTerm = e.maxTerm.toString();
+            t.fee = e.fee.shift(-16).toString();
+            t.description = e.description;
           }
         });
       }
       event.preventDefault();
+    },
+    mintOptinos(event) {
+      logInfo("vanillaOptinoExplorer", "mintOptinos()");
+      this.$bvModal.msgBoxConfirm('Mint ' + this.baseTokens + ' optinos?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
+            // this.$store.commit('priceFeedExplorer/setValue', { value: this.value, hasValue: this.hasValue });
+            var factoryAddress = store.getters['vanillaOptinoFactory/address']
+            var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
+            // function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _optionCollateralToken) {
+            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
+            var value = this.baseToken == ADDRESS0 ? new BigNumber(this.baseTokensPlusFee).shift(18).toString() : "0";
+            logInfo("vanillaOptinoExplorer", "  value=" + value);
+            factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), new BigNumber(this.expiry).toString(), new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
+              if (!error) {
+                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+
+            event.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
     },
   },
 };

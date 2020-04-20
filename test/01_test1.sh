@@ -227,7 +227,7 @@ var vanillaOptinoFactoryContract = web3.eth.contract(vanillaOptinoFactoryAbi);
 // console.log("DATA: vanillaOptinoFactoryContract=" + JSON.stringify(vanillaOptinoFactoryContract));
 var vanillaOptinoFactoryTx = null;
 var vanillaOptinoFactoryAddress = null;
-var vanillaOptinoFactory = vanillaOptinoFactoryContract.new(vanillaOptinoAddress, {from: deployer, data: vanillaOptinoFactoryBin, gas: 4000000, gasPrice: defaultGasPrice},
+var vanillaOptinoFactory = vanillaOptinoFactoryContract.new(vanillaOptinoAddress, {from: deployer, data: vanillaOptinoFactoryBin, gas: 5000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -258,7 +258,7 @@ failIfTxStatusError(priceFeedTx, deployGroup1_Message + " - PriceFeed");
 printTxData("priceFeedTx", priceFeedTx);
 failIfTxStatusError(priceFeedAdaptorTx, deployGroup1_Message + " - PriceFeedAdaptor");
 printTxData("priceFeedAdaptorTx", priceFeedAdaptorTx);
-failIfTxStatusError(vanillaOptinoFactoryTx, deployGroup1_Message + " - VanillaOptino");
+failIfTxStatusError(vanillaOptinoFactoryTx, deployGroup1_Message + " - VanillaOptinoFactory");
 printTxData("vanillaOptinoFactoryTx", vanillaOptinoFactoryTx);
 console.log("RESULT: ");
 printPriceFeedContractDetails();
@@ -293,8 +293,8 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "WETH/DAI(WEENUS) MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/DAI(WEENUS) MakerDAO PriceFeed ", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = weth.approve(vanillaOptinoFactoryAddress, wethTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = dai.approve(vanillaOptinoFactoryAddress, daiTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {

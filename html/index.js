@@ -1,8 +1,11 @@
 Vue.use(Vuex);
+Vue.use(VueApexCharts);
 
+Vue.component('apexchart', VueApexCharts);
 Vue.component('connection', Connection);
 Vue.component('tokenContract', TokenContract);
 Vue.component('tokens', Tokens);
+Vue.component('payoff', Payoff);
 Vue.component('priceFeed', PriceFeed);
 Vue.component('vanillaOptinoFactory', VanillaOptinoFactory);
 Vue.component('dataService', DataService);
@@ -51,6 +54,7 @@ const store = new Vuex.Store({
     connection: connectionModule,
     tokenContract: tokenContractModule,
     tokens: tokensModule,
+    payoff: payoffModule,
     priceFeed: priceFeedModule,
     vanillaOptinoFactory: vanillaOptinoFactoryModule,
     dataService: dataServiceModule,

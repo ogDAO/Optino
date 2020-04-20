@@ -1,5 +1,15 @@
 # BokkyPooBah's Optino(tm) Crypto Options
 
+Status: Muddled work in progress
+
+# Risks
+
+* Bugs
+  * Smart contracts
+  * UI
+* Manipulation of the price oracles
+* Flash loans
+* Chain splits
 
 
 ## MakerDAO Price Feed
@@ -8,6 +18,12 @@ https://makerdao.com/en/feeds
 https://etherscan.io/address/0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763
 
 ## How Does This Work
+
+e.g. ETH/DAI
+
+### Call Optino
+
+### Put Optino
 
 <br />
 
@@ -141,7 +157,29 @@ library VanillaOptinoFormulae {
     }
 }
 
+<br />
 
+<hr />
+
+## Exotics
+
+### Capped Call
+
+```
+callPayoff = max(spot - strike, 0)
+cappedCallPayoff = max(min(spot, cap) - strike, 0)
+cappedCallPayoff = max(spot - strike, 0) - max(spot - cap, 0)
+```
+
+<br />
+
+### Floored Put
+
+```
+putPayoff = max(strike - spot, 0)
+flooredPutPayoff = max(strike - max(spot, floor), 0)
+flooredPutPayoff = max(strike - spot, 0) - max(floor - spot, 0)
+```
 
 
 <br />
