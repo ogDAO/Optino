@@ -29,11 +29,11 @@ const Payoff = {
     },
     spotStep: {
       type: [String, Number],
-      default: "25",
+      default: "100",
     },
     spotTo: {
       type: [String, Number],
-      default: "1000",
+      default: "500",
     },
   },
   data: function () {
@@ -49,11 +49,26 @@ const Payoff = {
       var totalPayoffInBaseToken = [];
       var payoffInQuoteToken = [];
 
-      for (var spot = parseFloat(this.spotFrom); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
-          payoffInBaseTokens.push(spot + 20);
-          collateralPayoffInBaseToken.push(spot + 40);
-          totalPayoffInBaseToken.push(spot + 80);
-          payoffInQuoteToken.push(spot * 10 + 100);
+      var callPut = parseInt(this.callPut);
+      var baseDecimals = parseInt(this.baseDecimals);
+      var rateDecimals = parseInt(this.rateDecimals);
+      var strike = new BigNumber(this.strike).shift(rateDecimals);
+      var bound = new BigNumber(this.bound).shift(rateDecimals);
+      var baseTokens = new BigNumber(this.baseTokens).shift(baseDecimals);
+      console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
+
+      var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
+      var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
+      var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
+      console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
+      for (spot = spotFrom.add(spotStep); spot.lt(spotTo); spot = spot.add(spotStep)) {
+        console.log("spot: " + spot.toString());
+        var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals);
+
+        payoffInBaseTokens.push(result[0].shift(-rateDecimals).toString());
+        collateralPayoffInBaseToken.push(result[1].shift(-rateDecimals).toString());
+        totalPayoffInBaseToken.push(result[2].shift(-rateDecimals).toString());
+        payoffInQuoteToken.push(result[3].shift(-rateDecimals).toString());
       }
 
       return [{
@@ -76,7 +91,7 @@ const Payoff = {
     },
     chartOptions() {
       var categories = [];
-      for (var spot = parseFloat(this.spotFrom); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
+      for (var spot = parseFloat(this.spotFrom) + parseFloat(this.spotStep); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
           categories.push(spot);
       }
       return {
