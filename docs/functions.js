@@ -189,3 +189,97 @@ function getTermFromSeconds(term) {
     return "";
   }
 }
+
+
+
+/*
+Function payoffInDeliveryToken( _
+  callPut As Integer, _
+  strike As LongLong, _
+  bound As LongLong, _
+  spot As LongLong, _
+  baseTokens As LongLong, _
+  baseDecimals As LongLong, _
+  rateDecimals As LongLong) As Variant
+
+    Dim v(1 To 6) As Variant
+
+    Dim collateralInQuoteToken As LongLong
+    Dim payoffInQuoteToken As LongLong
+    Dim collateralPayoffInQuoteToken As LongLong
+
+    Dim collateral As LongLong
+    Dim payoff As LongLong
+    Dim collateralPayoff As LongLong
+
+    If (callPut = 0) Then
+        If (bound <= strike) Then
+            collateralInQuoteToken = spot
+        Else
+            collateralInQuoteToken = (bound - strike) * spot / bound
+        End If
+
+        If (spot > strike) Then
+            If (bound > strike And spot > bound) Then
+                payoffInQuoteToken = bound - strike
+            Else
+                payoffInQuoteToken = spot - strike
+            End If
+        Else
+            payoffInQuoteToken = 0
+        End If
+
+        collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
+
+        collateral = collateralInQuoteToken * (10 ^ rateDecimals) / spot
+        payoff = payoffInQuoteToken * (10 ^ rateDecimals) / spot
+        collateralPayoff = collateralPayoffInQuoteToken * (10 ^ rateDecimals) / spot
+
+        collateral = collateral * baseTokens / (10 ^ baseDecimals)
+        payoff = payoff * baseTokens / (10 ^ baseDecimals)
+        collateralPayoff = collateralPayoff * baseTokens / (10 ^ baseDecimals)
+
+        v(1) = payoff
+        v(2) = collateralPayoff
+        v(3) = collateral
+
+        v(4) = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+        v(5) = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+        v(6) = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
+
+    Else
+        If (bound = 0 Or bound >= strike) Then
+            collateralInQuoteToken = strike
+        Else
+            collateralInQuoteToken = (strike - bound)
+        End If
+
+        If (spot < strike) Then
+            If (bound = 0 Or (bound > 0 And spot >= bound)) Then
+                payoffInQuoteToken = strike - spot
+            Else
+                payoffInQuoteToken = strike - bound
+            End If
+        Else
+            payoffInQuoteToken = 0
+        End If
+
+        collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
+
+        collateral = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
+        payoff = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+        collateralPayoff = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+
+        v(1) = payoff
+        v(2) = collateralPayoff
+        v(3) = collateral
+
+        v(4) = payoff * (10 ^ rateDecimals) / spot
+        v(5) = collateralPayoff * (10 ^ rateDecimals) / spot
+        v(6) = collateral * (10 ^ rateDecimals) / spot
+
+    End If
+
+    payoffInDeliveryToken = Application.Transpose(v)
+End Function
+*/
