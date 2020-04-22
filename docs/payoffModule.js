@@ -35,6 +35,14 @@ const Payoff = {
       type: [String, Number],
       default: "1000",
     },
+    baseSymbol: {
+      type: [String],
+      default: "ETH",
+    },
+    quoteSymbol: {
+      type: [String],
+      default: "DAI",
+    },
   },
   data: function () {
     return {
@@ -42,12 +50,35 @@ const Payoff = {
     }
   },
   computed: {
+    title() {
+      var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
+      var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
+      if (this.bound == 0) {
+        if (this.callPut == "0") {
+          return 'Vanilla Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike;
+        } else {
+          return 'Vanilla Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike;
+        }
+      } else {
+        if (this.callPut == "0") {
+          return 'Capped Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + ' with cap ' + this.bound;
+        } else {
+          return 'Floored Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + ' with floor ' + this.bound;
+        }
+      }
+    },
+    yaxis1Title() {
+      return this.callPut == "0" ? 'Delivery Token (base) ' + this.baseSymbol : 'Delivery Token (quote) ' + this.quoteSymbol;
+    },
+    yaxis2Title() {
+      return this.callPut == "0" ? 'Non-Delivery Token (quote) ' + this.quoteSymbol : 'Non-Delivery Token (base) ' + this.baseSymbol;
+    },
     series() {
       var categories = [];
-      var payoffInBaseTokens = [];
-      var collateralPayoffInBaseToken = [];
-      var totalPayoffInBaseToken = [];
-      var payoffInQuoteToken = [];
+      var payoffInDeliveryTokenSeries = [];
+      var collateralPayoffInDeliveryTokenSeries = [];
+      var totalPayoffInDeliveryTokenSeries = [];
+      var payoffInNonDeliveryTokenSeries = [];
 
       var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
       var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
@@ -65,35 +96,46 @@ const Payoff = {
         // console.log("spot: " + spot.toString());
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals);
 
-        payoffInBaseTokens.push(result[0] == null ? null : result[0].shift(-rateDecimals).toString());
-        collateralPayoffInBaseToken.push(result[1] == null ? null : result[1].shift(-rateDecimals).toString());
-        totalPayoffInBaseToken.push(result[2] == null ? null : result[2].shift(-rateDecimals).toString());
-        payoffInQuoteToken.push(result[3] == null ? null : result[3].shift(-rateDecimals).toString());
+        payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
+        collateralPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
+        totalPayoffInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));
+        payoffInNonDeliveryTokenSeries.push(result[3] == null ? null : result[3].shift(-rateDecimals));
       }
 
       return [{
-        name: 'PayoffInBaseToken',
+        name: 'PayoffInDeliveryToken',
         type: 'line',
-        data: payoffInBaseTokens,
+        data: payoffInDeliveryTokenSeries,
       }, {
-        name: 'CollateralPayoffInBaseToken',
+        name: 'CollateralPayoffInDeliveryToken',
         type: 'line',
-        data: collateralPayoffInBaseToken,
+        data: collateralPayoffInDeliveryTokenSeries,
       }, {
-        name: 'TotalPayoffInBaseToken',
+        name: 'TotalPayoffInDeliveryToken',
         type: 'line',
-        data: totalPayoffInBaseToken,
+        data: totalPayoffInDeliveryTokenSeries,
       }, {
-        name: 'PayoffInQuoteToken',
+        name: 'PayoffInNonDeliveryToken',
         type: 'line',
-        data: payoffInQuoteToken,
+        data: payoffInNonDeliveryTokenSeries,
       }];
     },
     chartOptions() {
       var categories = [];
-      for (var spot = parseFloat(this.spotFrom) + parseFloat(this.spotStep); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
+      var colors = [
+        '#008FFB',
+        '#00E396',
+        '#FEB019',
+        '#FF4560',
+        '#775DD0',
+        '#546E7A',
+        '#26a69a',
+        '#D10CE8'
+      ];
+      for (var spot = parseFloat(this.spotFrom); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
           categories.push(spot);
       }
+      console.log(JSON.stringify(VueApexCharts));
       return {
         chart: {
           height: 350,
@@ -104,10 +146,29 @@ const Payoff = {
           enabled: false,
         },
         stroke: {
-          width: [4, 1, 1, 3]
+          width: [4, 4, 4, 4]
+        },
+        colors: colors,
+        fill: {
+          type: 'solid',
+          opacity: [1, 0.5, 0.5, 1],
+        },
+        // fill: {
+        //   opacity: [0.85, 0.25, 1],
+        //   gradient: {
+        //     inverseColors: false,
+        //     shade: 'light',
+        //     type: "vertical",
+        //     opacityFrom: 0.85,
+        //     opacityTo: 0.55,
+        //     stops: [0, 100, 100, 100]
+        //   }
+        // },
+        markers: {
+          size: 1
         },
         title: {
-          text: this.callPut == "0" ? 'Call Optino Payoff' : 'Put Optino Payoff',
+          text: this.title,
           align: 'left',
           offsetX: 110,
         },
@@ -120,9 +181,9 @@ const Payoff = {
         },
         yaxis: [
           {
-            seriesName: 'PayoffInBaseToken',
+            seriesName: 'PayoffInDeliveryToken',
             title: {
-              text: 'BaseTokens',
+              text: this.yaxis1Title,
               style: {
                 color: '#008FFB',
               },
@@ -135,6 +196,9 @@ const Payoff = {
               color: '#008FFB',
             },
             labels: {
+              formatter: function (value) {
+                return value == null ? "0" : value.toFixed(2);
+              },
               style: {
                 colors: '#008FFB',
               }
@@ -144,29 +208,51 @@ const Payoff = {
             },
           },
           {
-            seriesName: 'PayoffInBaseToken',
+            seriesName: 'PayoffInDeliveryToken',
             show: false,
+            labels: {
+              formatter: function (value) {
+                return value == null ? "0" : value.toFixed(18);
+              },
+              style: {
+                colors: '#008FFB',
+              }
+            },
           },
           {
-            seriesName: 'PayoffInBaseToken',
+            seriesName: 'PayoffInDeliveryToken',
             show: false,
+            labels: {
+              formatter: function (value) {
+                return value == null ? "0" : value.toFixed(18);
+              },
+              style: {
+                colors: '#008FFB',
+              }
+            },
           },
           {
-            seriesName: 'PayoffInQuoteToken',
+            seriesName: 'PayoffInNonDeliveryToken',
             opposite: true,
             title: {
-              text: 'QuoteTokens',
+              text: this.yaxis2Title,
+              style: {
+                color: '#FF4560',
+              },
             },
             axisTicks: {
               show: true,
             },
             axisBorder: {
               show: true,
-              color: '#00E396'
+              color: '#FF4560'
             },
             labels: {
+              formatter: function (value) {
+                return value == null ? "0" : value.toFixed(2);
+              },
               style: {
-                colors: '#00E396',
+                colors: '#FF4560',
               }
             },
           }
