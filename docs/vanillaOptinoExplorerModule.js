@@ -236,17 +236,8 @@ const VanillaOptinoExplorer = {
                     </div>
                     <br />
 
-                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals"></payoff>
+                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals"></payoff> 
 
-                    <div>
-                      <!-- <apexchart type="line" height="350" :options="options" :series="series"></apexchart> -->
-                    </div>
-
-                    <!--
-                    <div id="chart">
-                    <apexchart width="500" type="bar" :options="options" :series="series"></apexchart>
-                    </div>
-                    -->
                   </b-form>
                 </b-card-body>
               </b-collapse>
@@ -314,24 +305,8 @@ const VanillaOptinoExplorer = {
     </div>
   </div>
   `,
-  // components: {
-  //   apexchart: VueApexCharts,
-  // },
   data: function () {
     return {
-      options: {
-        chart: {
-          id: 'vuechart-example'
-        },
-        xaxis: {
-          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-        }
-      },
-      series: [{
-        name: 'series-1',
-        data: [30, 40, 45, 50, 49, 60, 70, 91]
-      }],
-
       address0: "0x0000000000000000000000000000000000000000",
       expired: false,
 

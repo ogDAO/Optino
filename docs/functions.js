@@ -197,149 +197,97 @@ function payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDec
   var results = [];
 
   BigNumber.config({ DECIMAL_PLACES: 0 });
-  console.log("payoffInDeliveryToken - callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", spot: " + spot.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
+  // console.log("payoffInDeliveryToken - callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", spot: " + spot.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
 
   var collateralInQuoteToken;
   var payoffInQuoteToken;
   var collateralPayoffInQuoteToken;
 
-  // Dim collateral As LongLong
-  // Dim payoff As LongLong
-  // Dim collateralPayoff As LongLong
-
   if (callPut == 0) {
-    // If (bound <= strike) Then
-    //     collateralInQuoteToken = spot
-    // Else
-    //     collateralInQuoteToken = (bound - strike) * spot / bound
-    // End If
-    if (bound.lte(strike)) {
-      collateralInQuoteToken = spot;
-      console.log("bound <= strike: collateralInQuoteToken = spot = " + collateralInQuoteToken.toString());
-    } else {
-      collateralInQuoteToken = bound.sub(strike).mul(spot).div(bound);
-      console.log("bound > strike: collateralInQuoteToken = (bound - strike) * spot / bound = " + collateralInQuoteToken.toString());
-    }
-
-    //
-    // If (spot > strike) Then
-    //     If (bound > strike And spot > bound) Then
-    //         payoffInQuoteToken = bound - strike
-    //     Else
-    //         payoffInQuoteToken = spot - strike
-    //     End If
-    // Else
-    //     payoffInQuoteToken = 0
-    // End If
-    if (spot.gt(strike)) {
-      if (bound.gt(strike) && spot.gt(bound)) {
-        payoffInQuoteToken = bound.minus(strike);
+    if (spot.gt(0) && (bound.eq(0) || bound.gt(strike))) {
+      if (bound.lte(strike)) {
+        collateralInQuoteToken = spot;
+        // console.log("bound <= strike: collateralInQuoteToken = spot = " + collateralInQuoteToken.toString());
       } else {
-        payoffInQuoteToken = spot.minus(strike);
+        collateralInQuoteToken = bound.sub(strike).mul(spot).div(bound);
+        // console.log("bound > strike: collateralInQuoteToken = (bound - strike) * spot / bound = " + collateralInQuoteToken.toString());
       }
+
+      if (spot.gt(strike)) {
+        if (bound.gt(strike) && spot.gt(bound)) {
+          payoffInQuoteToken = bound.minus(strike);
+        } else {
+          payoffInQuoteToken = spot.minus(strike);
+        }
+      } else {
+        payoffInQuoteToken = new BigNumber("0");
+      }
+      // console.log("payoffInQuoteToken: " + payoffInQuoteToken);
+
+      collateralPayoffInQuoteToken = collateralInQuoteToken.minus(payoffInQuoteToken);
+      // console.log("collateralPayoffInQuoteToken: " + collateralPayoffInQuoteToken);
+
+      var collateral = collateralInQuoteToken.shift(rateDecimals).div(spot);
+      var payoff = payoffInQuoteToken.shift(rateDecimals).div(spot);
+      var collateralPayoff = collateralPayoffInQuoteToken.shift(rateDecimals).div(spot);
+      // console.log("collateral: " + collateral);
+
+      collateral = collateral.mul(baseTokens).shift(-baseDecimals);
+      payoff = payoff.mul(baseTokens).shift(-baseDecimals);
+      collateralPayoff = collateralPayoff.mul(baseTokens).shift(-baseDecimals);
+
+      results.push(payoff);
+      results.push(collateralPayoff);
+      results.push(collateral);
+      results.push(payoffInQuoteToken.mul(baseTokens).shift(-baseDecimals));
+      results.push(collateralPayoffInQuoteToken.mul(baseTokens).shift(-baseDecimals));
+      results.push(collateralInQuoteToken.mul(baseTokens).shift(-baseDecimals));
+
     } else {
-      payoffInQuoteToken = new BigNumber("0");
+      results = [null, null, null, null, null];
     }
-    console.log("payoffInQuoteToken: " + payoffInQuoteToken);
-    //
-    // collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
-    collateralPayoffInQuoteToken = collateralInQuoteToken.minus(payoffInQuoteToken);
-    console.log("collateralPayoffInQuoteToken: " + collateralPayoffInQuoteToken);
-    //
-    // collateral = collateralInQuoteToken * (10 ^ rateDecimals) / spot
-    // payoff = payoffInQuoteToken * (10 ^ rateDecimals) / spot
-    // collateralPayoff = collateralPayoffInQuoteToken * (10 ^ rateDecimals) / spot
-    var collateral = collateralInQuoteToken.shift(rateDecimals).div(spot);
-    var payoff = payoffInQuoteToken.shift(rateDecimals).div(spot);
-    var collateralPayoff = collateralPayoffInQuoteToken.shift(rateDecimals).div(spot);
-    console.log("collateral: " + collateral);
-    //
-    // collateral = collateral * baseTokens / (10 ^ baseDecimals)
-    // payoff = payoff * baseTokens / (10 ^ baseDecimals)
-    // collateralPayoff = collateralPayoff * baseTokens / (10 ^ baseDecimals)
-    collateral = collateral.mul(baseTokens).shift(-baseDecimals);
-    payoff = payoff.mul(baseTokens).shift(-baseDecimals);
-    collateralPayoff = collateralPayoff.mul(baseTokens).shift(-baseDecimals);
-    //
-    // v(1) = payoff
-    // v(2) = collateralPayoff
-    // v(3) = collateral
-    results.push(payoff);
-    results.push(collateralPayoff);
-    results.push(collateral);
-    //
-    // v(4) = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-    // v(5) = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-    // v(6) = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
-    results.push(payoffInQuoteToken.mul(baseTokens).shift(-baseDecimals));
 
   } else {
-    // If (bound = 0 Or bound >= strike) Then
-    //     collateralInQuoteToken = strike
-    // Else
-    //     collateralInQuoteToken = (strike - bound)
-    // End If
-    if (bound.eq(0) || bound.gt(strike)) {
-      collateralInQuoteToken = strike;
-    } else {
-      collateralInQuoteToken = strike.minus(bound);
-    }
-
-    //
-    // If (spot < strike) Then
-    //     If (bound = 0 Or (bound > 0 And spot >= bound)) Then
-    //         payoffInQuoteToken = strike - spot
-    //     Else
-    //         payoffInQuoteToken = strike - bound
-    //     End If
-    // Else
-    //     payoffInQuoteToken = 0
-    // End If
-    if (spot.lt(strike)) {
-      if (bound.eq(0) || (bound.gt(0) && spot.gte(bound))) {
-        payoffInQuoteToken = strike.minus(spot);
-        console.log("payoffInQuoteToken 1: " + payoffInQuoteToken);
+    // If (spot > 0 And (bound >= 0 And bound < strike)) Then
+    if (spot.gt(0) && (bound.gte(0) && bound.lt(strike))) {
+      if (bound.eq(0) || bound.gt(strike)) {
+        collateralInQuoteToken = strike;
       } else {
-        payoffInQuoteToken = strike.minus(bound);
-        console.log("payoffInQuoteToken 2: " + payoffInQuoteToken);
+        collateralInQuoteToken = strike.minus(bound);
       }
+
+      if (spot.lt(strike)) {
+        if (bound.eq(0) || (bound.gt(0) && spot.gte(bound))) {
+          payoffInQuoteToken = strike.minus(spot);
+          // console.log("payoffInQuoteToken 1: " + payoffInQuoteToken);
+        } else {
+          payoffInQuoteToken = strike.minus(bound);
+          // console.log("payoffInQuoteToken 2: " + payoffInQuoteToken);
+        }
+      } else {
+        payoffInQuoteToken = new BigNumber("0");
+        // console.log("payoffInQuoteToken 3: " + payoffInQuoteToken);
+      }
+
+      collateralPayoffInQuoteToken = collateralInQuoteToken.minus(payoffInQuoteToken);
+      // console.log("collateralPayoffInQuoteToken: " + collateralPayoffInQuoteToken);
+
+      collateral = collateralInQuoteToken.mul(baseTokens).shift(-baseDecimals);
+      payoff = payoffInQuoteToken.mul(baseTokens).shift(-baseDecimals);
+      collateralPayoff = collateralPayoffInQuoteToken.mul(baseTokens).shift(-baseDecimals);
+      // console.log("collateral: " + collateral);
+
+      results.push(payoff);
+      results.push(collateralPayoff);
+      results.push(collateral);
+      results.push(payoff.shift(rateDecimals).div(spot));
+      results.push(collateralPayoff.shift(rateDecimals).div(spot));
+      results.push(collateral.shift(rateDecimals).div(spot));
     } else {
-      payoffInQuoteToken = new BigNumber("0");
-      console.log("payoffInQuoteToken 3: " + payoffInQuoteToken);
+      results = [null, null, null, null, null];
     }
-    // console.log("payoffInQuoteToken: " + payoffInQuoteToken);
-
-    //
-    // collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
-    collateralPayoffInQuoteToken = collateralInQuoteToken.minus(payoffInQuoteToken);
-    console.log("collateralPayoffInQuoteToken: " + collateralPayoffInQuoteToken);
-
-    //
-    // collateral = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
-    // payoff = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-    // collateralPayoff = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-    collateral = collateralInQuoteToken.mul(baseTokens).shift(-baseDecimals);
-    payoff = payoffInQuoteToken.mul(baseTokens).shift(-baseDecimals);
-    collateralPayoff = collateralPayoffInQuoteToken.mul(baseTokens).shift(-baseDecimals);
-    console.log("collateral: " + collateral);
-
-    //
-    // v(1) = payoff
-    // v(2) = collateralPayoff
-    // v(3) = collateral
-    results.push(payoff);
-    results.push(collateralPayoff);
-    results.push(collateral);
-
-    //
-    // v(4) = payoff * (10 ^ rateDecimals) / spot
-    // v(5) = collateralPayoff * (10 ^ rateDecimals) / spot
-    // v(6) = collateral * (10 ^ rateDecimals) / spot
-    results.push(payoff.shift(rateDecimals).div(spot));
-
   }
 
-  // return results;
   return results;
 }
 
@@ -364,73 +312,89 @@ Function payoffInDeliveryToken( _
     Dim collateralPayoff As LongLong
 
     If (callPut = 0) Then
-        If (bound <= strike) Then
-            collateralInQuoteToken = spot
-        Else
-            collateralInQuoteToken = (bound - strike) * spot / bound
-        End If
-
-        If (spot > strike) Then
-            If (bound > strike And spot > bound) Then
-                payoffInQuoteToken = bound - strike
+        If (spot > 0 And (bound = 0 Or bound > strike)) Then
+            If (bound <= strike) Then
+                collateralInQuoteToken = spot
             Else
-                payoffInQuoteToken = spot - strike
+                collateralInQuoteToken = (bound - strike) * spot / bound
             End If
+
+            If (spot > strike) Then
+                If (bound > strike And spot > bound) Then
+                    payoffInQuoteToken = bound - strike
+                Else
+                    payoffInQuoteToken = spot - strike
+                End If
+            Else
+                payoffInQuoteToken = 0
+            End If
+
+            collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
+
+            collateral = collateralInQuoteToken * (10 ^ rateDecimals) / spot
+            payoff = payoffInQuoteToken * (10 ^ rateDecimals) / spot
+            collateralPayoff = collateralPayoffInQuoteToken * (10 ^ rateDecimals) / spot
+
+            collateral = collateral * baseTokens / (10 ^ baseDecimals)
+            payoff = payoff * baseTokens / (10 ^ baseDecimals)
+            collateralPayoff = collateralPayoff * baseTokens / (10 ^ baseDecimals)
+
+            v(1) = payoff
+            v(2) = collateralPayoff
+            v(3) = collateral
+            v(4) = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+            v(5) = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+            v(6) = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
         Else
-            payoffInQuoteToken = 0
+            v(1) = CVErr(xlErrNA)
+            v(2) = CVErr(xlErrNA)
+            v(3) = CVErr(xlErrNA)
+            v(4) = CVErr(xlErrNA)
+            v(5) = CVErr(xlErrNA)
+            v(6) = CVErr(xlErrNA)
         End If
-
-        collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
-
-        collateral = collateralInQuoteToken * (10 ^ rateDecimals) / spot
-        payoff = payoffInQuoteToken * (10 ^ rateDecimals) / spot
-        collateralPayoff = collateralPayoffInQuoteToken * (10 ^ rateDecimals) / spot
-
-        collateral = collateral * baseTokens / (10 ^ baseDecimals)
-        payoff = payoff * baseTokens / (10 ^ baseDecimals)
-        collateralPayoff = collateralPayoff * baseTokens / (10 ^ baseDecimals)
-
-        v(1) = payoff
-        v(2) = collateralPayoff
-        v(3) = collateral
-
-        v(4) = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-        v(5) = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-        v(6) = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
 
     Else
-        If (bound = 0 Or bound >= strike) Then
-            collateralInQuoteToken = strike
-        Else
-            collateralInQuoteToken = (strike - bound)
-        End If
-
-        If (spot < strike) Then
-            If (bound = 0 Or (bound > 0 And spot >= bound)) Then
-                payoffInQuoteToken = strike - spot
+        If (spot > 0 And (bound >= 0 And bound < strike)) Then
+            If (bound = 0 Or bound >= strike) Then
+                collateralInQuoteToken = strike
             Else
-                payoffInQuoteToken = strike - bound
+                collateralInQuoteToken = (strike - bound)
             End If
+
+            If (spot < strike) Then
+                If (bound = 0 Or (bound > 0 And spot >= bound)) Then
+                    payoffInQuoteToken = strike - spot
+                Else
+                    payoffInQuoteToken = strike - bound
+                End If
+            Else
+                payoffInQuoteToken = 0
+            End If
+
+            collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
+
+            collateral = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
+            payoff = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+            collateralPayoff = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
+
+            v(1) = payoff
+            v(2) = collateralPayoff
+            v(3) = collateral
+            v(4) = payoff * (10 ^ rateDecimals) / spot
+            v(5) = collateralPayoff * (10 ^ rateDecimals) / spot
+            v(6) = collateral * (10 ^ rateDecimals) / spot
         Else
-            payoffInQuoteToken = 0
+            v(1) = CVErr(xlErrNA)
+            v(2) = CVErr(xlErrNA)
+            v(3) = CVErr(xlErrNA)
+            v(4) = CVErr(xlErrNA)
+            v(5) = CVErr(xlErrNA)
+            v(6) = CVErr(xlErrNA)
         End If
-
-        collateralPayoffInQuoteToken = collateralInQuoteToken - payoffInQuoteToken
-
-        collateral = collateralInQuoteToken * baseTokens / (10 ^ baseDecimals)
-        payoff = payoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-        collateralPayoff = collateralPayoffInQuoteToken * baseTokens / (10 ^ baseDecimals)
-
-        v(1) = payoff
-        v(2) = collateralPayoff
-        v(3) = collateral
-
-        v(4) = payoff * (10 ^ rateDecimals) / spot
-        v(5) = collateralPayoff * (10 ^ rateDecimals) / spot
-        v(6) = collateral * (10 ^ rateDecimals) / spot
-
     End If
 
     payoffInDeliveryToken = Application.Transpose(v)
 End Function
+
 */

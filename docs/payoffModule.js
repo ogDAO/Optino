@@ -10,7 +10,7 @@ const Payoff = {
       <b-collapse id="priceFeed" visible class="mt-2">
         <b-card no-body class="border-0" v-if="network == 1337 || network == 3">
           <div>
-            <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="line" height="450" :options="chartOptions" :series="series"></apexchart>
           </div>
         </b-card>
       </b-collapse>
@@ -29,11 +29,11 @@ const Payoff = {
     },
     spotStep: {
       type: [String, Number],
-      default: "100",
+      default: "25",
     },
     spotTo: {
       type: [String, Number],
-      default: "500",
+      default: "1000",
     },
   },
   data: function () {
@@ -49,26 +49,26 @@ const Payoff = {
       var totalPayoffInBaseToken = [];
       var payoffInQuoteToken = [];
 
-      var callPut = parseInt(this.callPut);
-      var baseDecimals = parseInt(this.baseDecimals);
-      var rateDecimals = parseInt(this.rateDecimals);
-      var strike = new BigNumber(this.strike).shift(rateDecimals);
-      var bound = new BigNumber(this.bound).shift(rateDecimals);
-      var baseTokens = new BigNumber(this.baseTokens).shift(baseDecimals);
+      var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
+      var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
+      var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
+      var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
+      var bound = this.bound == null ? new BigNumber(0) : new BigNumber(this.bound).shift(rateDecimals);
+      var baseTokens = this.baseTokens == null ? new BigNumber(1).shift(baseDecimals) : new BigNumber(this.baseTokens).shift(baseDecimals);
       console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
 
       var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
       var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
       var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
-      console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
-      for (spot = spotFrom.add(spotStep); spot.lt(spotTo); spot = spot.add(spotStep)) {
-        console.log("spot: " + spot.toString());
+      // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
+      for (spot = spotFrom; spot.lt(spotTo); spot = spot.add(spotStep)) {
+        // console.log("spot: " + spot.toString());
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals);
 
-        payoffInBaseTokens.push(result[0].shift(-rateDecimals).toString());
-        collateralPayoffInBaseToken.push(result[1].shift(-rateDecimals).toString());
-        totalPayoffInBaseToken.push(result[2].shift(-rateDecimals).toString());
-        payoffInQuoteToken.push(result[3].shift(-rateDecimals).toString());
+        payoffInBaseTokens.push(result[0] == null ? null : result[0].shift(-rateDecimals).toString());
+        collateralPayoffInBaseToken.push(result[1] == null ? null : result[1].shift(-rateDecimals).toString());
+        totalPayoffInBaseToken.push(result[2] == null ? null : result[2].shift(-rateDecimals).toString());
+        payoffInQuoteToken.push(result[3] == null ? null : result[3].shift(-rateDecimals).toString());
       }
 
       return [{
