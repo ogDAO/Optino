@@ -123,10 +123,10 @@ const Payoff = {
     chartOptions() {
       var categories = [];
       var colors = [
-        '#008FFB',
-        '#00E396',
-        '#FEB019',
-        '#FF4560',
+        '#00cc66',
+        '#ff9933',
+        '#999966',
+        '#ff00ff',
         '#775DD0',
         '#546E7A',
         '#26a69a',
@@ -135,7 +135,6 @@ const Payoff = {
       for (var spot = parseFloat(this.spotFrom); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
           categories.push(spot);
       }
-      console.log(JSON.stringify(VueApexCharts));
       return {
         chart: {
           height: 350,
@@ -146,12 +145,12 @@ const Payoff = {
           enabled: false,
         },
         stroke: {
-          width: [4, 4, 4, 4]
+          width: [4, 4, 10, 2]
         },
         colors: colors,
         fill: {
           type: 'solid',
-          opacity: [1, 0.5, 0.5, 1],
+          opacity: [1, 0.85, 0.15, 0.85],
         },
         // fill: {
         //   opacity: [0.85, 0.25, 1],
@@ -185,7 +184,7 @@ const Payoff = {
             title: {
               text: this.yaxis1Title,
               style: {
-                color: '#008FFB',
+                color: '#00cc66',
               },
             },
             axisTicks: {
@@ -193,14 +192,14 @@ const Payoff = {
             },
             axisBorder: {
               show: true,
-              color: '#008FFB',
+              color: '#00cc66',
             },
             labels: {
               formatter: function (value) {
                 return value == null ? "0" : value.toFixed(2);
               },
               style: {
-                colors: '#008FFB',
+                colors: '#00cc66',
               }
             },
             tooltip: {
@@ -237,7 +236,7 @@ const Payoff = {
             title: {
               text: this.yaxis2Title,
               style: {
-                color: '#FF4560',
+                color: '#ff00ff',
               },
             },
             axisTicks: {
@@ -245,14 +244,14 @@ const Payoff = {
             },
             axisBorder: {
               show: true,
-              color: '#FF4560'
+              color: '#ff00ff'
             },
             labels: {
               formatter: function (value) {
                 return value == null ? "0" : value.toFixed(2);
               },
               style: {
-                colors: '#FF4560',
+                colors: '#ff00ff',
               }
             },
           }
