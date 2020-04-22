@@ -164,7 +164,7 @@ const Payoff = {
         //   }
         // },
         markers: {
-          size: 1
+          size: 0,
         },
         title: {
           text: this.title,
