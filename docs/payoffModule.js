@@ -1,14 +1,9 @@
 const Payoff = {
   template: `
     <div>
-      <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337 && network != 3">
-        <b-card-text>
-          Please switch to the Geth Devnet in MetaMask and refresh this page
-        </b-card-text>
-      </b-card>
       <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Payoff {{ callPut }} {{ strike }} {{ bound }} {{ baseTokens }} {{ baseDecimals }} {{ rateDecimals }}</b-button>
       <b-collapse id="priceFeed" visible class="mt-2">
-        <b-card no-body class="border-0" v-if="network == 1337 || network == 3">
+        <b-card no-body class="border-0">
           <div>
             <apexchart type="line" height="450" :options="chartOptions" :series="series"></apexchart>
           </div>
@@ -29,7 +24,7 @@ const Payoff = {
     },
     spotStep: {
       type: [String, Number],
-      default: "25",
+      default: "100",
     },
     spotTo: {
       type: [String, Number],
@@ -61,9 +56,9 @@ const Payoff = {
         }
       } else {
         if (this.callPut == "0") {
-          return 'Capped Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + ' with cap ' + this.bound;
+          return 'Capped Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + ' [- ' + this.bound + ']';
         } else {
-          return 'Floored Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + ' with floor ' + this.bound;
+          return 'Floored Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' [' + this.bound + ' -] ' + this.strike;
         }
       }
     },
@@ -92,7 +87,7 @@ const Payoff = {
       var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
       var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
       // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
-      for (spot = spotFrom; spot.lt(spotTo); spot = spot.add(spotStep)) {
+      for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
         // console.log("spot: " + spot.toString());
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals);
 
@@ -132,8 +127,13 @@ const Payoff = {
         '#26a69a',
         '#D10CE8'
       ];
-      for (var spot = parseFloat(this.spotFrom); spot <= parseFloat(this.spotTo); spot += parseFloat(this.spotStep)) {
-          categories.push(spot);
+      var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
+      var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
+      var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
+      var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
+      // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
+      for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
+          categories.push(spot.shift(-rateDecimals));
       }
       return {
         chart: {
@@ -145,12 +145,12 @@ const Payoff = {
           enabled: false,
         },
         stroke: {
-          width: [4, 4, 10, 2]
+          width: [4, 4, 10, 4]
         },
         colors: colors,
         fill: {
           type: 'solid',
-          opacity: [1, 0.85, 0.15, 0.85],
+          opacity: [0.75, 0.85, 0.35, 0.65],
         },
         // fill: {
         //   opacity: [0.85, 0.25, 1],
