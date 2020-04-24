@@ -180,10 +180,13 @@ contract CloneFactory {
 // Utils
 // ----------------------------------------------------------------------------
 library Utils {
-    bytes constant CALL = "VCO";
-    bytes constant PUT = "VPO";
-    bytes constant CALLNAME = "Vanilla Call Optino";
-    bytes constant PUTNAME = "Vanilla Put Optino";
+    // TODO: Remove 't' before deployment to reduce symbol space pollution
+    bytes constant CALL = "tCALL";
+    bytes constant PUT = "tPUT";
+    bytes constant VANILLACALLNAME = "Vanilla Call Optino";
+    bytes constant VANILLAPUTNAME = "Vanilla Put Optino";
+    bytes constant CAPPEDCALLNAME = "Capped Call Optino";
+    bytes constant FLOOREDPUTNAME = "Floored Put Optino";
     bytes constant COLLATERAL = "C";
     bytes constant COLLATERALNAME = "Collateral";
     uint8 constant SPACE = 32;
@@ -305,18 +308,30 @@ library Utils {
         } while (i > 0);
         s = string(b);
     }
-    function _toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint decimals) internal pure returns (string memory s) {
+    function _toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint decimals) internal pure returns (string memory s) {
 
         bytes memory b = new bytes(128);
         uint i;
         uint j;
-        if (callPut == 0) {
-            for (i = 0; i < CALLNAME.length; i++) {
-                b[j++] = CALLNAME[i];
+        if (bound == 0) {
+            if (callPut == 0) {
+                for (i = 0; i < VANILLACALLNAME.length; i++) {
+                    b[j++] = VANILLACALLNAME[i];
+                }
+            } else {
+                 for (i = 0; i < VANILLAPUTNAME.length; i++) {
+                    b[j++] = VANILLAPUTNAME[i];
+                }
             }
         } else {
-             for (i = 0; i < PUTNAME.length; i++) {
-                b[j++] = PUTNAME[i];
+            if (callPut == 0) {
+                for (i = 0; i < CAPPEDCALLNAME.length; i++) {
+                    b[j++] = CAPPEDCALLNAME[i];
+                }
+            } else {
+                 for (i = 0; i < FLOOREDPUTNAME.length; i++) {
+                    b[j++] = FLOOREDPUTNAME[i];
+                }
             }
         }
         b[j++] = byte(SPACE);
@@ -340,9 +355,25 @@ library Utils {
         }
         b[j++] = byte(SPACE);
 
-        bytes memory b2 = _numToBytes(strike, decimals);
-        for (i = 0; i < b2.length; i++) {
-            b[j++] = b2[i];
+        if (callPut != 0 && bound != 0) {
+            bytes memory b2 = _numToBytes(bound, decimals);
+            for (i = 0; i < b2.length; i++) {
+                b[j++] = b2[i];
+            }
+            s = string(b);
+            b[j++] = byte(DASH);
+        }
+        bytes memory b3 = _numToBytes(strike, decimals);
+        for (i = 0; i < b3.length; i++) {
+            b[j++] = b3[i];
+        }
+        if (callPut == 0 && bound != 0) {
+            b[j++] = byte(DASH);
+            bytes memory b4 = _numToBytes(bound, decimals);
+            for (i = 0; i < b4.length; i++) {
+                b[j++] = b4[i];
+            }
+            s = string(b);
         }
         s = string(b);
     }
@@ -530,6 +561,11 @@ library SeriesLibrary {
         require(strike > 0, "SeriesLibrary.add: strike must be non-zero");
         require(optinoToken != address(0), "SeriesLibrary.add: optinoToken cannot be null");
         require(optinoCollateralToken != address(0), "SeriesLibrary.add: optinoCollateralToken cannot be null");
+        if (callPut == 0) {
+            require(bound == 0 || bound > strike, "SeriesLibrary.add: bound must be 0 or greater than strike for calls");
+        } else {
+            require(bound < strike, "SeriesLibrary.add: bound must be 0 or less than strike for put");
+        }
 
         bytes32 key = _generateKey(configKey, callPut, expiry, strike, bound);
         require(self.entries[key].timestamp == 0, "SeriesLibrary.add: Cannot add duplicate");
@@ -751,6 +787,7 @@ library VanillaOptinoFormulae {
     //   * Deliver baseToken for call and quoteToken for put
     // ------------------------------------------------------------------------
     function payoffInDeliveryToken(uint _callPut, uint _strike, uint /*_bound*/, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _collateral) {
+        // TODO: Bound in payoff
         if (_callPut == 0) {
             uint _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
             uint _collateralPayoffInQuoteToken = _spot._sub(_payoffInQuoteToken);
@@ -812,8 +849,7 @@ contract OptinoToken is Token {
         bound = _bound;
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, /*_baseDecimals*/, /*_quoteDecimals*/, /*_rateDecimals*/, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
         string memory _symbol = Utils._toSymbol(_isCollateral, _callPut, _seriesNumber);
-        // TODO: _bound in name
-        string memory _name = Utils._toName(_description, _isCollateral, _callPut, _expiry, _strike, OPTIONDECIMALS);
+        string memory _name = Utils._toName(_description, _isCollateral, _callPut, _expiry, _strike, _bound, OPTIONDECIMALS);
         super._initToken(factory, _symbol, _name, OPTIONDECIMALS);
     }
 
