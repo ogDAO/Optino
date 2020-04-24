@@ -211,7 +211,7 @@ library Utils {
                 result = result * 10 + num % 10;
                 if (result > 0) {
                     b[j++] = byte(uint8(num % 10 + ZERO));
-                    if (j > 1 && (number % num) == 0 && i <= decimals) {
+                    if ((j > 1) && (number == num * 10 ** i) && (i <= decimals)) {
                         break;
                     }
                 } else {
