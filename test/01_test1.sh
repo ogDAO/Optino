@@ -293,8 +293,8 @@ var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deploye
 var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "WETH/DAI(WEENUS) MakerDAO PriceFeed", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/DAI(WEENUS) MakerDAO PriceFeed ", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = vanillaOptinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "WETH/DAI MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_10Tx = vanillaOptinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = weth.approve(vanillaOptinoFactoryAddress, wethTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = dai.approve(vanillaOptinoFactoryAddress, daiTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -338,6 +338,7 @@ var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 2 * 60*60;
 var strike = new BigNumber("200").shift(18);
+var bound = new BigNumber("300").shift(18);
 // var strike1 = new BigNumber("201").shift(18);
 var baseTokens = new BigNumber("10").shift(18);
 var value = web3.toWei("100", "ether").toString();
@@ -345,9 +346,9 @@ var value = web3.toWei("100", "ether").toString();
 var _uiFeeAccount = uiFeeAccount;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
-var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount);
+var data = vanillaOptinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, baseTokens, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
-var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 6000000, gasPrice: defaultGasPrice });
+var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: vanillaOptinoFactoryAddress, from: maker1, data: data, value: value, gas: 3000000, gasPrice: defaultGasPrice });
 // var mintOptinoGroup1_2Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = vanillaOptinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 
@@ -359,7 +360,7 @@ console.log("RESULT: optinos=" + JSON.stringify(optinos));
 for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
   console.log(optinos[optinosIndex]);
   addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "optinoToken" : "optinoCollateralToken");
-  addTokenContractAddressAndAbi(optinosIndex + 2, optinos[optinosIndex], tokenAbi);
+  addTokenContractAddressAndAbi(optinosIndex + 2, optinos[optinosIndex], vanillaOptinoAbi);
 }
 
 printBalances();

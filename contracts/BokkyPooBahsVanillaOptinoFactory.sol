@@ -180,9 +180,9 @@ contract CloneFactory {
 // Utils
 // ----------------------------------------------------------------------------
 library Utils {
-    // TODO: Remove 't' before deployment to reduce symbol space pollution
-    bytes constant CALL = "tCALL";
-    bytes constant PUT = "tPUT";
+    // TODO: Remove 'z' before deployment to reduce symbol space pollution
+    bytes constant CALL = "zCALL";
+    bytes constant PUT = "zPUT";
     bytes constant VANILLACALLNAME = "Vanilla Call Optino";
     bytes constant VANILLAPUTNAME = "Vanilla Put Optino";
     bytes constant CAPPEDCALLNAME = "Capped Call Optino";
@@ -197,21 +197,21 @@ library Utils {
     uint8 constant CHAR_T = 84;
     uint8 constant CHAR_Z = 90;
 
-    function _numToBytes(uint strike, uint decimals) internal pure returns (bytes memory b) {
+    function _numToBytes(uint number, uint decimals) internal pure returns (bytes memory b, uint _length) {
         uint i;
         uint j;
         uint result;
         b = new bytes(40);
-        if (strike == 0) {
+        if (number == 0) {
             b[j++] = byte(ZERO);
         } else {
             i = decimals + 18;
             do {
-                uint num = strike / 10 ** i;
+                uint num = number / 10 ** i;
                 result = result * 10 + num % 10;
                 if (result > 0) {
                     b[j++] = byte(uint8(num % 10 + ZERO));
-                    if (j > 1 && (strike % num) == 0 && i <= decimals) {
+                    if (j > 1 && (number % num) == 0 && i <= decimals) {
                         break;
                     }
                 } else {
@@ -229,6 +229,7 @@ library Utils {
                 i--;
             } while (i >= 0);
         }
+        return (b, j);
     }
     function _dateTimeToBytes(uint timestamp) internal pure returns (bytes memory b) {
         (uint year, uint month, uint day, uint hour, uint min, uint sec) = BokkyPooBahsDateTimeLibrary.timestampToDateTime(timestamp);
@@ -309,8 +310,7 @@ library Utils {
         s = string(b);
     }
     function _toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint decimals) internal pure returns (string memory s) {
-
-        bytes memory b = new bytes(128);
+        bytes memory b = new bytes(256);
         uint i;
         uint j;
         if (bound == 0) {
@@ -356,24 +356,23 @@ library Utils {
         b[j++] = byte(SPACE);
 
         if (callPut != 0 && bound != 0) {
-            bytes memory b2 = _numToBytes(bound, decimals);
-            for (i = 0; i < b2.length; i++) {
+            (bytes memory b2, uint l2) = _numToBytes(bound, decimals);
+            for (i = 0; i < b2.length && i < l2; i++) {
                 b[j++] = b2[i];
             }
-            s = string(b);
             b[j++] = byte(DASH);
         }
-        bytes memory b3 = _numToBytes(strike, decimals);
-        for (i = 0; i < b3.length; i++) {
+
+        (bytes memory b3, uint l3) = _numToBytes(strike, decimals);
+        for (i = 0; i < b3.length && i < l3; i++) {
             b[j++] = b3[i];
         }
         if (callPut == 0 && bound != 0) {
             b[j++] = byte(DASH);
-            bytes memory b4 = _numToBytes(bound, decimals);
-            for (i = 0; i < b4.length; i++) {
+            (bytes memory b4, uint l4) = _numToBytes(bound, decimals);
+            for (i = 0; i < b4.length && i < l4; i++) {
                 b[j++] = b4[i];
             }
-            s = string(b);
         }
         s = string(b);
     }

@@ -24,7 +24,7 @@ const Payoff = {
     },
     spotStep: {
       type: [String, Number],
-      default: "100",
+      default: "25",
     },
     spotTo: {
       type: [String, Number],
@@ -196,7 +196,7 @@ const Payoff = {
             },
             labels: {
               formatter: function (value) {
-                return value == null ? "0" : value.toFixed(2);
+                return value == null ? null : value.toFixed(2);
               },
               style: {
                 colors: '#00cc66',
@@ -211,7 +211,7 @@ const Payoff = {
             show: false,
             labels: {
               formatter: function (value) {
-                return value == null ? "0" : value.toFixed(18);
+                return value == null ? null : value.toFixed(2);
               },
               style: {
                 colors: '#008FFB',
@@ -223,7 +223,7 @@ const Payoff = {
             show: false,
             labels: {
               formatter: function (value) {
-                return value == null ? "0" : value.toFixed(18);
+                return value == null ? null : value.toFixed(2);
               },
               style: {
                 colors: '#008FFB',
@@ -248,7 +248,7 @@ const Payoff = {
             },
             labels: {
               formatter: function (value) {
-                return value == null ? "0" : value.toFixed(2);
+                return value == null ? null : value.toFixed(2);
               },
               style: {
                 colors: '#ff00ff',
@@ -256,6 +256,7 @@ const Payoff = {
             },
           }
         ],
+        /*
         tooltip: {
           fixed: {
             enabled: true,
@@ -263,11 +264,22 @@ const Payoff = {
             offsetY: 30,
             offsetX: 60
           },
+          x: {
+            formatter: function (value) {
+              return "Spot: " + (value == null ? "0" : value.toFixed(12));
+            },
+          },
+          y: {
+            formatter: function (value) {
+              return value == null ? "(unable to calculate)" : value.toFixed(12);
+            },
+          },
         },
         legend: {
           horizontalAlign: 'left',
           offsetX: 40
-        }
+        },
+        */
       };
     },
     network() {
