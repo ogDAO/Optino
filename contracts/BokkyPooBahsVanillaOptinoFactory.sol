@@ -183,12 +183,13 @@ library Utils {
     // TODO: Remove 'z' before deployment to reduce symbol space pollution
     bytes constant CALL = "zCOPT";
     bytes constant PUT = "zPOPT";
-    bytes constant VANILLACALLNAME = "Vanilla Call Optino";
-    bytes constant VANILLAPUTNAME = "Vanilla Put Optino";
-    bytes constant CAPPEDCALLNAME = "Capped Call Optino";
-    bytes constant FLOOREDPUTNAME = "Floored Put Optino";
-    bytes constant COLLATERAL = "C";
-    bytes constant COLLATERALNAME = "Collateral";
+    bytes constant VANILLACALLNAME = "Vanilla Call";
+    bytes constant VANILLAPUTNAME = "Vanilla Put";
+    bytes constant CAPPEDCALLNAME = "Capped Call";
+    bytes constant FLOOREDPUTNAME = "Floored Put";
+    bytes constant OPTINO = "Optino";
+    bytes constant COVER = "C";
+    bytes constant COVERNAME = "Cover";
     uint8 constant SPACE = 32;
     uint8 constant DASH = 45;
     uint8 constant DOT = 46;
@@ -297,8 +298,8 @@ library Utils {
             }
         }
         if (cover) {
-            for (i = 0; i < COLLATERAL.length; i++) {
-                b[j++] = COLLATERAL[i];
+            for (i = 0; i < COVER.length; i++) {
+                b[j++] = COVER[i];
             }
         }
         i = 8;
@@ -335,10 +336,14 @@ library Utils {
             }
         }
         b[j++] = byte(SPACE);
+        for (i = 0; i < OPTINO.length; i++) {
+            b[j++] = OPTINO[i];
+        }
+        b[j++] = byte(SPACE);
 
         if (cover) {
-            for (i = 0; i < COLLATERALNAME.length; i++) {
-                b[j++] = COLLATERALNAME[i];
+            for (i = 0; i < COVERNAME.length; i++) {
+                b[j++] = COVERNAME[i];
             }
             b[j++] = byte(SPACE);
         }
@@ -963,28 +968,28 @@ contract OptinoToken is Token {
             require(_baseTokens <= ERC20Interface(pair).balanceOf(tokenOwner));
             require(OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, _baseTokens));
-            (bytes32 _configKey, uint _callPut, /*uint _expiry*/, uint _strike, /*uint _bound*/, /*_optinoToken*/, /*_optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
+            (bytes32 _configKey, uint _callPut, /*uint _expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_optinoCollateralToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
+            uint collateral = VanillaOptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
             if (_callPut == 0) {
                 if (_baseToken == ETH) {
-                    _baseTokens = collectDust(_baseTokens, address(this).balance, _baseDecimals);
-                    payable(tokenOwner).transfer(_baseTokens);
-                    emit Close(pair, _baseToken, tokenOwner, _baseTokens);
+                    collateral = collectDust(collateral, address(this).balance, _baseDecimals);
+                    payable(tokenOwner).transfer(collateral);
+                    emit Close(pair, _baseToken, tokenOwner, collateral);
                 } else {
-                    _baseTokens = collectDust(_baseTokens, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
-                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _baseTokens));
-                    emit Close(pair, _baseToken, tokenOwner, _baseTokens);
+                    _baseTokens = collectDust(collateral, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
+                    require(ERC20Interface(_baseToken).transfer(tokenOwner, collateral));
+                    emit Close(pair, _baseToken, tokenOwner, collateral);
                 }
             } else {
-                uint _quoteTokens = _baseTokens * _strike / (10 ** _rateDecimals);
                 if (_quoteToken == ETH) {
-                    _quoteTokens = collectDust(_quoteTokens, address(this).balance, _quoteDecimals);
-                    payable(tokenOwner).transfer(_quoteTokens);
-                    emit Close(pair, _quoteToken, tokenOwner, _quoteTokens);
+                    collateral = collectDust(collateral, address(this).balance, _quoteDecimals);
+                    payable(tokenOwner).transfer(collateral);
+                    emit Close(pair, _quoteToken, tokenOwner, collateral);
                 } else {
-                    _quoteTokens = collectDust(_quoteTokens, ERC20Interface(_quoteToken).balanceOf(address(this)), _baseDecimals);
-                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _quoteTokens));
-                    emit Close(pair, _quoteToken, tokenOwner, _quoteTokens);
+                    collateral = collectDust(collateral, ERC20Interface(_quoteToken).balanceOf(address(this)), _baseDecimals);
+                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, collateral));
+                    emit Close(pair, _quoteToken, tokenOwner, collateral);
                 }
             }
         }

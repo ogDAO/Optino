@@ -111,8 +111,8 @@ var decimals = 18;
 var tokenOwner = deployer;
 var initialSupply = new BigNumber("4000000").shift(18);
 
-var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
-console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
+// var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
+// console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
 
 console.log("DATA: deployer=" + deployer);
 console.log("DATA: defaultGasPrice=" + defaultGasPrice);
@@ -184,7 +184,7 @@ var priceFeedContract = web3.eth.contract(priceFeedAbi);
 // console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
 var priceFeedTx = null;
 var priceFeedAddress = null;
-var priceFeed = priceFeedContract.new(priceFeedInitialValue, true, {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
+var priceFeed = priceFeedContract.new(/*priceFeedInitialValue, true,*/ {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -338,7 +338,7 @@ var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 10; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(18);
-var bound = new BigNumber("500").shift(18);
+var bound = new BigNumber("250").shift(18);
 // var strike1 = new BigNumber("201").shift(18);
 var baseTokens = new BigNumber("10").shift(18);
 var value = web3.toWei("100", "ether").toString();
@@ -383,19 +383,19 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (false) {
+if (true) {
 // -----------------------------------------------------------------------------
-var netOffGroup1_Message = "Net off Optino & OptinoCollateral";
-var netOffBaseTokens = new BigNumber("2").shift(18);
+var closeGroup1_Message = "Close Optino & OptinoCollateral";
+var closeAmountInBaseTokens = new BigNumber("10").shift(18);
 var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
 // -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + netOffGroup1_Message + " ----------");
-var netOffGroup1_1Tx = optino.netOff(netOffBaseTokens, {from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
+console.log("RESULT: ---------- " + closeGroup1_Message + " ----------");
+var closeGroup1_1Tx = optino.close(closeAmountInBaseTokens, {from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(netOffGroup1_1Tx, netOffGroup1_Message + " - optino.netOff()");
-printTxData("netOffGroup1_1Tx", netOffGroup1_1Tx);
+failIfTxStatusError(closeGroup1_1Tx, closeGroup1_Message + " - optino.netOff()");
+printTxData("closeGroup1_1Tx", closeGroup1_1Tx);
 console.log("RESULT: ");
 printPriceFeedContractDetails();
 console.log("RESULT: ");
@@ -414,7 +414,7 @@ console.log("RESULT: ");
 }
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle";
   var rate = new BigNumber("300").shift(18);
