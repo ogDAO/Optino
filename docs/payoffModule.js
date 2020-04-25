@@ -5,7 +5,7 @@ const Payoff = {
       <b-collapse id="priceFeed" visible class="mt-2">
         <b-card no-body class="border-0">
           <div>
-            <apexchart type="line" height="450" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="line" height="700" :options="chartOptions" :series="series"></apexchart>
           </div>
         </b-card>
       </b-collapse>

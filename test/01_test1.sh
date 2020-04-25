@@ -359,7 +359,7 @@ var optinos = getVanillaOptinos();
 console.log("RESULT: optinos=" + JSON.stringify(optinos));
 for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
   console.log(optinos[optinosIndex]);
-  addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "optinoToken" : "optinoCollateralToken");
+  addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "optinoToken" : "coverToken");
   addTokenContractAddressAndAbi(optinosIndex + 2, optinos[optinosIndex], vanillaOptinoAbi);
 }
 
@@ -385,7 +385,7 @@ console.log("RESULT: ");
 
 if (true) {
 // -----------------------------------------------------------------------------
-var closeGroup1_Message = "Close Optino & OptinoCollateral";
+var closeGroup1_Message = "Close Optino & Cover";
 var closeAmountInBaseTokens = new BigNumber("10").shift(18);
 var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
 // -----------------------------------------------------------------------------
