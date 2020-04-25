@@ -181,8 +181,8 @@ contract CloneFactory {
 // ----------------------------------------------------------------------------
 library Utils {
     // TODO: Remove 'z' before deployment to reduce symbol space pollution
-    bytes constant CALL = "zCALL";
-    bytes constant PUT = "zPUT";
+    bytes constant CALL = "zCOPT";
+    bytes constant PUT = "zPOPT";
     bytes constant VANILLACALLNAME = "Vanilla Call Optino";
     bytes constant VANILLAPUTNAME = "Vanilla Put Optino";
     bytes constant CAPPEDCALLNAME = "Capped Call Optino";
@@ -597,7 +597,7 @@ library SeriesLibrary {
     function _updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0, "SeriesLibrary._updateSpot: Invalid key");
-        require(_value.expiry <= block.timestamp, "SeriesLibrary._updateSpot: Not expired yet");
+        // TODO: Testing require(_value.expiry <= block.timestamp, "SeriesLibrary._updateSpot: Not expired yet");
         require(_value.spot == 0, "SeriesLibrary._updateSpot: spot cannot be re-set");
         require(spot > 0, "SeriesLibrary._updateSpot: spot cannot be 0");
         _value.timestamp = block.timestamp;
@@ -785,25 +785,42 @@ library VanillaOptinoFormulae {
     //   * strike and spot at rateDecimals decimal places, 18 in this contract
     //   * Deliver baseToken for call and quoteToken for put
     // ------------------------------------------------------------------------
-    function payoffInDeliveryToken(uint _callPut, uint _strike, uint /*_bound*/, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _collateral) {
-        // TODO: Bound in payoff
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _coverPayoff) {
+        require(_strike > 0, "payoffInDeliveryToken: strike must be 0");
+        uint _collateral;
         if (_callPut == 0) {
-            uint _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
-            uint _collateralPayoffInQuoteToken = _spot._sub(_payoffInQuoteToken);
-
-            _payoff = _payoffInQuoteToken * (10 ** _rateDecimals) / _spot;
-            _collateral = _collateralPayoffInQuoteToken * (10 ** _rateDecimals) / _spot;
-
-            _payoff = _payoff * _baseTokens / (10 ** _baseDecimals);
-            _collateral = _collateral * _baseTokens / (10 ** _baseDecimals);
+            require(_bound == 0 || _bound > _strike, "payoffInDeliveryToken: bound (cap) must be 0 (vanilla) call or greater than strike for call optino");
+            require(_spot > 0, "payoffInDeliveryToken: spot must be 0 for call optino");
+            // Vanilla uint _payoffInQuoteToken = (_spot <= _strike) ? 0 : _spot._sub(_strike);
+            if (_spot > _strike) {
+                if (_bound > _strike && _spot > _bound) {
+                    _payoff = _bound - _strike;
+                } else {
+                    _payoff = _spot - _strike;
+                }
+                _payoff = _payoff * (10 ** _rateDecimals) / _spot * _baseTokens / (10 ** _baseDecimals);
+            } else {
+                _payoff = 0;
+            }
+            if (_bound <= _strike) {
+                _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
+            } else {
+                _collateral = (_bound - _strike) * (10 ** _rateDecimals) / _bound * _baseTokens / (10 ** _baseDecimals);
+            }
         } else {
-            // Payoff calculated on quote token, delivery of quoteToken
-            _payoff = (_spot >= _strike) ? 0 : _strike._sub(_spot);
-            _collateral = _strike._sub(_payoff);
-
-            _payoff = _payoff * _baseTokens / (10 ** _baseDecimals);
-            _collateral = _collateral * _baseTokens / (10 ** _baseDecimals);
+            require(_bound < _strike, "payoffInDeliveryToken: bound must be 0 or less than strike for put");
+            if (_spot < _strike) {
+                 if (_bound == 0 || (_bound > 0 && _spot >= _bound)) {
+                     _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
+                 } else {
+                     _payoff = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+                 }
+            } else {
+                _payoff = 0;
+            }
+            _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
         }
+        _coverPayoff = _collateral - _payoff;
     }
 }
 
