@@ -336,7 +336,7 @@ console.log("RESULT: ");
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
-var expiry = parseInt(new Date()/1000) + 2 * 60*60;
+var expiry = parseInt(new Date()/1000) + 10; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(18);
 var bound = new BigNumber("400").shift(18);
 // var strike1 = new BigNumber("201").shift(18);
@@ -421,6 +421,7 @@ if (true) {
   var optino = web3.eth.contract(vanillaOptinoAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
+  waitUntil("optino.expiry()", optino.expiry.call(), 0);
   var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }

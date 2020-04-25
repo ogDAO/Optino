@@ -597,7 +597,7 @@ library SeriesLibrary {
     function _updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0, "SeriesLibrary._updateSpot: Invalid key");
-        // TODO: Testing require(_value.expiry <= block.timestamp, "SeriesLibrary._updateSpot: Not expired yet");
+        require(_value.expiry <= block.timestamp, "SeriesLibrary._updateSpot: Not expired yet");
         require(_value.spot == 0, "SeriesLibrary._updateSpot: spot cannot be re-set");
         require(spot > 0, "SeriesLibrary._updateSpot: spot cannot be 0");
         _value.timestamp = block.timestamp;
@@ -821,6 +821,21 @@ library VanillaOptinoFormulae {
             _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
         }
         _coverPayoff = _collateral - _payoff;
+    }
+
+    function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _collateral) {
+        require(_strike > 0, "collateralInDeliveryToken: strike must be 0");
+        if (_callPut == 0) {
+            require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 (vanilla) call or greater than strike for call optino");
+            if (_bound <= _strike) {
+                _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
+            } else {
+                _collateral = (_bound - _strike) * (10 ** _rateDecimals) / _bound * _baseTokens / (10 ** _baseDecimals);
+            }
+        } else {
+            require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");
+            _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+        }
     }
 }
 
@@ -1247,26 +1262,27 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         optinoToken.mint(msg.sender, optinoData.baseTokens);
         optinoCollateralToken.mint(msg.sender, optinoData.baseTokens);
 
+        uint collateral = VanillaOptinoFormulae.collateralInDeliveryToken(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.baseTokens, config.baseDecimals, config.rateDecimals);
         if (optinoData.callPut == 0) {
-            uint devFee = optinoData.baseTokens * config.fee / (10 ** FEEDECIMALS);
+            uint devFee = collateral * config.fee / (10 ** FEEDECIMALS);
             uint uiFee;
             if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
                 uiFee = devFee / 2;
                 devFee = devFee - uiFee;
             }
             if (optinoData.baseToken == ETH) {
-                require(msg.value >= (optinoData.baseTokens + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
-                require(payable(optinoCollateralToken).send(optinoData.baseTokens), "_mintOptinoTokens: optinoCollateralToken.send(baseTokens) failure");
+                require(msg.value >= (collateral + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
+                require(payable(optinoCollateralToken).send(collateral), "_mintOptinoTokens: optinoCollateralToken.send(baseTokens) failure");
                 if (uiFee > 0) {
                     require(payable(uiFeeAccount).send(uiFee), "_mintOptinoTokens: uiFeeAccount.send(uiFee) failure");
                 }
                 // Dev fee left in this factory
-                uint refund = msg.value - optinoData.baseTokens - uiFee - devFee;
+                uint refund = msg.value - collateral - uiFee - devFee;
                 if (refund > 0) {
                     require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
                 }
             } else {
-                require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), optinoData.baseTokens), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, optinoCollateralToken, baseTokens) failure");
+                require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(optinoCollateralToken), collateral), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, optinoCollateralToken, collateral) failure");
                 if (uiFee > 0) {
                     require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
                 }
@@ -1275,26 +1291,26 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 }
             }
         } else {
-            uint quoteTokens = optinoData.baseTokens * optinoData.strike / (10 ** config.rateDecimals);
-            uint devFee = quoteTokens * config.fee / (10 ** FEEDECIMALS);
+            // uint quoteTokens = optinoData.baseTokens * optinoData.strike / (10 ** config.rateDecimals);
+            uint devFee = collateral * config.fee / (10 ** FEEDECIMALS);
             uint uiFee;
             if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
                 uiFee = devFee / 2;
                 devFee = devFee - uiFee;
             }
             if (optinoData.quoteToken == ETH) {
-                require(msg.value >= (quoteTokens + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
-                require(payable(optinoCollateralToken).send(quoteTokens), "_mintOptinoTokens: optinoCollateralToken.send(quoteTokens) failure");
+                require(msg.value >= (collateral + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
+                require(payable(optinoCollateralToken).send(collateral), "_mintOptinoTokens: optinoCollateralToken.send(collateral) failure");
                 if (uiFee > 0) {
                     require(payable(uiFeeAccount).send(uiFee), "_mintOptinoTokens: uiFeeAccount.send(uiFee) failure");
                 }
                 // Dev fee left in this factory
-                uint refund = msg.value - quoteTokens - uiFee - devFee;
+                uint refund = msg.value - collateral - uiFee - devFee;
                 if (refund > 0) {
                     require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
                 }
             } else {
-                require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), quoteTokens), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, optinoCollateralToken, quoteTokens) failure");
+                require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(optinoCollateralToken), collateral), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, optinoCollateralToken, collateral) failure");
                 if (uiFee > 0) {
                     require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
                 }
@@ -1311,6 +1327,9 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     }
     function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _collateral) {
         return VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+    }
+    function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
+        return VanillaOptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
     }
 
     function getTokenInfo(address token, address tokenOwner, address spender) public view returns (string memory _symbol, string memory _name, uint _decimals, uint _totalSupply, uint _balance, uint _allowance) {
