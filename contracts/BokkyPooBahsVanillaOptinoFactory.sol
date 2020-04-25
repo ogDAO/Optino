@@ -597,7 +597,7 @@ library SeriesLibrary {
     function _updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0, "SeriesLibrary._updateSpot: Invalid key");
-        require(_value.expiry <= block.timestamp, "SeriesLibrary._updateSpot: Not expired yet");
+        require(block.timestamp >= _value.expiry, "SeriesLibrary._updateSpot: Not expired yet");
         require(_value.spot == 0, "SeriesLibrary._updateSpot: spot cannot be re-set");
         require(spot > 0, "SeriesLibrary._updateSpot: spot cannot be 0");
         _value.timestamp = block.timestamp;
@@ -1289,6 +1289,9 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 if (devFee > 0) {
                     require(ERC20Interface(optinoData.baseToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: baseToken.transferFrom(msg.sender, factory, devFee) failure");
                 }
+                if (msg.value > 0) {
+                    require(msg.sender.send(msg.value), "_mintOptinoTokens: msg.sender.send(msg.value) failure");
+                }
             }
         } else {
             // uint quoteTokens = optinoData.baseTokens * optinoData.strike / (10 ** config.rateDecimals);
@@ -1316,6 +1319,9 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 }
                 if (devFee > 0) {
                     require(ERC20Interface(optinoData.quoteToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: quoteToken.transferFrom(msg.sender, factory, devFee) failure");
+                }
+                if (msg.value > 0) {
+                    require(msg.sender.send(msg.value), "_mintOptinoTokens: msg.sender.send(msg.value) failure");
                 }
             }
         }

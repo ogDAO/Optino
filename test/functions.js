@@ -278,7 +278,7 @@ function waitUntil(message, unixTime, addSeconds) {
   console.log("RESULT: Waiting until '" + message + "' at " + unixTime + "+" + addSeconds + "s=" + time + " now=" + new Date());
   while ((new Date()).getTime() <= time.getTime()) {
   }
-  console.log("RESULT: Waited until '" + message + "' at at " + unixTime + "+" + addSeconds + "s=" + time + " now=" + new Date());
+  console.log("RESULT: Waited until '" + message + "' at " + unixTime + "+" + addSeconds + "s=" + time + " now=" + new Date());
   console.log("RESULT: ");
 }
 
