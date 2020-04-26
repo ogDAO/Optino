@@ -45,9 +45,9 @@ TEST3RESULTS=test3results.txt
 TEST4OUTPUT=test4output.txt
 TEST4RESULTS=test4results.txt
 
-CURRENTTIME = '1587873973' 'Sun Apr 26 14:06:13 2020'
-START_DATE  = '1587874018' 'Sun Apr 26 14:06:58 2020'
-END_DATE    = '1587874093' 'Sun Apr 26 14:08:13 2020'
+CURRENTTIME = '1587875583' 'Sun Apr 26 14:33:03 2020'
+START_DATE  = '1587875628' 'Sun Apr 26 14:33:48 2020'
+END_DATE    = '1587875703' 'Sun Apr 26 14:35:03 2020'
 contractsdir: ../contracts/
 remapdir    : (no remapping)
 mainsol     : MintableToken.sol
@@ -90,7 +90,7 @@ Welcome to the Geth JavaScript console!
 
 instance: Geth/v1.9.10-stable-58cf5686/darwin-amd64/go1.13.6
 coinbase: 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e
-at block: 69886 (Sun, 26 Apr 2020 14:06:15 AEST)
+at block: 71496 (Sun, 26 Apr 2020 14:33:05 AEST)
  datadir: /Users/bok/Projects/Optino/test/testchain
  modules: admin:1.0 clique:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 shh:1.0 txpool:1.0 web3:1.0
 
@@ -210,7 +210,7 @@ undefined
 > 
 undefined
 > 
-DATA: wethContract={"abi":[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"guy","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Withdrawal","type":"event"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],"eth":{"_requestManager":{"polls":{},"provider":{},"timeout":null},"accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":69891,"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","compile":{},"gasPrice":"50000000000","hashrate":0,"mining":true,"pendingTransactions":[],"protocolVersion":"0x40","syncing":false}}
+DATA: wethContract={"abi":[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"guy","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Withdrawal","type":"event"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],"eth":{"_requestManager":{"polls":{},"provider":{},"timeout":null},"accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":71501,"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","compile":{},"gasPrice":"50000000000","hashrate":0,"mining":true,"pendingTransactions":[],"protocolVersion":"0x40","syncing":false}}
 undefined
 > 
 undefined
@@ -237,7 +237,7 @@ undefined
 > 
 undefined
 > 
-DATA: daiContract={"abi":[{"inputs":[{"internalType":"string","name":"symbol","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"},{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"}],"eth":{"_requestManager":{"polls":{"0x5da127c57de00d5604141d4a7d5f3c5f":{"data":{"method":"eth_getFilterChanges","params":["0x5da127c57de00d5604141d4a7d5f3c5f"]},"id":"0x5da127c57de00d5604141d4a7d5f3c5f"}},"provider":{},"timeout":{}},"accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":69891,"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","compile":{},"gasPrice":"50000000000","hashrate":0,"mining":true,"pendingTransactions":[{"blockHash":null,"blockNumber":null,"from":"0xa11aae29840fbb5c86e6fd4cf809eba183aef433","gas":4000000,"gasPrice":"50000000000","hash":"0xe96c51a109d8ff3a9b40eb82d8e03e1ddfa07cb8307c4e661bd848de8e32eeb8","input":"0x60c0604052600d60808190526c2bb930b83832b21022ba3432b960991b60a090815261002e916000919061007a565b50604080518082019091526004808252630ae8aa8960e31b602090920191825261005a9160019161007a565b506002805460ff1916601217905534801561007457600080fd5b50610115565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100bb57805160ff19168380011785556100e8565b828001600101855582156100e8579182015b828111156100e85782518255916020019190600101906100cd565b506100f49291506100f8565b5090565b61011291905b808211156100f457600081556001016100fe565b90565b6106fa806101246000396000f3fe6080604052600436106100a05760003560e01c8063313ce56711610064578063313ce5671461021f57806370a082311461024a57806395d89b411461027d578063a9059cbb14610292578063d0e30db0146102cb578063dd62ed3e146102d3576100af565b806306fdde03146100b4578063095ea7b31461013e57806318160ddd1461018b57806323b872dd146101b25780632e1a7d4d146101f5576100af565b366100af576100ad61030e565b005b600080fd5b3480156100c057600080fd5b506100c961035d565b6040805160208082528351818301528351919283929083019185019080838360005b838110156101035781810151838201526020016100eb565b50505050905090810190601f1680156101305780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561014a57600080fd5b506101776004803603604081101561016157600080fd5b506001600160a01b0381351690602001356103eb565b604080519115158252519081900360200190f35b34801561019757600080fd5b506101a0610451565b60408051918252519081900360200190f35b3480156101be57600080fd5b50610177600480360360608110156101d557600080fd5b506001600160a01b03813581169160208101359091169060400135610455565b34801561020157600080fd5b506100ad6004803603602081101561021857600080fd5b5035610589565b34801561022b57600080fd5b5061023461061e565b6040805160ff9092168252519081900360200190f35b34801561025657600080fd5b506101a06004803603602081101561026d57600080fd5b50356001600160a01b0316610627565b34801561028957600080fd5b506100c9610639565b34801561029e57600080fd5b50610177600480360360408110156102b557600080fd5b506001600160a01b038135169060200135610693565b6100ad61030e565b3480156102df57600080fd5b506101a0600480360360408110156102f657600080fd5b506001600160a01b03813581169160200135166106a7565b33600081815260036020908152604091829020805434908101909155825190815291517fe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c9281900390910190a2565b6000805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103e35780601f106103b8576101008083540402835291602001916103e3565b820191906000526020600020905b8154815290600101906020018083116103c657829003601f168201915b505050505081565b3360008181526004602090815260408083206001600160a01b038716808552908352818420869055815186815291519394909390927f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925928290030190a350600192915050565b4790565b6001600160a01b03831660009081526003602052604081205482111561047a57600080fd5b6001600160a01b03841633148015906104b857506001600160a01b038416600090815260046020908152604080832033845290915290205460001914155b15610518576001600160a01b03841660009081526004602090815260408083203384529091529020548211156104ed57600080fd5b6001600160a01b03841660009081526004602090815260408083203384529091529020805483900390555b6001600160a01b03808516600081815260036020908152604080832080548890039055938716808352918490208054870190558351868152935191937fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef929081900390910190a35060019392505050565b336000908152600360205260409020548111156105a557600080fd5b33600081815260036020526040808220805485900390555183156108fc0291849190818181858888f193505050501580156105e4573d6000803e3d6000fd5b5060408051828152905133917f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65919081900360200190a250565b60025460ff1681565b60036020526000908152604090205481565b60018054604080516020600284861615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103e35780601f106103b8576101008083540402835291602001916103e3565b60006106a0338484610455565b9392505050565b60046020908152600092835260408084209091529082529020548156fea264697066735822122099db6f304a7b456121f7dff826ced98407d700dc01d0d6cfd854deb95be50e6964736f6c63430006030033","nonce":780,"r":"0x70562cde68e8fd5917d545e54401c8127566c91aa73739095574eb4a9f7b0f56","s":"0x103e1d6f8fc79fff5e962111bef345f57d2e24d80c1a9cf66c383b8e055f95b3","to":null,"transactionIndex":null,"v":"0xa96","value":"0"}],"protocolVersion":"0x40","syncing":false}}
+DATA: daiContract={"abi":[{"inputs":[{"internalType":"string","name":"symbol","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"},{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"}],"eth":{"_requestManager":{"polls":{"0x4467226f85021f513900f3ba699dd129":{"data":{"method":"eth_getFilterChanges","params":["0x4467226f85021f513900f3ba699dd129"]},"id":"0x4467226f85021f513900f3ba699dd129"}},"provider":{},"timeout":{}},"accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":71501,"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","compile":{},"gasPrice":"50000000000","hashrate":0,"mining":true,"pendingTransactions":[{"blockHash":null,"blockNumber":null,"from":"0xa11aae29840fbb5c86e6fd4cf809eba183aef433","gas":4000000,"gasPrice":"50000000000","hash":"0x77cf7f07eb72de33a407574fdffd91c31baf59d4ba5ad5ba024187a1b94f6147","input":"0x60c0604052600d60808190526c2bb930b83832b21022ba3432b960991b60a090815261002e916000919061007a565b50604080518082019091526004808252630ae8aa8960e31b602090920191825261005a9160019161007a565b506002805460ff1916601217905534801561007457600080fd5b50610115565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100bb57805160ff19168380011785556100e8565b828001600101855582156100e8579182015b828111156100e85782518255916020019190600101906100cd565b506100f49291506100f8565b5090565b61011291905b808211156100f457600081556001016100fe565b90565b6106fa806101246000396000f3fe6080604052600436106100a05760003560e01c8063313ce56711610064578063313ce5671461021f57806370a082311461024a57806395d89b411461027d578063a9059cbb14610292578063d0e30db0146102cb578063dd62ed3e146102d3576100af565b806306fdde03146100b4578063095ea7b31461013e57806318160ddd1461018b57806323b872dd146101b25780632e1a7d4d146101f5576100af565b366100af576100ad61030e565b005b600080fd5b3480156100c057600080fd5b506100c961035d565b6040805160208082528351818301528351919283929083019185019080838360005b838110156101035781810151838201526020016100eb565b50505050905090810190601f1680156101305780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561014a57600080fd5b506101776004803603604081101561016157600080fd5b506001600160a01b0381351690602001356103eb565b604080519115158252519081900360200190f35b34801561019757600080fd5b506101a0610451565b60408051918252519081900360200190f35b3480156101be57600080fd5b50610177600480360360608110156101d557600080fd5b506001600160a01b03813581169160208101359091169060400135610455565b34801561020157600080fd5b506100ad6004803603602081101561021857600080fd5b5035610589565b34801561022b57600080fd5b5061023461061e565b6040805160ff9092168252519081900360200190f35b34801561025657600080fd5b506101a06004803603602081101561026d57600080fd5b50356001600160a01b0316610627565b34801561028957600080fd5b506100c9610639565b34801561029e57600080fd5b50610177600480360360408110156102b557600080fd5b506001600160a01b038135169060200135610693565b6100ad61030e565b3480156102df57600080fd5b506101a0600480360360408110156102f657600080fd5b506001600160a01b03813581169160200135166106a7565b33600081815260036020908152604091829020805434908101909155825190815291517fe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c9281900390910190a2565b6000805460408051602060026001851615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103e35780601f106103b8576101008083540402835291602001916103e3565b820191906000526020600020905b8154815290600101906020018083116103c657829003601f168201915b505050505081565b3360008181526004602090815260408083206001600160a01b038716808552908352818420869055815186815291519394909390927f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925928290030190a350600192915050565b4790565b6001600160a01b03831660009081526003602052604081205482111561047a57600080fd5b6001600160a01b03841633148015906104b857506001600160a01b038416600090815260046020908152604080832033845290915290205460001914155b15610518576001600160a01b03841660009081526004602090815260408083203384529091529020548211156104ed57600080fd5b6001600160a01b03841660009081526004602090815260408083203384529091529020805483900390555b6001600160a01b03808516600081815260036020908152604080832080548890039055938716808352918490208054870190558351868152935191937fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef929081900390910190a35060019392505050565b336000908152600360205260409020548111156105a557600080fd5b33600081815260036020526040808220805485900390555183156108fc0291849190818181858888f193505050501580156105e4573d6000803e3d6000fd5b5060408051828152905133917f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65919081900360200190a250565b60025460ff1681565b60036020526000908152604090205481565b60018054604080516020600284861615610100026000190190941693909304601f810184900484028201840190925281815292918301828280156103e35780601f106103b8576101008083540402835291602001916103e3565b60006106a0338484610455565b9392505050565b60046020908152600092835260408084209091529082529020548156fea264697066735822122099db6f304a7b456121f7dff826ced98407d700dc01d0d6cfd854deb95be50e6964736f6c63430006030033","nonce":817,"r":"0xd7fac56dffb3f80ccaf00127a26c6c493e6ffe98c0dd0aaced38fcbba5577325","s":"0x754b081993d460825ff91acc6c0c91b4f817f5dfbb93dc7ee4a48623816ba1b2","to":null,"transactionIndex":null,"v":"0xa96","value":"0"}],"protocolVersion":"0x40","syncing":false}}
 undefined
 > 
 undefined
@@ -248,31 +248,6 @@ undefined
 ...... 
 ......... 
 ............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-......... 
-...... 
-... 
-undefined
-> 
-undefined
-> 
-undefined
-> 
-undefined
-> 
-undefined
-> 
-... 
-...... 
-......... 
 ............ 
 ............ 
 ............ 
@@ -312,56 +287,56 @@ undefined
 ... 
 undefined
 > 
+undefined
+> 
+undefined
+> 
+undefined
+> 
+undefined
+> 
+... 
+...... 
+......... 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+......... 
+...... 
 ... 
 undefined
 > 
-DATA: var wethAddress="0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899";
+... 
+undefined
+> 
+DATA: var wethAddress="0xc83bac300889835dcdb7ae846cd4af8c062a5907";
 DATA: var wethAbi=[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"guy","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Withdrawal","type":"event"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"guy","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 DATA: var weth=eth.contract(wethAbi).at(wethAddress);
-DATA: var daiAddress="0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296";
+DATA: var daiAddress="0x02cee19c8007bad0636f9db35857f75d6d9f1346";
 DATA: var daiAbi=[{"inputs":[{"internalType":"string","name":"symbol","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"},{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 DATA: var dai=eth.contract(daiAbi).at(daiAddress);
-DATA: var vanillaOptinoAddress="0xa52b1fee742e8c8c48746aff91d0de5ffe363127";
+DATA: var vanillaOptinoAddress="0x0db88ef7e3c0b2cd4e4223c6a98a12de07a5fb40";
 DATA: var vanillaOptinoAbi=[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 DATA: var vanillaOptino=eth.contract(vanillaOptinoAbi).at(vanillaOptinoAddress);
-DATA: var priceFeedAddress="0xb31541e8f29775197de03bf2e0483fd72beb7f46";
+DATA: var priceFeedAddress="0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1";
 DATA: var priceFeedAbi=[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);
 undefined
 > 
-DATA: priceFeedAdaptorContract={"abi":[{"inputs":[{"internalType":"address","name":"_sourceAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"sourceAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],"eth":{"_requestManager":{"polls":{},"provider":{},"timeout":null},"accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":69893,"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","compile":{},"gasPrice":"50000000000","hashrate":0,"mining":true,"pendingTransactions":[],"protocolVersion":"0x40","syncing":false}}
+DATA: priceFeedAdaptorContract={"abi":[{"inputs":[{"internalType":"address","name":"_sourceAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"sourceAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],"eth":{"_requestManager":{"polls":{},"provider":{},"timeout":null},"accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":71503,"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","compile":{},"gasPrice":"50000000000","hashrate":0,"mining":true,"pendingTransactions":[],"protocolVersion":"0x40","syncing":false}}
 undefined
 > 
 undefined
 > 
 undefined
 > 
-DATA: priceFeedAddress=0xb31541e8f29775197de03bf2e0483fd72beb7f46
-undefined
-> 
-... 
-...... 
-......... 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-............ 
-......... 
-...... 
-... 
-undefined
-> 
-undefined
-> 
-undefined
-> 
-undefined
-> 
+DATA: priceFeedAddress=0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1
 undefined
 > 
 ... 
@@ -376,6 +351,31 @@ undefined
 ............ 
 ............ 
 ............ 
+......... 
+...... 
+... 
+undefined
+> 
+undefined
+> 
+undefined
+> 
+undefined
+> 
+undefined
+> 
+... 
+...... 
+......... 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
+............ 
 ............ 
 ............ 
 ......... 
@@ -386,19 +386,19 @@ undefined
 ... 
 undefined
 > 
-DATA: var priceFeedAdaptorAddress="0x7b740adee635850e781a6ff7352495b072d05a8f";
+DATA: var priceFeedAdaptorAddress="0x6ab173b6cb85b54650d1452f2dd9ba0fc5746299";
 DATA: var priceFeedAdaptorAbi=[{"inputs":[{"internalType":"address","name":"_sourceAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"sourceAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}];
 DATA: var priceFeedAdaptor=eth.contract(priceFeedAdaptorAbi).at(priceFeedAdaptorAddress);
-DATA: var vanillaOptinoFactoryAddress="0x69a54484da3c51d1d02da3a5e08b59b140f5c261";
+DATA: var vanillaOptinoFactoryAddress="0x13d2e9c117fcfa1fd7cd3d88cb376f143da01335";
 DATA: var vanillaOptinoFactoryAbi=[{"inputs":[{"internalType":"address","name":"_optinoTokenTemplate","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":false,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"baseDecimals","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"quoteDecimals","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"maxTerm","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"ConfigAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":false,"internalType":"address","name":"priceFeed","type":"address"}],"name":"ConfigRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":true,"internalType":"address","name":"baseToken","type":"address"},{"indexed":true,"internalType":"address","name":"quoteToken","type":"address"},{"indexed":false,"internalType":"address","name":"priceFeed","type":"address"},{"indexed":false,"internalType":"uint256","name":"maxTerm","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"ConfigUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_newAddress","type":"address"}],"name":"ContractDeprecated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"ethers","type":"uint256"}],"name":"EthersReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bound","type":"uint256"},{"indexed":false,"internalType":"address","name":"optinoToken","type":"address"},{"indexed":false,"internalType":"address","name":"coverToken","type":"address"}],"name":"SeriesAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bound","type":"uint256"}],"name":"SeriesRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bound","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"spot","type":"uint256"}],"name":"SeriesSpotUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"configKey","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"callPut","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"expiry","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"strike","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"bound","type":"uint256"},{"indexed":false,"internalType":"string","name":"description","type":"string"}],"name":"SeriesUpdated","type":"event"},{"inputs":[],"name":"FEEDECIMALS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"GRACEPERIOD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"baseDecimals","type":"uint256"},{"internalType":"uint256","name":"quoteDecimals","type":"uint256"},{"internalType":"uint256","name":"rateDecimals","type":"uint256"},{"internalType":"uint256","name":"maxTerm","type":"uint256"},{"internalType":"uint256","name":"fee","type":"uint256"},{"internalType":"string","name":"description","type":"string"}],"name":"addConfig","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_callPut","type":"uint256"},{"internalType":"uint256","name":"_strike","type":"uint256"},{"internalType":"uint256","name":"_bound","type":"uint256"},{"internalType":"uint256","name":"_baseTokens","type":"uint256"},{"internalType":"uint256","name":"_baseDecimals","type":"uint256"},{"internalType":"uint256","name":"_rateDecimals","type":"uint256"}],"name":"collateralInDeliveryToken","outputs":[{"internalType":"uint256","name":"_collateral","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"configDataLength","outputs":[{"internalType":"uint256","name":"_length","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newAddress","type":"address"}],"name":"deprecateContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getConfigByIndex","outputs":[{"internalType":"bytes32","name":"_configKey","type":"bytes32"},{"internalType":"address","name":"_baseToken","type":"address"},{"internalType":"address","name":"_quoteToken","type":"address"},{"internalType":"address","name":"_priceFeed","type":"address"},{"internalType":"uint256","name":"_baseDecimals","type":"uint256"},{"internalType":"uint256","name":"_quoteDecimals","type":"uint256"},{"internalType":"uint256","name":"_rateDecimals","type":"uint256"},{"internalType":"uint256","name":"_maxTerm","type":"uint256"},{"internalType":"uint256","name":"_fee","type":"uint256"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"getConfigByKey","outputs":[{"internalType":"address","name":"_baseToken","type":"address"},{"internalType":"address","name":"_quoteToken","type":"address"},{"internalType":"address","name":"_priceFeed","type":"address"},{"internalType":"uint256","name":"_baseDecimals","type":"uint256"},{"internalType":"uint256","name":"_quoteDecimals","type":"uint256"},{"internalType":"uint256","name":"_rateDecimals","type":"uint256"},{"internalType":"uint256","name":"_maxTerm","type":"uint256"},{"internalType":"uint256","name":"_fee","type":"uint256"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"getSeriesAndConfigCalcDataByKey","outputs":[{"internalType":"address","name":"_baseToken","type":"address"},{"internalType":"address","name":"_quoteToken","type":"address"},{"internalType":"uint256","name":"_baseDecimals","type":"uint256"},{"internalType":"uint256","name":"_quoteDecimals","type":"uint256"},{"internalType":"uint256","name":"_rateDecimals","type":"uint256"},{"internalType":"uint256","name":"_callPut","type":"uint256"},{"internalType":"uint256","name":"_strike","type":"uint256"},{"internalType":"uint256","name":"_bound","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getSeriesByIndex","outputs":[{"internalType":"bytes32","name":"_seriesKey","type":"bytes32"},{"internalType":"bytes32","name":"_configKey","type":"bytes32"},{"internalType":"uint256","name":"_callPut","type":"uint256"},{"internalType":"uint256","name":"_expiry","type":"uint256"},{"internalType":"uint256","name":"_strike","type":"uint256"},{"internalType":"uint256","name":"_bound","type":"uint256"},{"internalType":"uint256","name":"_timestamp","type":"uint256"},{"internalType":"address","name":"_optinoToken","type":"address"},{"internalType":"address","name":"_coverToken","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"getSeriesByKey","outputs":[{"internalType":"bytes32","name":"_configKey","type":"bytes32"},{"internalType":"uint256","name":"_callPut","type":"uint256"},{"internalType":"uint256","name":"_expiry","type":"uint256"},{"internalType":"uint256","name":"_strike","type":"uint256"},{"internalType":"uint256","name":"_bound","type":"uint256"},{"internalType":"address","name":"_optinoToken","type":"address"},{"internalType":"address","name":"_coverToken","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getSeriesCurrentSpot","outputs":[{"internalType":"uint256","name":"_currentSpot","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getSeriesSpot","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"getTokenInfo","outputs":[{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"string","name":"_name","type":"string"},{"internalType":"uint256","name":"_decimals","type":"uint256"},{"internalType":"uint256","name":"_totalSupply","type":"uint256"},{"internalType":"uint256","name":"_balance","type":"uint256"},{"internalType":"uint256","name":"_allowance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"callPut","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"uint256","name":"strike","type":"uint256"},{"internalType":"uint256","name":"bound","type":"uint256"},{"internalType":"uint256","name":"baseTokens","type":"uint256"},{"internalType":"address","name":"uiFeeAccount","type":"address"}],"name":"mintOptinoTokens","outputs":[{"internalType":"address","name":"_optinoToken","type":"address"},{"internalType":"address","name":"_optionCollateralToken","type":"address"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"newAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"optinoTokenTemplate","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_callPut","type":"uint256"}],"name":"payoffDeliveryInBaseOrQuote","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"_callPut","type":"uint256"},{"internalType":"uint256","name":"_strike","type":"uint256"},{"internalType":"uint256","name":"_bound","type":"uint256"},{"internalType":"uint256","name":"_spot","type":"uint256"},{"internalType":"uint256","name":"_baseTokens","type":"uint256"},{"internalType":"uint256","name":"_baseDecimals","type":"uint256"},{"internalType":"uint256","name":"_rateDecimals","type":"uint256"}],"name":"payoffInDeliveryToken","outputs":[{"internalType":"uint256","name":"_payoff","type":"uint256"},{"internalType":"uint256","name":"_collateral","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"recoverTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"seriesDataLength","outputs":[{"internalType":"uint256","name":"_seriesDataLength","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"setSeriesSpot","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"internalType":"uint256","name":"spot","type":"uint256"}],"name":"setSeriesSpotIfPriceFeedFails","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"baseToken","type":"address"},{"internalType":"address","name":"quoteToken","type":"address"},{"internalType":"address","name":"priceFeed","type":"address"},{"internalType":"uint256","name":"maxTerm","type":"uint256"},{"internalType":"uint256","name":"fee","type":"uint256"},{"internalType":"string","name":"description","type":"string"}],"name":"updateConfig","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 DATA: var vanillaOptinoAbi=[{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"optinoToken","type":"address"},{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Close","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"optinoToken","type":"address"},{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Payoff","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"COLLECTDUSTDECIMALS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"COLLECTDUSTMINIMUMDECIMALS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"OPTIONDECIMALS","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"_baseTokens","type":"uint256"}],"name":"_close","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"_settle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bound","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"callPut","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_baseTokens","type":"uint256"}],"name":"close","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"configKey","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentPayoffPerUnitBaseToken","outputs":[{"internalType":"uint256","name":"_currentPayoffPerUnitBaseToken","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentSpot","outputs":[{"internalType":"uint256","name":"_currentSpot","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"expiry","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"factory","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getConfigData1","outputs":[{"internalType":"address","name":"_baseToken","type":"address"},{"internalType":"address","name":"_quoteToken","type":"address"},{"internalType":"address","name":"_priceFeed","type":"address"},{"internalType":"uint256","name":"_baseDecimals","type":"uint256"},{"internalType":"uint256","name":"_quoteDecimals","type":"uint256"},{"internalType":"uint256","name":"_rateDecimals","type":"uint256"},{"internalType":"uint256","name":"_maxTerm","type":"uint256"},{"internalType":"uint256","name":"_fee","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getConfigData2","outputs":[{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getSeriesData","outputs":[{"internalType":"bytes32","name":"_seriesKey","type":"bytes32"},{"internalType":"bytes32","name":"_configKey","type":"bytes32"},{"internalType":"uint256","name":"_callPut","type":"uint256"},{"internalType":"uint256","name":"_expiry","type":"uint256"},{"internalType":"uint256","name":"_strike","type":"uint256"},{"internalType":"uint256","name":"_bound","type":"uint256"},{"internalType":"address","name":"_optinoToken","type":"address"},{"internalType":"address","name":"_coverToken","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_factory","type":"address"},{"internalType":"bytes32","name":"_seriesKey","type":"bytes32"},{"internalType":"address","name":"_pair","type":"address"},{"internalType":"uint256","name":"_seriesNumber","type":"uint256"},{"internalType":"bool","name":"_isCover","type":"bool"}],"name":"initOptinoToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"isCover","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pair","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"payoffDeliveryInBaseOrQuote","outputs":[{"internalType":"uint256","name":"_callPut","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_spot","type":"uint256"},{"internalType":"uint256","name":"_baseTokens","type":"uint256"}],"name":"payoffInDeliveryToken","outputs":[{"internalType":"uint256","name":"_payoff","type":"uint256"},{"internalType":"uint256","name":"_collateral","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"payoffPerUnitBaseToken","outputs":[{"internalType":"uint256","name":"_payoffPerUnitBaseToken","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"recoverTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"seriesKey","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"seriesNumber","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"setSpot","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"settle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"strike","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 DATA: var vanillaOptino=eth.contract(vanillaOptinoFactoryAbi).at(vanillaOptinoFactoryAddress);
 RESULT:  # Account                                             EtherBalanceChange                           WETH                            DAI Name
 RESULT:                                                                                                        2                              3
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.508087750000000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.507702550000000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.508087750000000000           0.000000000000000000     4000000.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.507702550000000000           0.000000000000000000     4000000.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976        0.000000000000000000           0.000000000000000000           0.000000000000000000 maker1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -410,17 +410,17 @@ RESULT:  5 0xa55a151eb00fded1634d27d1127b4be4627079ea        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.000000000000000000 uiFeeAccount
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  7 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899        0.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
+RESULT:  7 0xc83bac300889835dcdb7ae846cd4af8c062a5907        0.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
+RESULT:  8 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT:  9 0x0db88ef7e3c0b2cd4e4223c6a98a12de07a5fb40        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
+RESULT: 10 0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
+RESULT: 11 0x6ab173b6cb85b54650d1452f2dd9ba0fc5746299        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaOptinoFactory
+RESULT: 12 0x13d2e9c117fcfa1fd7cd3d88cb376f143da01335        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaOptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                                     0.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -432,61 +432,61 @@ undefined
 RESULT: PASS Deploy Group #1 - Contracts - WETH9
 1
 > 
-RESULT: wethTx status=0x1 Success gas=4000000 gasUsed=505987 costETH=0.02529935 costUSD=3.67359211675 @ ETH/USD=145.205 gasPrice=50 gwei block=69893 txIx=0 txId=0xe96c51a109d8ff3a9b40eb82d8e03e1ddfa07cb8307c4e661bd848de8e32eeb8 @ 1587873982 Sun, 26 Apr 2020 04:06:22 UTC
+RESULT: wethTx status=0x1 Success gas=4000000 gasUsed=505987 costETH=0.02529935 costUSD=3.67359211675 @ ETH/USD=145.205 gasPrice=50 gwei block=71503 txIx=0 txId=0x77cf7f07eb72de33a407574fdffd91c31baf59d4ba5ad5ba024187a1b94f6147 @ 1587875592 Sun, 26 Apr 2020 04:33:12 UTC
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - DAI
 1
 > 
-RESULT: daiTx status=0x1 Success gas=4000000 gasUsed=904554 costETH=0.0452277 costUSD=6.5672881785 @ ETH/USD=145.205 gasPrice=50 gwei block=69893 txIx=1 txId=0x3b0aea92fe78ba2ebd01ae56e79c3350c2e936fa352b6baf107788224fe91ddb @ 1587873982 Sun, 26 Apr 2020 04:06:22 UTC
+RESULT: daiTx status=0x1 Success gas=4000000 gasUsed=904554 costETH=0.0452277 costUSD=6.5672881785 @ ETH/USD=145.205 gasPrice=50 gwei block=71503 txIx=1 txId=0xcbce6ec1231934286cb973c34b3ed9b540f78ab8aae7e0a968767f8784dc62c8 @ 1587875592 Sun, 26 Apr 2020 04:33:12 UTC
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - VanillaOptino
 1
 > 
-RESULT: vanillaOptinoTx status=0x1 Success gas=5000000 gasUsed=4197062 costETH=0.2098531 costUSD=30.4717193855 @ ETH/USD=145.205 gasPrice=50 gwei block=69893 txIx=2 txId=0x1f152c05470e51fa382b0d546453d37d6de25d169ce55d675e4dc9d6faa46b5e @ 1587873982 Sun, 26 Apr 2020 04:06:22 UTC
+RESULT: vanillaOptinoTx status=0x1 Success gas=5000000 gasUsed=4193222 costETH=0.2096611 costUSD=30.4438400255 @ ETH/USD=145.205 gasPrice=50 gwei block=71503 txIx=2 txId=0xf28c95557df60667885e1e95592dd52d1a005bb397a6c4afd6c99a7e824f856e @ 1587875592 Sun, 26 Apr 2020 04:33:12 UTC
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - PriceFeed
 1
 > 
-RESULT: priceFeedTx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0089488 costUSD=1.299410504 @ ETH/USD=145.205 gasPrice=50 gwei block=69893 txIx=3 txId=0x3d208657ad8e3957a3435054a6e3ca01d94ec886e08ee24a3f69b92dfe721277 @ 1587873982 Sun, 26 Apr 2020 04:06:22 UTC
+RESULT: priceFeedTx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0089488 costUSD=1.299410504 @ ETH/USD=145.205 gasPrice=50 gwei block=71503 txIx=3 txId=0xa3253a58169ff95545e9aabcb6fd6c3114451fcec41d4aad6598be9d1887dedd @ 1587875592 Sun, 26 Apr 2020 04:33:12 UTC
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - PriceFeedAdaptor
 1
 > 
-RESULT: priceFeedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.007466 costUSD=1.08410053 @ ETH/USD=145.205 gasPrice=50 gwei block=69895 txIx=0 txId=0x45bafed62620c03e6b0378a2d9412cefed60e5284c8ba71d064e47e07d8ee15d @ 1587873984 Sun, 26 Apr 2020 04:06:24 UTC
+RESULT: priceFeedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.007466 costUSD=1.08410053 @ ETH/USD=145.205 gasPrice=50 gwei block=71505 txIx=0 txId=0x9ccd6d8bce4c03ce2b26c794b5c961f4c165b109ddc858f284422f620f13d195 @ 1587875594 Sun, 26 Apr 2020 04:33:14 UTC
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - VanillaOptinoFactory
 1
 > 
-RESULT: vanillaOptinoFactoryTx status=0x1 Success gas=5000000 gasUsed=4225856 costETH=0.2112928 costUSD=30.680771024 @ ETH/USD=145.205 gasPrice=50 gwei block=69895 txIx=1 txId=0xc36a90cb8b534f06cc22ad8cbd4e39a77964f43ea53caad14a42e21c341c1fcb @ 1587873984 Sun, 26 Apr 2020 04:06:24 UTC
+RESULT: vanillaOptinoFactoryTx status=0x1 Success gas=5000000 gasUsed=4221992 costETH=0.2110996 costUSD=30.652717418 @ ETH/USD=145.205 gasPrice=50 gwei block=71505 txIx=1 txId=0x27add1c5216ccd5db6b4bd533e71da8be86c9d9aa6c81606047450d63e0d2fbe @ 1587875594 Sun, 26 Apr 2020 04:33:14 UTC
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: priceFeedContractAddress=PriceFeed:0xb315
+RESULT: priceFeedContractAddress=PriceFeed:0x2d4b
 RESULT: priceFeed.peek=0x00000000000000000000000000000000000000000000000a3ee6e2a294d40000,true
 RESULT: priceFeed.value=189 ETH/USD
 RESULT: priceFeed.hasValue=true
-RESULT: SetValue 0 #69893 value=189 hasValue=true
+RESULT: SetValue 0 #71503 value=189 hasValue=true
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x7b74
-RESULT: priceFeedAdaptor.sourceAddress=0xb31541e8f29775197de03bf2e0483fd72beb7f46
+RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x6ab1
+RESULT: priceFeedAdaptor.sourceAddress=0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1
 RESULT: priceFeedAdaptor.spot=["189000000000000000000",true]
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: token0ContractAddress=WETH:0x9ecf
+RESULT: token0ContractAddress=WETH:0xc83b
 RESULT: token0.owner/new - Function call failed
 RESULT: token0.details='WETH' 'Wrapped Ether' 18 dp
 RESULT: token0.totalSupply=0
@@ -495,17 +495,17 @@ undefined
 RESULT: 
 undefined
 > 
-RESULT: token1ContractAddress=DAI:0xbf52
+RESULT: token1ContractAddress=DAI:0x02ce
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='DAI' 'Mintable ERC20 token' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #69893 from=null:0x0000 to=deployer:0xa11a tokens=4000000
+RESULT: token1.Transfer 0 #71503 from=null:0x0000 to=deployer:0xa11a tokens=4000000
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x69a5
+RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x13d2
 RESULT: vanillaOptinoFactory.owner/new=deployer:0xa11a/null:0x0000
 RESULT: vanillaOptinoFactory.configDataLength=0
 RESULT: vanillaOptinoFactory.seriesDataLength=0
@@ -571,9 +571,9 @@ undefined
 RESULT:  # Account                                             EtherBalanceChange                           WETH                            DAI Name
 RESULT:                                                                                                        2                              3
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.560852300000000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.560467100000000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.547773300000000000           0.000000000000000000           0.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.547388100000000000           0.000000000000000000           0.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976    -1000.006566450000000000        1000.000000000000000000     1000000.000000000000000000 maker1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -585,17 +585,17 @@ RESULT:  5 0xa55a151eb00fded1634d27d1127b4be4627079ea    -1000.00217085000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.000000000000000000 uiFeeAccount
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  7 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
+RESULT:  7 0xc83bac300889835dcdb7ae846cd4af8c062a5907     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
+RESULT:  8 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT:  9 0x0db88ef7e3c0b2cd4e4223c6a98a12de07a5fb40        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
+RESULT: 10 0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
+RESULT: 11 0x6ab173b6cb85b54650d1452f2dd9ba0fc5746299        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaOptinoFactory
+RESULT: 12 0x13d2e9c117fcfa1fd7cd3d88cb376f143da01335        0.000000000000000000           0.000000000000000000           0.000000000000000000 VanillaOptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                                  4000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -640,46 +640,46 @@ RESULT: PASS Deploy Group #2 - Setup - weth.approve(vanillaOptinoFactory, lots')
 RESULT: PASS Deploy Group #2 - Setup - dai.approve(vanillaOptinoFactory, lots')
 1
 > 
-RESULT: deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=69898 txIx=0 txId=0x6f326a4a3ba475e7828c34629193237977275bd2db9c5e8f46a1009cc27ec0dd @ 1587873987 Sun, 26 Apr 2020 04:06:27 UTC
+RESULT: deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=1 txId=0x4e13478b798daf0c5804cb9d3e759f0d49d6be826e0ca05c82c2d87aa925ecc9 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=1 txId=0xf10b99ae4b7b44a0da97af0c05d7cd0b711bef4478235a2cbc449b61c9d4845a @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=0 txId=0xa3c1d67d114a3de8ea018ce25cec9025f0922da2aab06da49aa72be6ed5ae129 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=0 txId=0xdb24b02d3dd133dee6c86a93bbf7a9e6f74d982848099bf0a6a61d527528c8bc @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=11 txId=0x0dc65dc868d643ecac38825cb430a1111eec3cd901a04f4c5ccc0f46129fb1ef @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=10 txId=0xe04c5c3261ee15fc65a2819a641d0a4453fad6366d56a3109e72613f5456648d @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=43417 costETH=0.00217085 costUSD=0.31521827425 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=10 txId=0x47f10912930eb1b13a2fb39eec7e92ca5765f0c4203ba8208409121d193e32d5 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.002548 costUSD=0.36998234 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=4 txId=0xf222f237b7c416e7b87517646cc9ee561c8cf78b0ebef7e9b4eb393393d36a30 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.002548 costUSD=0.36998234 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=4 txId=0x1ec61f5016f7908e9535ce5e8d8cd1e40b9c30951be448f6773d05063eee1cf4 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.002548 costUSD=0.36998234 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=5 txId=0xdf021b5d486620c420507007a08c797ec914410df7982aaddccfe01ec207e0a9 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.002548 costUSD=0.36998234 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=5 txId=0xea3cb07e734da1b9a49e2a487364e972438523d5a04b780cb5d469c5159abea4 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.002548 costUSD=0.36998234 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=6 txId=0x35488b0d50d0707971b252564f1bf1e59327aa5fb330b2bfe48c763a900d2649 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=50960 costETH=0.002548 costUSD=0.36998234 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=6 txId=0xc5af5b14b2d395b8a237333c071223a0ecb8c2039ca0d64f4ed8108846b2492a @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=35960 costETH=0.001798 costUSD=0.26107859 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=7 txId=0x4b92259d08bdd88bb0e8a11d1dbba2efb5850810c87ec83b082dc335f1158513 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=35960 costETH=0.001798 costUSD=0.26107859 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=7 txId=0x6998ed985826e76443b792de8558c454dd19a1e8a880d4c8d6193e94fd230b19 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_9Tx status=0x1 Success gas=1000000 gasUsed=320898 costETH=0.0160449 costUSD=2.3297997045 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=8 txId=0x0f5165930afdde703d21f33b1d1e0e7a9b8a84c75e28b38556185bc28f2006b8 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_9Tx status=0x1 Success gas=1000000 gasUsed=320898 costETH=0.0160449 costUSD=2.3297997045 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=8 txId=0xe05a1cfb03b9c932e0414fdba67999e289456a953b175c3c97fb8b3352fa5890 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_10Tx status=0x1 Success gas=1000000 gasUsed=283973 costETH=0.01419865 costUSD=2.06171497325 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=9 txId=0xb5ac44638e18709b163eec26b9dcde29071ea8934941039dd7c2c2128c573866 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_10Tx status=0x1 Success gas=1000000 gasUsed=283973 costETH=0.01419865 costUSD=2.06171497325 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=9 txId=0x552d86c0e900d9f87ab2ccd1b8bba60c6a0ba0ecc063c3fa7505aab68f36243e @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=43944 costETH=0.0021972 costUSD=0.319044426 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=2 txId=0x5f1c15edfc6e624dc58c8cfbf56985aa4966d688f6bacdfa018cabc2ce2f02a3 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=43944 costETH=0.0021972 costUSD=0.319044426 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=2 txId=0xa309cb8adea45a1c469cf5bfc327e7b44158667eb63059649068c060a9404d95 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
-RESULT: deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0021984 costUSD=0.319218672 @ ETH/USD=145.205 gasPrice=50 gwei block=69899 txIx=3 txId=0xdb8e01795635e64e9d43e8989014a02dd3d166800ac8e9383789a0aab8e19bf5 @ 1587873988 Sun, 26 Apr 2020 04:06:28 UTC
+RESULT: deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0021984 costUSD=0.319218672 @ ETH/USD=145.205 gasPrice=50 gwei block=71509 txIx=3 txId=0xfd8e595c43dcd9537c692dc9debf6195fa5b8d8aa1b2669b2a24bb30077f4a17 @ 1587875598 Sun, 26 Apr 2020 04:33:18 UTC
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: token0ContractAddress=WETH:0x9ecf
+RESULT: token0ContractAddress=WETH:0xc83b
 RESULT: token0.owner/new - Function call failed
 RESULT: token0.details='WETH' 'Wrapped Ether' 18 dp
 RESULT: token0.totalSupply=4000
@@ -688,25 +688,25 @@ undefined
 RESULT: 
 undefined
 > 
-RESULT: token1ContractAddress=DAI:0xbf52
+RESULT: token1ContractAddress=DAI:0x02ce
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='DAI' 'Mintable ERC20 token' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Approval 0 #69899 tokenOwner=maker1:0xa22a spender=VanillaOptinoFactory:0x69a5 tokens=1000000
-RESULT: token1.Transfer 0 #69899 from=deployer:0xa11a to=maker1:0xa22a tokens=1000000
-RESULT: token1.Transfer 1 #69899 from=deployer:0xa11a to=maker2:0xa33a tokens=1000000
-RESULT: token1.Transfer 2 #69899 from=deployer:0xa11a to=taker1:0xa44a tokens=1000000
-RESULT: token1.Transfer 3 #69899 from=deployer:0xa11a to=taker2:0xa55a tokens=1000000
+RESULT: token1.Approval 0 #71509 tokenOwner=maker1:0xa22a spender=VanillaOptinoFactory:0x13d2 tokens=1000000
+RESULT: token1.Transfer 0 #71509 from=deployer:0xa11a to=maker1:0xa22a tokens=1000000
+RESULT: token1.Transfer 1 #71509 from=deployer:0xa11a to=maker2:0xa33a tokens=1000000
+RESULT: token1.Transfer 2 #71509 from=deployer:0xa11a to=taker1:0xa44a tokens=1000000
+RESULT: token1.Transfer 3 #71509 from=deployer:0xa11a to=taker2:0xa55a tokens=1000000
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x69a5
+RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x13d2
 RESULT: vanillaOptinoFactory.owner/new=deployer:0xa11a/null:0x0000
 RESULT: vanillaOptinoFactory.configDataLength=2
-RESULT: vanillaOptino.getConfigByIndex(0). key=0x5e208c2bd98df36746eb7782a873eabd7809c6bddfef335047f70092aeed27fa, baseToken=WETH:0x9ecf, quoteToken=DAI:0xbf52, priceFeed=PriceFeedAdaptor:0x7b74, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='WETH/DAI MakerDAO PF', timestamp=1587873988
-RESULT: vanillaOptino.getConfigByIndex(1). key=0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d, baseToken=null:0x0000, quoteToken=DAI:0xbf52, priceFeed=PriceFeedAdaptor:0x7b74, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/DAI MakerDAO PF', timestamp=1587873988
+RESULT: vanillaOptino.getConfigByIndex(0). key=0xd1be0dea2398030fffcbf954ccf800017effccdcbef040ca7df09dae1e2110d4, baseToken=WETH:0xc83b, quoteToken=DAI:0x02ce, priceFeed=PriceFeedAdaptor:0x6ab1, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='WETH/DAI MakerDAO PF', timestamp=1587875598
+RESULT: vanillaOptino.getConfigByIndex(1). key=0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019, baseToken=null:0x0000, quoteToken=DAI:0x02ce, priceFeed=PriceFeedAdaptor:0x6ab1, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/DAI MakerDAO PF', timestamp=1587875598
 RESULT: vanillaOptinoFactory.seriesDataLength=0
 undefined
 > 
@@ -759,24 +759,24 @@ undefined
 > 
 undefined
 > 
-RESULT: optinos=["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]
+RESULT: optinos=["0x34eeedae178d495926598241b6e1ab0498fa29db","0x9e139089ace9966b0fe6c03a7763c65ab8b34bce"]
 undefined
 > 
 ... 
 ... 
 ... 
 ... 
-0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7
-0x9e56da235fe490954c1e6c3d65295240259cb290
+0x34eeedae178d495926598241b6e1ab0498fa29db
+0x9e139089ace9966b0fe6c03a7763c65ab8b34bce
 undefined
 > 
 > 
 RESULT:  # Account                                             EtherBalanceChange                           WETH                            DAI Name
 RESULT:                                                                                            zPOPT00000001                 zPOPTC00000001
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.634583300000000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.634198100000000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.547773300000000000           0.000000000000000000           0.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.547388100000000000           0.000000000000000000           0.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976    -1000.080297450000000000        1000.000000000000000000      999499.500000000000000000 maker1
 RESULT:                                                                                    10.000000000000000000          10.000000000000000000
@@ -788,21 +788,21 @@ RESULT:  5 0xa55a151eb00fded1634d27d1127b4be4627079ea    -1000.00217085000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.250000000000000000 uiFeeAccount
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  7 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
+RESULT:  7 0xc83bac300889835dcdb7ae846cd4af8c062a5907     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
+RESULT:  8 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT:  9 0x0db88ef7e3c0b2cd4e4223c6a98a12de07a5fb40        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
+RESULT: 10 0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
+RESULT: 11 0x6ab173b6cb85b54650d1452f2dd9ba0fc5746299        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.250000000000000000 VanillaOptinoFactory
+RESULT: 12 0x13d2e9c117fcfa1fd7cd3d88cb376f143da01335        0.000000000000000000           0.000000000000000000           0.250000000000000000 VanillaOptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7        0.000000000000000000           0.000000000000000000           0.000000000000000000 optinoToken
+RESULT: 13 0x34eeedae178d495926598241b6e1ab0498fa29db        0.000000000000000000           0.000000000000000000           0.000000000000000000 optinoToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x9e56da235fe490954c1e6c3d65295240259cb290        0.000000000000000000           0.000000000000000000         500.000000000000000000 coverToken
+RESULT: 14 0x9e139089ace9966b0fe6c03a7763c65ab8b34bce        0.000000000000000000           0.000000000000000000         500.000000000000000000 coverToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                                  4000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -818,7 +818,7 @@ undefined
 > 
 undefined
 > 
-RESULT: mintOptinoGroup1_1Tx status=0x1 Success gas=3000000 gasUsed=1474620 costETH=0.073731 costUSD=10.706109855 @ ETH/USD=145.205 gasPrice=50 gwei block=69903 txIx=0 txId=0xa99d438ac7ce638c4b251ad7beccbdb0008370db8455d7d507e13194195533aa @ 1587873992 Sun, 26 Apr 2020 04:06:32 UTC
+RESULT: mintOptinoGroup1_1Tx status=0x1 Success gas=3000000 gasUsed=1474620 costETH=0.073731 costUSD=10.706109855 @ ETH/USD=145.205 gasPrice=50 gwei block=71513 txIx=0 txId=0x6d3af83e23cd4348e5724684e024e50073061cd09c0c291ebe2c67d803274ad3 @ 1587875602 Sun, 26 Apr 2020 04:33:22 UTC
 undefined
 > 
 undefined
@@ -828,37 +828,37 @@ undefined
 RESULT: 
 undefined
 > 
-RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x69a5
+RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x13d2
 RESULT: vanillaOptinoFactory.owner/new=deployer:0xa11a/null:0x0000
 RESULT: vanillaOptinoFactory.configDataLength=2
-RESULT: vanillaOptino.getConfigByIndex(0). key=0x5e208c2bd98df36746eb7782a873eabd7809c6bddfef335047f70092aeed27fa, baseToken=WETH:0x9ecf, quoteToken=DAI:0xbf52, priceFeed=PriceFeedAdaptor:0x7b74, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='WETH/DAI MakerDAO PF', timestamp=1587873988
-RESULT: vanillaOptino.getConfigByIndex(1). key=0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d, baseToken=null:0x0000, quoteToken=DAI:0xbf52, priceFeed=PriceFeedAdaptor:0x7b74, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/DAI MakerDAO PF', timestamp=1587873988
+RESULT: vanillaOptino.getConfigByIndex(0). key=0xd1be0dea2398030fffcbf954ccf800017effccdcbef040ca7df09dae1e2110d4, baseToken=WETH:0xc83b, quoteToken=DAI:0x02ce, priceFeed=PriceFeedAdaptor:0x6ab1, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='WETH/DAI MakerDAO PF', timestamp=1587875598
+RESULT: vanillaOptino.getConfigByIndex(1). key=0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019, baseToken=null:0x0000, quoteToken=DAI:0x02ce, priceFeed=PriceFeedAdaptor:0x6ab1, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/DAI MakerDAO PF', timestamp=1587875598
 RESULT: vanillaOptinoFactory.seriesDataLength=1
-RESULT: vanillaOptinoFactory.seriesData=["0x03daed10508bf48daf96b28547a7692bea6ac5618f0fca9f5980e30f1290fad5","0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d","1","1587874000","200000000000000000000","150000000000000000000","1587873992","0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]
-RESULT: vanillaOptino.getSeriesByIndex(0). key=0x03daed10508bf48daf96b28547a7692bea6ac5618f0fca9f5980e30f1290fad5, configKey=0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d, callPut=1, expiry=1587874000, strike=200, bound=150', timestamp=1587873992, optinoToken=0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7, coverToken=0x9e56da235fe490954c1e6c3d65295240259cb290
+RESULT: vanillaOptinoFactory.seriesData=["0x7ad03b1a415a6bb66133e784ce8ce5c95a24ff3d859b631d85bd3e165b4879fe","0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019","1","1587875610","200000000000000000000","150000000000000000000","1587875602","0x34eeedae178d495926598241b6e1ab0498fa29db","0x9e139089ace9966b0fe6c03a7763c65ab8b34bce"]
+RESULT: vanillaOptino.getSeriesByIndex(0). key=0x7ad03b1a415a6bb66133e784ce8ce5c95a24ff3d859b631d85bd3e165b4879fe, configKey=0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019, callPut=1, expiry=1587875610, strike=200, bound=150', timestamp=1587875602, optinoToken=0x34eeedae178d495926598241b6e1ab0498fa29db, coverToken=0x9e139089ace9966b0fe6c03a7763c65ab8b34bce
 RESULT: - optinoToken:
-RESULT:     .owner/new=VanillaOptinoFactory:0x69a5/null:0x0000
-RESULT:     .details='zPOPT00000001' 'Floored Put Optino ETH/DAI MakerDAO PF 2020-04-26T04:06:40Z 150-200' 18 dp
+RESULT:     .owner/new=VanillaOptinoFactory:0x13d2/null:0x0000
+RESULT:     .details='zPOPT00000001' 'Floored Put Optino ETH/DAI MakerDAO PF 2020-04-26T04:33:30Z 150-200' 18 dp
 RESULT:     .totalSupply=10
-RESULT:     .callPut/expiry/strike/bound=1/1587874000/200/150
+RESULT:     .callPut/expiry/strike/bound=1/1587875610/200/150
 RESULT:     .currentSpot/currentPayoffPerUnitBaseToken=189/11
 RESULT:     .spot/payoffPerUnitBaseToken=0/0
-RESULT:     .Transfer 0 #69903 from=null:0x0000 to=maker1:0xa22a tokens=10
+RESULT:     .Transfer 0 #71513 from=null:0x0000 to=maker1:0xa22a tokens=10
 RESULT: - coverToken:
-RESULT:     .owner/new=VanillaOptinoFactory:0x69a5/null:0x0000
-RESULT:     .details='zPOPTC00000001' 'Floored Put Optino Cover ETH/DAI MakerDAO PF 2020-04-26T04:06:40Z 150-200' 18 dp
+RESULT:     .owner/new=VanillaOptinoFactory:0x13d2/null:0x0000
+RESULT:     .details='zPOPTC00000001' 'Floored Put Optino Cover ETH/DAI MakerDAO PF 2020-04-26T04:33:30Z 150-200' 18 dp
 RESULT:     .totalSupply=10
-RESULT:     .callPut/expiry/strike/bound=1/1587874000/200/150
+RESULT:     .callPut/expiry/strike/bound=1/1587875610/200/150
 RESULT:     .currentSpot/currentPayoffPerUnitBaseToken=189/39
 RESULT:     .spot/payoffPerUnitBaseToken=0/0
-RESULT:     .Transfer 0 #69903 from=null:0x0000 to=maker1:0xa22a tokens=10
-RESULT: SeriesAdded 0 #69903 {"bound":"150000000000000000000","callPut":"1","configKey":"0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d","coverToken":"0x9e56da235fe490954c1e6c3d65295240259cb290","expiry":"1587874000","optinoToken":"0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","seriesKey":"0x03daed10508bf48daf96b28547a7692bea6ac5618f0fca9f5980e30f1290fad5","strike":"200000000000000000000"}
+RESULT:     .Transfer 0 #71513 from=null:0x0000 to=maker1:0xa22a tokens=10
+RESULT: SeriesAdded 0 #71513 {"bound":"150000000000000000000","callPut":"1","configKey":"0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019","coverToken":"0x9e139089ace9966b0fe6c03a7763c65ab8b34bce","expiry":"1587875610","optinoToken":"0x34eeedae178d495926598241b6e1ab0498fa29db","seriesKey":"0x7ad03b1a415a6bb66133e784ce8ce5c95a24ff3d859b631d85bd3e165b4879fe","strike":"200000000000000000000"}
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: token0ContractAddress=WETH:0x9ecf
+RESULT: token0ContractAddress=WETH:0xc83b
 RESULT: token0.owner/new - Function call failed
 RESULT: token0.details='WETH' 'Wrapped Ether' 18 dp
 RESULT: token0.totalSupply=4000
@@ -867,37 +867,37 @@ undefined
 RESULT: 
 undefined
 > 
-RESULT: token1ContractAddress=DAI:0xbf52
+RESULT: token1ContractAddress=DAI:0x02ce
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='DAI' 'Mintable ERC20 token' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #69903 from=maker1:0xa22a to=coverToken:0x9e56 tokens=500
-RESULT: token1.Transfer 1 #69903 from=maker1:0xa22a to=uiFeeAccount:0xa66a tokens=0.25
-RESULT: token1.Transfer 2 #69903 from=maker1:0xa22a to=VanillaOptinoFactory:0x69a5 tokens=0.25
+RESULT: token1.Transfer 0 #71513 from=maker1:0xa22a to=coverToken:0x9e13 tokens=500
+RESULT: token1.Transfer 1 #71513 from=maker1:0xa22a to=uiFeeAccount:0xa66a tokens=0.25
+RESULT: token1.Transfer 2 #71513 from=maker1:0xa22a to=VanillaOptinoFactory:0x13d2 tokens=0.25
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: token2ContractAddress=optinoToken:0x6c43
-RESULT: token2.owner/new=VanillaOptinoFactory:0x69a5/null:0x0000
-RESULT: token2.details='zPOPT00000001' 'Floored Put Optino ETH/DAI MakerDAO PF 2020-04-26T04:06:40Z 150-200' 18 dp
+RESULT: token2ContractAddress=optinoToken:0x34ee
+RESULT: token2.owner/new=VanillaOptinoFactory:0x13d2/null:0x0000
+RESULT: token2.details='zPOPT00000001' 'Floored Put Optino ETH/DAI MakerDAO PF 2020-04-26T04:33:30Z 150-200' 18 dp
 RESULT: token2.totalSupply=10
 RESULT: token2.strike=200
 RESULT: token2.bound=150
-RESULT: token2.Transfer 0 #69903 from=null:0x0000 to=maker1:0xa22a tokens=10
+RESULT: token2.Transfer 0 #71513 from=null:0x0000 to=maker1:0xa22a tokens=10
 undefined
 > 
 RESULT: 
 undefined
 > 
-RESULT: token3ContractAddress=coverToken:0x9e56
-RESULT: token3.owner/new=VanillaOptinoFactory:0x69a5/null:0x0000
-RESULT: token3.details='zPOPTC00000001' 'Floored Put Optino Cover ETH/DAI MakerDAO PF 2020-04-26T04:06:40Z 150-200' 18 dp
+RESULT: token3ContractAddress=coverToken:0x9e13
+RESULT: token3.owner/new=VanillaOptinoFactory:0x13d2/null:0x0000
+RESULT: token3.details='zPOPTC00000001' 'Floored Put Optino Cover ETH/DAI MakerDAO PF 2020-04-26T04:33:30Z 150-200' 18 dp
 RESULT: token3.totalSupply=10
 RESULT: token3.strike=200
 RESULT: token3.bound=150
-RESULT: token3.Transfer 0 #69903 from=null:0x0000 to=maker1:0xa22a tokens=10
+RESULT: token3.Transfer 0 #71513 from=null:0x0000 to=maker1:0xa22a tokens=10
 undefined
 > 
 RESULT: 
@@ -933,15 +933,54 @@ undefined
 ... 
 ... 
 ... 
-RESULT: ---------- Close Optino & Cover ----------
+undefined
+> 
+> 
+> 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+...... 
+... 
+... 
+...... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+... 
+RESULT: ---------- Settle Optino & Cover ----------
+RESULT: Waiting until 'optino.expiry()' at 1587875610+0s=Sun, 26 Apr 2020 14:33:31 AEST now=Sun, 26 Apr 2020 14:33:26 AEST
+RESULT: Waited until 'optino.expiry()' at 1587875610+0s=Sun, 26 Apr 2020 14:33:31 AEST now=Sun, 26 Apr 2020 14:33:31 AEST
+RESULT: 
 RESULT:  # Account                                             EtherBalanceChange                           WETH                            DAI Name
 RESULT:                                                                                            zPOPT00000001                 zPOPTC00000001
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.637689450000000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.643014200000000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.547773300000000000           0.000000000000000000           0.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.548871500000000000           0.000000000000000000           0.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976    -1000.083403600000000000        1000.000000000000000000      999999.500000000000000000 maker1
+RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976    -1000.087630150000000000        1000.000000000000000000      999999.500000000000000000 maker1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0    -1000.002170850000000000        1000.000000000000000000     1000000.000000000000000000 maker2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -951,112 +990,78 @@ RESULT:  5 0xa55a151eb00fded1634d27d1127b4be4627079ea    -1000.00217085000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.250000000000000000 uiFeeAccount
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  7 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
+RESULT:  7 0xc83bac300889835dcdb7ae846cd4af8c062a5907     4000.000000000000000000           0.000000000000000000           0.000000000000000000 WETH
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
+RESULT:  8 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000           0.000000000000000000 DAI
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT:  9 0x0db88ef7e3c0b2cd4e4223c6a98a12de07a5fb40        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
+RESULT: 10 0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
+RESULT: 11 0x6ab173b6cb85b54650d1452f2dd9ba0fc5746299        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.250000000000000000 VanillaOptinoFactory
+RESULT: 12 0x13d2e9c117fcfa1fd7cd3d88cb376f143da01335        0.000000000000000000           0.000000000000000000           0.250000000000000000 VanillaOptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7        0.000000000000000000           0.000000000000000000           0.000000000000000000 optinoToken
+RESULT: 13 0x34eeedae178d495926598241b6e1ab0498fa29db        0.000000000000000000           0.000000000000000000           0.000000000000000000 optinoToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x9e56da235fe490954c1e6c3d65295240259cb290        0.000000000000000000           0.000000000000000000           0.000000000000000000 coverToken
+RESULT: 14 0x9e139089ace9966b0fe6c03a7763c65ab8b34bce        0.000000000000000000           0.000000000000000000           0.000000000000000000 coverToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                                  4000.000000000000000000     4000000.000000000000000000 Total Token Balances
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT: 
-RESULT: PASS Close Optino & Cover - optino.netOff()
-RESULT: closeGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=62123 costETH=0.00310615 costUSD=0.45102851075 @ ETH/USD=145.205 gasPrice=50 gwei block=69909 txIx=0 txId=0x39223ded04bb36a99cb96ca540ddd59964b42bea646ddd5efdbb9e9a592bc9d6 @ 1587873998 Sun, 26 Apr 2020 04:06:38 UTC
+RESULT: PASS Settle Optino & Cover - optino.settle()
+RESULT: settleGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=146654 costETH=0.0073327 costUSD=1.0647447035 @ ETH/USD=145.205 gasPrice=50 gwei block=71526 txIx=0 txId=0xa55b4a3c8f5bd5150d3f96f415a8bee72673bdda57133a88962f13c60469b2e3 @ 1587875615 Sun, 26 Apr 2020 04:33:35 UTC
 RESULT: 
-RESULT: priceFeedContractAddress=PriceFeed:0xb315
-RESULT: priceFeed.peek=0x00000000000000000000000000000000000000000000000a3ee6e2a294d40000,true
-RESULT: priceFeed.value=189 ETH/USD
+RESULT: priceFeedContractAddress=PriceFeed:0x2d4b
+RESULT: priceFeed.peek=0x00000000000000000000000000000000000000000000000d8d726b7177a80000,true
+RESULT: priceFeed.value=250 ETH/USD
 RESULT: priceFeed.hasValue=true
+RESULT: SetValue 0 #71524 value=250 hasValue=true
 RESULT: 
-RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x7b74
-RESULT: priceFeedAdaptor.sourceAddress=0xb31541e8f29775197de03bf2e0483fd72beb7f46
-RESULT: priceFeedAdaptor.spot=["189000000000000000000",true]
+RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x6ab1
+RESULT: priceFeedAdaptor.sourceAddress=0x2d4b0b38b2f7f7b465a8a8aede126299b6c147b1
+RESULT: priceFeedAdaptor.spot=["250000000000000000000",true]
 RESULT: 
-RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x69a5
+RESULT: vanillaOptinoFactoryContractAddress=VanillaOptinoFactory:0x13d2
 RESULT: vanillaOptinoFactory.owner/new=deployer:0xa11a/null:0x0000
 RESULT: vanillaOptinoFactory.configDataLength=2
-RESULT: vanillaOptino.getConfigByIndex(0). key=0x5e208c2bd98df36746eb7782a873eabd7809c6bddfef335047f70092aeed27fa, baseToken=WETH:0x9ecf, quoteToken=DAI:0xbf52, priceFeed=PriceFeedAdaptor:0x7b74, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='WETH/DAI MakerDAO PF', timestamp=1587873988
-RESULT: vanillaOptino.getConfigByIndex(1). key=0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d, baseToken=null:0x0000, quoteToken=DAI:0xbf52, priceFeed=PriceFeedAdaptor:0x7b74, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/DAI MakerDAO PF', timestamp=1587873988
+RESULT: vanillaOptino.getConfigByIndex(0). key=0xd1be0dea2398030fffcbf954ccf800017effccdcbef040ca7df09dae1e2110d4, baseToken=WETH:0xc83b, quoteToken=DAI:0x02ce, priceFeed=PriceFeedAdaptor:0x6ab1, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='WETH/DAI MakerDAO PF', timestamp=1587875598
+RESULT: vanillaOptino.getConfigByIndex(1). key=0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019, baseToken=null:0x0000, quoteToken=DAI:0x02ce, priceFeed=PriceFeedAdaptor:0x6ab1, baseDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/DAI MakerDAO PF', timestamp=1587875598
 RESULT: vanillaOptinoFactory.seriesDataLength=1
-RESULT: vanillaOptinoFactory.seriesData=["0x03daed10508bf48daf96b28547a7692bea6ac5618f0fca9f5980e30f1290fad5","0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d","1","1587874000","200000000000000000000","150000000000000000000","1587873992","0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]
-RESULT: vanillaOptino.getSeriesByIndex(0). key=0x03daed10508bf48daf96b28547a7692bea6ac5618f0fca9f5980e30f1290fad5, configKey=0xc4a5709c65dac9da6d2e2e60e9868a7e065bf1a3c99f8d6d50daca631b4a404d, callPut=1, expiry=1587874000, strike=200, bound=150', timestamp=1587873992, optinoToken=0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7, coverToken=0x9e56da235fe490954c1e6c3d65295240259cb290
+RESULT: vanillaOptinoFactory.seriesData=["0x7ad03b1a415a6bb66133e784ce8ce5c95a24ff3d859b631d85bd3e165b4879fe","0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019","1","1587875610","200000000000000000000","150000000000000000000","1587875615","0x34eeedae178d495926598241b6e1ab0498fa29db","0x9e139089ace9966b0fe6c03a7763c65ab8b34bce"]
+RESULT: vanillaOptino.getSeriesByIndex(0). key=0x7ad03b1a415a6bb66133e784ce8ce5c95a24ff3d859b631d85bd3e165b4879fe, configKey=0xdb48233d9a78544e9fdfcb945d9c931811fbc886a0952dbf5b10c3ae83cc0019, callPut=1, expiry=1587875610, strike=200, bound=150', timestamp=1587875615, optinoToken=0x34eeedae178d495926598241b6e1ab0498fa29db, coverToken=0x9e139089ace9966b0fe6c03a7763c65ab8b34bce
 RESULT: - optinoToken:
-RESULT:     .owner/new=VanillaOptinoFactory:0x69a5/null:0x0000
-RESULT:     .details='zPOPT00000001' 'Floored Put Optino ETH/DAI MakerDAO PF 2020-04-26T04:06:40Z 150-200' 18 dp
+RESULT:     .owner/new=VanillaOptinoFactory:0x13d2/null:0x0000
+RESULT:     .details='zPOPT00000001' 'Floored Put Optino ETH/DAI MakerDAO PF 2020-04-26T04:33:30Z 150-200' 18 dp
 RESULT:     .totalSupply=0
-RESULT:     .callPut/expiry/strike/bound=1/1587874000/200/150
-RESULT:     .currentSpot/currentPayoffPerUnitBaseToken=189/11
-RESULT:     .spot/payoffPerUnitBaseToken=0/0
-RESULT:     .Transfer 0 #69909 from=maker1:0xa22a to=null:0x0000 tokens=10
+RESULT:     .callPut/expiry/strike/bound=1/1587875610/200/150
+RESULT:     .currentSpot/currentPayoffPerUnitBaseToken=250/0
+RESULT:     .spot/payoffPerUnitBaseToken=250/0
+RESULT:     .Transfer 0 #71526 from=maker1:0xa22a to=null:0x0000 tokens=10
 RESULT: - coverToken:
-RESULT:     .owner/new=VanillaOptinoFactory:0x69a5/null:0x0000
-RESULT:     .details='zPOPTC00000001' 'Floored Put Optino Cover ETH/DAI MakerDAO PF 2020-04-26T04:06:40Z 150-200' 18 dp
+RESULT:     .owner/new=VanillaOptinoFactory:0x13d2/null:0x0000
+RESULT:     .details='zPOPTC00000001' 'Floored Put Optino Cover ETH/DAI MakerDAO PF 2020-04-26T04:33:30Z 150-200' 18 dp
 RESULT:     .totalSupply=0
-RESULT:     .callPut/expiry/strike/bound=1/1587874000/200/150
-RESULT:     .currentSpot/currentPayoffPerUnitBaseToken=189/39
-RESULT:     .spot/payoffPerUnitBaseToken=0/0
-RESULT:     .Transfer 0 #69909 from=maker1:0xa22a to=null:0x0000 tokens=10
-RESULT:     .Close 0 #69909 optinoToken=optinoToken:0x6c43 token=DAI:0xbf52 tokenOwner=maker1:0xa22a tokens=500
+RESULT:     .callPut/expiry/strike/bound=1/1587875610/200/150
+RESULT:     .currentSpot/currentPayoffPerUnitBaseToken=250/50
+RESULT:     .spot/payoffPerUnitBaseToken=250/50
+RESULT:     .Transfer 0 #71526 from=maker1:0xa22a to=null:0x0000 tokens=10
+RESULT:     .Payoff 0 #71526 optinoToken=optinoToken:0x34ee token=DAI:0x02ce tokenOwner=maker1:0xa22a tokens=0
+RESULT:     .Payoff 1 #71526 optinoToken=coverToken:0x9e13 token=DAI:0x02ce tokenOwner=maker1:0xa22a tokens=500
 RESULT: 
-RESULT: token0ContractAddress=WETH:0x9ecf
+RESULT: token0ContractAddress=WETH:0xc83b
 RESULT: token0.owner/new - Function call failed
 RESULT: token0.details='WETH' 'Wrapped Ether' 18 dp
 RESULT: token0.totalSupply=4000
 RESULT: 
-RESULT: token1ContractAddress=DAI:0xbf52
+RESULT: token1ContractAddress=DAI:0x02ce
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='DAI' 'Mintable ERC20 token' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #69909 from=coverToken:0x9e56 to=maker1:0xa22a tokens=500
+RESULT: token1.Transfer 0 #71526 from=coverToken:0x9e13 to=maker1:0xa22a tokens=500
 RESULT: 
-undefined
-> 
-> 
-> 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-...... 
-... 
-... 
-...... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
-... 
 undefined
 > 
 > 
