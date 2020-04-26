@@ -1219,18 +1219,18 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     function payoffDeliveryInBaseOrQuote(uint _callPut) public pure returns (uint) {
         return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
-    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _collateral) {
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _coverPayoff) {
         return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
     }
     function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
         return OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
     }
 
-    function getTokenInfo(address token, address tokenOwner, address spender) public view returns (string memory _symbol, string memory _name, uint _decimals, uint _totalSupply, uint _balance, uint _allowance) {
-        if (token == ETH) {
-            return ("ETH", "Ether", 18, 0, tokenOwner.balance, 0);
+    function getTokenInfo(Token token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
+        if (address(token) == ETH) {
+            return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
         } else {
-            return (Token(token).symbol(), Token(token).name(), Token(token).decimals(), Token(token).totalSupply(), Token(token).balanceOf(tokenOwner), Token(token).allowance(tokenOwner, spender));
+            return (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender), token.symbol(), token.name());
         }
     }
 }
