@@ -462,7 +462,6 @@ library ConfigLibrary {
     }
 
     event ConfigAdded(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint fee, string description);
-    // event ConfigRemoved(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed);
     event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
 
     function _init(Data storage self) internal {
@@ -487,20 +486,6 @@ library ConfigLibrary {
         self.entries[key] = Config(block.timestamp, self.index.length - 1, key, baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description);
         emit ConfigAdded(key, baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description);
     }
-    // function _remove(Data storage self, address baseToken, address quoteToken, address priceFeed) internal {
-    //     bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
-    //     require(self.entries[key].timestamp > 0, "ConfigLibrary:_remove: Invalid key");
-    //     uint removeIndex = self.entries[key].index;
-    //     emit ConfigRemoved(key, baseToken, quoteToken, priceFeed);
-    //     uint lastIndex = self.index.length - 1;
-    //     bytes32 lastIndexKey = self.index[lastIndex];
-    //     self.index[removeIndex] = lastIndexKey;
-    //     self.entries[lastIndexKey].index = removeIndex;
-    //     delete self.entries[key];
-    //     if (self.index.length > 0) {
-    //         self.index.pop();
-    //     }
-    // }
     function _update(Data storage self, address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) internal {
         bytes32 key = _generateKey(baseToken, quoteToken, priceFeed);
         Config storage _value = self.entries[key];
@@ -542,8 +527,6 @@ library SeriesLibrary {
     }
 
     event SeriesAdded(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
-    // event SeriesRemoved(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound);
-    // event SeriesUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, string description);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
 
     function _init(Data storage self) internal {
@@ -557,8 +540,6 @@ library SeriesLibrary {
         return self.entries[key].timestamp > 0;
     }
     function _add(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken) internal {
-        // require(baseToken != quoteToken, "SeriesLibrary.add: baseToken cannot be the same as quoteToken");
-        // require(priceFeed != address(0), "SeriesLibrary.add: priceFeed cannot be null");
         require(callPut < 2, "SeriesLibrary.add: callPut must be 0 (call) or 1 (callPut)");
         require(expiry > block.timestamp, "SeriesLibrary.add: expiry must be in the future");
         require(strike > 0, "SeriesLibrary.add: strike must be non-zero");
@@ -576,28 +557,6 @@ library SeriesLibrary {
         self.entries[key] = Series(block.timestamp, self.index.length - 1, key, configKey, callPut, expiry, strike, bound, optinoToken, coverToken, 0);
         emit SeriesAdded(key, configKey, callPut, expiry, strike, bound, optinoToken, coverToken);
     }
-    // function _remove(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, uint bound) internal {
-    //     bytes32 key = _generateKey(configKey, callPut, expiry, strike, bound);
-    //     require(self.entries[key].timestamp > 0, "SeriesLibrary._remove: Invalid key");
-    //     uint removeIndex = self.entries[key].index;
-    //     emit SeriesRemoved(key, configKey, callPut, expiry, strike, bound);
-    //     uint lastIndex = self.index.length - 1;
-    //     bytes32 lastIndexKey = self.index[lastIndex];
-    //     self.index[removeIndex] = lastIndexKey;
-    //     self.entries[lastIndexKey].index = removeIndex;
-    //     delete self.entries[key];
-    //     if (self.index.length > 0) {
-    //         self.index.pop();
-    //     }
-    // }
-    // function _update(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, string memory description) internal {
-    //     bytes32 key = generateKey(baseToken, quoteToken, priceFeed, callPut, expiry, strike);
-    //     Series storage _value = self.entries[key];
-    //     require(_value.timestamp > 0, "SeriesLibrary._update: Invalid key");
-    //     _value.timestamp = block.timestamp;
-    //     _value.description = description;
-    //     emit SeriesUpdated(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
-    // }
     function _updateSpot(Data storage self, bytes32 key, uint spot) internal {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0, "SeriesLibrary._updateSpot: Invalid key");
@@ -1054,10 +1013,6 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         require(configData.initialised);
         configData._update(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
     }
-    // function removeConfig(address baseToken, address quoteToken, address priceFeed) public onlyOwner {
-    //     require(configData.initialised);
-    //     configData._remove(baseToken, quoteToken, priceFeed);
-    // }
     function configDataLength() public view returns (uint _length) {
         return configData._length();
     }
@@ -1085,10 +1040,6 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         }
         seriesData._add(configKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, optinoToken, coverToken);
     }
-    // function updateSeries(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, string memory description) internal {
-    //     require(seriesData.initialised);
-    //     seriesData.update(baseToken, quoteToken, priceFeed, callPut, expiry, strike, description);
-    // }
     function getSeriesCurrentSpot(bytes32 seriesKey) public view returns (uint _currentSpot) {
         SeriesLibrary.Series memory series = seriesData.entries[seriesKey];
         ConfigLibrary.Config memory config = configData.entries[series.configKey];

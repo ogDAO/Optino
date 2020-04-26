@@ -598,7 +598,7 @@ function printOptinoFactoryContractDetails() {
         var timestamp = series[6];
         var optinoToken = series[7];
         var coverToken = series[8];
-        console.log("RESULT: optinoToken.getSeriesByIndex(" + i + "). key=" + key + ", configKey=" + configKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + "', timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
+        console.log("RESULT: optinoToken.getSeriesByIndex(" + i + "). key=" + key + ", configKey=" + configKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
 
         var optinoTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(optinoToken);
         var optinoTokenDecimals = optinoTokenContract.decimals.call();
