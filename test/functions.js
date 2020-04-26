@@ -1,6 +1,6 @@
-// 13 Jan 2020 16:11 AEDT ETH/USD from CMC and ethgasstation.info
-var ethPriceUSD = 145.205;
-var defaultGasPrice = web3.toWei(50, "gwei");
+// 26 Apr 2020 21:11 AEDT ETH/USD from CMC and ethgasstation.info normal
+var ethPriceUSD = 196.51;
+var defaultGasPrice = web3.toWei(8.1, "gwei");
 
 // -----------------------------------------------------------------------------
 // Accounts
@@ -704,6 +704,23 @@ function printOptinoFactoryContractDetails() {
       console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     seriesAddedEvents.stopWatching();
+
+    var optinoMintedEvents = contract.OptinoMinted({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    i = 0;
+    optinoMintedEvents.watch(function (error, result) {
+      // event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, address collateralToken, uint collateral, uint ownerFee, uint uiFee);
+      console.log("RESULT: OptinoMinted " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      console.log("RESULT: OptinoMinted " + j++ + " #" + result.blockNumber +
+        " seriesKey=" + result.args.seriesKey +
+        " optinoToken=" + getShortAddressName(result.args.optinoToken) +
+        " coverToken=" + getShortAddressName(result.args.coverToken) +
+        " tokens=" + result.args.tokens.shift(-optinoTokenDecimals) +
+        " collateralToken=" + getShortAddressName(result.args.collateralToken) +
+        " collateral=" + result.args.collateral.shift(-optinoTokenDecimals) +
+        " ownerFee=" + result.args.ownerFee.shift(-optinoTokenDecimals) +
+        " uiFee=" + result.args.uiFee.shift(-optinoTokenDecimals));
+    });
+    optinoMintedEvents.stopWatching();
 
     _optinoFactoryFromBlock = latestBlock + 1;
   }

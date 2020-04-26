@@ -112,7 +112,6 @@ library BokkyPooBahsDateTimeLibrary {
 // CloneFactory.sol - from
 // https://github.com/optionality/clone-factory/blob/32782f82dfc5a00d103a7e61a17a5dedbd1e8e9d/contracts/CloneFactory.sol
 // ----------------------------------------------------------------------------
-
 /*
 The MIT License (MIT)
 
@@ -611,7 +610,7 @@ interface ERC20 {
 
 
 // ----------------------------------------------------------------------------
-// Token (interface) = ERC20 + symbol + name + decimals + approveAndCall + mint
+// Token = ERC20 + symbol + name + decimals + approveAndCall + mint
 // ----------------------------------------------------------------------------
 interface Token is ERC20 {
     function symbol() external view returns (string memory);
@@ -623,6 +622,10 @@ interface Token is ERC20 {
 }
 
 
+// ----------------------------------------------------------------------------
+// Basic token = ERC20 + symbol + name + decimals + approveAndCall + mint + burn
+//               + ownership
+// ----------------------------------------------------------------------------
 contract BasicToken is Token, Owned {
     using SafeMath for uint;
 
@@ -976,19 +979,15 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     ConfigLibrary.Data private configData;
     SeriesLibrary.Data private seriesData;
 
-    // Config copy of events to be generated in the ABI
+    // ConfigLibrary & SeriesLibrary copy of events to be generated in the ABI
     event ConfigAdded(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint fee, string description);
-    // event ConfigRemoved(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed);
     event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
-    // SeriesLibrary copy of events to be generated in the ABI
     event SeriesAdded(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
-    // event SeriesRemoved(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound);
-    // event SeriesUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, string description);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
-
 
     event ContractDeprecated(address _newAddress);
     event EthersReceived(address indexed sender, uint ethers);
+    event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, address collateralToken, uint collateral, uint ownerFee, uint uiFee);
 
     constructor(address _optinoTokenTemplate) public {
         super.init(msg.sender);
@@ -1133,38 +1132,45 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
 
         uint collateral = OptinoFormulae.collateralInDeliveryToken(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.baseTokens, config.baseDecimals, config.rateDecimals);
         address collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
-        uint devFee = collateral * config.fee / (10 ** FEEDECIMALS);
+        uint ownerFee = collateral * config.fee / (10 ** FEEDECIMALS);
         uint uiFee;
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
-            uiFee = devFee / 2;
-            devFee = devFee - uiFee;
+            uiFee = ownerFee / 2;
+            ownerFee = ownerFee - uiFee;
         }
         if (collateralToken == ETH) {
-            require(msg.value >= (collateral + uiFee + devFee), "_mintOptinoTokens: Insufficient ETH sent");
+            require(msg.value >= (collateral + ownerFee + uiFee), "_mintOptinoTokens: Insufficient ETH sent");
             require(payable(coverToken).send(collateral), "_mintOptinoTokens: coverToken.send(collateral) failure");
+            if (ownerFee > 0) {
+                require(payable(owner).send(ownerFee), "_mintOptinoTokens: owner.send(ownerFee) failure");
+            }
             if (uiFee > 0) {
                 require(payable(uiFeeAccount).send(uiFee), "_mintOptinoTokens: uiFeeAccount.send(uiFee) failure");
             }
             // Dev fee left in this factory
-            uint refund = msg.value - collateral - uiFee - devFee;
+            uint refund = msg.value - collateral - ownerFee - uiFee;
             if (refund > 0) {
                 require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
             }
         } else {
             require(ERC20(collateralToken).transferFrom(msg.sender, address(coverToken), collateral), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, coverToken, collateral) failure");
+            if (ownerFee > 0) {
+                require(ERC20(collateralToken).transferFrom(msg.sender, owner, ownerFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, factory, ownerFee) failure");
+            }
             if (uiFee > 0) {
                 require(ERC20(collateralToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
             }
-            if (devFee > 0) {
-                require(ERC20(collateralToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, factory, devFee) failure");
-            }
             if (msg.value > 0) {
-                require(msg.sender.send(msg.value), "_mintOptinoTokens: msg.sender.send(msg.value) failure");
+                require(msg.sender.send(msg.value), "_mintOptinoTokens: msg.sender.send(refund) failure");
             }
         }
+        emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.baseTokens, collateralToken, collateral, ownerFee, uiFee);
         return (series.optinoToken, series.coverToken);
     }
 
+    // ----------------------------------------------------------------------------
+    // Info functions
+    // ----------------------------------------------------------------------------
     function payoffDeliveryInBaseOrQuote(uint _callPut) public pure returns (uint) {
         return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
@@ -1175,11 +1181,24 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         return OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
     }
 
+    // ----------------------------------------------------------------------------
+    // Helper functions
+    // ----------------------------------------------------------------------------
     function getTokenInfo(Token token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
         if (address(token) == ETH) {
             return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
         } else {
-            return (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender), token.symbol(), token.name());
+            try token.symbol() returns (string memory s) {
+                _symbol = s;
+            } catch {
+                _symbol = "(not implemented)";
+            }
+            try token.name() returns (string memory n) {
+                _name = n;
+            } catch {
+                _name = "(not implemented)";
+            }
+            (_decimals, _totalSupply, _balance, _allowance) = (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender));
         }
     }
 }
