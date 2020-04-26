@@ -432,7 +432,7 @@ contract Owned {
         if (token == address(0)) {
             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
         } else {
-            ERC20Interface(token).transfer(owner, tokens == 0 ? ERC20Interface(token).balanceOf(address(this)) : tokens);
+            ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
         }
     }
 }
@@ -639,7 +639,7 @@ interface PriceFeedAdaptor {
 // ERC Token Standard #20 Interface
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 // ----------------------------------------------------------------------------
-interface ERC20Interface {
+interface ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
@@ -653,10 +653,9 @@ interface ERC20Interface {
 
 
 // ----------------------------------------------------------------------------
-// Token Interface = symbol + name + decimals + approveAndCall + mint + burn
-// Use with ERC20Interface
+// Token (interface) = ERC20 + symbol + name + decimals + approveAndCall + mint
 // ----------------------------------------------------------------------------
-interface TokenInterface is ERC20Interface {
+interface Token is ERC20 {
     function symbol() external view returns (string memory);
     function name() external view returns (string memory);
     function decimals() external view returns (uint8);
@@ -666,7 +665,7 @@ interface TokenInterface is ERC20Interface {
 }
 
 
-contract Token is TokenInterface, Owned {
+contract BasicToken is Token, Owned {
     using SafeMath for uint;
 
     string _symbol;
@@ -766,7 +765,7 @@ contract Token is TokenInterface, Owned {
 //   - payoffInBaseToken = payoffInBaseTokenPerUnitBaseToken * 10 = [1 * 10, 1 * 10, 0.8 * 10] = [10, 10, 8] ETH
 //
 // ----------------------------------------------------------------------------
-library VanillaOptinoFormulae {
+library OptinoFormulae {
     using SafeMath for uint;
 
     // ------------------------------------------------------------------------
@@ -802,7 +801,7 @@ library VanillaOptinoFormulae {
                 } else {
                     _payoff = _spot - _strike;
                 }
-                _payoff = _payoff * (10 ** _rateDecimals) / _spot * _baseTokens / (10 ** _baseDecimals);
+                _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
             } else {
                 _payoff = 0;
             }
@@ -839,9 +838,9 @@ library VanillaOptinoFormulae {
 
 
 // ----------------------------------------------------------------------------
-// OptinoToken 📈 = Token + payoff
+// OptinoToken ⚛️ = basic token + burn + payoff + close + settle
 // ----------------------------------------------------------------------------
-contract OptinoToken is Token {
+contract OptinoToken is BasicToken {
     using SeriesLibrary for SeriesLibrary.Series;
     uint8 public constant OPTIONDECIMALS = 18;
     address private constant ETH = address(0);
@@ -917,7 +916,7 @@ contract OptinoToken is Token {
     function payoffInDeliveryToken(uint _spot, uint _baseTokens) public view returns (uint _payoff, uint _collateral) {
         (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
-        return VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+        return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
     }
 
     function currentPayoffPerUnitBaseToken() public view returns (uint _currentPayoffPerUnitBaseToken) {
@@ -925,7 +924,7 @@ contract OptinoToken is Token {
         (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
         uint _baseTokens = 10 ** _baseDecimals;
-        (uint _payoff, uint _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+        (uint _payoff, uint _collateral) = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
         return isCover ? _collateral : _payoff;
     }
     function payoffPerUnitBaseToken() public view returns (uint _payoffPerUnitBaseToken) {
@@ -937,16 +936,17 @@ contract OptinoToken is Token {
             (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
             uint _baseTokens = 10 ** _baseDecimals;
-            (uint _payoff, uint _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+            (uint _payoff, uint _collateral) = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
             return isCover ? _collateral : _payoff;
         }
     }
     function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-        if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-            if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
-                return balance;
-            }
-        }
+        // TODO: Check for various decimal places
+        // if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
+        //     if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
+        //         return balance;
+        //     }
+        // }
         return amount;
     }
     function close(uint _baseTokens) public {
@@ -957,34 +957,23 @@ contract OptinoToken is Token {
         if (!isCover) {
             OptinoToken(payable(pair))._close(tokenOwner, _baseTokens);
         } else {
-            require(_baseTokens <= ERC20Interface(this).balanceOf(tokenOwner));
-            require(_baseTokens <= ERC20Interface(pair).balanceOf(tokenOwner));
+            require(_baseTokens <= ERC20(this).balanceOf(tokenOwner));
+            require(_baseTokens <= ERC20(pair).balanceOf(tokenOwner));
             require(OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, _baseTokens));
             (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
             (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
-            uint collateral = VanillaOptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
-            if (_callPut == 0) {
-                if (_baseToken == ETH) {
-                    collateral = collectDust(collateral, address(this).balance, _baseDecimals);
-                    payable(tokenOwner).transfer(collateral);
-                    emit Close(pair, _baseToken, tokenOwner, collateral);
-                } else {
-                    _baseTokens = collectDust(collateral, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
-                    require(ERC20Interface(_baseToken).transfer(tokenOwner, collateral));
-                    emit Close(pair, _baseToken, tokenOwner, collateral);
-                }
+            uint collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
+            address token = _callPut == 0 ? _baseToken : _quoteToken;
+            uint decimals = _callPut == 0 ? _baseDecimals : _quoteDecimals;
+            if (token == ETH) {
+                collateral = collectDust(collateral, address(this).balance, decimals);
+                payable(tokenOwner).transfer(collateral);
             } else {
-                if (_quoteToken == ETH) {
-                    collateral = collectDust(collateral, address(this).balance, _quoteDecimals);
-                    payable(tokenOwner).transfer(collateral);
-                    emit Close(pair, _quoteToken, tokenOwner, collateral);
-                } else {
-                    collateral = collectDust(collateral, ERC20Interface(_quoteToken).balanceOf(address(this)), _baseDecimals);
-                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, collateral));
-                    emit Close(pair, _quoteToken, tokenOwner, collateral);
-                }
+                _baseTokens = collectDust(collateral, ERC20(token).balanceOf(address(this)), decimals);
+                require(ERC20(token).transfer(tokenOwner, collateral));
             }
+            emit Close(pair, token, tokenOwner, collateral);
         }
     }
     function settle() public {
@@ -995,8 +984,8 @@ contract OptinoToken is Token {
         if (!isCover) {
             OptinoToken(payable(pair))._settle(tokenOwner);
         } else {
-            uint optinoTokens = ERC20Interface(pair).balanceOf(tokenOwner);
-            uint coverTokens = ERC20Interface(this).balanceOf(tokenOwner);
+            uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
+            uint coverTokens = ERC20(this).balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0);
             uint _spot = spot();
             if (_spot == 0) {
@@ -1009,53 +998,34 @@ contract OptinoToken is Token {
 
             (address _baseToken, address _quoteToken, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, /*_callPut*/, /*_strike*/, /*_bound*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesAndConfigCalcDataByKey(seriesKey);
 
-            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, optinoTokens, _baseDecimals, _rateDecimals);
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
-            if (callPut == 0) {
-                if (_baseToken == ETH) {
-                    _payoff = collectDust(_payoff, address(this).balance, _baseDecimals);
-                    payable(tokenOwner).transfer(_payoff);
-                    emit Payoff(pair, _baseToken, tokenOwner, _payoff);
-                } else {
-                    _payoff = collectDust(_payoff, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
-                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _payoff));
-                    emit Payoff(pair, _baseToken, tokenOwner, _payoff);
-                }
-            } else {
-                if (_quoteToken == ETH) {
-                    _payoff = collectDust(_payoff, address(this).balance, _quoteDecimals);
-                    payable(tokenOwner).transfer(_payoff);
-                    emit Payoff(pair, _quoteToken, tokenOwner, _payoff);
-                } else {
-                    _payoff = collectDust(_payoff, ERC20Interface(_quoteToken).balanceOf(address(this)), _quoteDecimals);
-                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _payoff));
-                    emit Payoff(pair, _quoteToken, tokenOwner, _payoff);
-                }
-            }
-
-            (_payoff, _collateral) = VanillaOptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, coverTokens, _baseDecimals, _rateDecimals);
             require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
-            if (callPut == 0) {
-                if (_baseToken == ETH) {
-                    _collateral = collectDust(_collateral, address(this).balance, _baseDecimals);
-                    payable(tokenOwner).transfer(_collateral);
-                    emit Payoff(address(this), _baseToken, tokenOwner, _collateral);
+
+            (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, optinoTokens, _baseDecimals, _rateDecimals);
+            address token = callPut == 0 ? _baseToken : _quoteToken;
+            uint decimals = callPut == 0 ? _baseDecimals : _quoteDecimals;
+            if (_payoff > 0) {
+                if (token == ETH) {
+                    _payoff = collectDust(_payoff, address(this).balance, decimals);
+                    payable(tokenOwner).transfer(_payoff);
                 } else {
-                    _collateral = collectDust(_collateral, ERC20Interface(_baseToken).balanceOf(address(this)), _baseDecimals);
-                    require(ERC20Interface(_baseToken).transfer(tokenOwner, _collateral));
-                    emit Payoff(address(this), _baseToken, tokenOwner, _collateral);
-                }
-            } else {
-                if (_quoteToken == ETH) {
-                    _collateral = collectDust(_collateral, address(this).balance, _quoteDecimals);
-                    payable(tokenOwner).transfer(_collateral);
-                    emit Payoff(address(this), _quoteToken, tokenOwner, _collateral);
-                } else {
-                    _collateral = collectDust(_collateral, ERC20Interface(_quoteToken).balanceOf(address(this)), _quoteDecimals);
-                    require(ERC20Interface(_quoteToken).transfer(tokenOwner, _collateral));
-                    emit Payoff(address(this), _quoteToken, tokenOwner, _collateral);
+                    _payoff = collectDust(_payoff, ERC20(token).balanceOf(address(this)), decimals);
+                    require(ERC20(token).transfer(tokenOwner, _payoff));
                 }
             }
+            emit Payoff(pair, token, tokenOwner, _payoff);
+
+            (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, coverTokens, _baseDecimals, _rateDecimals);
+            if (_collateral > 0) {
+                if (token == ETH) {
+                    _collateral = collectDust(_collateral, address(this).balance, decimals);
+                    payable(tokenOwner).transfer(_collateral);
+                } else {
+                    _collateral = collectDust(_collateral, ERC20(token).balanceOf(address(this)), decimals);
+                    require(ERC20(token).transfer(tokenOwner, _collateral));
+                }
+            }
+            emit Payoff(address(this), token, tokenOwner, _collateral);
         }
     }
 }
@@ -1260,7 +1230,7 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         optinoToken.mint(msg.sender, optinoData.baseTokens);
         coverToken.mint(msg.sender, optinoData.baseTokens);
 
-        uint collateral = VanillaOptinoFormulae.collateralInDeliveryToken(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.baseTokens, config.baseDecimals, config.rateDecimals);
+        uint collateral = OptinoFormulae.collateralInDeliveryToken(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.baseTokens, config.baseDecimals, config.rateDecimals);
         address collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
         uint devFee = collateral * config.fee / (10 ** FEEDECIMALS);
         uint uiFee;
@@ -1280,12 +1250,12 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
                 require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
             }
         } else {
-            require(ERC20Interface(collateralToken).transferFrom(msg.sender, address(coverToken), collateral), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, coverToken, collateral) failure");
+            require(ERC20(collateralToken).transferFrom(msg.sender, address(coverToken), collateral), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, coverToken, collateral) failure");
             if (uiFee > 0) {
-                require(ERC20Interface(collateralToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
+                require(ERC20(collateralToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
             }
             if (devFee > 0) {
-                require(ERC20Interface(collateralToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, factory, devFee) failure");
+                require(ERC20(collateralToken).transferFrom(msg.sender, address(this), devFee), "_mintOptinoTokens: collateralToken.transferFrom(msg.sender, factory, devFee) failure");
             }
             if (msg.value > 0) {
                 require(msg.sender.send(msg.value), "_mintOptinoTokens: msg.sender.send(msg.value) failure");
@@ -1298,17 +1268,17 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
         return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
     function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _collateral) {
-        return VanillaOptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+        return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
     }
     function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
-        return VanillaOptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
+        return OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
     }
 
     function getTokenInfo(address token, address tokenOwner, address spender) public view returns (string memory _symbol, string memory _name, uint _decimals, uint _totalSupply, uint _balance, uint _allowance) {
         if (token == ETH) {
             return ("ETH", "Ether", 18, 0, tokenOwner.balance, 0);
         } else {
-            return (TokenInterface(token).symbol(), TokenInterface(token).name(), TokenInterface(token).decimals(), TokenInterface(token).totalSupply(), TokenInterface(token).balanceOf(tokenOwner), TokenInterface(token).allowance(tokenOwner, spender));
+            return (Token(token).symbol(), Token(token).name(), Token(token).decimals(), Token(token).totalSupply(), Token(token).balanceOf(tokenOwner), Token(token).allowance(tokenOwner, spender));
         }
     }
 }
