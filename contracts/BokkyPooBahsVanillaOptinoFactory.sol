@@ -748,9 +748,9 @@ contract BasicToken is Token, Owned {
 // ----------------------------------------------------------------------------
 library OptinoFormulae {
     function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _collateral) {
-        require(_strike > 0, "collateralInDeliveryToken: strike must be 0");
+        require(_strike > 0, "collateralInDeliveryToken: strike must be > 0");
         if (_callPut == 0) {
-            require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 (vanilla) call or greater than strike for call optino");
+            require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
             if (_bound <= _strike) {
                 _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
             } else {
@@ -764,8 +764,8 @@ library OptinoFormulae {
     function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _coverPayoff) {
         uint _collateral = collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
         if (_callPut == 0) {
-            require(_bound == 0 || _bound > _strike, "payoffInDeliveryToken: bound (cap) must be 0 (vanilla) call or greater than strike for call optino");
-            require(_spot > 0, "payoffInDeliveryToken: spot must be 0 for call optino");
+            require(_bound == 0 || _bound > _strike, "payoffInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
+            require(_spot > 0, "payoffInDeliveryToken: spot must be > 0 for call");
             if (_spot > _strike) {
                 if (_bound > _strike && _spot > _bound) {
                     _payoff = _bound - _strike;
@@ -775,7 +775,7 @@ library OptinoFormulae {
                 _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
             }
         } else {
-            require(_bound < _strike, "payoffInDeliveryToken: bound must be 0 or less than strike for put");
+            require(_bound < _strike, "payoffInDeliveryToken: bound (floor) must be 0 for vanilla put or < strike for floored put");
             if (_spot < _strike) {
                  if (_bound == 0 || (_bound > 0 && _spot >= _bound)) {
                      _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
@@ -1149,10 +1149,10 @@ contract BokkyPooBahsVanillaOptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     // Mint optino tokens
     // ----------------------------------------------------------------------------
-    function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _optionCollateralToken) {
+    function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _coverToken) {
         return _mintOptinoTokens(OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, baseTokens), uiFeeAccount);
     }
-    function _mintOptinoTokens(OptinoData memory optinoData, address uiFeeAccount) internal returns (address _optinoToken, address _optionCollateralToken) {
+    function _mintOptinoTokens(OptinoData memory optinoData, address uiFeeAccount) internal returns (address _optinoToken, address _coverToken) {
         // Check parameters not checked in SeriesLibrary and ConfigLibrary
         require(optinoData.expiry > block.timestamp, "_mintOptinoTokens: expiry must be in the future");
         require(optinoData.baseTokens > 0, "_mintOptinoTokens: baseTokens must be non-zero");
