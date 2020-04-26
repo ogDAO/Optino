@@ -715,7 +715,7 @@ library OptinoFormulae {
             if (_bound <= _strike) {
                 _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
             } else {
-                _collateral = (_bound - _strike) * (10 ** _rateDecimals) / _bound * _baseTokens / (10 ** _baseDecimals);
+                _collateral = (_bound - _strike) * (10 ** _rateDecimals) * _baseTokens / _bound / (10 ** _baseDecimals);
             }
         } else {
             require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");
