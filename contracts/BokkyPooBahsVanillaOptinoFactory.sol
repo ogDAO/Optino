@@ -865,7 +865,7 @@ contract OptinoToken is BasicToken {
         // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
         (/*_configKey*/, _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
-    function payoffInDeliveryToken(uint _spot, uint _baseTokens) public view returns (uint _payoff, uint _collateral) {
+    function payoffInDeliveryToken(uint _spot, uint _baseTokens) public view returns (uint _payoff, uint _coverPayoff) {
         (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsVanillaOptinoFactory(factory).getSeriesByKey(seriesKey);
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsVanillaOptinoFactory(factory).getConfigByKey(_configKey);
         return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
@@ -893,12 +893,11 @@ contract OptinoToken is BasicToken {
         }
     }
     function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-        // TODO: Check for various decimal places
-        // if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-        //     if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
-        //         return balance;
-        //     }
-        // }
+        if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
+            if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
+                return balance;
+            }
+        }
         return amount;
     }
     function close(uint _baseTokens) public {
