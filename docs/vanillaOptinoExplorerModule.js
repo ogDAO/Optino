@@ -226,7 +226,6 @@ const VanillaOptinoExplorer = {
                         need to have quoteTokens + fee approved
                       }
                     }
-                    -->
 
                     <b-form-group label-cols="3" label="baseTokensPlusFee (ETH)" v-if="callPut == 0 && baseToken == address0">
                       <b-input-group :append="tokenData[baseToken].symbol">
@@ -254,6 +253,7 @@ const VanillaOptinoExplorer = {
                         <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
                       </b-button-group>
                     </div>
+                    -->
                     <br />
 
                     <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals" :baseSymbol="baseSymbol" :quoteSymbol="quoteSymbol"></payoff>
@@ -437,13 +437,13 @@ const VanillaOptinoExplorer = {
     collateralPlusFee() {
       if (this.callPut == 0) {
         var n = new BigNumber(this.collateral).shift(this.baseDecimals);
-        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+        n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
         // TESTING
         // n = n.mul(new BigNumber("10"));
         return n.shift(-this.baseDecimals).toString();
       } else {
         var n = new BigNumber(this.collateral).shift(this.quoteDecimals);
-        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+        n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
         // TESTING
         // n = n.mul(new BigNumber("10"));
         return n.shift(-this.quoteDecimals).toString();
@@ -495,25 +495,25 @@ const VanillaOptinoExplorer = {
       });
       return results;
     },
-    baseTokensPlusFee() {
-      if (this.callPut == 0) {
-        var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
-        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
-        // TESTING
-        n = n.mul(new BigNumber("10"));
-        return n.shift(-this.baseDecimals).toString();
-      }
-      return 0;
-    },
-    quoteTokensPlusFee() {
-      if (this.callPut == 1) {
-        var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
-        n = n.mul(new BigNumber(this.strike).shift(this.rateDecimals));
-        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
-        return n.shift(-this.baseDecimals).shift(-this.rateDecimals).toString();
-      }
-      return 0;
-    },
+    // baseTokensPlusFee() {
+    //   if (this.callPut == 0) {
+    //     var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
+    //     n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+    //     // TESTING
+    //     n = n.mul(new BigNumber("10"));
+    //     return n.shift(-this.baseDecimals).toString();
+    //   }
+    //   return 0;
+    // },
+    // quoteTokensPlusFee() {
+    //   if (this.callPut == 1) {
+    //     var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
+    //     n = n.mul(new BigNumber(this.strike).shift(this.rateDecimals));
+    //     n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+    //     return n.shift(-this.baseDecimals).shift(-this.rateDecimals).toString();
+    //   }
+    //   return 0;
+    // },
   },
   methods: {
     calculatePayoff() {

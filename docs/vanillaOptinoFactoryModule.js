@@ -105,8 +105,8 @@ const VanillaOptinoFactory = {
                 <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.optionToken" class="card-link" target="_blank">{{ series.optionToken }}</b-link></b-col>
               </b-row>
               <b-row>
-                <b-col cols="4" class="small truncate">• optionCollateralToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.optionCollateralToken" class="card-link" target="_blank">{{ series.optionCollateralToken }}</b-link></b-col>
+                <b-col cols="4" class="small truncate">• coverToken</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.coverToken" class="card-link" target="_blank">{{ series.coverToken }}</b-link></b-col>
               </b-row>
             </b-col>
           </b-row>
@@ -293,14 +293,14 @@ const vanillaOptinoFactoryModule = {
             var bound = new BigNumber(series[5]);
             var timestamp = series[6];
             var optionToken = series[7];
-            var optionCollateralToken = series[8];
+            var coverToken = series[8];
 
 
             // bytes32 _seriesKey, bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, uint _timestamp, address _optinoToken, address _coverToken
 
             // TODO: Check timestamp for updated info
             if (i >= state.seriesData.length) {
-              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), timestamp: timestamp, optionToken: optionToken, optionCollateralToken: optionCollateralToken } });
+              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), timestamp: timestamp, optionToken: optionToken, coverToken: coverToken } });
             }
           }
         }
