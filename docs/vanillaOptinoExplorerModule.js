@@ -171,7 +171,7 @@ const VanillaOptinoExplorer = {
                         <b-form-radio value="1">Put</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="expiry" :description="new Date(expiryInMillis).toLocaleString()">
+                    <b-form-group label-cols="3" label="expiry" :description="'yyyy-mm-dd hh:mm:ss. In your default locale format: ' + new Date(expiryInMillis).toLocaleString()">
                       <b-input-group>
                         <!-- <b-form-input type="text" v-model.trim="expiry"></b-form-input> -->
                         <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="input"></flat-pickr>
@@ -195,6 +195,11 @@ const VanillaOptinoExplorer = {
                     <b-form-group label-cols="3" label="baseTokens">
                       <b-input-group>
                         <b-form-input type="text" v-model.trim="baseTokens"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="collateral">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="collateral" readonly></b-form-input>
                       </b-input-group>
                     </b-form-group>
 
@@ -242,12 +247,13 @@ const VanillaOptinoExplorer = {
                     </div>
                     <br />
 
-                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals"></payoff>
+                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals" :baseSymbol="baseSymbol" :quoteSymbol="quoteSymbol"></payoff>
 
                   </b-form>
                 </b-card-body>
               </b-collapse>
 
+              <!--
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.payoffCalculator variant="outline-info">Payoff Calculator</b-button>
               </b-card-header>
@@ -287,6 +293,7 @@ const VanillaOptinoExplorer = {
                   </b-form>
                 </b-card-body>
               </b-collapse>
+              -->
             </b-card>
           </b-card>
         </b-col>
@@ -339,7 +346,7 @@ const VanillaOptinoExplorer = {
       maxTerm: "0",
       fee: "0",
       description: "",
-      expiryInMillis: parseInt(new Date().getTime()) + (60 * 60 * 24 * 30 * 1000),
+      expiryInMillis: (parseInt(new Date().getTime() / MILLISPERDAY) + 7) * MILLISPERDAY,
 
       callPut: 0,
       callPutOptions: [
@@ -353,7 +360,14 @@ const VanillaOptinoExplorer = {
       baseTokens: "10",
       ethers: "",
       dateConfig: {
-        dateFormat: 'Y-m-d',
+        // dateFormat: 'Y-m-d H:i:S',
+        // formatDate: (d) => new Date(d).toLocaleString(),
+        enableTime: true,
+        enableSeconds: true,
+        time_24hr: true,
+        // defaultHour: 0,
+        // defaultMinute: 0,
+        // defaultSeconds: 0,
       },
     }
   },
@@ -381,6 +395,32 @@ const VanillaOptinoExplorer = {
     },
     totalPayoff() {
       return store.getters['vanillaOptinoExplorer/totalPayoff'];
+    },
+    baseSymbol() {
+      return this.tokenData[this.baseToken] == null ? "ETH" : this.tokenData[this.baseToken].symbol;
+    },
+    quoteSymbol() {
+      return this.tokenData[this.quoteToken] == null ? "DAI" : this.tokenData[this.quoteToken].symbol;
+    },
+    collateral() {
+      try {
+        var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
+        var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
+        var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
+        var quoteDecimals = this.quoteDecimals == null ? 18 : parseInt(this.quoteDecimals);
+        var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
+        var bound = this.bound == null ? new BigNumber(0) : new BigNumber(this.bound).shift(rateDecimals);
+        var baseTokens = this.baseTokens == null ? new BigNumber(1).shift(baseDecimals) : new BigNumber(this.baseTokens).shift(baseDecimals);
+        var collateral = collateralInDeliveryToken(callPut, strike, bound, baseTokens, baseDecimals, rateDecimals);
+        if (callPut == 0) {
+          collateral = collateral == null ? null : collateral.shift(-baseDecimals).toString();
+        } else {
+          collateral = collateral == null ? null : collateral.shift(-quoteDecimals).toString();
+        }
+        return collateral;
+      } catch (e) {
+        return new BigNumber(0);        
+      }
     },
     configData() {
       return store.getters['vanillaOptinoFactory/configData'];

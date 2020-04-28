@@ -5,7 +5,7 @@ const Payoff = {
       <b-collapse id="priceFeed" visible class="mt-2">
         <b-card no-body class="border-0">
           <div>
-            <apexchart type="line" height="700" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="line" :options="chartOptions" :series="series"></apexchart>
           </div>
         </b-card>
       </b-collapse>
@@ -71,8 +71,8 @@ const Payoff = {
     series() {
       var categories = [];
       var payoffInDeliveryTokenSeries = [];
-      var collateralPayoffInDeliveryTokenSeries = [];
-      var totalPayoffInDeliveryTokenSeries = [];
+      var coverPayoffInDeliveryTokenSeries = [];
+      var collateralInDeliveryTokenSeries = [];
       var payoffInNonDeliveryTokenSeries = [];
 
       var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
@@ -92,8 +92,8 @@ const Payoff = {
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals);
 
         payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
-        collateralPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
-        totalPayoffInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));
+        coverPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
+        collateralInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));
         payoffInNonDeliveryTokenSeries.push(result[3] == null ? null : result[3].shift(-rateDecimals));
       }
 
@@ -102,21 +102,34 @@ const Payoff = {
         type: 'line',
         data: payoffInDeliveryTokenSeries,
       }, {
-        name: 'CollateralPayoffInDeliveryToken',
+        name: 'CoverPayoffInDeliveryToken',
         type: 'line',
-        data: collateralPayoffInDeliveryTokenSeries,
+        data: coverPayoffInDeliveryTokenSeries,
       }, {
-        name: 'TotalPayoffInDeliveryToken',
+        name: 'CollateralInDeliveryToken',
         type: 'line',
-        data: totalPayoffInDeliveryTokenSeries,
+        data: collateralInDeliveryTokenSeries,
       }, {
         name: 'PayoffInNonDeliveryToken',
         type: 'line',
         data: payoffInNonDeliveryTokenSeries,
       }];
     },
+    categories() {
+      var _categories = [];
+      var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
+      var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
+      var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
+      var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
+      // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
+      for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
+          _categories.push(spot.shift(-rateDecimals));
+      }
+      console.log(JSON.stringify(_categories));
+      return _categories;
+    },
     chartOptions() {
-      var categories = [];
+      // var categories = [];
       var colors = [
         '#00cc66',
         '#ff9933',
@@ -127,17 +140,17 @@ const Payoff = {
         '#26a69a',
         '#D10CE8'
       ];
-      var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
-      var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
-      var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
-      var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
-      // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
-      for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
-          categories.push(spot.shift(-rateDecimals));
-      }
+      // var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
+      // var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
+      // var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
+      // var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
+      // // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
+      // for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
+      //     categories.push(spot.shift(-rateDecimals));
+      // }
       return {
         chart: {
-          height: 350,
+          height: 600,
           type: 'line',
           stacked: false,
         },
@@ -145,12 +158,12 @@ const Payoff = {
           enabled: false,
         },
         stroke: {
-          width: [4, 4, 10, 4]
+          width: [4, 3, 10, 3]
         },
         colors: colors,
         fill: {
           type: 'solid',
-          opacity: [0.75, 0.85, 0.35, 0.65],
+          opacity: [0.85, 0.75, 0.35, 0.35],
         },
         // fill: {
         //   opacity: [0.85, 0.25, 1],
@@ -164,23 +177,53 @@ const Payoff = {
         //   }
         // },
         markers: {
-          size: 0,
+          size: [3, 2, 0, 0],
         },
         title: {
           text: this.title,
           align: 'left',
           offsetX: 0, // 110,
         },
+        // annotations: {
+        //   xaxis: [{
+        //     x: 600,
+        //     // x: this.categories != null && this.categories.length > 10 ? this.categories[10] : 200,
+        //     // x2: this.categories[20],
+        //     borderColor: '#775DD0',
+        //     label: {
+        //       style: {
+        //         color: '#000000',
+        //       },
+        //       text: 'X-axis annotation - 22 Nov',
+        //     },
+        //   }],
+        //   points: [{
+        //     x: '200',
+        //     seriesIndex: 0,
+        //     label: {
+        //       borderColor: '#000000',
+        //       offsetY: 100,
+        //       style: {
+        //         color: '#fff',
+        //         background: '#000000',
+        //       },
+        //       text: 'Bananas are good',
+        //     }
+        //   }],
+        // },
         xaxis: {
+          type: 'category',
+          min: 0,
           title: {
             text: 'Spot',
-            align: 'right',
+            // align: 'right',
           },
-          categories: categories,
+          categories: this.categories,
         },
         yaxis: [
           {
             seriesName: 'PayoffInDeliveryToken',
+            min: 0,
             title: {
               text: this.yaxis1Title,
               style: {
@@ -208,6 +251,7 @@ const Payoff = {
           },
           {
             seriesName: 'PayoffInDeliveryToken',
+            min: 0,
             show: false,
             labels: {
               formatter: function (value) {
@@ -220,6 +264,7 @@ const Payoff = {
           },
           {
             seriesName: 'PayoffInDeliveryToken',
+            min: 0,
             show: false,
             labels: {
               formatter: function (value) {
@@ -232,6 +277,7 @@ const Payoff = {
           },
           {
             seriesName: 'PayoffInNonDeliveryToken',
+            min: 0,
             opposite: true,
             title: {
               text: this.yaxis2Title,
