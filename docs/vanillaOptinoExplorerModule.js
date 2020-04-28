@@ -236,7 +236,7 @@ const VanillaOptinoExplorer = {
                     </div>
                     <br />
 
-                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals"></payoff> 
+                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals"></payoff>
 
                   </b-form>
                 </b-card-body>
@@ -477,10 +477,10 @@ const VanillaOptinoExplorer = {
             var factoryAddress = store.getters['vanillaOptinoFactory/address']
             var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
             // function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _optionCollateralToken) {
-            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
+            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
             var value = this.baseToken == ADDRESS0 ? new BigNumber(this.baseTokensPlusFee).shift(18).toString() : "0";
             logInfo("vanillaOptinoExplorer", "  value=" + value);
-            factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), new BigNumber(this.expiry).toString(), new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
+            factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), new BigNumber(this.expiry).toString(), new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
               if (!error) {
                 logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
@@ -562,11 +562,12 @@ const vanillaOptinoExplorerModule = {
             var request = state.executionQueue[0];
             var callPut = request.callPut;
             var strike = new BigNumber(request.strike).shift(18).toString();
+            var bound = new BigNumber(request.bound).shift(18).toString();
             var spot = new BigNumber(request.spot).shift(18).toString();
             var baseDecimals = request.baseDecimals;
             var baseTokens = new BigNumber(request.baseTokens).shift(baseDecimals).toString();
 
-            var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, spot, baseTokens, baseDecimals, 18, cb));
+            var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, 18, cb));
             var result = await _result;
             logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
             commit('setPayoffResults', { payoff: result[0].shift(-18).toString(), collateralPayoff: result[1].shift(-18).toString(), totalPayoff: result[0].add(result[1]).shift(-18).toString() });
