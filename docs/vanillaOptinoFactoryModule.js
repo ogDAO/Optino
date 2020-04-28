@@ -101,8 +101,8 @@ const VanillaOptinoFactory = {
                 <b-col class="small truncate">{{ new Date(series.timestamp*1000).toLocaleString() }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="4" class="small truncate">• optionToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.optionToken" class="card-link" target="_blank">{{ series.optionToken }}</b-link></b-col>
+                <b-col cols="4" class="small truncate">• optinoToken</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.optinoToken" class="card-link" target="_blank">{{ series.optinoToken }}</b-link></b-col>
               </b-row>
               <b-row>
                 <b-col cols="4" class="small truncate">• coverToken</b-col>
@@ -283,11 +283,31 @@ const vanillaOptinoFactoryModule = {
             var strike = new BigNumber(series[4]);
             var bound = new BigNumber(series[5]);
             var timestamp = series[6];
-            var optionToken = series[7];
+            var optinoToken = series[7];
             var coverToken = series[8];
+            // TODO: Fix updating of token info. Refresh for now
+            [optinoToken, coverToken].forEach(async function(t) {
+              if (!(t in state.tokenData)) {
+                // Commit first so it does not get redone
+                commit('updateToken', { key: t, token: { address: t } });
+                var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], VANILLAOPTINOFACTORYADDRESS, cb));
+                var tokenInfo = await _tokenInfo;
+                var totalSupply;
+                var balance;
+                // WORKAROUND - getTokenInfo returns garbled totalSupply (set to 0) and balance (tokenOwner's balance). May be web3.js translation
+                if (t == ADDRESS0) {
+                  totalSupply = new BigNumber(0);
+                  balance = store.getters['connection/balance'];
+                } else {
+                  totalSupply = new BigNumber(tokenInfo[1]);
+                  balance = new BigNumber(tokenInfo[2]);
+                }
+                commit('updateToken', { key: t, token: { address: t, symbol: tokenInfo[4], name: tokenInfo[5], decimals: tokenInfo[0], totalSupply: totalSupply.toString(), balance: balance.toString(), allowance: tokenInfo[3] } });
+              }
+            });
             // TODO: Check timestamp for updated info
             if (i >= state.seriesData.length) {
-              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), timestamp: timestamp, optionToken: optionToken, coverToken: coverToken } });
+              commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken } });
             }
           }
         }

@@ -371,10 +371,12 @@ const VanillaOptinoExplorer = {
     },
     seriesOptions() {
       var seriesData = store.getters['vanillaOptinoFactory/seriesData'];
+      var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
       var results = [];
       results.push({ value: null, text: "(none)" });
       seriesData.forEach(function(e) {
-        results.push({ value: e.seriesKey, text: e.description });
+        var description = tokenData[e.optinoToken] == null ? "(loading)" : tokenData[e.optinoToken].symbol + ' - ' + tokenData[e.optinoToken].name;
+        results.push({ value: e.seriesKey, text: description });
       });
       return results;
     },
