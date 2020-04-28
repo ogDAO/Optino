@@ -263,16 +263,7 @@ const vanillaOptinoFactoryModule = {
                   balance = store.getters['connection/balance'];
                 } else {
                   totalSupply = new BigNumber(tokenInfo[1]);
-                  // console.log("totalSupply: " + totalSupply.toString(16));
-                  // if (totalSupply.toString(16) == "0") {
-                  //   totalSupply = new BigNumber(0);
-                  // }
                   balance = new BigNumber(tokenInfo[2]);
-                  // console.log("balance: " + balance.toString());
-                  // console.log("balance: " + balance.toString(16));
-                  // if (balance.toString(16) == "0") {
-                  //   balance = new BigNumber(0);
-                  // }
                 }
                 commit('updateToken', { key: t, token: { address: t, symbol: tokenInfo[4], name: tokenInfo[5], decimals: tokenInfo[0], totalSupply: totalSupply.toString(), balance: balance.toString(), allowance: tokenInfo[3] } });
               }
@@ -294,10 +285,6 @@ const vanillaOptinoFactoryModule = {
             var timestamp = series[6];
             var optionToken = series[7];
             var coverToken = series[8];
-
-
-            // bytes32 _seriesKey, bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, uint _timestamp, address _optinoToken, address _coverToken
-
             // TODO: Check timestamp for updated info
             if (i >= state.seriesData.length) {
               commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), timestamp: timestamp, optionToken: optionToken, coverToken: coverToken } });
