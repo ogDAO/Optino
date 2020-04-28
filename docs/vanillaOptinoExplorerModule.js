@@ -181,9 +181,14 @@ const VanillaOptinoExplorer = {
                         <b-form-input type="text" v-model.trim="strike"></b-form-input>
                       </b-input-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="bound" description="Cap for Capped Call or Floor for Floored Put">
+                    <b-form-group label-cols="3" label="cap" description="Cap (bound) for Capped Call. Set to 0 for Vanilla Call" v-if="callPut == 0">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="bound"></b-form-input>
+                        <b-form-input type="text" v-model.trim="cap"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="floor" description="Floor (bound) for Floored Put. Set to 0 for Vanilla Put" v-if="callPut != 0">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="floor"></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="baseTokens">
@@ -341,7 +346,8 @@ const VanillaOptinoExplorer = {
         { value: 1, text: 'Put' },
       ],
       strike: "200",
-      bound: "300",
+      cap: "300",
+      floor: "100",
       spot: "250",
       baseTokens: "10",
       ethers: "",
@@ -359,6 +365,9 @@ const VanillaOptinoExplorer = {
     },
     payoff() {
       return store.getters['vanillaOptinoExplorer/payoff'];
+    },
+    bound() {
+      return this.callPut == 0 ? this.cap : this.floor;
     },
     collateralPayoff() {
       return store.getters['vanillaOptinoExplorer/collateralPayoff'];

@@ -56,9 +56,9 @@ const Payoff = {
         }
       } else {
         if (this.callPut == "0") {
-          return 'Capped Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + ' [- ' + this.bound + ']';
+          return 'Capped Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + '-' + this.bound;
         } else {
-          return 'Floored Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' [' + this.bound + ' -] ' + this.strike;
+          return 'Floored Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.bound + '-' + this.strike;
         }
       }
     },
