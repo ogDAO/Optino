@@ -300,24 +300,12 @@ const VanillaOptinoExplorer = {
     coinbase() {
       return store.getters['connection/coinbase'];
     },
-    owner() {
-      return store.getters['priceFeed/owner'];
-    },
-    // payoff() {
-    //   return store.getters['vanillaOptinoExplorer/payoff'];
-    // },
     bound() {
       return this.callPut == 0 ? this.cap : this.floor;
     },
     expiry() {
       return parseInt(this.expiryInMillis / 1000);
     },
-    // collateralPayoff() {
-    //   return store.getters['vanillaOptinoExplorer/collateralPayoff'];
-    // },
-    // totalPayoff() {
-    //   return store.getters['vanillaOptinoExplorer/totalPayoff'];
-    // },
     baseSymbol() {
       return this.tokenData[this.baseToken] == null ? "ETH" : this.tokenData[this.baseToken].symbol;
     },
@@ -411,30 +399,8 @@ const VanillaOptinoExplorer = {
       });
       return results;
     },
-    // baseTokensPlusFee() {
-    //   if (this.callPut == 0) {
-    //     var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
-    //     n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
-    //     // TESTING
-    //     n = n.mul(new BigNumber("10"));
-    //     return n.shift(-this.baseDecimals).toString();
-    //   }
-    //   return 0;
-    // },
-    // quoteTokensPlusFee() {
-    //   if (this.callPut == 1) {
-    //     var n = new BigNumber(this.baseTokens).shift(this.baseDecimals);
-    //     n = n.mul(new BigNumber(this.strike).shift(this.rateDecimals));
-    //     n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
-    //     return n.shift(-this.baseDecimals).shift(-this.rateDecimals).toString();
-    //   }
-    //   return 0;
-    // },
   },
   methods: {
-    // calculatePayoff() {
-    //   this.$store.commit('vanillaOptinoExplorer/calculatePayoff', { callPut: this.callPut, strike: this.strike, spot: this.spot, baseTokens: this.baseTokens, baseDecimals: this.baseDecimals });
-    // },
     configSelected(config) {
       logDebug("configSelected", "configSelected(" +JSON.stringify(config) + ")");
       if (config != null) {
@@ -473,10 +439,8 @@ const VanillaOptinoExplorer = {
         .then(value1 => {
           if (value1) {
             logDebug("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
-            // this.$store.commit('priceFeedExplorer/setValue', { value: this.value, hasValue: this.hasValue });
             var factoryAddress = store.getters['vanillaOptinoFactory/address']
             var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
-            // function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _optionCollateralToken) {
             logDebug("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
             // TODO need to use baseDecimals/quoteDecimals
             var value = this.baseToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(18).toString() : "0";
@@ -505,81 +469,11 @@ const VanillaOptinoExplorer = {
 const vanillaOptinoExplorerModule = {
   namespaced: true,
   state: {
-    // payoff: "",
-    // collateralPayoff: "",
-    // totalPayoff: "",
-    // params: null,
-    // executing: false,
-    // executionQueue: [],
   },
   getters: {
-    // payoff: state => state.payoff,
-    // collateralPayoff: state => state.collateralPayoff,
-    // totalPayoff: state => state.totalPayoff,
-    // params: state => state.params,
-    // executionQueue: state => state.executionQueue,
   },
   mutations: {
-    // calculatePayoff(state, data) {
-    //   logDebug("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
-    //   state.executionQueue.push(data);
-    // },
-    // setPayoffResults(state, data) {
-    //   state.payoff = data.payoff;
-    //   state.collateralPayoff = data.collateralPayoff;
-    //   state.totalPayoff = data.totalPayoff;
-    //   logDebug("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
-    // },
-    // deQueue (state) {
-    //   logDebug("vanillaOptinoExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
-    //   state.executionQueue.shift();
-    // },
-    // updateParams (state, params) {
-    //   state.params = params;
-    //   logDebug("vanillaOptinoExplorerModule", "updateParams('" + params + "')")
-    // },
-    // updateExecuting (state, executing) {
-    //   state.executing = executing;
-    //   logDebug("vanillaOptinoExplorerModule", "updateExecuting(" + executing + ")")
-    // },
   },
   actions: {
-    // async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-    //   if (!state.executing) {
-    //     commit('updateExecuting', true);
-    //     logDebug("vanillaOptinoExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-    //
-    //     var paramsChanged = false;
-    //     if (state.params != rootState.route.params.param) {
-    //       logDebug("vanillaOptinoExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
-    //       paramsChanged = true;
-    //       commit('updateParams', rootState.route.params.param);
-    //     }
-    //
-    //     var vanillaOptinoFactoryAddress = store.getters['vanillaOptinoFactory/address']
-    //     var vanillaOptinoFactoryContract = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(vanillaOptinoFactoryAddress);
-    //     if (networkChanged || blockChanged || coinbaseChanged || paramsChanged || state.executionQueue.length > 0) {
-    //       if (state.executionQueue.length > 0) {
-    //         var request = state.executionQueue[0];
-    //         var callPut = request.callPut;
-    //         var strike = new BigNumber(request.strike).shift(18).toString();
-    //         var bound = new BigNumber(request.bound).shift(18).toString();
-    //         var spot = new BigNumber(request.spot).shift(18).toString();
-    //         var baseDecimals = request.baseDecimals;
-    //         var baseTokens = new BigNumber(request.baseTokens).shift(baseDecimals).toString();
-    //
-    //         var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, 18, cb));
-    //         var result = await _result;
-    //         logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
-    //         commit('setPayoffResults', { payoff: result[0].shift(-18).toString(), collateralPayoff: result[1].shift(-18).toString(), totalPayoff: result[0].add(result[1]).shift(-18).toString() });
-    //         commit('deQueue');
-    //       }
-    //     }
-    //     commit('updateExecuting', false);
-    //     logDebug("vanillaOptinoExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-    //   } else {
-    //     logDebug("vanillaOptinoExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-    //   }
-    // }
   },
 };
