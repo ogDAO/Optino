@@ -1,7 +1,7 @@
 const Payoff = {
   template: `
     <div>
-      <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Payoff {{ callPut }} {{ strike }} {{ bound }} {{ baseTokens }} {{ baseDecimals }} {{ rateDecimals }}</b-button>
+      <!-- <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Payoff {{ callPut }} {{ strike }} {{ bound }} {{ baseTokens }} {{ baseDecimals }} {{ rateDecimals }}</b-button> -->
       <b-collapse id="priceFeed" visible class="mt-2">
         <b-card no-body class="border-0">
           <div>
@@ -169,7 +169,7 @@ const Payoff = {
         title: {
           text: this.title,
           align: 'left',
-          offsetX: 110,
+          offsetX: 0, // 110,
         },
         xaxis: {
           title: {

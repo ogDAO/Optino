@@ -171,9 +171,10 @@ const VanillaOptinoExplorer = {
                         <b-form-radio value="1">Put</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="expiry" :description="new Date(expiry*1000).toLocaleString()">
+                    <b-form-group label-cols="3" label="expiry" :description="new Date(expiryInMillis).toLocaleString()">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="expiry"></b-form-input>
+                        <!-- <b-form-input type="text" v-model.trim="expiry"></b-form-input> -->
+                        <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="input"></flat-pickr>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="strike">
@@ -338,7 +339,7 @@ const VanillaOptinoExplorer = {
       maxTerm: "0",
       fee: "0",
       description: "",
-      expiry: parseInt(new Date().getTime()/1000) + (60 * 60 * 24 * 30),
+      expiryInMillis: parseInt(new Date().getTime()) + (60 * 60 * 24 * 30 * 1000),
 
       callPut: 0,
       callPutOptions: [
@@ -351,6 +352,9 @@ const VanillaOptinoExplorer = {
       spot: "250",
       baseTokens: "10",
       ethers: "",
+      dateConfig: {
+        dateFormat: 'Y-m-d',
+      },
     }
   },
   computed: {
@@ -368,6 +372,9 @@ const VanillaOptinoExplorer = {
     },
     bound() {
       return this.callPut == 0 ? this.cap : this.floor;
+    },
+    expiry() {
+      return parseInt(this.expiryInMillis / 1000);
     },
     collateralPayoff() {
       return store.getters['vanillaOptinoExplorer/collateralPayoff'];
