@@ -199,7 +199,16 @@ const VanillaOptinoExplorer = {
                     </b-form-group>
                     <b-form-group label-cols="3" label="collateral">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="collateral" readonly></b-form-input>
+                        <b-input-group :append="collateralSymbol">
+                          <b-form-input type="text" v-model.trim="collateral" readonly></b-form-input>
+                        </b-input-group>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="collateralPlusFee">
+                      <b-input-group>
+                        <b-input-group :append="collateralSymbol">
+                          <b-form-input type="text" v-model.trim="collateralPlusFee" readonly></b-form-input>
+                        </b-input-group>
                       </b-input-group>
                     </b-form-group>
 
@@ -402,6 +411,9 @@ const VanillaOptinoExplorer = {
     quoteSymbol() {
       return this.tokenData[this.quoteToken] == null ? "DAI" : this.tokenData[this.quoteToken].symbol;
     },
+    collateralSymbol() {
+      return this.callPut == 0 ? this.baseSymbol : this.quoteSymbol;
+    },
     collateral() {
       try {
         var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
@@ -419,8 +431,24 @@ const VanillaOptinoExplorer = {
         }
         return collateral;
       } catch (e) {
-        return new BigNumber(0);        
+        return new BigNumber(0);
       }
+    },
+    collateralPlusFee() {
+      if (this.callPut == 0) {
+        var n = new BigNumber(this.collateral).shift(this.baseDecimals);
+        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+        // TESTING
+        // n = n.mul(new BigNumber("10"));
+        return n.shift(-this.baseDecimals).toString();
+      } else {
+        var n = new BigNumber(this.collateral).shift(this.quoteDecimals);
+        n = n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18));
+        // TESTING
+        // n = n.mul(new BigNumber("10"));
+        return n.shift(-this.quoteDecimals).toString();
+      }
+      return 0;
     },
     configData() {
       return store.getters['vanillaOptinoFactory/configData'];
@@ -534,7 +562,8 @@ const VanillaOptinoExplorer = {
             var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
             // function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _optionCollateralToken) {
             logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
-            var value = this.baseToken == ADDRESS0 ? new BigNumber(this.baseTokensPlusFee).shift(18).toString() : "0";
+            // TODO need to use baseDecimals/quoteDecimals
+            var value = this.baseToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(18).toString() : "0";
             logInfo("vanillaOptinoExplorer", "  value=" + value);
             factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), new BigNumber(this.expiry).toString(), new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
               if (!error) {
@@ -599,42 +628,42 @@ const vanillaOptinoExplorerModule = {
     },
   },
   actions: {
-    async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-      if (!state.executing) {
-        commit('updateExecuting', true);
-        logInfo("vanillaOptinoExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-
-        var paramsChanged = false;
-        if (state.params != rootState.route.params.param) {
-          logDebug("vanillaOptinoExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
-          paramsChanged = true;
-          commit('updateParams', rootState.route.params.param);
-        }
-
-        var vanillaOptinoFactoryAddress = store.getters['vanillaOptinoFactory/address']
-        var vanillaOptinoFactoryContract = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(vanillaOptinoFactoryAddress);
-        if (networkChanged || blockChanged || coinbaseChanged || paramsChanged || state.executionQueue.length > 0) {
-          if (state.executionQueue.length > 0) {
-            var request = state.executionQueue[0];
-            var callPut = request.callPut;
-            var strike = new BigNumber(request.strike).shift(18).toString();
-            var bound = new BigNumber(request.bound).shift(18).toString();
-            var spot = new BigNumber(request.spot).shift(18).toString();
-            var baseDecimals = request.baseDecimals;
-            var baseTokens = new BigNumber(request.baseTokens).shift(baseDecimals).toString();
-
-            var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, 18, cb));
-            var result = await _result;
-            logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
-            commit('setPayoffResults', { payoff: result[0].shift(-18).toString(), collateralPayoff: result[1].shift(-18).toString(), totalPayoff: result[0].add(result[1]).shift(-18).toString() });
-            commit('deQueue');
-          }
-        }
-        commit('updateExecuting', false);
-        logDebug("vanillaOptinoExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-      } else {
-        logDebug("vanillaOptinoExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-      }
-    }
+    // async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
+    //   if (!state.executing) {
+    //     commit('updateExecuting', true);
+    //     logInfo("vanillaOptinoExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+    //
+    //     var paramsChanged = false;
+    //     if (state.params != rootState.route.params.param) {
+    //       logDebug("vanillaOptinoExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
+    //       paramsChanged = true;
+    //       commit('updateParams', rootState.route.params.param);
+    //     }
+    //
+    //     var vanillaOptinoFactoryAddress = store.getters['vanillaOptinoFactory/address']
+    //     var vanillaOptinoFactoryContract = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(vanillaOptinoFactoryAddress);
+    //     if (networkChanged || blockChanged || coinbaseChanged || paramsChanged || state.executionQueue.length > 0) {
+    //       if (state.executionQueue.length > 0) {
+    //         var request = state.executionQueue[0];
+    //         var callPut = request.callPut;
+    //         var strike = new BigNumber(request.strike).shift(18).toString();
+    //         var bound = new BigNumber(request.bound).shift(18).toString();
+    //         var spot = new BigNumber(request.spot).shift(18).toString();
+    //         var baseDecimals = request.baseDecimals;
+    //         var baseTokens = new BigNumber(request.baseTokens).shift(baseDecimals).toString();
+    //
+    //         var _result = promisify(cb => vanillaOptinoFactoryContract.payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, 18, cb));
+    //         var result = await _result;
+    //         logDebug("vanillaOptinoExplorerModule", "result=" +JSON.stringify(result));
+    //         commit('setPayoffResults', { payoff: result[0].shift(-18).toString(), collateralPayoff: result[1].shift(-18).toString(), totalPayoff: result[0].add(result[1]).shift(-18).toString() });
+    //         commit('deQueue');
+    //       }
+    //     }
+    //     commit('updateExecuting', false);
+    //     logDebug("vanillaOptinoExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+    //   } else {
+    //     logDebug("vanillaOptinoExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+    //   }
+    // }
   },
 };
