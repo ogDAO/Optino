@@ -211,98 +211,11 @@ const VanillaOptinoExplorer = {
                         </b-input-group>
                       </b-input-group>
                     </b-form-group>
-
-                    <!--
-                    if (call) {
-                      if (baseToken == eth) {
-                        need to send value + fee
-                      } else {
-                        need to have baseTokens + fee approved
-                      }
-                    } else {
-                      if (quoteToken == eth) {
-                        need to send value + fee
-                      } else {
-                        need to have quoteTokens + fee approved
-                      }
-                    }
-
-                    <b-form-group label-cols="3" label="baseTokensPlusFee (ETH)" v-if="callPut == 0 && baseToken == address0">
-                      <b-input-group :append="tokenData[baseToken].symbol">
-                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="baseTokensPlusFee (Tokens)" v-if="callPut == 0 && baseToken != '' && baseToken != address0" :description="'Allowance ' + tokenData[baseToken].allowance.shift(-baseDecimals).toString()">
-                      <b-input-group :append="tokenData[baseToken].symbol">
-                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-
-                    <b-form-group label-cols="3" label="quoteTokensPlusFee (ETH)" v-if="callPut == 1 && quoteToken == address0">
-                      <b-input-group :append="tokenData[quoteToken].symbol">
-                        <b-form-input type="text" v-model.trim="quoteTokensPlusFee"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="quoteTokensPlusFee (Tokens)" v-if="callPut == 1 && quoteToken != '' && quoteToken != address0" :description="'Allowance ' + tokenData[quoteToken].allowance.shift(-quoteDecimals).toString()">
-                      <b-input-group :append="tokenData[quoteToken].symbol">
-                        <b-form-input type="text" v-model.trim="quoteTokensPlusFee"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <div class="text-center">
-                      <b-button-group>
-                        <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
-                      </b-button-group>
-                    </div>
-                    -->
                     <br />
-
                     <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals" :baseSymbol="baseSymbol" :quoteSymbol="quoteSymbol"></payoff>
-
                   </b-form>
                 </b-card-body>
               </b-collapse>
-
-              <!--
-              <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.payoffCalculator variant="outline-info">Payoff Calculator</b-button>
-              </b-card-header>
-              <b-collapse id="payoffCalculator" class="border-0">
-                <b-card-body>
-                  <b-form>
-                    <b-form-group label="Call or Put: " label-cols="4">
-                      <b-form-select v-model="callPut" :options="callPutOptions" size="sm" class="mt-3"></b-form-select>
-                    </b-form-group>
-                    <b-form-group label="strike: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="strike" placeholder="e.g. 200"></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="spot: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="spot" placeholder="e.g. 250"></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="baseTokens: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="baseTokens" placeholder="e.g. 10"></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="baseDecimals: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="baseDecimals" placeholder="e.g. 18"></b-form-input>
-                    </b-form-group>
-                    <div class="text-center">
-                      <b-button-group>
-                        <b-button size="sm" @click="calculatePayoff" variant="primary">Calculate</b-button>
-                      </b-button-group>
-                      <br />
-                    </div>
-                    <b-form-group label="payoff: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="payoff" disabled></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="collateralPayoff: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="collateralPayoff.toString()" disabled></b-form-input>
-                    </b-form-group>
-                    <b-form-group label="totalPayoff: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="totalPayoff.toString()" disabled></b-form-input>
-                    </b-form-group>
-                  </b-form>
-                </b-card-body>
-              </b-collapse>
-              -->
             </b-card>
           </b-card>
         </b-col>
@@ -390,21 +303,21 @@ const VanillaOptinoExplorer = {
     owner() {
       return store.getters['priceFeed/owner'];
     },
-    payoff() {
-      return store.getters['vanillaOptinoExplorer/payoff'];
-    },
+    // payoff() {
+    //   return store.getters['vanillaOptinoExplorer/payoff'];
+    // },
     bound() {
       return this.callPut == 0 ? this.cap : this.floor;
     },
     expiry() {
       return parseInt(this.expiryInMillis / 1000);
     },
-    collateralPayoff() {
-      return store.getters['vanillaOptinoExplorer/collateralPayoff'];
-    },
-    totalPayoff() {
-      return store.getters['vanillaOptinoExplorer/totalPayoff'];
-    },
+    // collateralPayoff() {
+    //   return store.getters['vanillaOptinoExplorer/collateralPayoff'];
+    // },
+    // totalPayoff() {
+    //   return store.getters['vanillaOptinoExplorer/totalPayoff'];
+    // },
     baseSymbol() {
       return this.tokenData[this.baseToken] == null ? "ETH" : this.tokenData[this.baseToken].symbol;
     },
@@ -435,20 +348,23 @@ const VanillaOptinoExplorer = {
       }
     },
     collateralPlusFee() {
-      if (this.callPut == 0) {
-        var n = new BigNumber(this.collateral).shift(this.baseDecimals);
-        n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
-        // TESTING
-        // n = n.mul(new BigNumber("10"));
-        return n.shift(-this.baseDecimals).toString();
-      } else {
-        var n = new BigNumber(this.collateral).shift(this.quoteDecimals);
-        n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
-        // TESTING
-        // n = n.mul(new BigNumber("10"));
-        return n.shift(-this.quoteDecimals).toString();
+      try {
+        if (this.callPut == 0) {
+          var n = new BigNumber(this.collateral).shift(this.baseDecimals);
+          n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
+          // TESTING
+          // n = n.mul(new BigNumber("10"));
+          return n.shift(-this.baseDecimals).toString();
+        } else {
+          var n = new BigNumber(this.collateral).shift(this.quoteDecimals);
+          n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
+          // TESTING
+          // n = n.mul(new BigNumber("10"));
+          return n.shift(-this.quoteDecimals).toString();
+        }
+      } catch (e) {
       }
-      return 0;
+      return new BigNumber(0);
     },
     configData() {
       return store.getters['vanillaOptinoFactory/configData'];
@@ -516,9 +432,9 @@ const VanillaOptinoExplorer = {
     // },
   },
   methods: {
-    calculatePayoff() {
-      this.$store.commit('vanillaOptinoExplorer/calculatePayoff', { callPut: this.callPut, strike: this.strike, spot: this.spot, baseTokens: this.baseTokens, baseDecimals: this.baseDecimals });
-    },
+    // calculatePayoff() {
+    //   this.$store.commit('vanillaOptinoExplorer/calculatePayoff', { callPut: this.callPut, strike: this.strike, spot: this.spot, baseTokens: this.baseTokens, baseDecimals: this.baseDecimals });
+    // },
     configSelected(config) {
       logDebug("configSelected", "configSelected(" +JSON.stringify(config) + ")");
       if (config != null) {
@@ -526,7 +442,7 @@ const VanillaOptinoExplorer = {
         var t = this;
         configData.forEach(function(e) {
           if (config == e.configKey) {
-            logInfo("configSelected", "Applying " +JSON.stringify(e));
+            logDebug("configSelected", "Applying " +JSON.stringify(e));
             t.baseToken = e.baseToken;
             t.quoteToken = e.quoteToken;
             t.priceFeed = e.priceFeed;
@@ -542,7 +458,7 @@ const VanillaOptinoExplorer = {
       event.preventDefault();
     },
     mintOptinos(event) {
-      logInfo("vanillaOptinoExplorer", "mintOptinos()");
+      logDebug("vanillaOptinoExplorer", "mintOptinos()");
       this.$bvModal.msgBoxConfirm('Mint ' + this.baseTokens + ' optinos?', {
           title: 'Please Confirm',
           size: 'sm',
@@ -556,21 +472,21 @@ const VanillaOptinoExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
+            logDebug("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
             // this.$store.commit('priceFeedExplorer/setValue', { value: this.value, hasValue: this.hasValue });
             var factoryAddress = store.getters['vanillaOptinoFactory/address']
             var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
             // function mintOptinoTokens(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _optionCollateralToken) {
-            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
+            logDebug("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
             // TODO need to use baseDecimals/quoteDecimals
             var value = this.baseToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(18).toString() : "0";
-            logInfo("vanillaOptinoExplorer", "  value=" + value);
+            logDebug("vanillaOptinoExplorer", "  value=" + value);
             factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), new BigNumber(this.expiry).toString(), new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
               if (!error) {
-                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
+                logDebug("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() error: ");
+                logDebug("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
@@ -589,49 +505,49 @@ const VanillaOptinoExplorer = {
 const vanillaOptinoExplorerModule = {
   namespaced: true,
   state: {
-    payoff: "",
-    collateralPayoff: "",
-    totalPayoff: "",
-    params: null,
-    executing: false,
-    executionQueue: [],
+    // payoff: "",
+    // collateralPayoff: "",
+    // totalPayoff: "",
+    // params: null,
+    // executing: false,
+    // executionQueue: [],
   },
   getters: {
-    payoff: state => state.payoff,
-    collateralPayoff: state => state.collateralPayoff,
-    totalPayoff: state => state.totalPayoff,
-    params: state => state.params,
-    executionQueue: state => state.executionQueue,
+    // payoff: state => state.payoff,
+    // collateralPayoff: state => state.collateralPayoff,
+    // totalPayoff: state => state.totalPayoff,
+    // params: state => state.params,
+    // executionQueue: state => state.executionQueue,
   },
   mutations: {
-    calculatePayoff(state, data) {
-      logInfo("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
-      state.executionQueue.push(data);
-    },
-    setPayoffResults(state, data) {
-      state.payoff = data.payoff;
-      state.collateralPayoff = data.collateralPayoff;
-      state.totalPayoff = data.totalPayoff;
-      logInfo("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
-    },
-    deQueue (state) {
-      logDebug("vanillaOptinoExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
-      state.executionQueue.shift();
-    },
-    updateParams (state, params) {
-      state.params = params;
-      logDebug("vanillaOptinoExplorerModule", "updateParams('" + params + "')")
-    },
-    updateExecuting (state, executing) {
-      state.executing = executing;
-      logDebug("vanillaOptinoExplorerModule", "updateExecuting(" + executing + ")")
-    },
+    // calculatePayoff(state, data) {
+    //   logDebug("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
+    //   state.executionQueue.push(data);
+    // },
+    // setPayoffResults(state, data) {
+    //   state.payoff = data.payoff;
+    //   state.collateralPayoff = data.collateralPayoff;
+    //   state.totalPayoff = data.totalPayoff;
+    //   logDebug("vanillaOptinoExplorerModule", "calculatePayoff(" +JSON.stringify(data) + ")");
+    // },
+    // deQueue (state) {
+    //   logDebug("vanillaOptinoExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
+    //   state.executionQueue.shift();
+    // },
+    // updateParams (state, params) {
+    //   state.params = params;
+    //   logDebug("vanillaOptinoExplorerModule", "updateParams('" + params + "')")
+    // },
+    // updateExecuting (state, executing) {
+    //   state.executing = executing;
+    //   logDebug("vanillaOptinoExplorerModule", "updateExecuting(" + executing + ")")
+    // },
   },
   actions: {
     // async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
     //   if (!state.executing) {
     //     commit('updateExecuting', true);
-    //     logInfo("vanillaOptinoExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+    //     logDebug("vanillaOptinoExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
     //
     //     var paramsChanged = false;
     //     if (state.params != rootState.route.params.param) {

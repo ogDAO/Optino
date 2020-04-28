@@ -12,22 +12,22 @@ const Payoff = {
     </div>
   `,
   props: {
-    callPut: [String, Number],
-    strike: [String, Number],
-    bound: [String, Number],
+    callPut: [String, Number, Object],
+    strike: [String, Number, Object],
+    bound: [String, Number, Object],
     baseTokens: [String, Number],
     baseDecimals: [String, Number],
     rateDecimals: [String, Number],
     spotFrom: {
-      type: [String, Number],
+      type: [String, Number, Object],
       default: "0",
     },
     spotStep: {
-      type: [String, Number],
+      type: [String, Number, Object],
       default: "25",
     },
     spotTo: {
-      type: [String, Number],
+      type: [String, Number, Object],
       default: "1000",
     },
     baseSymbol: {
@@ -81,7 +81,7 @@ const Payoff = {
       var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
       var bound = this.bound == null ? new BigNumber(0) : new BigNumber(this.bound).shift(rateDecimals);
       var baseTokens = this.baseTokens == null ? new BigNumber(1).shift(baseDecimals) : new BigNumber(this.baseTokens).shift(baseDecimals);
-      console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
+      // console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
 
       var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
       var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
@@ -125,7 +125,7 @@ const Payoff = {
       for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
           _categories.push(spot.shift(-rateDecimals));
       }
-      console.log(JSON.stringify(_categories));
+      // console.log(JSON.stringify(_categories));
       return _categories;
     },
     chartOptions() {

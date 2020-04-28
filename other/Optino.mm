@@ -138,13 +138,18 @@
 </node>
 <node TEXT="Permissions" POSITION="left" ID="ID_550495268" CREATED="1588036359126" MODIFIED="1588036362167">
 <edge COLOR="#ff0000"/>
+<node TEXT="factory" ID="ID_939038222" CREATED="1588036752887" MODIFIED="1588036754954">
 <node TEXT="admin" ID="ID_1470035315" CREATED="1588036367587" MODIFIED="1588036369220">
 <node TEXT="addConfig(baseToken, quoteToken, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description)" ID="ID_1722513437" CREATED="1588036380066" MODIFIED="1588036514542"/>
 <node TEXT="updateConfig(baseToken, quoteToken, priceFeed, maxTerm, fee, description)" ID="ID_615389790" CREATED="1588036412297" MODIFIED="1588036593164"/>
 <node TEXT="setSeriesSpotIfPriceFeedFails(seriesKey, spot)" ID="ID_694989703" CREATED="1588036632471" MODIFIED="1588036634081"/>
 <node TEXT="deprecateContract(newAddress)" ID="ID_685185481" CREATED="1588036448250" MODIFIED="1588036457435"/>
 </node>
-<node TEXT="users" ID="ID_1713704166" CREATED="1588036370971" MODIFIED="1588036373019"/>
+<node TEXT="users" ID="ID_1713704166" CREATED="1588036370971" MODIFIED="1588036373019">
+<node TEXT="mintOptinoTokens(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, baseTokens, uiFeeAccount)" ID="ID_1476616503" CREATED="1588036806841" MODIFIED="1588036808665"/>
+</node>
+</node>
+<node TEXT="optino &amp; cover tokens" ID="ID_6846822" CREATED="1588036850389" MODIFIED="1588036860377"/>
 </node>
 <node TEXT="fee" POSITION="right" ID="ID_1231123725" CREATED="1588036689042" MODIFIED="1588036691618">
 <edge COLOR="#0000ff"/>

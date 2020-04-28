@@ -173,7 +173,7 @@ const vanillaOptinoFactoryModule = {
     },
     updateSeries(state, {index, series}) {
       Vue.set(state.seriesData, index, series);
-      logInfo("vanillaOptinoFactoryModule", "updateSeries(" + index + ", " + JSON.stringify(series) + ")")
+      logDebug("vanillaOptinoFactoryModule", "updateSeries(" + index + ", " + JSON.stringify(series) + ")")
     },
     updateToken(state, {key, token}) {
       Vue.set(state.tokenData, key, token);
@@ -275,7 +275,7 @@ const vanillaOptinoFactoryModule = {
           for (var i = 0; i < seriesDataLength; i++) {
             var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(i).toString(), cb));
             var series = await _series;
-            logInfo("vanillaOptinoFactoryModule", "execWeb3() config: " + JSON.stringify(series));
+            logDebug("vanillaOptinoFactoryModule", "execWeb3() config: " + JSON.stringify(series));
             var seriesKey = series[0];
             var configKey = series[1];
             var callPut = series[2];
