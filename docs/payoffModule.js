@@ -158,12 +158,12 @@ const Payoff = {
           enabled: false,
         },
         stroke: {
-          width: [4, 3, 10, 3]
+          width: [5, 4, 10, 3]
         },
         colors: colors,
         fill: {
           type: 'solid',
-          opacity: [0.85, 0.75, 0.35, 0.35],
+          opacity: [0.85, 0.75, 0.35, 0.45],
         },
         // fill: {
         //   opacity: [0.85, 0.25, 1],
@@ -213,7 +213,6 @@ const Payoff = {
         // },
         xaxis: {
           type: 'category',
-          min: 0,
           title: {
             text: 'Spot',
             // align: 'right',
