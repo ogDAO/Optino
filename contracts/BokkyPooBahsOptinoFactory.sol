@@ -1,7 +1,7 @@
 pragma solidity ^0.6.3;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah's Optino ⚛️ + Factory v0.97-pre-release
+// BokkyPooBah's Optino ⚛️ + Factory v0.971-pre-release
 //
 // Status: Work in progress
 //
@@ -12,7 +12,7 @@ pragma solidity ^0.6.3;
 // BokkyPooBahsOptinoFactory deployment on Ropsten:
 //
 // https://optino.xyz
-//
+// https://bokkypoobah.github.io/Optino
 // https://github.com/bokkypoobah/Optino
 //
 // TODO:
@@ -437,7 +437,8 @@ contract Owned {
 
 
 // ----------------------------------------------------------------------------
-// Config - [baseToken, quoteToken, priceFeed] => [maxTerm, fee, description]
+// Config - [baseToken, quoteToken, priceFeed] =>
+//   [baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description, timestamp]
 // ----------------------------------------------------------------------------
 library ConfigLibrary {
     struct Config {
@@ -502,8 +503,8 @@ library ConfigLibrary {
 
 
 // ----------------------------------------------------------------------------
-// Series - [(baseToken, quoteToken, priceFeed), callPut, expiry, strike, bound] =>
-// [description, optinoToken, coverToken]
+// Series - [configKey(baseToken, quoteToken, priceFeed), callPut, expiry, strike, bound] =>
+// [optinoToken, coverToken, spot, timestamp]
 // ----------------------------------------------------------------------------
 library SeriesLibrary {
     struct Series {
@@ -861,6 +862,15 @@ contract OptinoToken is BasicToken {
         }
         return amount;
     }
+    function transferOut(address token, address tokenOwner, uint tokens, uint decimals) internal {
+        if (token == ETH) {
+            tokens = collectDust(tokens, address(this).balance, decimals);
+            payable(tokenOwner).transfer(tokens);
+        } else {
+            tokens = collectDust(tokens, ERC20(token).balanceOf(address(this)), decimals);
+            require(ERC20(token).transfer(tokenOwner, tokens));
+        }
+    }
     function close(uint _baseTokens) public {
         _close(msg.sender, _baseTokens);
     }
@@ -878,13 +888,7 @@ contract OptinoToken is BasicToken {
             uint collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
             address token = _callPut == 0 ? _baseToken : _quoteToken;
             uint decimals = _callPut == 0 ? _baseDecimals : _quoteDecimals;
-            if (token == ETH) {
-                collateral = collectDust(collateral, address(this).balance, decimals);
-                payable(tokenOwner).transfer(collateral);
-            } else {
-                _baseTokens = collectDust(collateral, ERC20(token).balanceOf(address(this)), decimals);
-                require(ERC20(token).transfer(tokenOwner, collateral));
-            }
+            transferOut(token, tokenOwner, collateral, decimals);
             emit Close(pair, token, tokenOwner, collateral);
         }
     }
@@ -917,25 +921,13 @@ contract OptinoToken is BasicToken {
             address token = callPut == 0 ? _baseToken : _quoteToken;
             uint decimals = callPut == 0 ? _baseDecimals : _quoteDecimals;
             if (_payoff > 0) {
-                if (token == ETH) {
-                    _payoff = collectDust(_payoff, address(this).balance, decimals);
-                    payable(tokenOwner).transfer(_payoff);
-                } else {
-                    _payoff = collectDust(_payoff, ERC20(token).balanceOf(address(this)), decimals);
-                    require(ERC20(token).transfer(tokenOwner, _payoff));
-                }
+                transferOut(token, tokenOwner, _payoff, decimals);
             }
             emit Payoff(pair, token, tokenOwner, _payoff);
 
             (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, coverTokens, _baseDecimals, _rateDecimals);
             if (_collateral > 0) {
-                if (token == ETH) {
-                    _collateral = collectDust(_collateral, address(this).balance, decimals);
-                    payable(tokenOwner).transfer(_collateral);
-                } else {
-                    _collateral = collectDust(_collateral, ERC20(token).balanceOf(address(this)), decimals);
-                    require(ERC20(token).transfer(tokenOwner, _collateral));
-                }
+                transferOut(token, tokenOwner, _collateral, decimals);
             }
             emit Payoff(address(this), token, tokenOwner, _collateral);
         }

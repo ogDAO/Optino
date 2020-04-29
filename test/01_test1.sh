@@ -335,10 +335,10 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "1"; // 0 Call, 1 Put
+var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(18);
-var bound = new BigNumber("150").shift(18);
+var bound = new BigNumber("300").shift(18);
 // var strike1 = new BigNumber("201").shift(18);
 var baseTokens = new BigNumber("10").shift(18);
 var value = web3.toWei("100", "ether").toString();
@@ -417,7 +417,7 @@ console.log("RESULT: ");
 if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = new BigNumber("250").shift(18);
+  var rate = new BigNumber("233").shift(18);
   var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
