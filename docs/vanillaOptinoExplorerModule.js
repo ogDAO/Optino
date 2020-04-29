@@ -277,7 +277,7 @@ const VanillaOptinoExplorer = {
         { value: 1, text: 'Put' },
       ],
       expiryInMillis: moment().utc().add(1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf(),
-      expirySelection: null,
+      expirySelection: "+1d",
       expiryOptions: [
         { value: null, text: 'Select' },
         { value: '+0d', text: '+0d' },
