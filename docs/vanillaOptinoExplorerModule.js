@@ -171,10 +171,13 @@ const VanillaOptinoExplorer = {
                         <b-form-radio value="1">Put</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="expiry" :description="'yyyy-mm-dd hh:mm:ss. In your default locale format: ' + new Date(expiryInMillis).toLocaleString()">
+                    <b-form-group label-cols="3" label="expiry" :description="'yyyy-mm-dd hh:mm:ss. In your default locale format: ' + new Date(expiryInMillis).toLocaleString() + '. Time defaults to 08:00:00 UTC'">
                       <b-input-group>
                         <!-- <b-form-input type="text" v-model.trim="expiry"></b-form-input> -->
-                        <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="input"></flat-pickr>
+                        <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="form-control"></flat-pickr>
+                        <template v-slot:append>
+                          <b-form-select v-model.trim="expirySelection" :options="expiryOptions" v-on:change="expirySelected"></b-form-select>
+                        </template>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="strike">
@@ -265,15 +268,35 @@ const VanillaOptinoExplorer = {
       baseDecimals: "18",
       quoteDecimals: "18",
       rateDecimals: "18",
-      maxTerm: "0",
+      maxTerm: null,
       fee: "0",
       description: "",
-      expiryInMillis: (parseInt(new Date().getTime() / MILLISPERDAY) + 7) * MILLISPERDAY,
-
       callPut: 0,
       callPutOptions: [
         { value: 0, text: 'Call' },
         { value: 1, text: 'Put' },
+      ],
+      expiryInMillis: moment().utc().add(1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf(),
+      expirySelection: null,
+      expiryOptions: [
+        { value: null, text: 'Select' },
+        { value: '+0d', text: '+0d' },
+        { value: '+1d', text: '+1d' },
+        { value: '+2d', text: '+2d' },
+        { value: '+3d', text: '+3d' },
+        { value: '+4d', text: '+4d' },
+        { value: '+5d', text: '+5d' },
+        { value: '+6d', text: '+6d' },
+        { value: '+1w', text: '+1w' },
+        { value: '+2w', text: '+2w' },
+        { value: '+3w', text: '+3w' },
+        { value: '+4w', text: '+4w' },
+        { value: 'e0w', text: 'end of this week' },
+        { value: 'e1w', text: 'end of next week' },
+        { value: 'e2w', text: 'end of the following week' },
+        { value: 'e0M', text: 'end of this month' },
+        { value: 'e1M', text: 'end of next month' },
+        { value: 'e2M', text: 'end of the following month' },
       ],
       strike: "200",
       cap: "300",
@@ -281,16 +304,17 @@ const VanillaOptinoExplorer = {
       spot: "250",
       baseTokens: "10",
       ethers: "",
-      dateConfig: {
-        // dateFormat: 'Y-m-d H:i:S',
-        // formatDate: (d) => new Date(d).toLocaleString(),
-        enableTime: true,
-        enableSeconds: true,
-        time_24hr: true,
-        // defaultHour: 0,
-        // defaultMinute: 0,
-        // defaultSeconds: 0,
-      },
+      // dateConfig: {
+      //   // dateFormat: 'Y-m-d H:i:S',
+      //   // formatDate: (d) => new Date(d).toLocaleString(),
+      //   enableTime: true,
+      //   enableSeconds: true,
+      //   time_24hr: true,
+      //   maxDate: new Date().fp_incr(parseInt(this.maxTerm)/60/60/24),
+      //   // defaultHour: 0,
+      //   // defaultMinute: 0,
+      //   // defaultSeconds: 0,
+      // },
     }
   },
   computed: {
@@ -299,6 +323,20 @@ const VanillaOptinoExplorer = {
     },
     coinbase() {
       return store.getters['connection/coinbase'];
+    },
+    maxTermInDays() {
+      return this.maxTerm == null ? null : parseInt(this.maxTerm)/60/60/24;
+    },
+    dateConfig() {
+      return {
+        enableTime: true,
+        enableSeconds: true,
+        time_24hr: true,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        // maxDate: new Date().fp_incr(this.maxTermInDays == null ? 7 : this.maxTermInDays),
+      }
     },
     bound() {
       return this.callPut == 0 ? this.cap : this.floor;
@@ -340,14 +378,10 @@ const VanillaOptinoExplorer = {
         if (this.callPut == 0) {
           var n = new BigNumber(this.collateral).shift(this.baseDecimals);
           n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
-          // TESTING
-          // n = n.mul(new BigNumber("10"));
           return n.shift(-this.baseDecimals).toString();
         } else {
           var n = new BigNumber(this.collateral).shift(this.quoteDecimals);
           n = new BigNumber(n.add(n.mul(new BigNumber(this.fee).shift(16)).shift(-18)).toFixed(0));
-          // TESTING
-          // n = n.mul(new BigNumber("10"));
           return n.shift(-this.quoteDecimals).toString();
         }
       } catch (e) {
@@ -426,7 +460,7 @@ const VanillaOptinoExplorer = {
       event.preventDefault();
     },
     seriesSelected(series) {
-      logInfo("seriesSelected", "seriesSelected(" +JSON.stringify(series) + ")");
+      logDebug("seriesSelected", "seriesSelected(" +JSON.stringify(series) + ")");
       if (series != null) {
         var seriesData = store.getters['vanillaOptinoFactory/seriesData'];
         var configData = store.getters['vanillaOptinoFactory/configData'];
@@ -434,10 +468,10 @@ const VanillaOptinoExplorer = {
         var t = this;
         seriesData.forEach(function(s) {
           if (series == s.seriesKey) {
-            logInfo("seriesSelected", "Applying " + JSON.stringify(s));
+            logDebug("seriesSelected", "Applying " + JSON.stringify(s));
             configData.forEach(function(c) {
               if (s.configKey == c.configKey) {
-                logInfo("seriesSelected", "Applying Config " + JSON.stringify(c));
+                logDebug("seriesSelected", "Applying Config " + JSON.stringify(c));
                 t.baseToken = c.baseToken;
                 t.quoteToken = c.quoteToken;
                 t.priceFeed = c.priceFeed;
@@ -450,8 +484,6 @@ const VanillaOptinoExplorer = {
                 t.callPut = parseInt(s.callPut);
                 t.expiryInMillis = s.expiry * 1000;
                 t.strike = s.strike;
-                // t.cap = s.bound;
-                // t.floor = s.bound;
                 if (t.callPut == 0) {
                   t.cap = s.bound;
                 } else {
@@ -461,6 +493,29 @@ const VanillaOptinoExplorer = {
             });
           }
         });
+      }
+      event.preventDefault();
+    },
+    expirySelected(expiryString) {
+      // logInfo("expirySelected", "expirySelected(" + expiryString + ")");
+      if (expiryString != null) {
+        var match = expiryString.match(/^([\+|e])([0-9]*)([dwM])$/);
+        if (match != null) {
+          if (match[1] == "+") {
+            var check = moment().utc().hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
+            if (check.valueOf() < moment()) {
+              this.expiryInMillis = moment().utc().add(1, 'd').add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            } else {
+              this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            }
+          } else if (match[1] == "e" && match[3] == "w") {
+            // TODO: Want to check if we have gone past the calculated end of this week
+            this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+          } else if (match[1] == "e" && match[3] == "M") {
+            // TODO: Want to check if we have gone past the calculated end of this month
+            this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+          }
+        }
       }
       event.preventDefault();
     },
