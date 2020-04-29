@@ -1,11 +1,10 @@
 # BokkyPooBah's Vanilla And Bounded Optino(tm) Crypto Options
 
 
+Status: Work in progress
 
+You can test it out using MetaMask connected to the Ropsten network at [https://bokkypoobah.github.io/Optino](https://bokkypoobah.github.io/Optino/#/vanillaOptinoExplorer/all)
 
-
-
-Status: Muddled work in progress
 
 # Risks
 
