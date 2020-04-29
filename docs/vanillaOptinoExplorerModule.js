@@ -86,9 +86,9 @@ const VanillaOptinoExplorer = {
                     <b-form-group label="Expired: " label-cols="3">
                       <b-form-checkbox v-model="expired">Display</b-form-checkbox>
                     </b-form-group>
-                    <b-form-group label="Series: " label-cols="3">
+                    <b-form-group label="Series1: " label-cols="3">
                       <b-input-group>
-                        <b-form-select v-model="selectedSeries" :options="seriesOptions"></b-form-select>
+                        <b-form-select v-model="selectedSeries" :options="seriesOptions" v-on:change="seriesSelected"></b-form-select>
                         <b-input-group-append>
                           <b-button @click="$bvModal.show('bv-modal-example')">Select</b-button>
                           </b-input-group-append>
@@ -101,7 +101,7 @@ const VanillaOptinoExplorer = {
                       </template>
                       <div class="d-block text-center">
                         <b-form-group label="Series: " label-cols="3">
-                          <b-form-select v-model="selectedSeries" :options="tokenOptions" size="sm" class="mt-3">></b-form-select>
+                          <b-form-select v-model="selectedSeries" :options="tokenOptions" v-on:change="seriesSelected" size="sm" class="mt-3">></b-form-select>
                         </b-form-group>
                         <h3>Hello From This Modal!</h3>
                       </div>
@@ -420,6 +420,45 @@ const VanillaOptinoExplorer = {
             t.maxTerm = e.maxTerm.toString();
             t.fee = e.fee.shift(-16).toString();
             t.description = e.description;
+          }
+        });
+      }
+      event.preventDefault();
+    },
+    seriesSelected(series) {
+      logInfo("seriesSelected", "seriesSelected(" +JSON.stringify(series) + ")");
+      if (series != null) {
+        var seriesData = store.getters['vanillaOptinoFactory/seriesData'];
+        var configData = store.getters['vanillaOptinoFactory/configData'];
+        var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
+        var t = this;
+        seriesData.forEach(function(s) {
+          if (series == s.seriesKey) {
+            logInfo("seriesSelected", "Applying " + JSON.stringify(s));
+            configData.forEach(function(c) {
+              if (s.configKey == c.configKey) {
+                logInfo("seriesSelected", "Applying Config " + JSON.stringify(c));
+                t.baseToken = c.baseToken;
+                t.quoteToken = c.quoteToken;
+                t.priceFeed = c.priceFeed;
+                t.baseDecimals = c.baseDecimals.toString();
+                t.quoteDecimals = c.quoteDecimals.toString();
+                t.rateDecimals = c.rateDecimals.toString();
+                t.maxTerm = c.maxTerm.toString();
+                t.fee = c.fee.shift(-16).toString();
+                t.description = tokenData[s.optinoToken].name;
+                t.callPut = parseInt(s.callPut);
+                t.expiryInMillis = s.expiry * 1000;
+                t.strike = s.strike;
+                // t.cap = s.bound;
+                // t.floor = s.bound;
+                if (t.callPut == 0) {
+                  t.cap = s.bound;
+                } else {
+                  t.floor = s.bound;
+                }
+              }
+            });
           }
         });
       }
