@@ -1,4 +1,4 @@
-pragma solidity ^0.6.3;
+pragma solidity ^0.6.6;
 
 // ----------------------------------------------------------------------------
 // BokkyPooBah's Optino ⚛️ + Factory v0.971-pre-release
@@ -28,7 +28,7 @@ pragma solidity ^0.6.3;
 
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah's DateTime Library v1.01 - only the required parts
+// BokkyPooBah's DateTime Library v1.01 - only the necessary snippets
 //
 // A gas-efficient Solidity date and time library
 //
@@ -104,7 +104,7 @@ library BokkyPooBahsDateTimeLibrary {
     }
 }
 // ----------------------------------------------------------------------------
-// End BokkyPooBah's DateTime Library v1.01 - only the required parts
+// End BokkyPooBah's DateTime Library v1.01 - only the necessary snippets
 // ----------------------------------------------------------------------------
 
 

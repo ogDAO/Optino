@@ -296,7 +296,7 @@ const VanillaOptinoExplorer = {
       cap: "300",
       floor: "100",
       spot: "250",
-      baseTokens: "10",
+      baseTokens: "0.1",
       ethers: "",
       // dateConfig: {
       //   // dateFormat: 'Y-m-d H:i:S',
