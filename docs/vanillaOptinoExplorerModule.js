@@ -214,6 +214,11 @@ const VanillaOptinoExplorer = {
                         </b-input-group>
                       </b-input-group>
                     </b-form-group>
+                    <div class="text-center">
+                      <b-button-group>
+                        <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
+                      </b-button-group>
+                    </div>
                     <br />
                     <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals" :baseSymbol="baseSymbol" :quoteSymbol="quoteSymbol"></payoff>
                   </b-form>
