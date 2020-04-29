@@ -250,17 +250,6 @@ const VanillaOptinoExplorer = {
 
       selectedSeries: null,
 
-      // mintOptinoTokens(baseToken, quoteToken, priceFeed, callPut, expiry, strike, baseTokens, uiFeeAccount
-      // address baseToken;
-      // address quoteToken;
-      // address priceFeed;
-      // uint baseDecimals;
-      // uint quoteDecimals;
-      // uint rateDecimals;
-      // uint maxTerm;
-      // uint fee;
-      // string description;
-
       configKey: "",
       baseToken: "",
       quoteToken: "",
@@ -277,7 +266,7 @@ const VanillaOptinoExplorer = {
         { value: 1, text: 'Put' },
       ],
       expiryInMillis: moment().utc().add(1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf(),
-      expirySelection: "+1d",
+      expirySelection: "null",
       expiryOptions: [
         { value: null, text: 'Select' },
         { value: '+0d', text: '+0d' },
@@ -423,7 +412,6 @@ const VanillaOptinoExplorer = {
       results.push({ value: "", text: "(select Config or Series above)", disabled: true });
 
       Object.keys(tokenData).forEach(function(e) {
-        // console.error(e + " => " + JSON.stringify(tokenData[e]));
         var symbol = tokenData[e].symbol;
         var name = tokenData[e].name;
         var decimals = tokenData[e].decimals;
@@ -509,11 +497,19 @@ const VanillaOptinoExplorer = {
               this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
             }
           } else if (match[1] == "e" && match[3] == "w") {
-            // TODO: Want to check if we have gone past the calculated end of this week
-            this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            var check = moment().utc().day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
+            if (check.valueOf() < moment()) {
+              this.expiryInMillis = moment().utc().add(1, 'w').add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            } else {
+                this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            }
           } else if (match[1] == "e" && match[3] == "M") {
-            // TODO: Want to check if we have gone past the calculated end of this month
-            this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            var check = moment().utc().add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
+            if (check.valueOf() < moment()) {
+              this.expiryInMillis = moment().utc().add(1, 'M').add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            } else {
+              this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            }
           }
         }
       }
