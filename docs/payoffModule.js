@@ -78,9 +78,24 @@ const Payoff = {
       var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
       var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
       var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
-      var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
-      var bound = this.bound == null ? new BigNumber(0) : new BigNumber(this.bound).shift(rateDecimals);
-      var baseTokens = this.baseTokens == null ? new BigNumber(1).shift(baseDecimals) : new BigNumber(this.baseTokens).shift(baseDecimals);
+      var strike;
+      try {
+        strike = new BigNumber(this.strike).shift(rateDecimals);
+      } catch (e) {
+        strike = new BigNumber(0);
+      }
+      var bound;
+      try {
+        bound = new BigNumber(this.bound).shift(rateDecimals);
+      } catch (e) {
+        bound = new BigNumber(0);
+      }
+      var baseTokens;
+      try {
+        baseTokens = new BigNumber(this.baseTokens).shift(rateDecimals);
+      } catch (e) {
+        baseTokens = new BigNumber(0);
+      }
       // console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
 
       var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);

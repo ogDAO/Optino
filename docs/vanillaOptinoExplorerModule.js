@@ -86,7 +86,7 @@ const VanillaOptinoExplorer = {
                     <b-form-group label="Expired: " label-cols="3">
                       <b-form-checkbox v-model="expired">Display</b-form-checkbox>
                     </b-form-group>
-                    <b-form-group label="Series1: " label-cols="3">
+                    <b-form-group label="Series: " label-cols="3">
                       <b-input-group>
                         <b-form-select v-model="selectedSeries" :options="seriesOptions" v-on:change="seriesSelected"></b-form-select>
                         <b-input-group-append>
@@ -216,6 +216,43 @@ const VanillaOptinoExplorer = {
                         </b-input-group>
                       </b-input-group>
                     </b-form-group>
+
+                    <!--
+                    <b-form-group label-cols="3" label="baseTokensPlusFee (ETH)" v-if="callPut == 0 && baseToken == address0">
+                      <b-input-group :append="tokenData[baseToken].symbol">
+                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="baseTokensPlusFee (Tokens)" v-if="callPut == 0 && baseToken != '' && baseToken != address0" :description="'Allowance ' + tokenData[baseToken].allowance.shift(-baseDecimals).toString()">
+                      <b-input-group :append="tokenData[baseToken].symbol">
+                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    -->
+
+                    <b-card :title="collateralSymbol" v-if="collateralToken != null && collateralToken != ADDRESS0">
+                      <!--
+                      <b-form-group label-cols="3" label="Current allowance">
+                        <b-input-group>
+                          <b-form-input type="text" v-model.trim="strike"></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      -->
+                      <b-card-text>
+                      Current allowance {{ tokenData[collateralToken].allowance.shift(-collateralDecimals).toString() }}
+                      </b-card-text>
+                      <b-form-group label-cols="3" label="collateralAllowance">
+                        <b-input-group>
+                          <b-form-input type="text" v-model.trim="collateralAllowance"></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <div class="text-center">
+                        <b-button-group>
+                          <b-button @click="setCollateralAllowance()" variant="primary" v-b-popover.hover="'Set Allowance'">Set Allowance</b-button>
+                        </b-button-group>
+                      </div>
+                    </b-card>
+
                     <div class="text-center">
                       <b-button-group>
                         <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
@@ -252,13 +289,12 @@ const VanillaOptinoExplorer = {
   `,
   data: function () {
     return {
+      ADDRESS0: ADDRESS0,
       expired: false,
-
       selectedSeries: null,
-
       configKey: "",
-      baseToken: "",
-      quoteToken: "",
+      baseToken: null,
+      quoteToken: null,
       priceFeed: "",
       baseDecimals: "18",
       quoteDecimals: "18",
@@ -298,7 +334,7 @@ const VanillaOptinoExplorer = {
       floor: "100",
       spot: "250",
       baseTokens: "0.1",
-      ethers: "",
+      collateralAllowance: "0",
       // dateConfig: {
       //   // dateFormat: 'Y-m-d H:i:S',
       //   // formatDate: (d) => new Date(d).toLocaleString(),
@@ -345,8 +381,14 @@ const VanillaOptinoExplorer = {
     quoteSymbol() {
       return this.tokenData[this.quoteToken] == null ? "DAI" : this.tokenData[this.quoteToken].symbol;
     },
+    collateralToken() {
+      return this.callPut == 0 ? this.baseToken : this.quoteToken;
+    },
     collateralSymbol() {
       return this.callPut == 0 ? this.baseSymbol : this.quoteSymbol;
+    },
+    collateralDecimals() {
+      return this.callPut == 0 ? this.baseDecimals : this.quoteDecimals;
     },
     collateral() {
       try {
@@ -415,7 +457,7 @@ const VanillaOptinoExplorer = {
     tokenOptions() {
       var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
       var results = [];
-      results.push({ value: "", text: "(select Config or Series above)", disabled: true });
+      results.push({ value: null, text: "(select Config or Series above)", disabled: true });
 
       Object.keys(tokenData).forEach(function(e) {
         var symbol = tokenData[e].symbol;
@@ -499,6 +541,7 @@ const VanillaOptinoExplorer = {
             var check = moment().utc().hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
             // if (check.valueOf() < moment()) {
               this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'd').add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+              logInfo("expirySelected", "expirySelected(" + expiryString + ") => " + this.expiryInMillis);
             // } else {
               // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
             // }
@@ -521,6 +564,45 @@ const VanillaOptinoExplorer = {
       }
       event.preventDefault();
     },
+    setCollateralAllowance(event) {
+      logDebug("vanillaOptinoExplorer", "setCollateralAllowance()");
+      this.$bvModal.msgBoxConfirm('Set collateral allowance ' + this.collateralAllowance + ' ?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            var factoryAddress = store.getters['vanillaOptinoFactory/address']
+            var tokenContract = web3.eth.contract(ERC20ABI).at(this.collateralToken);
+            logInfo("vanillaOptinoExplorer", "setCollateralAllowance tokenContract.approve('" + factoryAddress + "', '" + this.collateralAllowance + "')");
+            // TODO need to use baseDecimals/quoteDecimals
+            var value = new BigNumber(this.collateralAllowance).shift(this.collateralDecimals).toString();
+            logInfo("vanillaOptinoExplorer", "  value=" + value);
+            tokenContract.approve(factoryAddress, value, { from: store.getters['connection/coinbase'] }, function(error, tx) {
+              if (!error) {
+                logInfo("vanillaOptinoExplorer", "setCollateralAllowance() tokenContract.approve() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("vanillaOptinoExplorer", "setCollateralAllowance() tokenContract.approve() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+
+            event.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
+    },
     mintOptinos(event) {
       logDebug("vanillaOptinoExplorer", "mintOptinos()");
       this.$bvModal.msgBoxConfirm('Mint ' + this.baseTokens + ' optinos?', {
@@ -536,19 +618,18 @@ const VanillaOptinoExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logDebug("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
+            logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
             var factoryAddress = store.getters['vanillaOptinoFactory/address']
             var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
-            logDebug("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new BigNumber(this.expiry).toString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
-            // TODO need to use baseDecimals/quoteDecimals
-            var value = this.baseToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(18).toString() : "0";
-            logDebug("vanillaOptinoExplorer", "  value=" + value);
-            factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), new BigNumber(this.expiry).toString(), new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
+            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new Date(this.expiry * 1000).toUTCString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
+            var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
+            logInfo("vanillaOptinoExplorer", "  value=" + value);
+            factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), this.expiry, new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
               if (!error) {
-                logDebug("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
+                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logDebug("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() error: ");
+                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
