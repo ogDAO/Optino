@@ -95,6 +95,7 @@ const VanillaOptinoExplorer = {
                         </b-input-group>
                     </b-form-group>
 
+                    <!--
                     <b-modal id="bv-modal-example" hide-footer>
                       <template v-slot:modal-title>
                         Select <code>baseToken</code>
@@ -107,12 +108,13 @@ const VanillaOptinoExplorer = {
                       </div>
                       <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">Close Me</b-button>
                     </b-modal>
+                    -->
 
                     <b-form-group label-cols="3" label="baseToken">
                       <b-input-group>
                         <b-form-select v-model="baseToken" :options="tokenOptions"></b-form-select>
                         <b-input-group-append>
-                          <b-button v-bind:disabled="(baseToken !== '' && baseToken != address0) ? false : 'disabled'" :href="explorer + 'token/' + baseToken" target="_blank" variant="outline-info">🔗</b-button>
+                          <b-button v-bind:disabled="(baseToken !== '' && baseToken != ADDRESS0) ? false : 'disabled'" :href="explorer + 'token/' + baseToken" target="_blank" variant="outline-info">🔗</b-button>
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
@@ -121,7 +123,7 @@ const VanillaOptinoExplorer = {
                       <b-input-group>
                         <b-form-select v-model="quoteToken" :options="tokenOptions"></b-form-select>
                         <b-input-group-append>
-                          <b-button v-bind:disabled="(quoteToken !== '' && quoteToken != address0) ? false : 'disabled'" :href="explorer + 'token/' + quoteToken" target="_blank" variant="outline-info">🔗</b-button>
+                          <b-button v-bind:disabled="(quoteToken !== '' && quoteToken != ADDRESS0) ? false : 'disabled'" :href="explorer + 'token/' + quoteToken" target="_blank" variant="outline-info">🔗</b-button>
                         </b-input-group-append>
                       </b-input-group>
                     </b-form-group>
@@ -250,7 +252,6 @@ const VanillaOptinoExplorer = {
   `,
   data: function () {
     return {
-      address0: "0x0000000000000000000000000000000000000000",
       expired: false,
 
       selectedSeries: null,
@@ -270,8 +271,8 @@ const VanillaOptinoExplorer = {
         { value: 0, text: 'Call' },
         { value: 1, text: 'Put' },
       ],
-      expiryInMillis: moment().utc().add(1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf(),
-      expirySelection: "null",
+      expiryInMillis: moment().utc().add(moment().utc().hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf() < moment() ? 1 : 0, 'd').add(1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf(),
+      expirySelection: "+1d",
       expiryOptions: [
         { value: null, text: 'Select' },
         { value: '+0d', text: '+0d' },
@@ -496,25 +497,25 @@ const VanillaOptinoExplorer = {
         if (match != null) {
           if (match[1] == "+") {
             var check = moment().utc().hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
-            if (check.valueOf() < moment()) {
-              this.expiryInMillis = moment().utc().add(1, 'd').add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            } else {
-              this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            }
+            // if (check.valueOf() < moment()) {
+              this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'd').add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            // } else {
+              // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            // }
           } else if (match[1] == "e" && match[3] == "w") {
             var check = moment().utc().day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
-            if (check.valueOf() < moment()) {
-              this.expiryInMillis = moment().utc().add(1, 'w').add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            } else {
-                this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            }
+            // if (check.valueOf() < moment()) {
+              this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'w').add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            // } else {
+                // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            // }
           } else if (match[1] == "e" && match[3] == "M") {
             var check = moment().utc().add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
-            if (check.valueOf() < moment()) {
-              this.expiryInMillis = moment().utc().add(1, 'M').add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            } else {
-              this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            }
+            // if (check.valueOf() < moment()) {
+              this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'M').add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            // } else {
+              // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            // }
           }
         }
       }

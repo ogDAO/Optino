@@ -1,9 +1,26 @@
 pragma solidity ^0.6.6;
 
 // ----------------------------------------------------------------------------
-// BokkyPooBah's Optino ⚛️ + Factory v0.971-pre-release
+//    ____        _    _          _____            ____        _     _
+//   |  _ \      | |  | |        |  __ \          |  _ \      | |   ( )
+//   | |_) | ___ | | _| | ___   _| |__) |__   ___ | |_) | __ _| |__ |/ ___
+//   |  _ < / _ \| |/ / |/ / | | |  ___/ _ \ / _ \|  _ < / _` | '_ \  / __|
+//   | |_) | (_) |   <|   <| |_| | |  | (_) | (_) | |_) | (_| | | | | \__ \
+//   |____/ \___/|_|\_\_|\_\\__, |_|   \___/ \___/|____/ \__,_|_| |_| |___/
+//                           __/ |
+//                          |___/
+//          ____        _   _               ______         _
+//         / __ \      | | (_)             |  ____|       | |
+//        | |  | |_ __ | |_ _ _ __   ___tm | |__ __ _  ___| |_ ___  _ __ _   _
+//        | |  | | '_ \| __| | '_ \ / _ \  |  __/ _` |/ __| __/ _ \| '__| | | |
+//        | |__| | |_) | |_| | | | | (_) | | | | (_| | (__| || (_) | |  | |_| |
+//         \____/| .__/ \__|_|_| |_|\___/  |_|  \__,_|\___|\__\___/|_|   \__, |
+//               | |                                                      __/ |
+//               |_|                                                     |___/
 //
-// Status: Work in progress
+// BokkyPooBah's Optino ⚛️ Factory v0.971-pre-release
+//
+// Status: Work in progress. To test, optimise and review, especially decimals
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
@@ -11,16 +28,14 @@ pragma solidity ^0.6.6;
 // OptinoToken deployment on Ropsten:
 // BokkyPooBahsOptinoFactory deployment on Ropsten:
 //
-// https://optino.xyz
-// https://bokkypoobah.github.io/Optino
+// Web UI at https://optino.xyz, https://bokkypoobah.github.io/Optino,
+// https://github.com/bokkypoobah/Optino, https://optino.eth and
+// https://optino.eth.link
+//
 // https://github.com/bokkypoobah/Optino
 //
-// TODO:
-// * optimise
-// * test/check, especially decimals
-//
-// Note: If you deploy this contract, or derivatives of this contract, please
-// forward 50% of the fees you earn from this code or derivatives to
+// NOTE: If you deploy this contract, or derivatives of this contract, please
+// forward 50% of the fees you earn from this code or derivative to
 // bokkypoobah.eth
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
@@ -1139,7 +1154,6 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
             if (uiFee > 0) {
                 require(payable(uiFeeAccount).send(uiFee), "_mintOptinoTokens: uiFeeAccount.send(uiFee) failure");
             }
-            // Dev fee left in this factory
             uint refund = msg.value - collateral - ownerFee - uiFee;
             if (refund > 0) {
                 require(msg.sender.send(refund), "_mintOptinoTokens: msg.sender.send(refund) failure");
@@ -1171,6 +1185,13 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     }
     function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
         return OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
+    }
+    function collateralAndFeeInDeliveryToken(address baseToken, address quoteToken, address priceFeed, uint _callPut, uint _strike, uint _bound, uint _baseTokens) public view returns (uint _collateral, uint _fee) {
+        bytes32 key = ConfigLibrary._generateKey(baseToken, quoteToken, priceFeed);
+        ConfigLibrary.Config memory config = configData.entries[key];
+        require(config.timestamp > 0, "collateralAndFeeInDeliveryToken: Invalid baseToken/quoteToken/priceFeed");
+        _collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, config.baseDecimals, config.rateDecimals);
+        _fee = _collateral * config.fee / (10 ** FEEDECIMALS);
     }
 
     // ----------------------------------------------------------------------------
