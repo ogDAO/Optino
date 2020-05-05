@@ -409,6 +409,14 @@ library SafeMath {
         require(b <= a, "SafeMath._sub: Underflow");
         c = a - b;
     }
+    function _mul(uint a, uint b) internal pure returns (uint c) {
+        c = a * b;
+        require(a == 0 || c / a == b, "SafeMath._mul: Overflow");
+    }
+    function _div(uint a, uint b) internal pure returns (uint c) {
+        require(b > 0, "SafeMath._mul: Divide by 0");
+        c = a / b;
+    }
 }
 
 
@@ -724,14 +732,18 @@ contract BasicToken is Token, Owned {
 //                   = max(strike - spot, 0) - max(floor - spot, 0)
 // ----------------------------------------------------------------------------
 library OptinoFormulae {
+    using SafeMath for uint;
+
     function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _collateral) {
         require(_strike > 0, "collateralInDeliveryToken: strike must be > 0");
         if (_callPut == 0) {
             require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
             if (_bound <= _strike) {
-                _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
+                // _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
+                _collateral = _baseTokens._mul(10 ** _rateDecimals)._div(10 ** _baseDecimals);
             } else {
-                _collateral = (_bound - _strike) * (10 ** _rateDecimals) * _baseTokens / _bound / (10 ** _baseDecimals);
+                // _collateral = (_bound - _strike) * (10 ** _rateDecimals) * _baseTokens / _bound / (10 ** _baseDecimals);
+                _collateral = _bound._sub(_strike)._mul(10 ** _rateDecimals)._mul(_baseTokens)._div(_bound)._div(10 ** _baseDecimals);
             }
         } else {
             require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");

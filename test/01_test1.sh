@@ -28,8 +28,8 @@ printf "END_DATE    = '$END_DATE' '$END_DATE_S'\n" | tee -a $TEST1OUTPUT
 # Make copy of SOL file ---
 cp $SOURCEDIR/$WETH9SOL .
 # cp $SOURCEDIR/$DAISOL .
-# rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol --exclude=test/
-# rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol
+# rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol --exclude=test/ # */
+# rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol # */
 # Copy modified contracts if any files exist
 # find ./modifiedContracts -type f -name \* -exec cp {} . \;
 
@@ -53,7 +53,7 @@ echo "var tokenOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --com
 echo "var priceFeedOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDFLATTENED`;" > $PRICEFEEDJS
 echo "var priceFeedAdaptorOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $PRICEFEEDADAPTORFLATTENED`;" > $PRICEFEEDADAPTORJS
 echo "var optinoFactoryOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $OPTINOFACTORYFLATTENED`;" > $OPTINOFACTORYJS
-# echo "var daiOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
+# echo "var quoteTokenOutput=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
 # ../scripts/solidityFlattener.pl --contractsdir=../contracts --mainsol=$TOKENFACTORYSOL --outputsol=$TOKENFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
 
 
@@ -105,57 +105,60 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var deployGroup1_Message = "Deploy Group #1 - Contracts";
-var symbol = "DAI";
-var name = "Mintable ERC20 token";
-var decimals = 18;
-var tokenOwner = deployer;
-var initialSupply = new BigNumber("4000000").shift(18);
 
+var baseDecimals = 18;
+var quoteDecimals = 18;
+var rateDecimals = 18;
+var baseSymbol = 'BASE';
+var quoteSymbol = 'QUOTE';
+var baseName = "Base Token (" + baseDecimals + " dp)";
+var quoteName = "Quote Token (" + quoteDecimals + " dp)";
+var tokenOwner = deployer;
+var initialSupply = new BigNumber("0").shift(18);
 // var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
 // console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
-
 console.log("DATA: deployer=" + deployer);
 console.log("DATA: defaultGasPrice=" + defaultGasPrice);
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup1_Message + " ----------");
-var wethContract = web3.eth.contract(wethAbi);
-console.log("DATA: wethContract=" + JSON.stringify(wethContract));
-var wethTx = null;
-var wethAddress = null;
-var weth = wethContract.new({from: deployer, data: wethBin, gas: 4000000, gasPrice: defaultGasPrice},
+var baseTokenContract = web3.eth.contract(tokenAbi);
+console.log("DATA: baseTokenContract=" + JSON.stringify(baseTokenContract));
+var baseTokenTx = null;
+var baseTokenAddress = null;
+var baseToken = baseTokenContract.new(baseSymbol, baseName, baseDecimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
-        wethTx = contract.transactionHash;
+        baseTokenTx = contract.transactionHash;
       } else {
-        wethAddress = contract.address;
-        addAccount(wethAddress, "WETH");
-        addTokenContractAddressAndAbi(0, wethAddress, wethAbi);
-        addAddressSymbol(wethAddress, "WETH");
-        console.log("DATA: var wethAddress=\"" + wethAddress + "\";");
-        console.log("DATA: var wethAbi=" + JSON.stringify(wethAbi) + ";");
-        console.log("DATA: var weth=eth.contract(wethAbi).at(wethAddress);");
+        baseTokenAddress = contract.address;
+        addAccount(baseTokenAddress, "'" + baseToken.symbol.call() + "' '" + baseToken.name.call() + "'");
+        addAddressSymbol(baseTokenAddress, "'" + baseToken.symbol.call() + "' '" + baseToken.name.call() + "'");
+        addTokenContractAddressAndAbi(0, baseTokenAddress, tokenAbi);
+        console.log("DATA: var baseTokenAddress=\"" + baseTokenAddress + "\";");
+        console.log("DATA: var tokenAbi=" + JSON.stringify(tokenAbi) + ";");
+        console.log("DATA: var baseToken=eth.contract(tokenAbi).at(baseTokenAddress);");
       }
     }
   }
 );
-var daiContract = web3.eth.contract(tokenAbi);
-console.log("DATA: daiContract=" + JSON.stringify(daiContract));
-var daiTx = null;
-var daiAddress = null;
-var dai = daiContract.new(symbol, name, decimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
+var quoteTokenContract = web3.eth.contract(tokenAbi);
+console.log("DATA: quoteTokenContract=" + JSON.stringify(quoteTokenContract));
+var quoteTokenTx = null;
+var quoteTokenAddress = null;
+var quoteToken = quoteTokenContract.new(quoteSymbol, quoteName, quoteDecimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
-        daiTx = contract.transactionHash;
+        quoteTokenTx = contract.transactionHash;
       } else {
-        daiAddress = contract.address;
-        addAccount(daiAddress, "DAI");
-        addAddressSymbol(daiAddress, "DAI");
-        addTokenContractAddressAndAbi(1, daiAddress, tokenAbi);
-        console.log("DATA: var daiAddress=\"" + daiAddress + "\";");
-        console.log("DATA: var daiAbi=" + JSON.stringify(tokenAbi) + ";");
-        console.log("DATA: var dai=eth.contract(daiAbi).at(daiAddress);");
+        quoteTokenAddress = contract.address;
+        addAccount(quoteTokenAddress, "'" + quoteToken.symbol.call() + "' '" + quoteToken.name.call() + "'");
+        addAddressSymbol(quoteTokenAddress, "'" + quoteToken.symbol.call() + "' '" + quoteToken.name.call() + "'");
+        addTokenContractAddressAndAbi(1, quoteTokenAddress, tokenAbi);
+        console.log("DATA: var quoteTokenAddress=\"" + quoteTokenAddress + "\";");
+        console.log("DATA: var tokenAbi=" + JSON.stringify(tokenAbi) + ";");
+        console.log("DATA: var quoteToken=eth.contract(tokenAbi).at(quoteTokenAddress);");
       }
     }
   }
@@ -248,10 +251,10 @@ var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deploye
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(wethTx, deployGroup1_Message + " - WETH9");
-printTxData("wethTx", wethTx);
-failIfTxStatusError(daiTx, deployGroup1_Message + " - DAI");
-printTxData("daiTx", daiTx);
+failIfTxStatusError(baseTokenTx, deployGroup1_Message + " - BaseToken");
+printTxData("baseTokenTx", baseTokenTx);
+failIfTxStatusError(quoteTokenTx, deployGroup1_Message + " - QuoteToken");
+printTxData("quoteTokenTx", quoteTokenTx);
 failIfTxStatusError(optinoTokenTx, deployGroup1_Message + " - OptinoToken");
 printTxData("optinoTokenTx", optinoTokenTx);
 failIfTxStatusError(priceFeedTx, deployGroup1_Message + " - PriceFeed");
@@ -275,43 +278,41 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var deployGroup2_Message = "Deploy Group #2 - Setup";
-var wethTokens = new BigNumber("1000").shift(18)
-var daiTokens = new BigNumber("1000000").shift(18)
-var baseDecimals = 18;
-var quoteDecimals = 18;
-var rateDecimals = 18;
+var baseTokens = new BigNumber("1000000").shift(baseDecimals)
+var quoteTokens = new BigNumber("1000000").shift(quoteDecimals)
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
 var fee = new BigNumber("1").shift(15); // 0.1%, so 1 ETH = 0.001 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
+var ethDecimals = 18;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
-var deployGroup2_1Tx = web3.eth.sendTransaction({from: maker1, to: wethAddress, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_2Tx = web3.eth.sendTransaction({from: maker2, to: wethAddress, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_3Tx = web3.eth.sendTransaction({from: taker1, to: wethAddress, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_4Tx = web3.eth.sendTransaction({from: taker2, to: wethAddress, value: wethTokens.toString(), gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_5Tx = dai.transfer(maker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_6Tx = dai.transfer(maker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_7Tx = dai.transfer(taker1, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_8Tx = dai.transfer(taker2, daiTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_9Tx = optinoFactory.addConfig(wethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "WETH/DAI MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_10Tx = optinoFactory.addConfig(ethAddress, daiAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/DAI MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = weth.approve(optinoFactoryAddress, wethTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = dai.approve(optinoFactoryAddress, daiTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_1Tx = baseToken.mint(maker1, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_2Tx = baseToken.mint(maker2, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_3Tx = baseToken.mint(taker1, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_4Tx = baseToken.mint(taker2, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_5Tx = quoteToken.mint(maker1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_6Tx = quoteToken.mint(maker2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_7Tx = quoteToken.mint(taker1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_8Tx = quoteToken.mint(taker2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_9Tx = optinoFactory.addConfig(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_10Tx = optinoFactory.addConfig(ethAddress, quoteTokenAddress, priceFeedAdaptorAddress, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - 1,000 ETH -> weth.mint(maker1, 1,000)");
-failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - 1,000 ETH -> weth.mint(maker2, 1,000)");
-failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - 1,000 ETH -> weth.mint(taker1, 1,000)");
-failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - 1,000 ETH -> weth.mint(taker2, 1,000)");
-failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - dai.transfer(maker1, 1,000,000)");
-failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - dai.transfer(maker2, 1,000,000)");
-failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - dai.transfer(taker1, 1,000,000)");
-failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - dai.transfer(taker2, 1,000,000)");
-failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(WETH, DAI, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
-failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, DAI, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
-failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - weth.approve(optinoFactory, lots')");
-failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - dai.approve(optinoFactory, lots')");
+failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - baseToken.mint(maker1, 1,000)");
+failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - baseToken.mint(maker2, 1,000)");
+failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - baseToken.mint(taker1, 1,000)");
+failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - baseToken.mint(taker2, 1,000)");
+failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - quoteToken.mint(maker1, 1,000,000)");
+failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - quoteToken.mint(maker2, 1,000,000)");
+failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - quoteToken.mint(taker1, 1,000,000)");
+failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - quoteToken.mint(taker2, 1,000,000)");
+failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
+failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
+failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - maker1 -> baseToken.approve(optinoFactory, 1,000')");
+failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - maker1 -> quoteToken.approve(optinoFactory, 1,000,000')");
 printTxData("deployGroup2_1Tx", deployGroup2_1Tx);
 printTxData("deployGroup2_2Tx", deployGroup2_2Tx);
 printTxData("deployGroup2_3Tx", deployGroup2_3Tx);
@@ -337,20 +338,29 @@ console.log("RESULT: ");
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
-var strike = new BigNumber("200.000000000000000000").shift(18);
-var bound = new BigNumber("300").shift(18);
-// var strike1 = new BigNumber("201").shift(18);
-var baseTokens = new BigNumber("10").shift(18);
+var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
+var cap = new BigNumber("0").shift(rateDecimals);
+var floor = new BigNumber("150").shift(rateDecimals);
+var bound = callPut == "0" ? cap : floor;
+var baseTokens = new BigNumber("10").shift(baseDecimals);
 var value = web3.toWei("100", "ether").toString();
 // var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
 var _uiFeeAccount = uiFeeAccount;
+var collateralDecimals = callPut == 0 ? baseDecimals : quoteDecimals;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
-var data = optinoFactory.mintOptinoTokens.getData(ethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, baseTokens, _uiFeeAccount);
+
+var spot = strike;
+var payoffInDeliveryToken = optinoFactory.payoffInDeliveryToken.call(parseInt(callPut), strike.toString(), bound.toString(), spot.toString(), baseTokens.toString(), parseInt(baseDecimals), parseInt(rateDecimals));
+console.log("RESULT: payoffInDeliveryToken() '" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + spot.toString() + ", " + baseTokens + ", " + baseDecimals + ", " + rateDecimals + "'");
+console.log("RESULT: payoffInDeliveryToken=" + payoffInDeliveryToken);
+
+// var data = optinoFactory.mintOptinoTokens.getData(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, baseTokens, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
-var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: maker1, data: data, value: value, gas: 3000000, gasPrice: defaultGasPrice });
-// var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
-// var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(wethAddress, daiAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: maker1, data: data, value: value, gas: 3000000, gasPrice: defaultGasPrice });
+var mintOptinoGroup1_1Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, baseTokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
 }
@@ -364,7 +374,8 @@ for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
 }
 
 printBalances();
-failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
+// failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
+failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(BASE, QUOTE, priceFeed, " + baseTokens.shift(-baseDecimals) + ", ...)");
 // failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
@@ -417,7 +428,7 @@ console.log("RESULT: ");
 if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = new BigNumber("233").shift(18);
+  var rate = new BigNumber("250").shift(18);
   var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");

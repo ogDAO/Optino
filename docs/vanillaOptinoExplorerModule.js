@@ -360,11 +360,35 @@ const VanillaOptinoExplorer = {
     },
     dateConfig() {
       return {
+        dateFormat: 'YYYY-MM-DD\\\\THH:mm:ssZ',
         enableTime: true,
         enableSeconds: true,
         time_24hr: true,
         locale: {
           firstDayOfWeek: 1
+        },
+        parseDate(dateString, format) {
+          return moment.parse(dateString).valueOf();
+          // let timezonedDate = new moment.tz(dateString, format, timeZone);
+          // return new Date(
+          //   timezonedDate.year(),
+          //   timezonedDate.month(),
+          //   timezonedDate.date(),
+          //   timezonedDate.hour(),
+          //   timezonedDate.minute(),
+          //   timezonedDate.second()
+          // );
+        },
+        formatDate(date, format) {
+          return moment(date).format();
+          // return moment.tz([
+          //   date.getFullYear(),
+          //   date.getMonth(),
+          //   date.getDate(),
+          //   date.getHours(),
+          //   date.getMinutes(),
+          //   date.getSeconds()
+          // ], timeZone).locale('en-GB').format(format);
         },
         // maxDate: new Date().fp_incr(this.maxTermInDays == null ? 7 : this.maxTermInDays),
       }
@@ -373,7 +397,7 @@ const VanillaOptinoExplorer = {
       return this.callPut == 0 ? this.cap : this.floor;
     },
     expiry() {
-      return parseInt(this.expiryInMillis / 1000);
+      return parseInt(new Date(this.expiryInMillis).getTime()/1000); // : parseInt(this.expiryInMillis / 1000);
     },
     baseSymbol() {
       return this.tokenData[this.baseToken] == null ? "ETH" : this.tokenData[this.baseToken].symbol;
@@ -621,7 +645,7 @@ const VanillaOptinoExplorer = {
             logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
             var factoryAddress = store.getters['vanillaOptinoFactory/address']
             var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
-            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + new Date(this.expiry * 1000).toUTCString() + ", '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
+            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + this.expiry + "='" + new Date(this.expiry * 1000).toUTCString() + "', '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
             var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
             logInfo("vanillaOptinoExplorer", "  value=" + value);
             factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), this.expiry, new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
