@@ -868,7 +868,7 @@ contract OptinoToken is BasicToken {
         uint _spot = currentSpot();
         (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
-        uint _tokens = 10 ** _baseDecimals;
+        uint _tokens = 10 ** _decimals;
         uint _payoff = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _tokens, _decimals, _baseDecimals, _quoteDecimals, _rateDecimals);
         uint _collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, _decimals, _baseDecimals, _quoteDecimals, _rateDecimals);
         return isCover ? _collateral._sub(_payoff) : _payoff;
@@ -881,18 +881,18 @@ contract OptinoToken is BasicToken {
         } else {
             (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
             (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
-            uint _tokens = 10 ** _baseDecimals;
+            uint _tokens = 10 ** _decimals;
             uint _payoff = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _tokens, _decimals, _baseDecimals, _quoteDecimals, _rateDecimals);
             uint _collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, _decimals, _baseDecimals, _quoteDecimals, _rateDecimals);
             return isCover ? _collateral._sub(_payoff) : _payoff;
         }
     }
     function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-        if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-            if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
+        // if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
+        //     if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
                 return balance;
-            }
-        }
+        //     }
+        // }
         return amount;
     }
     function transferOut(address token, address tokenOwner, uint tokens, uint decimals) internal {

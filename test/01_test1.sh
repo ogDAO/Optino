@@ -107,9 +107,9 @@ console.log("RESULT: ");
 var deployGroup1_Message = "Deploy Group #1 - Contracts";
 
 var OPTINODECIMALS = 18;
-var baseDecimals = 7;
-var quoteDecimals = 5;
-var rateDecimals = 9;
+var baseDecimals = 18;
+var quoteDecimals = 18;
+var rateDecimals = 18;
 var baseSymbol = 'BASE';
 var quoteSymbol = 'QUOTE';
 var baseName = "Base Token (" + baseDecimals + " dp)";
@@ -337,11 +337,11 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "1"; // 0 Call, 1 Put
-var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
-var strike = new BigNumber("200.000000010000000000").shift(rateDecimals);
-var cap = new BigNumber("300").shift(rateDecimals);
-var floor = new BigNumber("100.001").shift(rateDecimals);
+var callPut = "0"; // 0 Call, 1 Put
+var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
+var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
+var cap = new BigNumber("0").shift(rateDecimals);
+var floor = new BigNumber("100.000").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var tokens = new BigNumber("10").shift(OPTINODECIMALS);
 var value = web3.toWei("100", "ether").toString();
@@ -435,7 +435,7 @@ console.log("RESULT: ");
 if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = new BigNumber("150").shift(rateDecimals);
+  var rate = new BigNumber("300").shift(rateDecimals);
   var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
