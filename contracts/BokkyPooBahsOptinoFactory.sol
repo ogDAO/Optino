@@ -749,47 +749,33 @@ library OptinoFormulae {
         if (_callPut == 0) {
             require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
             if (_bound <= _strike) {
-                // _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
                 _collateral = shiftRightLeft(_tokens, _baseDecimals, _decimals);
             } else {
-                // _collateral = (_bound - _strike) * (10 ** _rateDecimals) * _baseTokens / _bound / (10 ** _baseDecimals);
-                // HHH _collateral = _bound._sub(_strike)._mul(_tokens)._div(_bound)._mul(10 ** _baseDecimals)._div(10 ** _decimals);
                 _collateral = shiftRightLeft(_bound._sub(_strike)._mul(_tokens)._div(_bound), _baseDecimals, _decimals);
             }
         } else {
             require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");
-            // _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
             _collateral = shiftRightLeft(_strike._sub(_bound)._mul(_tokens), _quoteDecimals, _decimals)._div(10 ** _rateDecimals);
         }
     }
     function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _tokens, uint _decimals, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals) internal pure returns (uint _payoff) {
         if (_callPut == 0) {
             require(_bound == 0 || _bound > _strike, "payoffInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
-            // require(_spot > 0, "payoffInDeliveryToken: spot must be > 0 for call");
             if (_spot > 0 && _spot > _strike) {
                 if (_bound > _strike && _spot > _bound) {
-                    // _payoff = _bound - _strike;
                     _payoff = _bound._sub(_strike);
                 } else {
-                    // _payoff = _spot - _strike;
                     _payoff = _spot._sub(_strike);
                 }
-                // don't know _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
-                // working _payoff = _payoff._mul(10 ** _rateDecimals)._mul(_tokens)._div(_spot)._div(10 ** _baseDecimals);
                 _payoff = _payoff._mul(10 ** _baseDecimals)._mul(_tokens)._div(_spot)._div(10 ** _decimals);
-                // TODO: Move division to the end
-                // _payoff = _payoff._div(_spot)._mul(10 ** _rateDecimals);
-                // _payoff = _payoff._mul(_tokens)._div(10 ** _decimals);
             }
         } else {
             require(_bound < _strike, "payoffInDeliveryToken: bound (floor) must be 0 for vanilla put or < strike for floored put");
             if (_spot < _strike) {
                  if (_bound == 0 || (_bound > 0 && _spot >= _bound)) {
-                     // _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
-                     // HHH _payoff = shiftRightLeft(_strike._sub(_spot)._mul(_tokens), _quoteDecimals, _decimals)._div(10 ** _rateDecimals);
+                     _payoff = shiftRightLeft(_strike._sub(_spot)._mul(_tokens), _quoteDecimals, _decimals + _rateDecimals);
                  } else {
-                     // _payoff = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
-                     // HHH _payoff = shiftRightLeft(_strike._sub(_bound)._mul(_tokens), _quoteDecimals, _decimals)._div(10 ** _rateDecimals);
+                     _payoff = shiftRightLeft(_strike._sub(_bound)._mul(_tokens), _quoteDecimals, _decimals + _rateDecimals);
                  }
             }
         }
