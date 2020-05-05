@@ -820,9 +820,9 @@ contract OptinoToken is BasicToken {
         expiry = _expiry;
         strike = _strike;
         bound = _bound;
-        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, /*_baseDecimals*/, /*_quoteDecimals*/, /*_rateDecimals*/, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, /*_baseDecimals*/, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
         string memory _symbol = Utils._toSymbol(_isCover, _callPut, _seriesNumber);
-        string memory _name = Utils._toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimals);
+        string memory _name = Utils._toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _rateDecimals);
         super._initToken(factory, _symbol, _name, _decimals);
     }
 
