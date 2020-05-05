@@ -655,13 +655,13 @@ contract BasicToken is Token, Owned {
 
     string _symbol;
     string  _name;
-    uint8 _decimals;
+    uint _decimals; // Note that this is `uint` instead of `uint8`. decimals() will return `uint8`
     uint _totalSupply;
 
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
 
-    function _initToken(address tokenOwner, string memory symbol, string memory name, uint8 decimals) internal {
+    function _initToken(address tokenOwner, string memory symbol, string memory name, uint decimals) internal {
         super.init(tokenOwner);
         _symbol = symbol;
         _name = name;
@@ -674,7 +674,7 @@ contract BasicToken is Token, Owned {
         return _name;
     }
     function decimals() override external view returns (uint8) {
-        return _decimals;
+        return uint8(_decimals);
     }
     function totalSupply() override external view returns (uint) {
         return _totalSupply._sub(balances[address(0)]);
@@ -734,25 +734,25 @@ contract BasicToken is Token, Owned {
 library OptinoFormulae {
     using SafeMath for uint;
 
-    function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _collateral) {
+    function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _tokens, uint _decimals, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _collateral) {
         require(_strike > 0, "collateralInDeliveryToken: strike must be > 0");
         if (_callPut == 0) {
             require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
             if (_bound <= _strike) {
                 // _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
-                _collateral = _baseTokens._mul(10 ** _rateDecimals)._div(10 ** _baseDecimals);
+                _collateral = _tokens._mul(10 ** _rateDecimals)._div(10 ** _baseDecimals);
             } else {
                 // _collateral = (_bound - _strike) * (10 ** _rateDecimals) * _baseTokens / _bound / (10 ** _baseDecimals);
-                _collateral = _bound._sub(_strike)._mul(10 ** _rateDecimals)._mul(_baseTokens)._div(_bound)._div(10 ** _baseDecimals);
+                _collateral = _bound._sub(_strike)._mul(10 ** _rateDecimals)._mul(_tokens)._div(_bound)._div(10 ** _baseDecimals);
             }
         } else {
             require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");
             // _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
-            _collateral = _strike._sub(_bound)._mul(_baseTokens)._div(10 ** _baseDecimals);
+            _collateral = _strike._sub(_bound)._mul(_tokens)._div(10 ** _baseDecimals);
         }
     }
-    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _coverPayoff) {
-        uint _collateral = collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _tokens, uint _decimals, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _coverPayoff) {
+        uint _collateral = collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, _decimals, _baseDecimals, _rateDecimals);
         if (_callPut == 0) {
             require(_bound == 0 || _bound > _strike, "payoffInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
             require(_spot > 0, "payoffInDeliveryToken: spot must be > 0 for call");
@@ -765,17 +765,17 @@ library OptinoFormulae {
                     _payoff = _spot._sub(_strike);
                 }
                 // _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
-                _payoff = _payoff._mul(10 ** _rateDecimals)._mul(_baseTokens)._div(_spot)._div(10 ** _baseDecimals);
+                _payoff = _payoff._mul(10 ** _rateDecimals)._mul(_tokens)._div(_spot)._div(10 ** _baseDecimals);
             }
         } else {
             require(_bound < _strike, "payoffInDeliveryToken: bound (floor) must be 0 for vanilla put or < strike for floored put");
             if (_spot < _strike) {
                  if (_bound == 0 || (_bound > 0 && _spot >= _bound)) {
                      // _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
-                     _payoff = _strike._sub(_spot)._mul(_baseTokens)._div(10 ** _baseDecimals);
+                     _payoff = _strike._sub(_spot)._mul(_tokens)._div(10 ** _baseDecimals);
                  } else {
                      // _payoff = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
-                     _payoff = _strike._sub(_bound)._mul(_baseTokens)._div(10 ** _baseDecimals);
+                     _payoff = _strike._sub(_bound)._mul(_tokens)._div(10 ** _baseDecimals);
                  }
             }
         }
@@ -789,7 +789,6 @@ library OptinoFormulae {
 // ----------------------------------------------------------------------------
 contract OptinoToken is BasicToken {
     using SeriesLibrary for SeriesLibrary.Series;
-    uint8 public constant OPTIONDECIMALS = 18;
     address private constant ETH = address(0);
     uint public constant COLLECTDUSTMINIMUMDECIMALS = 10; // Collect dust only if token has > 10 decimal places
     uint public constant COLLECTDUSTDECIMALS = 2; // Collect dust if less < 10**2 = 100
@@ -810,7 +809,7 @@ contract OptinoToken is BasicToken {
     event Close(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
     event Payoff(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
 
-    function initOptinoToken(address _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCover) public {
+    function initOptinoToken(address _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         factory = _factory;
         seriesKey = _seriesKey;
         pair = _pair;
@@ -824,8 +823,8 @@ contract OptinoToken is BasicToken {
         bound = _bound;
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, /*_baseDecimals*/, /*_quoteDecimals*/, /*_rateDecimals*/, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
         string memory _symbol = Utils._toSymbol(_isCover, _callPut, _seriesNumber);
-        string memory _name = Utils._toName(_description, _isCover, _callPut, _expiry, _strike, _bound, OPTIONDECIMALS);
-        super._initToken(factory, _symbol, _name, OPTIONDECIMALS);
+        string memory _name = Utils._toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimals);
+        super._initToken(factory, _symbol, _name, _decimals);
     }
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
@@ -860,18 +859,18 @@ contract OptinoToken is BasicToken {
         // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
         (/*_configKey*/, _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
     }
-    function payoffInDeliveryToken(uint _spot, uint _baseTokens) public view returns (uint _payoff, uint _coverPayoff) {
+    function payoffInDeliveryToken(uint _spot, uint _tokens) public view returns (uint _payoff, uint _coverPayoff) {
         (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
-        return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+        return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _tokens, _decimals, _baseDecimals, _rateDecimals);
     }
 
     function currentPayoffPerUnitBaseToken() public view returns (uint _currentPayoffPerUnitBaseToken) {
         uint _spot = currentSpot();
         (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
         (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
-        uint _baseTokens = 10 ** _baseDecimals;
-        (uint _payoff, uint _coverPayoff) = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+        uint _tokens = 10 ** _baseDecimals;
+        (uint _payoff, uint _coverPayoff) = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _tokens, _decimals, _baseDecimals, _rateDecimals);
         return isCover ? _coverPayoff : _payoff;
     }
     function payoffPerUnitBaseToken() public view returns (uint _payoffPerUnitBaseToken) {
@@ -882,8 +881,8 @@ contract OptinoToken is BasicToken {
         } else {
             (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
             (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _baseDecimals, /*_quoteDecimals*/, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
-            uint _baseTokens = 10 ** _baseDecimals;
-            (uint _payoff, uint _coverPayoff) = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+            uint _tokens = 10 ** _baseDecimals;
+            (uint _payoff, uint _coverPayoff) = OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _tokens, _decimals, _baseDecimals, _rateDecimals);
             return isCover ? _coverPayoff : _payoff;
         }
     }
@@ -907,18 +906,18 @@ contract OptinoToken is BasicToken {
     function close(uint _baseTokens) public {
         _close(msg.sender, _baseTokens);
     }
-    function _close(address tokenOwner, uint _baseTokens) public {
+    function _close(address tokenOwner, uint _tokens) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
-            OptinoToken(payable(pair))._close(tokenOwner, _baseTokens);
+            OptinoToken(payable(pair))._close(tokenOwner, _tokens);
         } else {
-            require(_baseTokens <= ERC20(this).balanceOf(tokenOwner));
-            require(_baseTokens <= ERC20(pair).balanceOf(tokenOwner));
-            require(OptinoToken(payable(pair)).burn(tokenOwner, _baseTokens));
-            require(OptinoToken(payable(this)).burn(tokenOwner, _baseTokens));
+            require(_tokens <= ERC20(this).balanceOf(tokenOwner));
+            require(_tokens <= ERC20(pair).balanceOf(tokenOwner));
+            require(OptinoToken(payable(pair)).burn(tokenOwner, _tokens));
+            require(OptinoToken(payable(this)).burn(tokenOwner, _tokens));
             (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
             (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
-            uint collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
+            uint collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, _decimals, _baseDecimals, _rateDecimals);
             address token = _callPut == 0 ? _baseToken : _quoteToken;
             uint decimals = _callPut == 0 ? _baseDecimals : _quoteDecimals;
             transferOut(token, tokenOwner, collateral, decimals);
@@ -950,7 +949,7 @@ contract OptinoToken is BasicToken {
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
 
-            (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, optinoTokens, _baseDecimals, _rateDecimals);
+            (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, optinoTokens, _decimals, _baseDecimals, _rateDecimals);
             address token = callPut == 0 ? _baseToken : _quoteToken;
             uint decimals = callPut == 0 ? _baseDecimals : _quoteDecimals;
             if (_payoff > 0) {
@@ -958,7 +957,7 @@ contract OptinoToken is BasicToken {
             }
             emit Payoff(pair, token, tokenOwner, _payoff);
 
-            (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, coverTokens, _baseDecimals, _rateDecimals);
+            (_payoff, _collateral) = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, coverTokens, _decimals, _baseDecimals, _rateDecimals);
             if (_collateral > 0) {
                 transferOut(token, tokenOwner, _collateral, decimals);
             }
@@ -988,10 +987,11 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         uint expiry;
         uint strike;
         uint bound;
-        uint baseTokens;
+        uint tokens;
     }
 
     address private constant ETH = address(0);
+    uint public constant OPTINODECIMALS = 18;
     uint public constant FEEDECIMALS = 18;
     // Manually set spot 7 days after expiry, if priceFeed fails (spot == 0 or hasValue == 0)
     uint public constant GRACEPERIOD = 7 * 24 * 60 * 60;
@@ -1128,7 +1128,7 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     function _mintOptinoTokens(OptinoData memory optinoData, address uiFeeAccount) internal returns (address _optinoToken, address _coverToken) {
         // Check parameters not checked in SeriesLibrary and ConfigLibrary
         require(optinoData.expiry > block.timestamp, "_mintOptinoTokens: expiry must be in the future");
-        require(optinoData.baseTokens > 0, "_mintOptinoTokens: baseTokens must be non-zero");
+        require(optinoData.tokens > 0, "_mintOptinoTokens: tokens must be non-zero");
 
         // Check config registered
         ConfigLibrary.Config memory config = _getConfig(optinoData);
@@ -1146,18 +1146,18 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
             addSeries(optinoData, config.key, address(optinoToken), address(coverToken));
             series = _getSeries(optinoData);
 
-            optinoToken.initOptinoToken(address(this), series.key, address(coverToken), seriesData._length(), false);
-            coverToken.initOptinoToken(address(this), series.key, address(optinoToken), seriesData._length(), true);
+            optinoToken.initOptinoToken(address(this), series.key, address(coverToken), seriesData._length(), false, OPTINODECIMALS);
+            coverToken.initOptinoToken(address(this), series.key, address(optinoToken), seriesData._length(), true, OPTINODECIMALS);
         } else {
             optinoToken = OptinoToken(payable(series.optinoToken));
             coverToken = OptinoToken(payable(series.coverToken));
         }
-        optinoToken.mint(msg.sender, optinoData.baseTokens);
-        coverToken.mint(msg.sender, optinoData.baseTokens);
+        optinoToken.mint(msg.sender, optinoData.tokens);
+        coverToken.mint(msg.sender, optinoData.tokens);
 
-        uint collateral = OptinoFormulae.collateralInDeliveryToken(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.baseTokens, config.baseDecimals, config.rateDecimals);
+        uint collateral = OptinoFormulae.collateralInDeliveryToken(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, OPTINODECIMALS, config.baseDecimals, config.rateDecimals);
         address collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
-        uint ownerFee = collateral * config.fee / (10 ** FEEDECIMALS);
+        uint ownerFee = collateral._mul(config.fee)._div(10 ** FEEDECIMALS);
         uint uiFee;
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
             uiFee = ownerFee / 2;
@@ -1188,7 +1188,7 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
                 require(msg.sender.send(msg.value), "_mintOptinoTokens: msg.sender.send(refund) failure");
             }
         }
-        emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.baseTokens, collateralToken, collateral, ownerFee, uiFee);
+        emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, collateralToken, collateral, ownerFee, uiFee);
         return (series.optinoToken, series.coverToken);
     }
 
@@ -1198,18 +1198,18 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     function payoffDeliveryInBaseOrQuote(uint _callPut) public pure returns (uint) {
         return _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
-    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _coverPayoff) {
-        return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _baseTokens, _baseDecimals, _rateDecimals);
+    function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _tokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _payoff, uint _coverPayoff) {
+        return OptinoFormulae.payoffInDeliveryToken(_callPut, _strike, _bound, _spot, _tokens, OPTINODECIMALS, _baseDecimals, _rateDecimals);
     }
-    function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
-        return OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
+    function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _tokens, uint _baseDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
+        return OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, OPTINODECIMALS, _baseDecimals, _rateDecimals);
     }
-    function collateralAndFeeInDeliveryToken(address baseToken, address quoteToken, address priceFeed, uint _callPut, uint _strike, uint _bound, uint _baseTokens) public view returns (uint _collateral, uint _fee) {
+    function collateralAndFeeInDeliveryToken(address baseToken, address quoteToken, address priceFeed, uint _callPut, uint _strike, uint _bound, uint _tokens) public view returns (uint _collateral, uint _fee) {
         bytes32 key = ConfigLibrary._generateKey(baseToken, quoteToken, priceFeed);
         ConfigLibrary.Config memory config = configData.entries[key];
         require(config.timestamp > 0, "collateralAndFeeInDeliveryToken: Invalid baseToken/quoteToken/priceFeed");
-        _collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, config.baseDecimals, config.rateDecimals);
-        _fee = _collateral * config.fee / (10 ** FEEDECIMALS);
+        _collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, OPTINODECIMALS, config.baseDecimals, config.rateDecimals);
+        _fee = _collateral._mul(config.fee)._div(10 ** FEEDECIMALS);
     }
 
     // ----------------------------------------------------------------------------
