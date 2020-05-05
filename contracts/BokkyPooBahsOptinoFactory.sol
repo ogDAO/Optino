@@ -747,7 +747,8 @@ library OptinoFormulae {
             }
         } else {
             require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");
-            _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+            // _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+            _collateral = _strike._sub(_bound)._mul(_baseTokens)._div(10 ** _baseDecimals);
         }
     }
     function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _coverPayoff) {
@@ -757,23 +758,28 @@ library OptinoFormulae {
             require(_spot > 0, "payoffInDeliveryToken: spot must be > 0 for call");
             if (_spot > _strike) {
                 if (_bound > _strike && _spot > _bound) {
-                    _payoff = _bound - _strike;
+                    // _payoff = _bound - _strike;
+                    _payoff = _bound._sub(_strike);
                 } else {
-                    _payoff = _spot - _strike;
+                    // _payoff = _spot - _strike;
+                    _payoff = _spot._sub(_strike);
                 }
-                _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
+                // _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
+                _payoff = _payoff._mul(10 ** _rateDecimals)._mul(_baseTokens)._div(_spot)._div(10 ** _baseDecimals);
             }
         } else {
             require(_bound < _strike, "payoffInDeliveryToken: bound (floor) must be 0 for vanilla put or < strike for floored put");
             if (_spot < _strike) {
                  if (_bound == 0 || (_bound > 0 && _spot >= _bound)) {
-                     _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
+                     // _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
+                     _payoff = _strike._sub(_spot)._mul(_baseTokens)._div(10 ** _baseDecimals);
                  } else {
-                     _payoff = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+                     // _payoff = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+                     _payoff = _strike._sub(_bound)._mul(_baseTokens)._div(10 ** _baseDecimals);
                  }
             }
         }
-        _coverPayoff = _collateral - _payoff;
+        _coverPayoff = _collateral._sub(_payoff);
     }
 }
 

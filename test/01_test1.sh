@@ -339,7 +339,7 @@ var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
-var cap = new BigNumber("0").shift(rateDecimals);
+var cap = new BigNumber("300").shift(rateDecimals);
 var floor = new BigNumber("150").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var baseTokens = new BigNumber("10").shift(baseDecimals);
