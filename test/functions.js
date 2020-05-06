@@ -5,6 +5,7 @@ var defaultGasPrice = web3.toWei(8.1, "gwei");
 // -----------------------------------------------------------------------------
 // Accounts
 // -----------------------------------------------------------------------------
+var NULLACCOUNT = "0x0000000000000000000000000000000000000000";
 var accounts = [];
 var accountNames = {};
 
@@ -15,6 +16,7 @@ addAccount(eth.accounts[3], "seller2");
 addAccount(eth.accounts[4], "buyer1");
 addAccount(eth.accounts[5], "buyer2");
 addAccount(eth.accounts[6], "uiFeeAccount");
+addAccount(NULLACCOUNT, "null");
 
 var miner = eth.accounts[0];
 var deployer = eth.accounts[1];
@@ -54,7 +56,6 @@ function addAccount(account, accountName) {
   addAddressNames(account, accountName);
 }
 
-var NULLACCOUNT = "0x0000000000000000000000000000000000000000";
 addAddressNames(NULLACCOUNT, "null");
 
 // -----------------------------------------------------------------------------

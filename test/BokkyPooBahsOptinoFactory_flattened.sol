@@ -864,9 +864,9 @@ contract OptinoToken is BasicToken {
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
         balances[tokenOwner] = balances[tokenOwner]._sub(tokens);
-        balances[address(this)] = balances[address(this)]._add(tokens);
-        _totalSupply = _totalSupply._sub(tokens);
-        emit Transfer(tokenOwner, address(this), tokens);
+        balances[address(0)] = balances[address(0)]._add(tokens);
+        // _totalSupply = _totalSupply._sub(tokens);
+        emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
 
@@ -938,12 +938,12 @@ contract OptinoToken is BasicToken {
         }
     }
     function close(uint _baseTokens) public {
-        _close(msg.sender, _baseTokens);
+        closeFor(msg.sender, _baseTokens);
     }
-    function _close(address tokenOwner, uint _tokens) public {
+    function closeFor(address tokenOwner, uint _tokens) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
-            OptinoToken(payable(pair))._close(tokenOwner, _tokens);
+            OptinoToken(payable(pair)).closeFor(tokenOwner, _tokens);
         } else {
             require(_tokens <= ERC20(this).balanceOf(tokenOwner));
             require(_tokens <= ERC20(pair).balanceOf(tokenOwner));
@@ -959,12 +959,12 @@ contract OptinoToken is BasicToken {
         }
     }
     function settle() public {
-        _settle(msg.sender);
+        settleFor(msg.sender);
     }
-    function _settle(address tokenOwner) public {
+    function settleFor(address tokenOwner) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
-            OptinoToken(payable(pair))._settle(tokenOwner);
+            OptinoToken(payable(pair)).settleFor(tokenOwner);
         } else {
             uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
