@@ -425,6 +425,10 @@ library SafeMath {
 // ----------------------------------------------------------------------------
 library Decimals {
     function _setDecimals(uint _decimals, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals) internal pure returns (uint _decimalsData) {
+        require(_decimals <= 18, "ConfigLibrary.add baseDecimals must be >= 0 and <= 18");
+        require(_baseDecimals <= 18, "ConfigLibrary.add baseDecimals must be >= 0 and <= 18");
+        require(_quoteDecimals <= 18, "ConfigLibrary.add quoteDecimals must be >= 0 and <= 18");
+        require(_rateDecimals <= 18, "ConfigLibrary.add rateDecimals must be >= 0 and <= 18");
         _decimalsData = _decimals * 1000000 + _baseDecimals * 10000 + _quoteDecimals * 100 + _rateDecimals;
     }
     function _getDecimals(uint decimalsData) internal pure returns (uint _decimals) {
@@ -526,9 +530,6 @@ library ConfigLibrary {
         return self.entries[key].timestamp > 0;
     }
     function _add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint decimalsData, uint maxTerm, uint fee, string memory description) internal {
-        require(decimalsData._getBaseDecimals() <= 18, "ConfigLibrary.add baseDecimals must be >= 0 and <= 18");
-        require(decimalsData._getQuoteDecimals() <= 18, "ConfigLibrary.add quoteDecimals must be >= 0 and <= 18");
-        require(decimalsData._getRateDecimals() <= 18, "ConfigLibrary.add rateDecimals must be >= 0 and <= 18");
         require(baseToken != quoteToken, "ConfigLibrary.add: baseToken cannot be the same as quoteToken");
         require(priceFeed != address(0), "ConfigLibrary.add: priceFeed cannot be null");
         require(maxTerm > 0, "ConfigLibrary.add: maxTerm must be > 0");

@@ -404,7 +404,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   var closeAmountInBaseTokens = new BigNumber("10").shift(18);
@@ -428,18 +428,18 @@ if (true) {
   console.log("RESULT: ");
   printTokenContractDetails(1);
   console.log("RESULT: ");
-  // printTokenContractDetails(2);
-  // console.log("RESULT: ");
-  // printTokenContractDetails(3);
-  // console.log("RESULT: ");
+  printTokenContractDetails(2);
+  console.log("RESULT: ");
+  printTokenContractDetails(3);
+  console.log("RESULT: ");
 }
 
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = new BigNumber("300").shift(rateDecimals);
+  var rate = new BigNumber("250").shift(rateDecimals);
   // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
