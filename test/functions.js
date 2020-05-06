@@ -404,53 +404,6 @@ function getTokenContractDeployed() {
   }
   return addresses;
 }
-function printFactoryContractDetails() {
-  console.log("RESULT: factoryContractAddress=" + _factoryContractAddress);
-  if (_factoryContractAddress != null && _factoryContractAbi != null) {
-    var contract = eth.contract(_factoryContractAbi).at(factoryContractAddress);
-    console.log("RESULT: factory.owner=" + contract.owner());
-    console.log("RESULT: factory.newOwner=" + contract.newOwner());
-    console.log("RESULT: factory.minimumFee=" + contract.minimumFee().shift(-18) + " ETH");
-    console.log("RESULT: factory.newAddress=" + contract.newAddress());
-    console.log("RESULT: factory.numberOfChildren=" + contract.numberOfChildren());
-    var i;
-    for (i = 0; i < contract.numberOfChildren(); i++) {
-        console.log("RESULT: factory.children(" + i + ")=" + contract.children(i));
-    }
-
-    var latestBlock = eth.blockNumber;
-
-    var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
-    i = 0;
-    ownershipTransferredEvents.watch(function (error, result) {
-      console.log("RESULT: OwnershipTransferred " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    ownershipTransferredEvents.stopWatching();
-
-    var factoryDeprecatedEvents = contract.FactoryDeprecated({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
-    i = 0;
-    factoryDeprecatedEvents.watch(function (error, result) {
-      console.log("RESULT: FactoryDeprecated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    factoryDeprecatedEvents.stopWatching();
-
-    var minimumFeeUpdatedEvents = contract.MinimumFeeUpdated({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
-    i = 0;
-    minimumFeeUpdatedEvents.watch(function (error, result) {
-      console.log("RESULT: MinimumFeeUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    minimumFeeUpdatedEvents.stopWatching();
-
-    var tokenDeployedEvents = contract.TokenDeployed({}, { fromBlock: _factoryFromBlock, toBlock: latestBlock });
-    i = 0;
-    tokenDeployedEvents.watch(function (error, result) {
-      console.log("RESULT: TokenDeployed " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    tokenDeployedEvents.stopWatching();
-
-    _factoryFromBlock = latestBlock + 1;
-  }
-}
 
 
 // -----------------------------------------------------------------------------
@@ -586,15 +539,17 @@ function printOptinoFactoryContractDetails() {
         var baseToken = getShortAddressName(config[1]);
         var quoteToken = getShortAddressName(config[2]);
         var priceFeed = getShortAddressName(config[3]);
-        var baseDecimals = config[4];
-        var quoteDecimals = config[5];
-        var rateDecimals = config[6];
-        var maxTerm = config[7];
-        var fee = config[8];
-        var description = config[9];
-        var timestamp = config[10];
-        configData[key] = { key: key, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, baseDecimals: baseDecimals, quoteDecimals: quoteDecimals, rateDecimals: rateDecimals };
-        console.log("RESULT: optinoToken.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", baseDecimals=" + baseDecimals + ", maxTerm=" + maxTerm + ", fee=" + fee + ", description='" + description + "', timestamp=" + timestamp);
+        var decimalsData = parseInt(config[4]);
+        var decimals = parseInt(decimalsData / 1000000 % 100);
+        var baseDecimals = parseInt(decimalsData / 10000 % 100);
+        var quoteDecimals = parseInt(decimalsData / 100 % 100);
+        var rateDecimals = parseInt(decimalsData % 100);
+        var maxTerm = config[5];
+        var fee = config[6];
+        var description = config[7];
+        var timestamp = config[8];
+        configData[key] = { key: key, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, decimalsData: decimalsData, decimals: decimals, baseDecimals: baseDecimals, quoteDecimals: quoteDecimals, rateDecimals: rateDecimals };
+        console.log("RESULT: optinoToken.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", decimalsData=" + decimalsData + ", decimals=" + decimals + ", baseDecimals=" + baseDecimals + ", quoteDecimals=" + quoteDecimals + ", rateDecimals=" + rateDecimals + ", maxTerm=" + maxTerm + ", fee=" + fee + ", description='" + description + "', timestamp=" + timestamp);
     }
 
     var seriesData = {};

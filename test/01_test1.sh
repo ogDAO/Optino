@@ -404,7 +404,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   var closeAmountInBaseTokens = new BigNumber("10").shift(18);
@@ -464,14 +464,14 @@ if (false) {
   console.log("RESULT: ");
   printTokenContractDetails(1);
   console.log("RESULT: ");
-  // printTokenContractDetails(2);
-  // console.log("RESULT: ");
-  // printTokenContractDetails(3);
-  // console.log("RESULT: ");
+  printTokenContractDetails(2);
+  console.log("RESULT: ");
+  printTokenContractDetails(3);
+  console.log("RESULT: ");
 }
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var transferThenSettleGroup1_Message = "Transfer, then settle Optino & Cover";
   var rate = new BigNumber("300").shift(rateDecimals);
@@ -539,108 +539,6 @@ if (true) {
   console.log("RESULT: ");
 
 }
-exit;
-
-// -----------------------------------------------------------------------------
-var payoffCalcsGroup1_Message = "Payoff Calcs #1";
-var rate = new BigNumber("250.123456789012345678").shift(18);
-var optinoAddress = optinos[0];
-var optino = web3.eth.contract(optinoTokenAbi).at(optinoAddress);
-// -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + payoffCalcsGroup1_Message + " ----------");
-var payoffCalcsGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
-while (txpool.status.pending > 0) {
-}
-var payoffCalcsGroup1_2Tx = optino.setSpot({from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
-while (txpool.status.pending > 0) {
-}
-printBalances();
-failIfTxStatusError(payoffCalcsGroup1_1Tx, payoffCalcsGroup1_Message + " - priceFeed.setValue()");
-failIfTxStatusError(payoffCalcsGroup1_2Tx, payoffCalcsGroup1_Message + " - optino.setSpot()");
-printTxData("payoffCalcsGroup1_1Tx", payoffCalcsGroup1_1Tx);
-printTxData("payoffCalcsGroup1_2Tx", payoffCalcsGroup1_2Tx);
-console.log("RESULT: ");
-printPriceFeedContractDetails();
-console.log("RESULT: ");
-printPriceFeedAdaptorContractDetails();
-console.log("RESULT: ");
-printOptinoFactoryContractDetails();
-console.log("RESULT: ");
-printTokenContractDetails(0);
-console.log("RESULT: ");
-printTokenContractDetails(1);
-console.log("RESULT: ");
-// printTokenContractDetails(2);
-// console.log("RESULT: ");
-// printTokenContractDetails(3);
-// console.log("RESULT: ");
-
-
-exit;
-
-
-// -----------------------------------------------------------------------------
-var deployGroup2Message = "Deploy Group #1 - Deploy Second Token";
-var symbol = "TEST";
-var name = "Test";
-var decimals = 18;
-var totalSupply = new BigNumber("1000000000").shift(decimals);
-var feeInEthers = new BigNumber("9.999999999999999999").shift(18);
-// -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + deployGroup2Message + " ----------");
-var deployToken_1Tx = tokenFactory.deployTokenContract(symbol, name, decimals, totalSupply, uiFeeAccount, {from: user1, value: feeInEthers, gas: 2000000, gasPrice: defaultGasPrice});
-while (txpool.status.pending > 0) {
-}
-var tokenContract = getTokenContractDeployed();
-console.log("RESULT: tokenContract=#" + tokenContract.length + " " + JSON.stringify(tokenContract));
-tokenAddress = tokenContract[0];
-token = web3.eth.contract(tokenAbi).at(tokenAddress);
-addAccount(tokenAddress, "Token '" + token.symbol() + "' '" + token.name() + "'");
-addTokenContractAddressAndAbi(tokenAddress, tokenAbi);
-console.log("DATA: var tokenAddress=\"" + tokenAddress + "\";");
-console.log("DATA: var tokenAbi=" + JSON.stringify(tokenAbi) + ";");
-console.log("DATA: var token=eth.contract(tokenAbi).at(tokenAddress);");
-
-printBalances();
-failIfTxStatusError(deployToken_1Tx, deployGroup2Message + " - Token");
-printTxData("deployToken_1Tx", deployToken_1Tx);
-console.log("RESULT: ");
-printFactoryContractDetails();
-console.log("RESULT: ");
-printTokenContractDetails();
-console.log("RESULT: ");
-
-
-// -----------------------------------------------------------------------------
-var testSecondInitMessage = "Test second init";
-var symbol = "TEST2";
-var name = "Test 2";
-var decimals = 18;
-var totalSupply = new BigNumber("1000000001").shift(decimals);
-// Simulate error by commenting out in Owned:init(...) either of the two lines:
-//   require(!initialised);
-//   initialised = true;
-// -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + testSecondInitMessage + " ----------");
-// function init(address tokenOwner, string memory symbol, string memory name, uint8 decimals, uint fixedSupply)
-console.log("RESULT: user2: " + user2);
-console.log("RESULT: symbol: " + symbol);
-console.log("RESULT: name: " + name);
-console.log("RESULT: decimals: " + decimals);
-console.log("RESULT: totalSupply: " + totalSupply.toString());
-var testSecondInit_1Tx = token.init(user2, symbol, name, decimals, totalSupply.toString(), {from: user2, value: 0, gas: 2000000, gasPrice: defaultGasPrice});
-while (txpool.status.pending > 0) {
-}
-printBalances();
-passIfTxStatusError(testSecondInit_1Tx, testSecondInitMessage + " - expecting init() to fail");
-printTxData("testSecondInit_1Tx", testSecondInit_1Tx);
-console.log("RESULT: ");
-printTokenContractDetails(0);
-printTokenContractDetails(1);
-console.log("RESULT: ");
-
-
-
 
 EOF
 grep "DATA: " $TEST1OUTPUT | sed "s/DATA: //" > $DEPLOYMENTDATA
