@@ -829,8 +829,9 @@ contract OptinoToken is BasicToken {
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
         balances[tokenOwner] = balances[tokenOwner]._sub(tokens);
+        balances[address(this)] = balances[address(this)]._add(tokens);
         _totalSupply = _totalSupply._sub(tokens);
-        emit Transfer(tokenOwner, address(0), tokens);
+        emit Transfer(tokenOwner, address(this), tokens);
         return true;
     }
 

@@ -170,7 +170,8 @@ function printTxData(name, txId) {
     var trace = debug.traceTransaction(txId);
     var memory = trace.structLogs[trace.structLogs.length-1].memory;
     for (var i = memory.length - 10; i < memory.length; i++) {
-      console.log("RESULT: debug.traceTransaction().trace.structLogs[" + (trace.structLogs.length-1) + "].memory[" + i + "]" + memory[i] + " => '" + web3.toAscii(memory[i]) + "'");
+      console.log("RESULT: debug.traceTransaction().trace.structLogs[" + (trace.structLogs.length-1) + "].memory[" + i + "]" +
+        memory[i] + " => '" + web3.toAscii(memory[i]) + "'");
     }
   }
 }

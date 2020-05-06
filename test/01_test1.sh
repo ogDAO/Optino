@@ -490,12 +490,6 @@ if (true) {
   var transferThenSettleGroup1_4Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
-  var transferThenSettleGroup1_5Tx = optino.settle({from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
-  while (txpool.status.pending > 0) {
-  }
-  var transferThenSettleGroup1_6Tx = optino.settle({from: buyer2, gas: 2000000, gasPrice: defaultGasPrice});
-  while (txpool.status.pending > 0) {
-  }
   printBalances();
   failIfTxStatusError(transferThenSettleGroup1_1Tx, transferThenSettleGroup1_Message + " - seller1 -> optino.transfer(buyer1, " + transferAmount.shift(-OPTINODECIMALS).toString() + ")");
   printTxData("transferThenSettleGroup1_1Tx", transferThenSettleGroup1_1Tx);
@@ -505,10 +499,6 @@ if (true) {
   printTxData("transferThenSettleGroup1_3Tx", transferThenSettleGroup1_3Tx);
   failIfTxStatusError(transferThenSettleGroup1_4Tx, transferThenSettleGroup1_Message + " - seller1 -> optino.settle()");
   printTxData("transferThenSettleGroup1_4Tx", transferThenSettleGroup1_4Tx);
-  failIfTxStatusError(transferThenSettleGroup1_5Tx, transferThenSettleGroup1_Message + " - buyer1 -> optino.settle()");
-  printTxData("transferThenSettleGroup1_5Tx", transferThenSettleGroup1_5Tx);
-  failIfTxStatusError(transferThenSettleGroup1_6Tx, transferThenSettleGroup1_Message + " - buyer2 -> optino.settle()");
-  printTxData("transferThenSettleGroup1_6Tx", transferThenSettleGroup1_6Tx);
   console.log("RESULT: ");
   printPriceFeedContractDetails();
   console.log("RESULT: ");
@@ -524,6 +514,30 @@ if (true) {
   console.log("RESULT: ");
   printTokenContractDetails(3);
   console.log("RESULT: ");
+
+  var transferThenSettleGroup1_5Tx = optino.settle({from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  var transferThenSettleGroup1_6Tx = optino.settle({from: buyer2, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  printBalances();
+  failIfTxStatusError(transferThenSettleGroup1_5Tx, transferThenSettleGroup1_Message + " - buyer1 -> optino.settle()");
+  printTxData("transferThenSettleGroup1_5Tx", transferThenSettleGroup1_5Tx);
+  failIfTxStatusError(transferThenSettleGroup1_6Tx, transferThenSettleGroup1_Message + " - buyer2 -> optino.settle()");
+  printTxData("transferThenSettleGroup1_6Tx", transferThenSettleGroup1_6Tx);
+  console.log("RESULT: ");
+  printOptinoFactoryContractDetails();
+  console.log("RESULT: ");
+  printTokenContractDetails(0);
+  console.log("RESULT: ");
+  printTokenContractDetails(1);
+  console.log("RESULT: ");
+  printTokenContractDetails(2);
+  console.log("RESULT: ");
+  printTokenContractDetails(3);
+  console.log("RESULT: ");
+
 }
 exit;
 
