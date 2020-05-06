@@ -789,8 +789,8 @@ library OptinoFormulae {
 contract OptinoToken is BasicToken {
     using SeriesLibrary for SeriesLibrary.Series;
     address private constant ETH = address(0);
-    uint public constant COLLECTDUSTMINIMUMDECIMALS = 10; // Collect dust only if token has > 10 decimal places
-    uint public constant COLLECTDUSTDECIMALS = 2; // Collect dust if less < 10**2 = 100
+    uint public constant COLLECTDUSTMINIMUMDECIMALS = 4; // Collect dust only if token has > 10 decimal places
+    uint public constant COLLECTDUSTDECIMALS = 1; // Collect dust if less < 10**1 = 10
 
     address public factory;
     bytes32 public seriesKey;
@@ -888,11 +888,11 @@ contract OptinoToken is BasicToken {
         }
     }
     function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-        // if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-        //     if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
+        if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
+            if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
                 return balance;
-        //     }
-        // }
+            }
+        }
         return amount;
     }
     function transferOut(address token, address tokenOwner, uint tokens, uint decimals) internal {

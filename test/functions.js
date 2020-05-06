@@ -10,27 +10,27 @@ var accountNames = {};
 
 addAccount(eth.accounts[0], "miner");
 addAccount(eth.accounts[1], "deployer");
-addAccount(eth.accounts[2], "maker1");
-addAccount(eth.accounts[3], "maker2");
-addAccount(eth.accounts[4], "taker1");
-addAccount(eth.accounts[5], "taker2");
+addAccount(eth.accounts[2], "seller1");
+addAccount(eth.accounts[3], "seller2");
+addAccount(eth.accounts[4], "buyer1");
+addAccount(eth.accounts[5], "buyer2");
 addAccount(eth.accounts[6], "uiFeeAccount");
 
 var miner = eth.accounts[0];
 var deployer = eth.accounts[1];
-var maker1 = eth.accounts[2];
-var maker2 = eth.accounts[3];
-var taker1 = eth.accounts[4];
-var taker2 = eth.accounts[5];
+var seller1 = eth.accounts[2];
+var seller2 = eth.accounts[3];
+var buyer1 = eth.accounts[4];
+var buyer2 = eth.accounts[5];
 var uiFeeAccount = eth.accounts[6];
 
 
 console.log("DATA: var miner=\"" + eth.accounts[0] + "\";");
 console.log("DATA: var deployer=\"" + eth.accounts[1] + "\";");
-console.log("DATA: var maker1=\"" + eth.accounts[2] + "\";");
-console.log("DATA: var maker2=\"" + eth.accounts[3] + "\";");
-console.log("DATA: var taker1=\"" + eth.accounts[4] + "\";");
-console.log("DATA: var taker2=\"" + eth.accounts[5] + "\";");
+console.log("DATA: var seller1=\"" + eth.accounts[2] + "\";");
+console.log("DATA: var seller2=\"" + eth.accounts[3] + "\";");
+console.log("DATA: var buyer1=\"" + eth.accounts[4] + "\";");
+console.log("DATA: var buyer2=\"" + eth.accounts[5] + "\";");
 console.log("DATA: var uiFeeAccount=\"" + eth.accounts[6] + "\";");
 
 
@@ -166,6 +166,13 @@ function printTxData(name, txId) {
     " @ ETH/USD=" + ethPriceUSD + " gasPrice=" + web3.fromWei(gasPrice, "gwei") + " gwei block=" +
     txReceipt.blockNumber + " txIx=" + tx.transactionIndex + " txId=" + txId +
     " @ " + block.timestamp + " " + new Date(block.timestamp * 1000).toUTCString());
+  if (txReceipt.status == 0) {
+    var trace = debug.traceTransaction(txId);
+    var memory = trace.structLogs[trace.structLogs.length-1].memory;
+    for (var i = memory.length - 10; i < memory.length; i++) {
+      console.log("RESULT: debug.traceTransaction().trace.structLogs[" + (trace.structLogs.length-1) + "].memory[" + i + "]" + memory[i] + " => '" + web3.toAscii(memory[i]) + "'");
+    }
+  }
 }
 
 function assertEtherBalance(account, expectedBalance) {

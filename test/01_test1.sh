@@ -287,44 +287,44 @@ var ethAddress = "0x0000000000000000000000000000000000000000";
 var ethDecimals = 18;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
-var deployGroup2_1Tx = baseToken.mint(maker1, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_2Tx = baseToken.mint(maker2, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_3Tx = baseToken.mint(taker1, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_4Tx = baseToken.mint(taker2, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_5Tx = quoteToken.mint(maker1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_6Tx = quoteToken.mint(maker2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_7Tx = quoteToken.mint(taker1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
-var deployGroup2_8Tx = quoteToken.mint(taker2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_1Tx = baseToken.mint(seller1, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_2Tx = baseToken.mint(seller2, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_3Tx = baseToken.mint(buyer1, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_4Tx = baseToken.mint(buyer2, baseTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_5Tx = quoteToken.mint(seller1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_6Tx = quoteToken.mint(seller2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_7Tx = quoteToken.mint(buyer1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
+var deployGroup2_8Tx = quoteToken.mint(buyer2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_9Tx = optinoFactory.addConfig(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_10Tx = optinoFactory.addConfig(ethAddress, quoteTokenAddress, priceFeedAdaptorAddress, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: maker1, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - baseToken.mint(maker1, 1,000)");
-failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - baseToken.mint(maker2, 1,000)");
-failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - baseToken.mint(taker1, 1,000)");
-failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - baseToken.mint(taker2, 1,000)");
-failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - quoteToken.mint(maker1, 1,000,000)");
-failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - quoteToken.mint(maker2, 1,000,000)");
-failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - quoteToken.mint(taker1, 1,000,000)");
-failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - quoteToken.mint(taker2, 1,000,000)");
-failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
-failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
-failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - maker1 -> baseToken.approve(optinoFactory, 1,000')");
-failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - maker1 -> quoteToken.approve(optinoFactory, 1,000,000')");
+failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - baseToken.mint(seller1, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_1Tx", deployGroup2_1Tx);
+failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - baseToken.mint(seller2, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_2Tx", deployGroup2_2Tx);
+failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - baseToken.mint(buyer1, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_3Tx", deployGroup2_3Tx);
+failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - baseToken.mint(buyer2, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_4Tx", deployGroup2_4Tx);
+failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - quoteToken.mint(seller1, " + quoteTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_5Tx", deployGroup2_5Tx);
+failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - quoteToken.mint(seller2, " + quoteTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_6Tx", deployGroup2_6Tx);
+failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - quoteToken.mint(buyer1, " + quoteTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_7Tx", deployGroup2_7Tx);
+failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - quoteToken.mint(buyer2, " + quoteTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_8Tx", deployGroup2_8Tx);
+failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
 printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
+failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
 printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
+failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - seller1 -> baseToken.approve(optinoFactory, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_11Tx", deployGroup2_11Tx);
+failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - seller1 -> quoteToken.approve(optinoFactory, " + quoteTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_12Tx", deployGroup2_12Tx);
 console.log("RESULT: ");
 printTokenContractDetails(0);
@@ -340,7 +340,7 @@ var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
-var cap = new BigNumber("0").shift(rateDecimals);
+var cap = new BigNumber("300").shift(rateDecimals);
 var floor = new BigNumber("100.000").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var tokens = new BigNumber("10").shift(OPTINODECIMALS);
@@ -364,10 +364,11 @@ for (spot = 0; spot < 400; spot += 50) {
 
 // var data = optinoFactory.mintOptinoTokens.getData(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
-// var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: maker1, data: data, value: value, gas: 3000000, gasPrice: defaultGasPrice });
-var mintOptinoGroup1_1Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
-// var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
-// var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 3000000, gasPrice: defaultGasPrice });
+console.log("RESULT: optinoFactory.mintOptinoTokens(" + baseTokenAddress + ", " + quoteTokenAddress + ", " + priceFeedAdaptorAddress + ", " + callPut + ", " + expiry + ", " + strike + ", " + bound + ", " + tokens + ", " + _uiFeeAccount + ")");
+var mintOptinoGroup1_1Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
+// var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 
 while (txpool.status.pending > 0) {
 }
@@ -379,6 +380,8 @@ for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
   addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "optinoToken" : "coverToken");
   addTokenContractAddressAndAbi(optinosIndex + 2, optinos[optinosIndex], optinoTokenAbi);
 }
+var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
+var cover = web3.eth.contract(optinoTokenAbi).at(optinos[1]);
 
 printBalances();
 // failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
@@ -402,48 +405,49 @@ console.log("RESULT: ");
 
 
 if (false) {
-// -----------------------------------------------------------------------------
-var closeGroup1_Message = "Close Optino & Cover";
-var closeAmountInBaseTokens = new BigNumber("10").shift(18);
-var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
-// -----------------------------------------------------------------------------
-console.log("RESULT: ---------- " + closeGroup1_Message + " ----------");
-var closeGroup1_1Tx = optino.close(closeAmountInBaseTokens, {from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
-while (txpool.status.pending > 0) {
-}
-printBalances();
-failIfTxStatusError(closeGroup1_1Tx, closeGroup1_Message + " - optino.netOff()");
-printTxData("closeGroup1_1Tx", closeGroup1_1Tx);
-console.log("RESULT: ");
-printPriceFeedContractDetails();
-console.log("RESULT: ");
-printPriceFeedAdaptorContractDetails();
-console.log("RESULT: ");
-printOptinoFactoryContractDetails();
-console.log("RESULT: ");
-printTokenContractDetails(0);
-console.log("RESULT: ");
-printTokenContractDetails(1);
-console.log("RESULT: ");
-// printTokenContractDetails(2);
-// console.log("RESULT: ");
-// printTokenContractDetails(3);
-// console.log("RESULT: ");
+  // -----------------------------------------------------------------------------
+  var closeGroup1_Message = "Close Optino & Cover";
+  var closeAmountInBaseTokens = new BigNumber("10").shift(18);
+  // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
+  // -----------------------------------------------------------------------------
+  console.log("RESULT: ---------- " + closeGroup1_Message + " ----------");
+  var closeGroup1_1Tx = optino.close(closeAmountInBaseTokens, {from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  printBalances();
+  failIfTxStatusError(closeGroup1_1Tx, closeGroup1_Message + " - optino.netOff()");
+  printTxData("closeGroup1_1Tx", closeGroup1_1Tx);
+  console.log("RESULT: ");
+  printPriceFeedContractDetails();
+  console.log("RESULT: ");
+  printPriceFeedAdaptorContractDetails();
+  console.log("RESULT: ");
+  printOptinoFactoryContractDetails();
+  console.log("RESULT: ");
+  printTokenContractDetails(0);
+  console.log("RESULT: ");
+  printTokenContractDetails(1);
+  console.log("RESULT: ");
+  // printTokenContractDetails(2);
+  // console.log("RESULT: ");
+  // printTokenContractDetails(3);
+  // console.log("RESULT: ");
 }
 
 
-if (true) {
+
+if (false) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = new BigNumber("300").shift(rateDecimals);
-  var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
+  // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
   waitUntil("optino.expiry()", optino.expiry.call(), 0);
   var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
-  var settleGroup1_1Tx = optino.settle({from: maker1, gas: 2000000, gasPrice: defaultGasPrice});
+  var settleGroup1_1Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
@@ -466,6 +470,61 @@ if (true) {
   // console.log("RESULT: ");
 }
 
+
+if (true) {
+  // -----------------------------------------------------------------------------
+  var transferThenSettleGroup1_Message = "Transfer, then settle Optino & Cover";
+  var rate = new BigNumber("300").shift(rateDecimals);
+  var transferAmount = optino.balanceOf.call(seller1).mul(4).div(8);
+  console.log("RESULT: transferAmount=" + transferAmount.shift(-OPTINODECIMALS).toString());
+  // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
+  // -----------------------------------------------------------------------------
+  console.log("RESULT: ---------- " + transferThenSettleGroup1_Message + " ----------");
+  waitUntil("optino.expiry()", optino.expiry.call(), 0);
+
+  var transferThenSettleGroup1_1Tx = optino.transfer(buyer1, transferAmount.toString(), {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
+  var transferThenSettleGroup1_2Tx = cover.transfer(buyer2, transferAmount.toString(), {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
+  var transferThenSettleGroup1_3Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  var transferThenSettleGroup1_4Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  var transferThenSettleGroup1_5Tx = optino.settle({from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  var transferThenSettleGroup1_6Tx = optino.settle({from: buyer2, gas: 2000000, gasPrice: defaultGasPrice});
+  while (txpool.status.pending > 0) {
+  }
+  printBalances();
+  failIfTxStatusError(transferThenSettleGroup1_1Tx, transferThenSettleGroup1_Message + " - seller1 -> optino.transfer(buyer1, " + transferAmount.shift(-OPTINODECIMALS).toString() + ")");
+  printTxData("transferThenSettleGroup1_1Tx", transferThenSettleGroup1_1Tx);
+  failIfTxStatusError(transferThenSettleGroup1_2Tx, transferThenSettleGroup1_Message + " - seller1 -> cover.transfer(buyer2, " + transferAmount.shift(-OPTINODECIMALS).toString() + ")");
+  printTxData("transferThenSettleGroup1_2Tx", transferThenSettleGroup1_2Tx);
+  failIfTxStatusError(transferThenSettleGroup1_3Tx, transferThenSettleGroup1_Message + " - deployer -> priceFeed.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
+  printTxData("transferThenSettleGroup1_3Tx", transferThenSettleGroup1_3Tx);
+  failIfTxStatusError(transferThenSettleGroup1_4Tx, transferThenSettleGroup1_Message + " - seller1 -> optino.settle()");
+  printTxData("transferThenSettleGroup1_4Tx", transferThenSettleGroup1_4Tx);
+  failIfTxStatusError(transferThenSettleGroup1_5Tx, transferThenSettleGroup1_Message + " - buyer1 -> optino.settle()");
+  printTxData("transferThenSettleGroup1_5Tx", transferThenSettleGroup1_5Tx);
+  failIfTxStatusError(transferThenSettleGroup1_6Tx, transferThenSettleGroup1_Message + " - buyer2 -> optino.settle()");
+  printTxData("transferThenSettleGroup1_6Tx", transferThenSettleGroup1_6Tx);
+  console.log("RESULT: ");
+  printPriceFeedContractDetails();
+  console.log("RESULT: ");
+  printPriceFeedAdaptorContractDetails();
+  console.log("RESULT: ");
+  printOptinoFactoryContractDetails();
+  console.log("RESULT: ");
+  printTokenContractDetails(0);
+  console.log("RESULT: ");
+  printTokenContractDetails(1);
+  console.log("RESULT: ");
+  printTokenContractDetails(2);
+  console.log("RESULT: ");
+  printTokenContractDetails(3);
+  console.log("RESULT: ");
+}
 exit;
 
 // -----------------------------------------------------------------------------
@@ -478,7 +537,7 @@ console.log("RESULT: ---------- " + payoffCalcsGroup1_Message + " ----------");
 var payoffCalcsGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
-var payoffCalcsGroup1_2Tx = optino.setSpot({from: maker1, gas: 6000000, gasPrice: defaultGasPrice});
+var payoffCalcsGroup1_2Tx = optino.setSpot({from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
