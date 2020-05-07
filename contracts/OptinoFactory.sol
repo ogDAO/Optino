@@ -927,7 +927,7 @@ contract OptinoToken is BasicToken {
     }
     function settleFor(address tokenOwner) public {
         emit LogInfo("settleFor start msg.sender", msg.sender, 0);
-        require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
+        // require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "settleFor: Invalid msg.sender");
         if (!isCover) {
             emit LogInfo("settleFor msg.sender for Optino token. Transferring to Cover token", msg.sender, 0);
             OptinoToken(payable(pair)).settleFor(tokenOwner);
@@ -945,25 +945,29 @@ contract OptinoToken is BasicToken {
             require(_spot > 0);
             uint _payoff;
             uint _collateral;
-
             (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = factory.getCalcData(seriesKey);
-
-            require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
-            require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
-
-            _payoff = OptinoV1.payoff(_callPut, _strike, _bound, _spot, optinoTokens, _decimalsData);
-            if (_payoff > 0) {
-                transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
+            if (optinoTokens > 0) {
+                require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             }
-            emit Payoff(pair, collateralToken, tokenOwner, _payoff);
-
-            _payoff = OptinoV1.payoff(_callPut, _strike, _bound, _spot, coverTokens, _decimalsData);
-            _collateral = OptinoV1.collateral(_callPut, _strike, _bound, coverTokens, _decimalsData);
-            uint _coverPayoff = _collateral.sub(_payoff);
-            if (_coverPayoff > 0) {
-                transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
+            if (coverTokens > 0) {
+                require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
             }
-            emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff);
+            if (optinoTokens > 0) {
+                _payoff = OptinoV1.payoff(_callPut, _strike, _bound, _spot, optinoTokens, _decimalsData);
+                if (_payoff > 0) {
+                    transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
+                }
+                emit Payoff(pair, collateralToken, tokenOwner, _payoff);
+            }
+            if (coverTokens > 0) {
+                _payoff = OptinoV1.payoff(_callPut, _strike, _bound, _spot, coverTokens, _decimalsData);
+                _collateral = OptinoV1.collateral(_callPut, _strike, _bound, coverTokens, _decimalsData);
+                uint _coverPayoff = _collateral.sub(_payoff);
+                if (_coverPayoff > 0) {
+                    transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
+                }
+                emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff);
+            }
         }
     }
     function recoverTokens(address token, uint tokens) public onlyOwner {

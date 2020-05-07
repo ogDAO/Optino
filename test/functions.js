@@ -619,7 +619,10 @@ function printOptinoFactoryContractDetails() {
         var optinoTokenLogInfoEvents = optinoTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
         j = 0;
         optinoTokenLogInfoEvents.watch(function (error, result) {
-          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
+            " note=" + result.args.note +
+            " addr=" + getShortAddressName(result.args.addr) +
+            " number=" + result.args.number);
         });
         optinoTokenLogInfoEvents.stopWatching();
 
@@ -668,7 +671,10 @@ function printOptinoFactoryContractDetails() {
         var coverTokenLogInfoEvents = coverTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
         j = 0;
         coverTokenLogInfoEvents.watch(function (error, result) {
-          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
+            " note=" + result.args.note +
+            " addr=" + getShortAddressName(result.args.addr) +
+            " number=" + result.args.number);
         });
         coverTokenLogInfoEvents.stopWatching();
 

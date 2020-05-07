@@ -450,7 +450,7 @@ if (true) {
   while (txpool.status.pending > 0) {
   }
   // var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
-  var settleGroup1_2Tx = optino.settleFor(seller1, {from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  var settleGroup1_2Tx = optino.settleFor(seller1, {from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
