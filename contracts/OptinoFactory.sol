@@ -12,7 +12,7 @@ pragma solidity ^0.6.6;
 //
 // Optino Factory v0.971-pre-release
 //
-// Status: Work in progress. To test, optimise and review, especially decimals
+// Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
@@ -203,7 +203,7 @@ library NameUtils {
     uint8 constant CHAR_T = 84;
     uint8 constant CHAR_Z = 90;
 
-    function _numToBytes(uint number, uint decimals) internal pure returns (bytes memory b, uint _length) {
+    function numToBytes(uint number, uint decimals) internal pure returns (bytes memory b, uint _length) {
         uint i;
         uint j;
         uint result;
@@ -237,7 +237,7 @@ library NameUtils {
         }
         return (b, j);
     }
-    function _dateTimeToBytes(uint timestamp) internal pure returns (bytes memory b) {
+    function dateTimeToBytes(uint timestamp) internal pure returns (bytes memory b) {
         (uint year, uint month, uint day, uint hour, uint min, uint sec) = BokkyPooBahsDateTimeLibrary.timestampToDateTime(timestamp);
 
         b = new bytes(20);
@@ -288,7 +288,7 @@ library NameUtils {
         } while (i > 0);
         b[j++] = byte(CHAR_Z);
     }
-    function _toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
+    function toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
         bytes memory b = new bytes(64);
         uint i;
         uint j;
@@ -315,7 +315,7 @@ library NameUtils {
         } while (i > 0);
         s = string(b);
     }
-    function _toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint decimals) internal pure returns (string memory s) {
+    function toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint decimals) internal pure returns (string memory s) {
         bytes memory b = new bytes(256);
         uint i;
         uint j;
@@ -359,27 +359,27 @@ library NameUtils {
         }
         b[j++] = byte(SPACE);
 
-        bytes memory b1 = _dateTimeToBytes(expiry);
+        bytes memory b1 = dateTimeToBytes(expiry);
         for (i = 0; i < b1.length; i++) {
             b[j++] = b1[i];
         }
         b[j++] = byte(SPACE);
 
         if (callPut != 0 && bound != 0) {
-            (bytes memory b2, uint l2) = _numToBytes(bound, decimals);
+            (bytes memory b2, uint l2) = numToBytes(bound, decimals);
             for (i = 0; i < b2.length && i < l2; i++) {
                 b[j++] = b2[i];
             }
             b[j++] = byte(DASH);
         }
 
-        (bytes memory b3, uint l3) = _numToBytes(strike, decimals);
+        (bytes memory b3, uint l3) = numToBytes(strike, decimals);
         for (i = 0; i < b3.length && i < l3; i++) {
             b[j++] = b3[i];
         }
         if (callPut == 0 && bound != 0) {
             b[j++] = byte(DASH);
-            (bytes memory b4, uint l4) = _numToBytes(bound, decimals);
+            (bytes memory b4, uint l4) = numToBytes(bound, decimals);
             for (i = 0; i < b4.length && i < l4; i++) {
                 b[j++] = b4[i];
             }
@@ -452,12 +452,12 @@ contract Owned {
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
     modifier onlyOwner {
-        require(msg.sender == owner, "Owned.onlyOwner: Not owner");
+        require(msg.sender == owner, "onlyOwner: Not owner");
         _;
     }
 
-    function init(address _owner) internal {
-        require(!initialised, "Owned.init: Already initialised");
+    function initOwned(address _owner) internal {
+        require(!initialised, "initOwned: Already initialised");
         owner = address(uint160(_owner));
         initialised = true;
     }
@@ -465,7 +465,7 @@ contract Owned {
         newOwner = _newOwner;
     }
     function acceptOwnership() public {
-        require(msg.sender == newOwner, "Owned.acceptOwnership: Not new owner");
+        require(msg.sender == newOwner, "acceptOwnership: Not new owner");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
         newOwner = address(0);
@@ -501,8 +501,8 @@ library ConfigLib {
     event ConfigAdded(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint decimalsData, uint maxTerm, uint fee, string description);
     event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
 
-    function _init(Data storage self) internal {
-        require(!self.initialised, "ConfigLib._init: Cannot re-initialise");
+    function initConfig(Data storage self) internal {
+        require(!self.initialised, "ConfigLib.init: Cannot re-initialise");
         self.initialised = true;
     }
     function generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
@@ -566,7 +566,7 @@ library SeriesLib {
     event SeriesAdded(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
 
-    function init(Data storage self) internal {
+    function initSeries(Data storage self) internal {
         require(!self.initialised, "SeriesLib._init: Cannot re-initialise");
         self.initialised = true;
     }
@@ -674,8 +674,8 @@ contract BasicToken is Token, Owned {
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
 
-    function _initToken(address tokenOwner, string memory symbol, string memory name, uint decimals) internal {
-        super.init(tokenOwner);
+    function initToken(address tokenOwner, string memory symbol, string memory name, uint decimals) internal {
+        super.initOwned(tokenOwner);
         _symbol = symbol;
         _name = name;
         _decimals = decimals;
@@ -836,9 +836,9 @@ contract OptinoToken is BasicToken {
             collateralToken = _quoteToken;
             collateralDecimals = _decimalsData.getQuoteDecimals();
         }
-        string memory _symbol = NameUtils._toSymbol(_isCover, _callPut, _seriesNumber);
-        string memory _name = NameUtils._toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimalsData.getRateDecimals());
-        super._initToken(address(factory), _symbol, _name, _decimals);
+        string memory _symbol = NameUtils.toSymbol(_isCover, _callPut, _seriesNumber);
+        string memory _name = NameUtils.toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimalsData.getRateDecimals());
+        super.initToken(address(factory), _symbol, _name, _decimals);
     }
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
@@ -1028,7 +1028,7 @@ contract OptinoFactory is Owned, CloneFactory {
     event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, address collateralToken, uint collateral, uint ownerFee, uint uiFee);
 
     constructor(address _optinoTokenTemplate) public {
-        super.init(msg.sender);
+        super.initOwned(msg.sender);
         optinoTokenTemplate = _optinoTokenTemplate;
     }
     function deprecateContract(address _newAddress) public onlyOwner {
@@ -1042,7 +1042,7 @@ contract OptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint fee, string memory description) public onlyOwner {
         if (!configData.initialised) {
-            configData._init();
+            configData.initConfig();
         }
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals);
         configData.add(baseToken, quoteToken, priceFeed, decimalsData, maxTerm, fee, description);
@@ -1073,7 +1073,7 @@ contract OptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     function addSeries(OptinoData memory optinoData, bytes32 configKey, address optinoToken, address coverToken) internal {
         if (!seriesData.initialised) {
-            seriesData.init();
+            seriesData.initSeries();
         }
         seriesData.add(configKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, optinoToken, coverToken);
     }
@@ -1124,9 +1124,9 @@ contract OptinoFactory is Owned, CloneFactory {
         ConfigLib.Config memory config = configData.entries[series.configKey];
         return (series.callPut, series.strike, series.bound, config.decimalsData);
     }
-    function _getSeries(OptinoData memory optinoData) internal view returns (SeriesLib.Series storage _series) {
+    function getSeries(OptinoData memory optinoData) internal view returns (SeriesLib.Series storage _series) {
         ConfigLib.Config memory config = _getConfig(optinoData);
-        require(config.timestamp > 0, "_getSeries: Invalid config");
+        require(config.timestamp > 0, "getSeries: Invalid config");
         bytes32 key = SeriesLib.generateKey(config.key, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound);
         return seriesData.entries[key];
     }
@@ -1135,23 +1135,22 @@ contract OptinoFactory is Owned, CloneFactory {
     // Mint optino and cover tokens
     // ----------------------------------------------------------------------------
     function mint(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (address _optinoToken, address _coverToken) {
-        OptinoData memory optinoData = OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, tokens);
-        // Check parameters not checked in SeriesLib and ConfigLib
         require(expiry > block.timestamp, "mint: expiry must >= now");
         require(tokens > 0, "mint: tokens must be > 0");
+
+        OptinoData memory optinoData = OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, tokens);
         ConfigLib.Config memory config = _getConfig(optinoData);
         require(config.timestamp > 0, "mint: Invalid config");
-        SeriesLib.Series storage series = _getSeries(optinoData);
 
         OptinoToken optinoToken;
         OptinoToken coverToken;
-        // Series has not been created yet
+        SeriesLib.Series storage series = getSeries(optinoData);
         if (series.timestamp == 0) {
             require(expiry < (block.timestamp + config.maxTerm), "mint: expiry must be <= now + config.maxTerm");
             optinoToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             coverToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             addSeries(optinoData, config.key, address(optinoToken), address(coverToken));
-            series = _getSeries(optinoData);
+            series = getSeries(optinoData);
             optinoToken.initOptinoToken(this, series.key, address(coverToken), seriesData.length(), false, OPTINODECIMALS);
             coverToken.initOptinoToken(this, series.key, address(optinoToken), seriesData.length(), true, OPTINODECIMALS);
         } else {
