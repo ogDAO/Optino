@@ -3,9 +3,9 @@
  # Account                                             EtherBalanceChange                           BASE                          QUOTE Name
                                                                                                        2                              3
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.086456743200000000           0.000000000000000000                     0.000000000000000000           miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.086139563400000000           0.000000000000000000                     0.000000000000000000           miner
                                                                                     0.000000000000000000                     0.000000000000000000          
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.086456743200000000           0.000000000000000000                     0.000000000000000000           deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.086139563400000000           0.000000000000000000                     0.000000000000000000           deployer
                                                                                     0.000000000000000000                     0.000000000000000000          
  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976        0.000000000000000000           0.000000000000000000                     0.000000000000000000           seller1
                                                                                     0.000000000000000000                     0.000000000000000000          
@@ -19,17 +19,17 @@
                                                                                     0.000000000000000000                     0.000000000000000000          
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000                     0.000000000000000000           null
                                                                                     0.000000000000000000                     0.000000000000000000          
- 8 0x94dd4c26d57461ee12af98e7b4b3438c2554bd76        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
+ 8 0x84a015848fe14ceb333091ed1e9f67c1f131b226        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
- 9 0x3b2f14a8cba87bb8d051443108768c57a24dba14        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
+ 9 0xb6686676bb06566f588225723a3b7508d46bc287        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
-10 0x9fc8b14a33912973a6c45e4c81ec146ac8bac85b        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
+10 0x6742e4da9a40d5e06c9c16296e723773acd57f9f        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
                                                                                     0.000000000000000000                     0.000000000000000000          
-11 0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
+11 0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
                                                                                     0.000000000000000000                     0.000000000000000000          
-12 0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
+12 0xc83bac300889835dcdb7ae846cd4af8c062a5907        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
                                                                                     0.000000000000000000                     0.000000000000000000          
-13 0x35b7ae17fc9807cd85ccd869d55c08b46c313bb3        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
+13 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
                                                                                     0.000000000000000000                     0.000000000000000000          
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                                     0.000000000000000000                     0.000000000000000000           Total Token Balances
@@ -37,41 +37,41 @@
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Deploy Group #1 - Contracts - BaseToken
-baseTokenTx status=0x1 Success gas=4000000 gasUsed=866034 costETH=0.0070148754 costUSD=1.378493164854 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44124 txIx=0 txId=0x3b30bc5129dfbbc59e5bbf5e6adfe99cc3d9077c1dbc82b231dc1fe177d12608 @ 1588813121 Thu, 07 May 2020 00:58:41 GMT
+baseTokenTx status=0x1 Success gas=4000000 gasUsed=866034 costETH=0.0070148754 costUSD=1.378493164854 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44474 txIx=0 txId=0x84b196d197791cb8327af65266554729fba9d8c31db8da8fc43001e3b24f2e57 @ 1588813471 Thu, 07 May 2020 01:04:31 GMT
 PASS Deploy Group #1 - Contracts - QuoteToken
-quoteTokenTx status=0x1 Success gas=4000000 gasUsed=866058 costETH=0.0070150698 costUSD=1.378531366398 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44124 txIx=1 txId=0xd1a84e0cae89993c1552c242079ed5b58efb1ab9a7ea4f34e479184953253044 @ 1588813121 Thu, 07 May 2020 00:58:41 GMT
+quoteTokenTx status=0x1 Success gas=4000000 gasUsed=866058 costETH=0.0070150698 costUSD=1.378531366398 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44474 txIx=1 txId=0xe606ab7dc3cbc2177c3dc74212d463d7c618c00f987c170819775afbbfc80602 @ 1588813471 Thu, 07 May 2020 01:04:31 GMT
 PASS Deploy Group #1 - Contracts - OptinoToken
-optinoTokenTx status=0x1 Success gas=5000000 gasUsed=4055512 costETH=0.0328496472 costUSD=6.455284171272 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44124 txIx=2 txId=0x98fdd8c0e4dfdefd86c7b6a892acc1f192d64dcc96e2017cbf5801b445645b9a @ 1588813121 Thu, 07 May 2020 00:58:41 GMT
+optinoTokenTx status=0x1 Success gas=5000000 gasUsed=4037535 costETH=0.0327040335 costUSD=6.426669623085 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44474 txIx=2 txId=0x2792bda271eecd1dd94bbf81b8987ba3683c550d188b89eb9b0e5a167827760b @ 1588813471 Thu, 07 May 2020 01:04:31 GMT
 PASS Deploy Group #1 - Contracts - PriceFeed
-priceFeedTx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44124 txIx=3 txId=0x87066967846877eda080582ecb1a8671b8b8952a14c0d10fc1fbcb9bd54d97cf @ 1588813121 Thu, 07 May 2020 00:58:41 GMT
+priceFeedTx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44474 txIx=3 txId=0x184439718a84f0655ec4a221a3f6daa8cffd8589f7701864fe7b94c93a46f9e0 @ 1588813471 Thu, 07 May 2020 01:04:31 GMT
 PASS Deploy Group #1 - Contracts - PriceFeedAdaptor
-priceFeedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.001209492 costUSD=0.23767727292 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44126 txIx=0 txId=0xc742122c47298f98302b536181b9a619b02e5e852763242f8c6c1bd9e4e57bef @ 1588813123 Thu, 07 May 2020 00:58:43 GMT
+priceFeedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.001209492 costUSD=0.23767727292 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44476 txIx=0 txId=0x832cee0d70095bf000d276ea5145d168a5394e7166faecfe098d1a154ad2ff25 @ 1588813473 Thu, 07 May 2020 01:04:33 GMT
 PASS Deploy Group #1 - Contracts - OptinoFactory
-optinoFactoryTx status=0x1 Success gas=5000000 gasUsed=4557772 costETH=0.0369179532 costUSD=7.254746983332 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44126 txIx=1 txId=0x52d0ef51e295a17d0c86ffa88fd2f0a952d11590ce7060c797017adb9a2e3083 @ 1588813123 Thu, 07 May 2020 00:58:43 GMT
+optinoFactoryTx status=0x1 Success gas=5000000 gasUsed=4536591 costETH=0.0367463871 costUSD=7.221032529021 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44476 txIx=1 txId=0xb3490f41684722d259074f2567e528eed97450e70d068d48a8edf4768a2aad5a @ 1588813473 Thu, 07 May 2020 01:04:33 GMT
 
-priceFeedContractAddress=PriceFeed:0x8f38
+priceFeedContractAddress=PriceFeed:0x8bd5
 priceFeed.peek=0x00000000000000000000000000000000000000000000000a3ee6e2a294d40000,true
 priceFeed.value=189 ETH/USD
 priceFeed.hasValue=true
-SetValue 0 #44124 value=189 hasValue=true
+SetValue 0 #44474 value=189 hasValue=true
 
-priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x540b
-priceFeedAdaptor.sourceAddress=0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa
+priceFeedAdaptorContractAddress=PriceFeedAdaptor:0xc83b
+priceFeedAdaptor.sourceAddress=0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9
 priceFeedAdaptor.spot=["189000000000000000000",true]
 
-token0ContractAddress='BASE' 'Base Token (18 dp)':0x94dd
+token0ContractAddress='BASE' 'Base Token (18 dp)':0x84a0
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='BASE' 'Base Token (18 dp)' 18 dp
 token0.totalSupply=0
-token0.Transfer 0 #44124 from=null:0x0000 to=deployer:0xa11a tokens=0
+token0.Transfer 0 #44474 from=null:0x0000 to=deployer:0xa11a tokens=0
 
-token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0x3b2f
+token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0xb668
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='QUOTE' 'Quote Token (18 dp)' 18 dp
 token1.totalSupply=0
-token1.Transfer 0 #44124 from=null:0x0000 to=deployer:0xa11a tokens=0
+token1.Transfer 0 #44474 from=null:0x0000 to=deployer:0xa11a tokens=0
 
-optinoFactoryContractAddress=OptinoFactory:0x35b7
+optinoFactoryContractAddress=OptinoFactory:0x02ce
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
 optinoFactory.configDataLength=0
 optinoFactory.seriesDataLength=0
@@ -80,9 +80,9 @@ optinoFactory.seriesDataLength=0
  # Account                                             EtherBalanceChange                           BASE                          QUOTE Name
                                                                                                        2                              3
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.095003401500000000           0.000000000000000000                     0.000000000000000000           miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.094685508900000000           0.000000000000000000                     0.000000000000000000           miner
                                                                                     0.000000000000000000                     0.000000000000000000          
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.094291119900000000           0.000000000000000000                     0.000000000000000000           deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.093973227300000000           0.000000000000000000                     0.000000000000000000           deployer
                                                                                     0.000000000000000000                     0.000000000000000000          
  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.000712281600000000     1000000.000000000000000000               1000000.000000000000000000           seller1
                                                                                     0.000000000000000000                     0.000000000000000000          
@@ -96,17 +96,17 @@ optinoFactory.seriesDataLength=0
                                                                                     0.000000000000000000                     0.000000000000000000          
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000                     0.000000000000000000           null
                                                                                     0.000000000000000000                     0.000000000000000000          
- 8 0x94dd4c26d57461ee12af98e7b4b3438c2554bd76        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
+ 8 0x84a015848fe14ceb333091ed1e9f67c1f131b226        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
- 9 0x3b2f14a8cba87bb8d051443108768c57a24dba14        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
+ 9 0xb6686676bb06566f588225723a3b7508d46bc287        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
-10 0x9fc8b14a33912973a6c45e4c81ec146ac8bac85b        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
+10 0x6742e4da9a40d5e06c9c16296e723773acd57f9f        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
                                                                                     0.000000000000000000                     0.000000000000000000          
-11 0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
+11 0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
                                                                                     0.000000000000000000                     0.000000000000000000          
-12 0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
+12 0xc83bac300889835dcdb7ae846cd4af8c062a5907        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
                                                                                     0.000000000000000000                     0.000000000000000000          
-13 0x35b7ae17fc9807cd85ccd869d55c08b46c313bb3        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
+13 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
                                                                                     0.000000000000000000                     0.000000000000000000          
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                               4000000.000000000000000000               4000000.000000000000000000           Total Token Balances
@@ -114,79 +114,79 @@ optinoFactory.seriesDataLength=0
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Deploy Group #2 - Setup - baseToken.mint(seller1, 1000000)
-deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=0 txId=0x53cdcb39a16d3b8063610f24f79ec802344be5641df6bb0c2bc01b941c78432e @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=0 txId=0x635ec43f547854da9a80fa44d7df889131068db44223ace9d4671a46c44de563 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - baseToken.mint(seller2, 1000000)
-deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=1 txId=0xc67e6c8bb2100d1ac50065569658d187137343f19d626fa7bfa377c914cad203 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=1 txId=0xc81d92b684fc3d3725eab617b67dffcf158712a51af3d45c19bdde0b92934df1 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - baseToken.mint(buyer1, 1000000)
-deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=2 txId=0x0edf2187efca9b2eeb12468a63bc9329cb2768b486b8dc35756f6cf6ae130da9 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=2 txId=0x14e9912bc41b119a2df9d54dd5a35b985636278072db05e9f1dc03f2fd1a1789 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - baseToken.mint(buyer2, 1000000)
-deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=3 txId=0x651ba66f4d7b2c7e97e3cab24673a9ec49a8208ef3c0a758504280e21b679f13 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=3 txId=0x09ab14fd807ab706d7c4e95e27ae8f5f79692becef877e26a29c40aefab55afa @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - quoteToken.mint(seller1, 1000000)
-deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=4 txId=0x7a94021f0a4ea580280741ae7f254cb84798f4ed028d97d497595a364594a9a4 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=4 txId=0x7e6a243e788fa014abc30752ad55030cc6647daf68a82c79bdf89d2c92f066e8 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - quoteToken.mint(seller2, 1000000)
-deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=5 txId=0x3babe9406157a18a0eda712f1db29f34f0c102941c294803a468af85715fa819 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=5 txId=0x76a86b390f72599d98dccdce9d547c9131eaad368914b664c93f2222720a7c0b @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - quoteToken.mint(buyer1, 1000000)
-deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=6 txId=0xf736a2cc626bebe322822a3e15c05c0f34dcf158497ffb53847b37d074bc523a @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=6 txId=0xeec0e8302e1205977504da5b34e2848d4f6af083a18bfab00006a8f4160e8186 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - quoteToken.mint(buyer2, 1000000)
-deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=7 txId=0xa5e29e5cfc166c0037ab1d7aa699a37b268a664ed527c9f2f6458ad5505216ff @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=7 txId=0xacf2710e98369959346c312d5d3c6182e1b8dda550b41e8e7d732cb0bd809e22 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')
-deployGroup2_9Tx status=0x1 Success gas=1000000 gasUsed=280526 costETH=0.0022722606 costUSD=0.446521930506 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=8 txId=0xa0736060ec9564ac46a348542e08848bbc80f0e502b7a47a43f0acabc32f3bca @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_9Tx status=0x1 Success gas=1000000 gasUsed=280482 costETH=0.0022719042 costUSD=0.446451894342 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=8 txId=0xfb36b968d29b364bca3b7d14f2a685453d60a6ef80d053ff3bd8047a63bbb09f @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')
-deployGroup2_10Tx status=0x1 Success gas=1000000 gasUsed=243601 costETH=0.0019731681 costUSD=0.387747263331 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=9 txId=0x62518ea304442e5a4b72dbd438502f820658b06888eddd361086cad14dd282f9 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_10Tx status=0x1 Success gas=1000000 gasUsed=243557 costETH=0.0019728117 costUSD=0.387677227167 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=9 txId=0xefbbb13db41a1bb8176560135f3024f13b69617d2a9cde24cd242054804c7cc9 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - seller1 -> baseToken.approve(optinoFactory, 1000000)
-deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44128 txIx=10 txId=0x6ea5731ab17e28c7b52ec4df51639228c84d902c05adffeff77b524bd1104e03 @ 1588813125 Thu, 07 May 2020 00:58:45 GMT
+deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=10 txId=0xdabf1e202365d8c52b63ef1266bd13fa8a51107bf047598d3e943faf235175cb @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 PASS Deploy Group #2 - Setup - seller1 -> quoteToken.approve(optinoFactory, 1000000)
-deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44129 txIx=0 txId=0xc0beb836a1b759b1e223841a0410122b3104cabc9eea07774584bf19507ec08e @ 1588813126 Thu, 07 May 2020 00:58:46 GMT
+deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44478 txIx=11 txId=0xe428a05c781d7f20393a56ac859defcbfe2701f430785f7045af270bdac6b295 @ 1588813475 Thu, 07 May 2020 01:04:35 GMT
 
-token0ContractAddress='BASE' 'Base Token (18 dp)':0x94dd
+token0ContractAddress='BASE' 'Base Token (18 dp)':0x84a0
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='BASE' 'Base Token (18 dp)' 18 dp
 token0.totalSupply=4000000
-token0.Approval 0 #44128 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x35b7 tokens=1000000
-token0.Transfer 0 #44128 from=null:0x0000 to=seller1:0xa22a tokens=1000000
-token0.Transfer 1 #44128 from=null:0x0000 to=seller2:0xa33a tokens=1000000
-token0.Transfer 2 #44128 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
-token0.Transfer 3 #44128 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
+token0.Approval 0 #44478 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x02ce tokens=1000000
+token0.Transfer 0 #44478 from=null:0x0000 to=seller1:0xa22a tokens=1000000
+token0.Transfer 1 #44478 from=null:0x0000 to=seller2:0xa33a tokens=1000000
+token0.Transfer 2 #44478 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
+token0.Transfer 3 #44478 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
 
-token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0x3b2f
+token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0xb668
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='QUOTE' 'Quote Token (18 dp)' 18 dp
 token1.totalSupply=4000000
-token1.Approval 0 #44129 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x35b7 tokens=1000000
-token1.Transfer 0 #44128 from=null:0x0000 to=seller1:0xa22a tokens=1000000
-token1.Transfer 1 #44128 from=null:0x0000 to=seller2:0xa33a tokens=1000000
-token1.Transfer 2 #44128 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
-token1.Transfer 3 #44128 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
+token1.Approval 0 #44478 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x02ce tokens=1000000
+token1.Transfer 0 #44478 from=null:0x0000 to=seller1:0xa22a tokens=1000000
+token1.Transfer 1 #44478 from=null:0x0000 to=seller2:0xa33a tokens=1000000
+token1.Transfer 2 #44478 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
+token1.Transfer 3 #44478 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
 
-optinoFactoryContractAddress=OptinoFactory:0x35b7
+optinoFactoryContractAddress=OptinoFactory:0x02ce
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
 optinoFactory.configDataLength=2
-optinoToken.getConfigByIndex(0). key=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, baseToken='BASE' 'Base Token (18 dp)':0x94dd, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813125
-optinoToken.getConfigByIndex(1). key=0x7ca56ec0ab0dccb422fbbbeb53dc36ecbf835df47bf7eb24c944b2a0fa5cec75, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813125
+optinoToken.getConfigByIndex(0). key=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, baseToken='BASE' 'Base Token (18 dp)':0x84a0, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813475
+optinoToken.getConfigByIndex(1). key=0xce3df0979cdbc5ed130d936260fc5f09a09d20c8bccff58666d5f73d113fe0f0, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813475
 optinoFactory.seriesDataLength=0
-ConfigAdded 0 #44128 {"configKey":"0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44","baseToken":"0x94dd4c26d57461ee12af98e7b4b3438c2554bd76","quoteToken":"0x3b2f14a8cba87bb8d051443108768c57a24dba14","priceFeed":"0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e","decimalsData":"18181818","maxTerm":"1047845","fee":"1000000000000000","description":"BASE/QUOTE MakerDAO PF"}
-ConfigAdded 1 #44128 {"configKey":"0x7ca56ec0ab0dccb422fbbbeb53dc36ecbf835df47bf7eb24c944b2a0fa5cec75","baseToken":"0x0000000000000000000000000000000000000000","quoteToken":"0x3b2f14a8cba87bb8d051443108768c57a24dba14","priceFeed":"0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e","decimalsData":"18181818","maxTerm":"1047845","fee":"1000000000000000","description":"ETH/QUOTE MakerDAO PF"}
+ConfigAdded 0 #44478 {"configKey":"0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6","baseToken":"0x84a015848fe14ceb333091ed1e9f67c1f131b226","quoteToken":"0xb6686676bb06566f588225723a3b7508d46bc287","priceFeed":"0xc83bac300889835dcdb7ae846cd4af8c062a5907","decimalsData":"18181818","maxTerm":"1047845","fee":"1000000000000000","description":"BASE/QUOTE MakerDAO PF"}
+ConfigAdded 1 #44478 {"configKey":"0xce3df0979cdbc5ed130d936260fc5f09a09d20c8bccff58666d5f73d113fe0f0","baseToken":"0x0000000000000000000000000000000000000000","quoteToken":"0xb6686676bb06566f588225723a3b7508d46bc287","priceFeed":"0xc83bac300889835dcdb7ae846cd4af8c062a5907","decimalsData":"18181818","maxTerm":"1047845","fee":"1000000000000000","description":"ETH/QUOTE MakerDAO PF"}
 
 ---------- Mint Optino Group #1 ----------
-collateralInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 10000000000000000000, 18, 18, 18)=3333333333333333333 (3.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 0, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoffInDeliveryToken=3333333333333333333 (3.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 50, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoffInDeliveryToken=3333333333333333333 (3.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 100, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoffInDeliveryToken=3333333333333333333 (3.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 150, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoffInDeliveryToken=3333333333333333333 (3.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 200, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoffInDeliveryToken=3333333333333333333 (3.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 250, 10000000000000000000, 18, 18, 18): 2000000000000000000 (2), coverPayoffInDeliveryToken=1333333333333333333 (1.333333333333333333)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 300, 10000000000000000000, 18, 18, 18): 3333333333333333333 (3.333333333333333333), coverPayoffInDeliveryToken=0 (0)
-payoffInDeliveryToken(0, 200000000000000000000, 300000000000000000000, 350, 10000000000000000000, 18, 18, 18): 2857142857142857142 (2.857142857142857142), coverPayoffInDeliveryToken=476190476190476191 (0.476190476190476191)
-optinoFactory.mintOptinoTokens(0x94dd4c26d57461ee12af98e7b4b3438c2554bd76, 0x3b2f14a8cba87bb8d051443108768c57a24dba14, 0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e, 0, 1588813131, 200000000000000000000, 300000000000000000000, 10000000000000000000, 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9)
-optinos=["0x0732506da9780d7fbccad4289842f1eb734234b5","0xcc026c5c063f2caad20ee24a3504ebbe993aaef6"]
+collateral(0, 200000000000000000000, 300000000000000000000, 10000000000000000000, 18, 18, 18)=3333333333333333333 (3.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 0, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoff=3333333333333333333 (3.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 50, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoff=3333333333333333333 (3.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 100, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoff=3333333333333333333 (3.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 150, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoff=3333333333333333333 (3.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 200, 10000000000000000000, 18, 18, 18): 0 (0), coverPayoff=3333333333333333333 (3.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 250, 10000000000000000000, 18, 18, 18): 2000000000000000000 (2), coverPayoff=1333333333333333333 (1.333333333333333333)
+payoff(0, 200000000000000000000, 300000000000000000000, 300, 10000000000000000000, 18, 18, 18): 3333333333333333333 (3.333333333333333333), coverPayoff=0 (0)
+payoff(0, 200000000000000000000, 300000000000000000000, 350, 10000000000000000000, 18, 18, 18): 2857142857142857142 (2.857142857142857142), coverPayoff=476190476190476191 (0.476190476190476191)
+optinoFactory.mintOptinoTokens(0x84a015848fe14ceb333091ed1e9f67c1f131b226, 0xb6686676bb06566f588225723a3b7508d46bc287, 0xc83bac300889835dcdb7ae846cd4af8c062a5907, 0, 1588813480, 200000000000000000000, 300000000000000000000, 10000000000000000000, 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9)
+optinos=["0x856b752e402f44d9b28e1aecbc4cbc71b1c33883","0xf4193653970882783b9cfb54687d152e8adea8c9"]
  # Account                                             EtherBalanceChange                           BASE                          QUOTE Name
                                                                                            zCOPT00000001                 zCOPTC00000001
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.106932028500000000           0.000000000000000000                     0.000000000000000000           miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.106613074800000000           0.000000000000000000                     0.000000000000000000           miner
                                                                                     0.000000000000000000                     0.000000000000000000          
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.094291119900000000           0.001666666666666667                     0.000000000000000000           deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.093973227300000000           0.001666666666666667                     0.000000000000000000           deployer
                                                                                     0.000000000000000000                     0.000000000000000000          
- 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.012640908600000000      999996.663333333333333334               1000000.000000000000000000           seller1
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.012639847500000000      999996.663333333333333334               1000000.000000000000000000           seller1
                                                                                    10.000000000000000000                    10.000000000000000000          
  3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000               1000000.000000000000000000           seller2
                                                                                     0.000000000000000000                     0.000000000000000000          
@@ -198,21 +198,21 @@ optinos=["0x0732506da9780d7fbccad4289842f1eb734234b5","0xcc026c5c063f2caad20ee24
                                                                                     0.000000000000000000                     0.000000000000000000          
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000                     0.000000000000000000           null
                                                                                     0.000000000000000000                     0.000000000000000000          
- 8 0x94dd4c26d57461ee12af98e7b4b3438c2554bd76        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
+ 8 0x84a015848fe14ceb333091ed1e9f67c1f131b226        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
- 9 0x3b2f14a8cba87bb8d051443108768c57a24dba14        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
+ 9 0xb6686676bb06566f588225723a3b7508d46bc287        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
-10 0x9fc8b14a33912973a6c45e4c81ec146ac8bac85b        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
+10 0x6742e4da9a40d5e06c9c16296e723773acd57f9f        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
                                                                                     0.000000000000000000                     0.000000000000000000          
-11 0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
+11 0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
                                                                                     0.000000000000000000                     0.000000000000000000          
-12 0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
+12 0xc83bac300889835dcdb7ae846cd4af8c062a5907        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
                                                                                     0.000000000000000000                     0.000000000000000000          
-13 0x35b7ae17fc9807cd85ccd869d55c08b46c313bb3        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
+13 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
                                                                                     0.000000000000000000                     0.000000000000000000          
-14 0x0732506da9780d7fbccad4289842f1eb734234b5        0.000000000000000000           0.000000000000000000                     0.000000000000000000           optinoToken
+14 0x856b752e402f44d9b28e1aecbc4cbc71b1c33883        0.000000000000000000           0.000000000000000000                     0.000000000000000000           optinoToken
                                                                                     0.000000000000000000                     0.000000000000000000          
-15 0xcc026c5c063f2caad20ee24a3504ebbe993aaef6        0.000000000000000000           3.333333333333333333                     0.000000000000000000           coverToken
+15 0xf4193653970882783b9cfb54687d152e8adea8c9        0.000000000000000000           3.333333333333333333                     0.000000000000000000           coverToken
                                                                                     0.000000000000000000                     0.000000000000000000          
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                               4000000.000000000000000000               4000000.000000000000000000           Total Token Balances
@@ -220,75 +220,75 @@ optinos=["0x0732506da9780d7fbccad4289842f1eb734234b5","0xcc026c5c063f2caad20ee24
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Mint Optino Group #1 - optinoFactory.mintOptinoTokens(BASE, QUOTE, priceFeed, 10, ...)
-mintOptinoGroup1_1Tx status=0x1 Success gas=6000000 gasUsed=1472670 costETH=0.011928627 costUSD=2.34409449177 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44131 txIx=0 txId=0xbdc0a5b65bf21e7622e5cf33efe6a87968b9fad51bbe623215738fa203e2aab2 @ 1588813128 Thu, 07 May 2020 00:58:48 GMT
+mintOptinoGroup1_1Tx status=0x1 Success gas=6000000 gasUsed=1472539 costETH=0.0119275659 costUSD=2.343885975009 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44480 txIx=0 txId=0x369dd10d2c502e10d1baef52fe5f11460e44904ecd0add59648a6a0bddd7ad5b @ 1588813477 Thu, 07 May 2020 01:04:37 GMT
 
-optinoFactoryContractAddress=OptinoFactory:0x35b7
+optinoFactoryContractAddress=OptinoFactory:0x02ce
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
 optinoFactory.configDataLength=2
-optinoToken.getConfigByIndex(0). key=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, baseToken='BASE' 'Base Token (18 dp)':0x94dd, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813125
-optinoToken.getConfigByIndex(1). key=0x7ca56ec0ab0dccb422fbbbeb53dc36ecbf835df47bf7eb24c944b2a0fa5cec75, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813125
+optinoToken.getConfigByIndex(0). key=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, baseToken='BASE' 'Base Token (18 dp)':0x84a0, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813475
+optinoToken.getConfigByIndex(1). key=0xce3df0979cdbc5ed130d936260fc5f09a09d20c8bccff58666d5f73d113fe0f0, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813475
 optinoFactory.seriesDataLength=1
-optinoFactory.seriesData=["0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd","0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44","0","1588813131","200000000000000000000","300000000000000000000","1588813128","0x0732506da9780d7fbccad4289842f1eb734234b5","0xcc026c5c063f2caad20ee24a3504ebbe993aaef6"]
-optinoToken.getSeriesByIndex(0). key=0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd, configKey=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, callPut=0, expiry=1588813131, strike=200, bound=300, timestamp=1588813128, optinoToken=0x0732506da9780d7fbccad4289842f1eb734234b5, coverToken=0xcc026c5c063f2caad20ee24a3504ebbe993aaef6
+optinoFactory.seriesData=["0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1","0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6","0","1588813480","200000000000000000000","300000000000000000000","1588813477","0x856b752e402f44d9b28e1aecbc4cbc71b1c33883","0xf4193653970882783b9cfb54687d152e8adea8c9"]
+optinoToken.getSeriesByIndex(0). key=0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1, configKey=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, callPut=0, expiry=1588813480, strike=200, bound=300, timestamp=1588813477, optinoToken=0x856b752e402f44d9b28e1aecbc4cbc71b1c33883, coverToken=0xf4193653970882783b9cfb54687d152e8adea8c9
 - optinoToken:
-    .owner/new=OptinoFactory:0x35b7/null:0x0000
-    .details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+    .owner/new=OptinoFactory:0x02ce/null:0x0000
+    .details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
     .totalSupply=10
-    .callPut/expiry/strike/bound=0/1588813131/200/300
+    .callPut/expiry/strike/bound=0/1588813480/200/300
     .currentSpot/currentPayoffPerUnitBaseToken=189/0
     .spot/payoffPerUnitBaseToken=0/0
-    .Transfer 0 #44131 from=null:0x0000 to=seller1:0xa22a tokens=10
+    .Transfer 0 #44480 from=null:0x0000 to=seller1:0xa22a tokens=10
 - coverToken:
-    .owner/new=OptinoFactory:0x35b7/null:0x0000
-    .details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+    .owner/new=OptinoFactory:0x02ce/null:0x0000
+    .details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
     .totalSupply=10
-    .callPut/expiry/strike/bound=0/1588813131/200/300
+    .callPut/expiry/strike/bound=0/1588813480/200/300
     .currentSpot/currentPayoffPerUnitBaseToken=189/0.333333333333333333
     .spot/payoffPerUnitBaseToken=0/0
-    .Transfer 0 #44131 from=null:0x0000 to=seller1:0xa22a tokens=10
-SeriesAdded 0 #44131 {"seriesKey":"0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd","configKey":"0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44","callPut":"0","expiry":"1588813131","strike":"200000000000000000000","bound":"300000000000000000000","optinoToken":"0x0732506da9780d7fbccad4289842f1eb734234b5","coverToken":"0xcc026c5c063f2caad20ee24a3504ebbe993aaef6"}
+    .Transfer 0 #44480 from=null:0x0000 to=seller1:0xa22a tokens=10
+SeriesAdded 0 #44480 {"seriesKey":"0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1","configKey":"0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6","callPut":"0","expiry":"1588813480","strike":"200000000000000000000","bound":"300000000000000000000","optinoToken":"0x856b752e402f44d9b28e1aecbc4cbc71b1c33883","coverToken":"0xf4193653970882783b9cfb54687d152e8adea8c9"}
 collateralDecimals=0
-series={"key":"0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd","configKey":"0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44","callPut":"0","expiry":"1588813131","strike":"200000000000000000000","bound":"300000000000000000000","timestamp":"1588813128","optinoToken":"0x0732506da9780d7fbccad4289842f1eb734234b5","coverToken":"0xcc026c5c063f2caad20ee24a3504ebbe993aaef6","collateralDecimals":18}
-OptinoMinted 0 #44131 seriesKey=0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd optinoToken=optinoToken:0x0732 coverToken=coverToken:0xcc02 tokens=10 collateralToken='BASE' 'Base Token (18 dp)':0x94dd collateral=3333333333333333333 ownerFee=1666666666666667 uiFee=1666666666666666
+series={"key":"0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1","configKey":"0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6","callPut":"0","expiry":"1588813480","strike":"200000000000000000000","bound":"300000000000000000000","timestamp":"1588813477","optinoToken":"0x856b752e402f44d9b28e1aecbc4cbc71b1c33883","coverToken":"0xf4193653970882783b9cfb54687d152e8adea8c9","collateralDecimals":18}
+OptinoMinted 0 #44480 seriesKey=0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1 optinoToken=optinoToken:0x856b coverToken=coverToken:0xf419 tokens=10 collateralToken='BASE' 'Base Token (18 dp)':0x84a0 collateral=3333333333333333333 ownerFee=1666666666666667 uiFee=1666666666666666
 
-token0ContractAddress='BASE' 'Base Token (18 dp)':0x94dd
+token0ContractAddress='BASE' 'Base Token (18 dp)':0x84a0
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='BASE' 'Base Token (18 dp)' 18 dp
 token0.totalSupply=4000000
-token0.Transfer 0 #44131 from=seller1:0xa22a to=coverToken:0xcc02 tokens=3.333333333333333333
-token0.Transfer 1 #44131 from=seller1:0xa22a to=deployer:0xa11a tokens=0.001666666666666667
-token0.Transfer 2 #44131 from=seller1:0xa22a to=uiFeeAccount:0xa66a tokens=0.001666666666666666
+token0.Transfer 0 #44480 from=seller1:0xa22a to=coverToken:0xf419 tokens=3.333333333333333333
+token0.Transfer 1 #44480 from=seller1:0xa22a to=deployer:0xa11a tokens=0.001666666666666667
+token0.Transfer 2 #44480 from=seller1:0xa22a to=uiFeeAccount:0xa66a tokens=0.001666666666666666
 
-token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0x3b2f
+token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0xb668
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='QUOTE' 'Quote Token (18 dp)' 18 dp
 token1.totalSupply=4000000
 
-token2ContractAddress=optinoToken:0x0732
-token2.owner/new=OptinoFactory:0x35b7/null:0x0000
-token2.details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+token2ContractAddress=optinoToken:0x856b
+token2.owner/new=OptinoFactory:0x02ce/null:0x0000
+token2.details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
 token2.totalSupply=10
 token2.strike=200
 token2.bound=300
-token2.Transfer 0 #44131 from=null:0x0000 to=seller1:0xa22a tokens=10
+token2.Transfer 0 #44480 from=null:0x0000 to=seller1:0xa22a tokens=10
 
-token3ContractAddress=coverToken:0xcc02
-token3.owner/new=OptinoFactory:0x35b7/null:0x0000
-token3.details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+token3ContractAddress=coverToken:0xf419
+token3.owner/new=OptinoFactory:0x02ce/null:0x0000
+token3.details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
 token3.totalSupply=10
 token3.strike=200
 token3.bound=300
-token3.Transfer 0 #44131 from=null:0x0000 to=seller1:0xa22a tokens=10
+token3.Transfer 0 #44480 from=null:0x0000 to=seller1:0xa22a tokens=10
 
 ---------- Close Optino & Cover ----------
  # Account                                             EtherBalanceChange                           BASE                          QUOTE Name
                                                                                            zCOPT00000001                 zCOPTC00000001
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.108192550500000000           0.000000000000000000                     0.000000000000000000           miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.107873418600000000           0.000000000000000000                     0.000000000000000000           miner
                                                                                     0.000000000000000000                     0.000000000000000000          
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.094291119900000000           0.001666666666666667                     0.000000000000000000           deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.093973227300000000           0.001666666666666667                     0.000000000000000000           deployer
                                                                                     0.000000000000000000                     0.000000000000000000          
- 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.013901430600000000      999997.774444444444444445               1000000.000000000000000000           seller1
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.013900191300000000      999997.774444444444444445               1000000.000000000000000000           seller1
                                                                                     6.666666666666666667                     6.666666666666666667          
  3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000               1000000.000000000000000000           seller2
                                                                                     0.000000000000000000                     0.000000000000000000          
@@ -300,21 +300,21 @@ token3.Transfer 0 #44131 from=null:0x0000 to=seller1:0xa22a tokens=10
                                                                                     0.000000000000000000                     0.000000000000000000          
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000                     0.000000000000000000           null
                                                                                     3.333333333333333333                     3.333333333333333333          
- 8 0x94dd4c26d57461ee12af98e7b4b3438c2554bd76        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
+ 8 0x84a015848fe14ceb333091ed1e9f67c1f131b226        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
- 9 0x3b2f14a8cba87bb8d051443108768c57a24dba14        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
+ 9 0xb6686676bb06566f588225723a3b7508d46bc287        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
-10 0x9fc8b14a33912973a6c45e4c81ec146ac8bac85b        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
+10 0x6742e4da9a40d5e06c9c16296e723773acd57f9f        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
                                                                                     0.000000000000000000                     0.000000000000000000          
-11 0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
+11 0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
                                                                                     0.000000000000000000                     0.000000000000000000          
-12 0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
+12 0xc83bac300889835dcdb7ae846cd4af8c062a5907        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
                                                                                     0.000000000000000000                     0.000000000000000000          
-13 0x35b7ae17fc9807cd85ccd869d55c08b46c313bb3        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
+13 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
                                                                                     0.000000000000000000                     0.000000000000000000          
-14 0x0732506da9780d7fbccad4289842f1eb734234b5        0.000000000000000000           0.000000000000000000                     0.000000000000000000           optinoToken
+14 0x856b752e402f44d9b28e1aecbc4cbc71b1c33883        0.000000000000000000           0.000000000000000000                     0.000000000000000000           optinoToken
                                                                                     0.000000000000000000                     0.000000000000000000          
-15 0xcc026c5c063f2caad20ee24a3504ebbe993aaef6        0.000000000000000000           2.222222222222222222                     0.000000000000000000           coverToken
+15 0xf4193653970882783b9cfb54687d152e8adea8c9        0.000000000000000000           2.222222222222222222                     0.000000000000000000           coverToken
                                                                                     0.000000000000000000                     0.000000000000000000          
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                               4000000.000000000000000000               4000000.000000000000000000           Total Token Balances
@@ -322,82 +322,82 @@ token3.Transfer 0 #44131 from=null:0x0000 to=seller1:0xa22a tokens=10
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Close Optino & Cover - optino.close(3.33333333333333333333333333333333333333)
-closeGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=155620 costETH=0.001260522 costUSD=0.24770517822 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44134 txIx=0 txId=0x76a74e50d4fad1af335937b93c605780b324bb12a71e64c43f60c13b37f3ce0d @ 1588813131 Thu, 07 May 2020 00:58:51 GMT
+closeGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=155598 costETH=0.0012603438 costUSD=0.247670160138 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44483 txIx=0 txId=0x17cf9c8516213ff1734809d743606aaa40d99e73765a384d58c8beda41771b75 @ 1588813480 Thu, 07 May 2020 01:04:40 GMT
 
-priceFeedContractAddress=PriceFeed:0x8f38
+priceFeedContractAddress=PriceFeed:0x8bd5
 priceFeed.peek=0x00000000000000000000000000000000000000000000000a3ee6e2a294d40000,true
 priceFeed.value=189 ETH/USD
 priceFeed.hasValue=true
 
-priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x540b
-priceFeedAdaptor.sourceAddress=0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa
+priceFeedAdaptorContractAddress=PriceFeedAdaptor:0xc83b
+priceFeedAdaptor.sourceAddress=0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9
 priceFeedAdaptor.spot=["189000000000000000000",true]
 
-optinoFactoryContractAddress=OptinoFactory:0x35b7
+optinoFactoryContractAddress=OptinoFactory:0x02ce
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
 optinoFactory.configDataLength=2
-optinoToken.getConfigByIndex(0). key=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, baseToken='BASE' 'Base Token (18 dp)':0x94dd, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813125
-optinoToken.getConfigByIndex(1). key=0x7ca56ec0ab0dccb422fbbbeb53dc36ecbf835df47bf7eb24c944b2a0fa5cec75, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813125
+optinoToken.getConfigByIndex(0). key=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, baseToken='BASE' 'Base Token (18 dp)':0x84a0, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813475
+optinoToken.getConfigByIndex(1). key=0xce3df0979cdbc5ed130d936260fc5f09a09d20c8bccff58666d5f73d113fe0f0, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813475
 optinoFactory.seriesDataLength=1
-optinoFactory.seriesData=["0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd","0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44","0","1588813131","200000000000000000000","300000000000000000000","1588813128","0x0732506da9780d7fbccad4289842f1eb734234b5","0xcc026c5c063f2caad20ee24a3504ebbe993aaef6"]
-optinoToken.getSeriesByIndex(0). key=0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd, configKey=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, callPut=0, expiry=1588813131, strike=200, bound=300, timestamp=1588813128, optinoToken=0x0732506da9780d7fbccad4289842f1eb734234b5, coverToken=0xcc026c5c063f2caad20ee24a3504ebbe993aaef6
+optinoFactory.seriesData=["0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1","0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6","0","1588813480","200000000000000000000","300000000000000000000","1588813477","0x856b752e402f44d9b28e1aecbc4cbc71b1c33883","0xf4193653970882783b9cfb54687d152e8adea8c9"]
+optinoToken.getSeriesByIndex(0). key=0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1, configKey=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, callPut=0, expiry=1588813480, strike=200, bound=300, timestamp=1588813477, optinoToken=0x856b752e402f44d9b28e1aecbc4cbc71b1c33883, coverToken=0xf4193653970882783b9cfb54687d152e8adea8c9
 - optinoToken:
-    .owner/new=OptinoFactory:0x35b7/null:0x0000
-    .details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+    .owner/new=OptinoFactory:0x02ce/null:0x0000
+    .details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
     .totalSupply=6.666666666666666667
-    .callPut/expiry/strike/bound=0/1588813131/200/300
+    .callPut/expiry/strike/bound=0/1588813480/200/300
     .currentSpot/currentPayoffPerUnitBaseToken=189/0
     .spot/payoffPerUnitBaseToken=0/0
-    .Transfer 0 #44134 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
+    .Transfer 0 #44483 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
 - coverToken:
-    .owner/new=OptinoFactory:0x35b7/null:0x0000
-    .details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+    .owner/new=OptinoFactory:0x02ce/null:0x0000
+    .details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
     .totalSupply=6.666666666666666667
-    .callPut/expiry/strike/bound=0/1588813131/200/300
+    .callPut/expiry/strike/bound=0/1588813480/200/300
     .currentSpot/currentPayoffPerUnitBaseToken=189/0.333333333333333333
     .spot/payoffPerUnitBaseToken=0/0
-    .Transfer 0 #44134 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
-    .Close 0 #44134 optinoToken=optinoToken:0x0732 token='BASE' 'Base Token (18 dp)':0x94dd tokenOwner=seller1:0xa22a tokens=1.111111111111111111
+    .Transfer 0 #44483 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
+    .Close 0 #44483 optinoToken=optinoToken:0x856b token='BASE' 'Base Token (18 dp)':0x84a0 tokenOwner=seller1:0xa22a tokens=1.111111111111111111
 
-token0ContractAddress='BASE' 'Base Token (18 dp)':0x94dd
+token0ContractAddress='BASE' 'Base Token (18 dp)':0x84a0
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='BASE' 'Base Token (18 dp)' 18 dp
 token0.totalSupply=4000000
-token0.Transfer 0 #44134 from=coverToken:0xcc02 to=seller1:0xa22a tokens=1.111111111111111111
+token0.Transfer 0 #44483 from=coverToken:0xf419 to=seller1:0xa22a tokens=1.111111111111111111
 
-token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0x3b2f
+token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0xb668
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='QUOTE' 'Quote Token (18 dp)' 18 dp
 token1.totalSupply=4000000
 
-token2ContractAddress=optinoToken:0x0732
-token2.owner/new=OptinoFactory:0x35b7/null:0x0000
-token2.details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+token2ContractAddress=optinoToken:0x856b
+token2.owner/new=OptinoFactory:0x02ce/null:0x0000
+token2.details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
 token2.totalSupply=6.666666666666666667
 token2.strike=200
 token2.bound=300
-token2.Transfer 0 #44134 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
+token2.Transfer 0 #44483 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
 
-token3ContractAddress=coverToken:0xcc02
-token3.owner/new=OptinoFactory:0x35b7/null:0x0000
-token3.details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+token3ContractAddress=coverToken:0xf419
+token3.owner/new=OptinoFactory:0x02ce/null:0x0000
+token3.details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
 token3.totalSupply=6.666666666666666667
 token3.strike=200
 token3.bound=300
-token3.Transfer 0 #44134 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
+token3.Transfer 0 #44483 from=seller1:0xa22a to=null:0x0000 tokens=3.333333333333333333
 
 ---------- Settle Optino & Cover ----------
-Waiting until 'optino.expiry()' at 1588813131+0s=Thu May 07 2020 10:58:52 GMT+1000 (AEST) now=Thu May 07 2020 10:58:52 GMT+1000 (AEST)
-Waited until 'optino.expiry()' at 1588813131+0s=Thu May 07 2020 10:58:52 GMT+1000 (AEST) now=Thu May 07 2020 10:58:52 GMT+1000 (AEST)
+Waiting until 'optino.expiry()' at 1588813480+0s=Thu May 07 2020 11:04:41 GMT+1000 (AEST) now=Thu May 07 2020 11:04:41 GMT+1000 (AEST)
+Waited until 'optino.expiry()' at 1588813480+0s=Thu May 07 2020 11:04:41 GMT+1000 (AEST) now=Thu May 07 2020 11:04:41 GMT+1000 (AEST)
 
  # Account                                             EtherBalanceChange                           BASE                          QUOTE Name
                                                                                            zCOPT00000001                 zCOPTC00000001
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.109984626900000000           0.000000000000000000                     0.000000000000000000           miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.109666758600000000           0.000000000000000000                     0.000000000000000000           miner
                                                                                     0.000000000000000000                     0.000000000000000000          
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.094531430700000000           0.001666666666666667                     0.000000000000000000           deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.094213538100000000           0.001666666666666667                     0.000000000000000000           deployer
                                                                                     0.000000000000000000                     0.000000000000000000          
- 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.015453196200000000      999999.996666666666666667               1000000.000000000000000000           seller1
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.015453220500000000      999999.996666666666666667               1000000.000000000000000000           seller1
                                                                                     0.000000000000000000                     0.000000000000000000          
  3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000               1000000.000000000000000000           seller2
                                                                                     0.000000000000000000                     0.000000000000000000          
@@ -409,21 +409,21 @@ Waited until 'optino.expiry()' at 1588813131+0s=Thu May 07 2020 10:58:52 GMT+100
                                                                                     0.000000000000000000                     0.000000000000000000          
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000                     0.000000000000000000           null
                                                                                    10.000000000000000000                    10.000000000000000000          
- 8 0x94dd4c26d57461ee12af98e7b4b3438c2554bd76        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
+ 8 0x84a015848fe14ceb333091ed1e9f67c1f131b226        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'BASE' 'Base Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
- 9 0x3b2f14a8cba87bb8d051443108768c57a24dba14        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
+ 9 0xb6686676bb06566f588225723a3b7508d46bc287        0.000000000000000000           0.000000000000000000                     0.000000000000000000           'QUOTE' 'Quote Token (18 dp)'
                                                                                     0.000000000000000000                     0.000000000000000000          
-10 0x9fc8b14a33912973a6c45e4c81ec146ac8bac85b        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
+10 0x6742e4da9a40d5e06c9c16296e723773acd57f9f        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoToken Template
                                                                                     0.000000000000000000                     0.000000000000000000          
-11 0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
+11 0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeed
                                                                                     0.000000000000000000                     0.000000000000000000          
-12 0x540be061015db5ee98cfb6b0ebeb9f0e4838f59e        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
+12 0xc83bac300889835dcdb7ae846cd4af8c062a5907        0.000000000000000000           0.000000000000000000                     0.000000000000000000           PriceFeedAdaptor
                                                                                     0.000000000000000000                     0.000000000000000000          
-13 0x35b7ae17fc9807cd85ccd869d55c08b46c313bb3        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
+13 0x02cee19c8007bad0636f9db35857f75d6d9f1346        0.000000000000000000           0.000000000000000000                     0.000000000000000000           OptinoFactory
                                                                                     0.000000000000000000                     0.000000000000000000          
-14 0x0732506da9780d7fbccad4289842f1eb734234b5        0.000000000000000000           0.000000000000000000                     0.000000000000000000           optinoToken
+14 0x856b752e402f44d9b28e1aecbc4cbc71b1c33883        0.000000000000000000           0.000000000000000000                     0.000000000000000000           optinoToken
                                                                                     0.000000000000000000                     0.000000000000000000          
-15 0xcc026c5c063f2caad20ee24a3504ebbe993aaef6        0.000000000000000000           0.000000000000000000                     0.000000000000000000           coverToken
+15 0xf4193653970882783b9cfb54687d152e8adea8c9        0.000000000000000000           0.000000000000000000                     0.000000000000000000           coverToken
                                                                                     0.000000000000000000                     0.000000000000000000          
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                               4000000.000000000000000000               4000000.000000000000000000           Total Token Balances
@@ -431,70 +431,70 @@ Waited until 'optino.expiry()' at 1588813131+0s=Thu May 07 2020 10:58:52 GMT+100
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Settle Optino & Cover - optino.settle()
-settleGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=191576 costETH=0.0015517656 costUSD=0.304937458056 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44139 txIx=0 txId=0x968556c9304049611d815cd75611e33c372dc910f98a7514bb153157846fd852 @ 1588813136 Thu, 07 May 2020 00:58:56 GMT
+settleGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=191732 costETH=0.0015530292 costUSD=0.305185768092 @ ETH/USD=196.51 gasPrice=8.1 gwei block=44488 txIx=0 txId=0xb75d1755bc127f97ef7a0bb22678dedfa9d0f4d84108aa91a5fde275cc08d2b6 @ 1588813485 Thu, 07 May 2020 01:04:45 GMT
 
-priceFeedContractAddress=PriceFeed:0x8f38
+priceFeedContractAddress=PriceFeed:0x8bd5
 priceFeed.peek=0x00000000000000000000000000000000000000000000000d8d726b7177a80000,true
 priceFeed.value=250 ETH/USD
 priceFeed.hasValue=true
-SetValue 0 #44137 value=250 hasValue=true
+SetValue 0 #44486 value=250 hasValue=true
 
-priceFeedAdaptorContractAddress=PriceFeedAdaptor:0x540b
-priceFeedAdaptor.sourceAddress=0x8f386343ff6cd4aca4f14044e166b0d6eaacc6fa
+priceFeedAdaptorContractAddress=PriceFeedAdaptor:0xc83b
+priceFeedAdaptor.sourceAddress=0x8bd57cd74479fd94e7d4542e9bd45214d79ae9b9
 priceFeedAdaptor.spot=["250000000000000000000",true]
 
-optinoFactoryContractAddress=OptinoFactory:0x35b7
+optinoFactoryContractAddress=OptinoFactory:0x02ce
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
 optinoFactory.configDataLength=2
-optinoToken.getConfigByIndex(0). key=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, baseToken='BASE' 'Base Token (18 dp)':0x94dd, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813125
-optinoToken.getConfigByIndex(1). key=0x7ca56ec0ab0dccb422fbbbeb53dc36ecbf835df47bf7eb24c944b2a0fa5cec75, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0x3b2f, priceFeed=PriceFeedAdaptor:0x540b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813125
+optinoToken.getConfigByIndex(0). key=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, baseToken='BASE' 'Base Token (18 dp)':0x84a0, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='BASE/QUOTE MakerDAO PF', timestamp=1588813475
+optinoToken.getConfigByIndex(1). key=0xce3df0979cdbc5ed130d936260fc5f09a09d20c8bccff58666d5f73d113fe0f0, baseToken=null:0x0000, quoteToken='QUOTE' 'Quote Token (18 dp)':0xb668, priceFeed=PriceFeedAdaptor:0xc83b, decimalsData=18181818, decimals=18, baseDecimals=18, quoteDecimals=18, rateDecimals=18, maxTerm=1047845, fee=1000000000000000, description='ETH/QUOTE MakerDAO PF', timestamp=1588813475
 optinoFactory.seriesDataLength=1
-optinoFactory.seriesData=["0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd","0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44","0","1588813131","200000000000000000000","300000000000000000000","1588813136","0x0732506da9780d7fbccad4289842f1eb734234b5","0xcc026c5c063f2caad20ee24a3504ebbe993aaef6"]
-optinoToken.getSeriesByIndex(0). key=0x7613b022d99a4a9c07419893c91823243d5f56e1ea171c373c8f5402391a8ecd, configKey=0x13fd3c1d2d98f6b750aeacde91fc7b24ed92a74b294b8c60de2be9e3743d8c44, callPut=0, expiry=1588813131, strike=200, bound=300, timestamp=1588813136, optinoToken=0x0732506da9780d7fbccad4289842f1eb734234b5, coverToken=0xcc026c5c063f2caad20ee24a3504ebbe993aaef6
+optinoFactory.seriesData=["0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1","0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6","0","1588813480","200000000000000000000","300000000000000000000","1588813485","0x856b752e402f44d9b28e1aecbc4cbc71b1c33883","0xf4193653970882783b9cfb54687d152e8adea8c9"]
+optinoToken.getSeriesByIndex(0). key=0x4a874cb1fdf9b3f1b7c20829e8c0b79b559c92819f09755d27060299c32b22d1, configKey=0xe0ef8a75105f2aea45673b627879b3cae7cd37957295dc229e400f033a20f8f6, callPut=0, expiry=1588813480, strike=200, bound=300, timestamp=1588813485, optinoToken=0x856b752e402f44d9b28e1aecbc4cbc71b1c33883, coverToken=0xf4193653970882783b9cfb54687d152e8adea8c9
 - optinoToken:
-    .owner/new=OptinoFactory:0x35b7/null:0x0000
-    .details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+    .owner/new=OptinoFactory:0x02ce/null:0x0000
+    .details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
     .totalSupply=0
-    .callPut/expiry/strike/bound=0/1588813131/200/300
+    .callPut/expiry/strike/bound=0/1588813480/200/300
     .currentSpot/currentPayoffPerUnitBaseToken=250/0.2
     .spot/payoffPerUnitBaseToken=250/0.2
-    .Transfer 0 #44139 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
+    .Transfer 0 #44488 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
 - coverToken:
-    .owner/new=OptinoFactory:0x35b7/null:0x0000
-    .details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+    .owner/new=OptinoFactory:0x02ce/null:0x0000
+    .details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
     .totalSupply=0
-    .callPut/expiry/strike/bound=0/1588813131/200/300
+    .callPut/expiry/strike/bound=0/1588813480/200/300
     .currentSpot/currentPayoffPerUnitBaseToken=250/0.133333333333333333
     .spot/payoffPerUnitBaseToken=250/0.133333333333333333
-    .Transfer 0 #44139 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
-    .Payoff 0 #44139 optinoToken=optinoToken:0x0732 token='BASE' 'Base Token (18 dp)':0x94dd tokenOwner=seller1:0xa22a tokens=1.333333333333333333
-    .Payoff 1 #44139 optinoToken=coverToken:0xcc02 token='BASE' 'Base Token (18 dp)':0x94dd tokenOwner=seller1:0xa22a tokens=0.888888888888888889
+    .Transfer 0 #44488 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
+    .Payoff 0 #44488 optinoToken=optinoToken:0x856b token='BASE' 'Base Token (18 dp)':0x84a0 tokenOwner=seller1:0xa22a tokens=1.333333333333333333
+    .Payoff 1 #44488 optinoToken=coverToken:0xf419 token='BASE' 'Base Token (18 dp)':0x84a0 tokenOwner=seller1:0xa22a tokens=0.888888888888888889
 
-token0ContractAddress='BASE' 'Base Token (18 dp)':0x94dd
+token0ContractAddress='BASE' 'Base Token (18 dp)':0x84a0
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='BASE' 'Base Token (18 dp)' 18 dp
 token0.totalSupply=4000000
-token0.Transfer 0 #44139 from=coverToken:0xcc02 to=seller1:0xa22a tokens=1.333333333333333333
-token0.Transfer 1 #44139 from=coverToken:0xcc02 to=seller1:0xa22a tokens=0.888888888888888889
+token0.Transfer 0 #44488 from=coverToken:0xf419 to=seller1:0xa22a tokens=1.333333333333333333
+token0.Transfer 1 #44488 from=coverToken:0xf419 to=seller1:0xa22a tokens=0.888888888888888889
 
-token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0x3b2f
+token1ContractAddress='QUOTE' 'Quote Token (18 dp)':0xb668
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='QUOTE' 'Quote Token (18 dp)' 18 dp
 token1.totalSupply=4000000
 
-token2ContractAddress=optinoToken:0x0732
-token2.owner/new=OptinoFactory:0x35b7/null:0x0000
-token2.details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+token2ContractAddress=optinoToken:0x856b
+token2.owner/new=OptinoFactory:0x02ce/null:0x0000
+token2.details='zCOPT00000001' 'Capped Call Optino BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
 token2.totalSupply=0
 token2.strike=200
 token2.bound=300
-token2.Transfer 0 #44139 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
+token2.Transfer 0 #44488 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
 
-token3ContractAddress=coverToken:0xcc02
-token3.owner/new=OptinoFactory:0x35b7/null:0x0000
-token3.details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T00:58:51Z 200-300' 18 dp
+token3ContractAddress=coverToken:0xf419
+token3.owner/new=OptinoFactory:0x02ce/null:0x0000
+token3.details='zCOPTC00000001' 'Capped Call Optino Cover BASE/QUOTE MakerDAO PF 2020-05-07T01:04:40Z 200-300' 18 dp
 token3.totalSupply=0
 token3.strike=200
 token3.bound=300
-token3.Transfer 0 #44139 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
+token3.Transfer 0 #44488 from=seller1:0xa22a to=null:0x0000 tokens=6.666666666666666667
 
