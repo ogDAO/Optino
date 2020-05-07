@@ -829,10 +829,10 @@ contract OptinoToken is BasicToken {
     uint public collateralDecimals;
 
     // Duplicated data - to get around stack too deep
-    uint public callPut;
-    uint public expiry;
-    uint public strike;
-    uint public bound;
+    // uint public callPut;
+    // uint public expiry;
+    // uint public strike;
+    // uint public bound;
 
     event Close(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
     event Payoff(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
@@ -845,12 +845,12 @@ contract OptinoToken is BasicToken {
         isCover = _isCover;
         (bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
         configKey = _configKey;
-        callPut = _callPut;
-        expiry = _expiry;
-        strike = _strike;
-        bound = _bound;
+        // callPut = _callPut;
+        // expiry = _expiry;
+        // strike = _strike;
+        // bound = _bound;
         (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
-        if (callPut == 0) {
+        if (_callPut == 0) {
             collateralToken = _baseToken;
             collateralDecimals = _decimalsData._getBaseDecimals();
         } else {
@@ -950,8 +950,7 @@ contract OptinoToken is BasicToken {
             require(_tokens <= ERC20(pair).balanceOf(tokenOwner));
             require(OptinoToken(payable(pair)).burn(tokenOwner, _tokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, _tokens));
-            (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
-            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
+            (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
             uint collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
             transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
             emit Close(pair, collateralToken, tokenOwner, collateral);
@@ -977,19 +976,19 @@ contract OptinoToken is BasicToken {
             uint _payoff;
             uint _collateral;
 
-            (/*_baseToken*/, /*_quoteToken*/, uint _decimalsData, /*_callPut*/, /*_strike*/, /*_bound*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesAndConfigCalcDataByKey(seriesKey);
+            (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
 
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
 
-            _payoff = Optino.payoff(callPut, strike, bound, _spot, optinoTokens, _decimalsData);
+            _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, optinoTokens, _decimalsData);
             if (_payoff > 0) {
                 transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
             }
             emit Payoff(pair, collateralToken, tokenOwner, _payoff);
 
-            _payoff = Optino.payoff(callPut, strike, bound, _spot, coverTokens, _decimalsData);
-            _collateral = Optino.collateral(callPut, strike, bound, coverTokens, _decimalsData);
+            _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, coverTokens, _decimalsData);
+            _collateral = Optino.collateral(_callPut, _strike, _bound, coverTokens, _decimalsData);
             uint _coverPayoff = _collateral._sub(_payoff);
             if (_coverPayoff > 0) {
                 transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
@@ -1148,11 +1147,11 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         require(series.timestamp > 0, "getSeriesByKey: Invalid key");
         return (series.configKey, series.callPut, series.expiry, series.strike, series.bound, series.optinoToken, series.coverToken);
     }
-    function getSeriesAndConfigCalcDataByKey(bytes32 key) public view returns (address _baseToken, address _quoteToken, uint _decimalsData, uint _callPut, uint _strike, uint _bound) {
+    function getCalcData(bytes32 key) public view returns (uint _callPut, uint _strike, uint _bound, uint _decimalsData) {
         SeriesLib.Series memory series = seriesData.entries[key];
-        require(series.timestamp > 0, "getSeriesAndConfigCalcDataByKey: Invalid key");
+        require(series.timestamp > 0, "getCalcData: Invalid key");
         ConfigLib.Config memory config = configData.entries[series.configKey];
-        return (config.baseToken, config.quoteToken, config.decimalsData, series.callPut, series.strike, series.bound);
+        return (series.callPut, series.strike, series.bound, config.decimalsData);
     }
     function _getSeries(OptinoData memory optinoData) internal view returns (SeriesLib.Series storage _series) {
         ConfigLib.Config memory config = _getConfig(optinoData);
