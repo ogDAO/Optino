@@ -395,18 +395,18 @@ library NameUtils {
 library SafeMath {
     function add(uint a, uint b) internal pure returns (uint c) {
         c = a + b;
-        require(c >= a, "SafeMath.add: Overflow");
+        require(c >= a, "add: Overflow");
     }
     function sub(uint a, uint b) internal pure returns (uint c) {
-        require(b <= a, "SafeMath.sub: Underflow");
+        require(b <= a, "sub: Underflow");
         c = a - b;
     }
     function mul(uint a, uint b) internal pure returns (uint c) {
         c = a * b;
-        require(a == 0 || c / a == b, "SafeMath.mul: Overflow");
+        require(a == 0 || c / a == b, "mul: Overflow");
     }
     function div(uint a, uint b) internal pure returns (uint c) {
-        require(b > 0, "SafeMath.div: Divide by 0");
+        require(b > 0, "div: Divide by 0");
         c = a / b;
     }
 }
@@ -499,7 +499,7 @@ library ConfigLib {
     event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
 
     function initConfig(Data storage self) internal {
-        require(!self.initialised, "ConfigLib.init: Cannot re-initialise");
+        require(!self.initialised, "initConfig: Cannot re-initialise");
         self.initialised = true;
     }
     function generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
@@ -564,7 +564,7 @@ library SeriesLib {
     event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
 
     function initSeries(Data storage self) internal {
-        require(!self.initialised, "SeriesLib._init: Cannot re-initialise");
+        require(!self.initialised, "initSeries: Cannot re-initialise");
         self.initialised = true;
     }
     function generateKey(bytes32 configKey, uint callPut, uint expiry, uint strike, uint bound) internal pure returns (bytes32 hash) {
@@ -754,21 +754,21 @@ library OptinoV1 {
         (uint decimals, uint baseDecimals, uint quoteDecimals, uint rateDecimals) = decimalsData.getAllDecimals();
         require(strike > 0, "collateral: strike must be > 0");
         if (callPut == 0) {
-            require(bound == 0 || bound > strike, "collateral: bound (cap) must be 0 for vanilla call or > strike for capped call");
+            require(bound == 0 || bound > strike, "collateral: Call bound must = 0 or > strike");
             if (bound <= strike) {
                 return shiftRightLeft(tokens, baseDecimals, decimals);
             } else {
                 return shiftRightLeft(bound.sub(strike).mul(tokens).div(bound), baseDecimals, decimals);
             }
         } else {
-            require(bound < strike, "collateral: bound must be 0 or less than strike for put");
+            require(bound < strike, "collateral: Put bound must = 0 or < strike");
             return shiftRightLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** rateDecimals);
         }
     }
     function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
         (uint decimals, uint baseDecimals, uint quoteDecimals, uint rateDecimals) = decimalsData.getAllDecimals();
         if (callPut == 0) {
-            require(bound == 0 || bound > strike, "payoff: bound (cap) must be 0 for vanilla call or > strike for capped call");
+            require(bound == 0 || bound > strike, "payoff: Call bound must = 0 or > strike");
             if (spot > 0 && spot > strike) {
                 if (bound > strike && spot > bound) {
                     return shiftRightLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
@@ -777,7 +777,7 @@ library OptinoV1 {
                 }
             }
         } else {
-            require(bound < strike, "payoff: bound (floor) must be 0 for vanilla put or < strike for floored put");
+            require(bound < strike, "payoff: Put bound must = 0 or < strike");
             if (spot < strike) {
                  if (bound == 0 || (bound > 0 && spot >= bound)) {
                      return shiftRightLeft(strike.sub(spot).mul(tokens), quoteDecimals, decimals + rateDecimals);
@@ -969,11 +969,9 @@ contract OptinoToken is BasicToken {
 }
 
 
-// ----------------------------------------------------------------------------
-// Optino Factory
-//
-// Note: If `newAddress` is not null, it will point to the upgraded contract
-// ----------------------------------------------------------------------------
+/// @title Optino Factory - Deploy optino and cover token contracts
+/// @author BokkyPooBah, Bok Consulting Pty Ltd - <https://github.com/bokkypoobah>
+/// @notice If `newAddress` is not null, it will point to the upgraded contract
 contract OptinoFactory is Owned, CloneFactory {
     using SafeMath for uint;
     using Decimals for uint;
