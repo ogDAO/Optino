@@ -365,8 +365,8 @@ for (spot = 0; spot < 400; spot += 50) {
 // var data = optinoFactory.mintOptinoTokens.getData(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
 // var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 3000000, gasPrice: defaultGasPrice });
-console.log("RESULT: optinoFactory.mintOptinoTokens(" + baseTokenAddress + ", " + quoteTokenAddress + ", " + priceFeedAdaptorAddress + ", " + callPut + ", " + expiry + ", " + strike + ", " + bound + ", " + tokens + ", " + _uiFeeAccount + ")");
-var mintOptinoGroup1_1Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
+console.log("RESULT: optinoFactory.mint(" + baseTokenAddress + ", " + quoteTokenAddress + ", " + priceFeedAdaptorAddress + ", " + callPut + ", " + expiry + ", " + strike + ", " + bound + ", " + tokens + ", " + _uiFeeAccount + ")");
+var mintOptinoGroup1_1Tx = optinoFactory.mint(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 
@@ -535,8 +535,13 @@ if (false) {
   console.log("RESULT: ");
   printTokenContractDetails(3);
   console.log("RESULT: ");
-
 }
+
+console.log("RESULT: --- Main contracts gas usage ---");
+printTxData("optinoTokenTx", optinoTokenTx);
+printTxData("optinoFactoryTx", optinoFactoryTx);
+printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
+
 
 EOF
 grep "DATA: " $TEST1OUTPUT | sed "s/DATA: //" > $DEPLOYMENTDATA
