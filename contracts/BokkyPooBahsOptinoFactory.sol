@@ -414,7 +414,7 @@ library SafeMath {
         require(a == 0 || c / a == b, "SafeMath._mul: Overflow");
     }
     function _div(uint a, uint b) internal pure returns (uint c) {
-        require(b > 0, "SafeMath._mul: Divide by 0");
+        require(b > 0, "SafeMath._div: Divide by 0");
         c = a / b;
     }
 }
@@ -425,10 +425,7 @@ library SafeMath {
 // ----------------------------------------------------------------------------
 library Decimals {
     function _setDecimals(uint _decimals, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals) internal pure returns (uint _decimalsData) {
-        require(_decimals <= 18, "ConfigLib.add baseDecimals must be >= 0 and <= 18");
-        require(_baseDecimals <= 18, "ConfigLib.add baseDecimals must be >= 0 and <= 18");
-        require(_quoteDecimals <= 18, "ConfigLib.add quoteDecimals must be >= 0 and <= 18");
-        require(_rateDecimals <= 18, "ConfigLib.add rateDecimals must be >= 0 and <= 18");
+        require(_decimals <= 18 && _baseDecimals <= 18 && _quoteDecimals <= 18 && _rateDecimals <= 18, "Decimals._setDecimals: All decimals must be <= 18");
         _decimalsData = _decimals * 1000000 + _baseDecimals * 10000 + _quoteDecimals * 100 + _rateDecimals;
     }
     function _getDecimals(uint decimalsData) internal pure returns (uint _decimals) {
@@ -588,15 +585,15 @@ library SeriesLib {
         return self.entries[key].timestamp > 0;
     }
     function _add(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken) internal {
-        require(callPut < 2, "SeriesLib.add: callPut must be 0 (call) or 1 (callPut)");
-        require(expiry > block.timestamp, "SeriesLib.add: expiry must be in the future");
-        require(strike > 0, "SeriesLib.add: strike must be non-zero");
-        require(optinoToken != address(0), "SeriesLib.add: optinoToken cannot be null");
-        require(coverToken != address(0), "SeriesLib.add: coverToken cannot be null");
+        require(callPut < 2, "SeriesLib.add: callPut must be 0 or 1");
+        require(expiry > block.timestamp, "SeriesLib.add: expiry must be > now");
+        require(strike > 0, "SeriesLib.add: strike must be > 0");
+        require(optinoToken != address(0), "SeriesLib.add: Invalid optinoToken");
+        require(coverToken != address(0), "SeriesLib.add: Invalid coverToken");
         if (callPut == 0) {
-            require(bound == 0 || bound > strike, "SeriesLib.add: bound must be 0 or greater than strike for calls");
+            require(bound == 0 || bound > strike, "SeriesLib.add: Call bound must = 0 or > strike");
         } else {
-            require(bound < strike, "SeriesLib.add: bound must be 0 or less than strike for put");
+            require(bound < strike, "SeriesLib.add: Put bound must = 0 or < strike");
         }
 
         bytes32 key = _generateKey(configKey, callPut, expiry, strike, bound);
@@ -609,8 +606,8 @@ library SeriesLib {
         Series storage _value = self.entries[key];
         require(_value.timestamp > 0, "SeriesLib._updateSpot: Invalid key");
         require(block.timestamp >= _value.expiry, "SeriesLib._updateSpot: Not expired yet");
-        require(_value.spot == 0, "SeriesLib._updateSpot: spot cannot be re-set");
-        require(spot > 0, "SeriesLib._updateSpot: spot cannot be 0");
+        require(_value.spot == 0, "SeriesLib._updateSpot: spot already set");
+        require(spot > 0, "SeriesLib._updateSpot: spot must > 0");
         _value.timestamp = block.timestamp;
         _value.spot = spot;
         emit SeriesSpotUpdated(key, _value.configKey, _value.callPut, _value.expiry, _value.strike, _value.bound, spot);
@@ -828,12 +825,6 @@ contract OptinoToken is BasicToken {
     address public collateralToken;
     uint public collateralDecimals;
 
-    // Duplicated data - to get around stack too deep
-    // uint public callPut;
-    // uint public expiry;
-    // uint public strike;
-    // uint public bound;
-
     event Close(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
     event Payoff(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
 
@@ -845,10 +836,6 @@ contract OptinoToken is BasicToken {
         isCover = _isCover;
         (bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
         configKey = _configKey;
-        // callPut = _callPut;
-        // expiry = _expiry;
-        // strike = _strike;
-        // bound = _bound;
         (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
         if (_callPut == 0) {
             collateralToken = _baseToken;

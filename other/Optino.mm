@@ -63,7 +63,7 @@
 </stylenode>
 </map_styles>
 </hook>
-<hook NAME="AutomaticEdgeColor" COUNTER="18" RULE="ON_BRANCH_CREATION"/>
+<hook NAME="AutomaticEdgeColor" COUNTER="19" RULE="ON_BRANCH_CREATION"/>
 <node TEXT="Types" POSITION="right" ID="ID_1739703506" CREATED="1587891511466" MODIFIED="1587891556387">
 <edge COLOR="#ff0000"/>
 <node TEXT="Vanilla Call" ID="ID_113019528" CREATED="1587891530085" MODIFIED="1587891721417"/>
@@ -255,6 +255,12 @@
 <node TEXT="Minting optino and cover tokens" ID="ID_1234922442" CREATED="1588811834781" MODIFIED="1588811848374"/>
 <node TEXT="Closing and settling optino and cover tokens" ID="ID_1941491987" CREATED="1588811851431" MODIFIED="1588811863352"/>
 </node>
+</node>
+</node>
+<node TEXT="Notes" POSITION="left" ID="ID_596086674" CREATED="1588817488521" MODIFIED="1588817491550">
+<edge COLOR="#007c00"/>
+<node TEXT="spot cannot be 0" ID="ID_1068247030" CREATED="1588817491908" MODIFIED="1588817494820">
+<node TEXT="Will have to recover" ID="ID_1699170913" CREATED="1588817495877" MODIFIED="1588817499575"/>
 </node>
 </node>
 </node>
