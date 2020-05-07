@@ -417,13 +417,15 @@ const VanillaOptinoExplorer = {
     collateral() {
       try {
         var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
+        var decimals = 18;
         var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
         var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
         var quoteDecimals = this.quoteDecimals == null ? 18 : parseInt(this.quoteDecimals);
         var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
         var bound = this.bound == null ? new BigNumber(0) : new BigNumber(this.bound).shift(rateDecimals);
         var baseTokens = this.baseTokens == null ? new BigNumber(1).shift(baseDecimals) : new BigNumber(this.baseTokens).shift(baseDecimals);
-        var collateral = collateralInDeliveryToken(callPut, strike, bound, baseTokens, baseDecimals, rateDecimals);
+        var collateral = collateral(callPut, strike, bound, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
+        logDebug("collateral", JSON.stringify(collateral));
         if (callPut == 0) {
           collateral = collateral == null ? null : collateral.shift(-baseDecimals).toString();
         } else {

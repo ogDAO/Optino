@@ -76,7 +76,9 @@ const Payoff = {
       var payoffInNonDeliveryTokenSeries = [];
 
       var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
+      var decimals = 18;
       var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
+      var quoteDecimals = this.quoteDecimals == null ? 18 : parseInt(this.quoteDecimals);
       var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
       var strike;
       try {
@@ -104,8 +106,8 @@ const Payoff = {
       // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
       for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
         // console.log("spot: " + spot.toString());
-        var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals);
-
+        var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
+        console.log("payoffInDeliveryToken: " + spot + " => " + JSON.stringify(result));
         payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
         coverPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
         collateralInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));

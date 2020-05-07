@@ -201,93 +201,99 @@ function getTermFromSeconds(term) {
 // strike, bound, spot and baseTokens must be BigNumber()s, converted to the
 // appropriate decimals
 // -----------------------------------------------------------------------------
-// function collateralInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _collateral) {
-//     require(_strike > 0, "collateralInDeliveryToken: strike must be > 0");
-//     if (_callPut == 0) {
-//         require(_bound == 0 || _bound > _strike, "collateralInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
-//         if (_bound <= _strike) {
-//             _collateral = _baseTokens * (10 ** _rateDecimals) / (10 ** _baseDecimals);
-//         } else {
-//             _collateral = (_bound - _strike) * (10 ** _rateDecimals) * _baseTokens / _bound / (10 ** _baseDecimals);
-//         }
+
+// function shiftRightThenLeft(uint amount, uint right, uint left) internal pure returns (uint _result) {
+//     if (right == left) {
+//         return amount;
+//     } else if (right > left) {
+//         return amount.mul(10 ** (right - left));
 //     } else {
-//         require(_bound < _strike, "collateralInDeliveryToken: bound must be 0 or less than strike for put");
-//         _collateral = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+//         return amount.div(10 ** (left - right));
 //     }
 // }
-function collateralInDeliveryToken(callPut, strike, bound, baseTokens, baseDecimals, rateDecimals) {
+function shiftRightThenLeft(amount, right, left) {
+  if (right == left) {
+    return amount;
+  } else if (right > left) {
+    return amount.shift(right - left);
+  } else {
+    return amount.shift(-(left - right));
+  }
+}
+
+function collateralInDeliveryToken(callPut, strike, bound, tokens, decimals, baseDecimals, quoteDecimals, rateDecimals) {
   BigNumber.config({ DECIMAL_PLACES: 0 });
   if (strike.gt(0)) {
     if (callPut == 0) {
       if (bound.eq(0) || bound.gt(strike)) {
         if (bound.lte(strike)) {
-          return baseTokens.shift(rateDecimals).shift(-baseDecimals);
+          return new BigNumber(shiftRightThenLeft(tokens, baseDecimals, decimals).toFixed(0));
         } else {
-          return new BigNumber(bound.sub(strike).shift(rateDecimals).mul(baseTokens).div(bound).shift(-baseDecimals).toFixed(0));
+          return new BigNumber(shiftRightThenLeft(bound.sub(strike).mul(tokens).div(bound), baseDecimals, decimals).toFixed(0));
         }
       }
     } else {
       if (bound.lt(strike)) {
-        return new BigNumber(strike.sub(bound).mul(baseTokens).shift(-baseDecimals).toFixed(0));
+        return new BigNumber(shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).shift(-rateDecimals).toFixed(0));
       }
     }
   }
   return null;
 }
 
-// function payoffInDeliveryToken(uint _callPut, uint _strike, uint _bound, uint _spot, uint _baseTokens, uint _baseDecimals, uint _rateDecimals) internal pure returns (uint _payoff, uint _coverPayoff) {
-//     uint _collateral = collateralInDeliveryToken(_callPut, _strike, _bound, _baseTokens, _baseDecimals, _rateDecimals);
-//     if (_callPut == 0) {
-//         require(_bound == 0 || _bound > _strike, "payoffInDeliveryToken: bound (cap) must be 0 for vanilla call or > strike for capped call");
-//         require(_spot > 0, "payoffInDeliveryToken: spot must be > 0 for call");
-//         if (_spot > _strike) {
-//             if (_bound > _strike && _spot > _bound) {
-//                 _payoff = _bound - _strike;
+
+// function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
+//     (uint decimals, uint baseDecimals, uint quoteDecimals, uint rateDecimals) = decimalsData.getAllDecimals();
+//     if (callPut == 0) {
+//         require(bound == 0 || bound > strike, "payoff: Call bound must = 0 or > strike");
+//         if (spot > 0 && spot > strike) {
+//             if (bound > strike && spot > bound) {
+//                 return shiftRightThenLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
 //             } else {
-//                 _payoff = _spot - _strike;
+//                 return shiftRightThenLeft(spot.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
 //             }
-//             _payoff = _payoff * (10 ** _rateDecimals) * _baseTokens / _spot / (10 ** _baseDecimals);
 //         }
 //     } else {
-//         require(_bound < _strike, "payoffInDeliveryToken: bound (floor) must be 0 for vanilla put or < strike for floored put");
-//         if (_spot < _strike) {
-//              if (_bound == 0 || (_bound > 0 && _spot >= _bound)) {
-//                  _payoff = (_strike - _spot) * _baseTokens / (10 ** _baseDecimals);
+//         require(bound < strike, "payoff: Put bound must = 0 or < strike");
+//         if (spot < strike) {
+//              if (bound == 0 || (bound > 0 && spot >= bound)) {
+//                  return shiftRightThenLeft(strike.sub(spot).mul(tokens), quoteDecimals, decimals + rateDecimals);
 //              } else {
-//                  _payoff = (_strike - _bound) * _baseTokens / (10 ** _baseDecimals);
+//                  return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals + rateDecimals);
 //              }
 //         }
 //     }
-//     _coverPayoff = _collateral - _payoff;
 // }
-function payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals) {
+
+function payoffInDeliveryToken(callPut, strike, bound, spot, tokens, decimals, baseDecimals, quoteDecimals, rateDecimals) {
   BigNumber.config({ DECIMAL_PLACES: 0 });
   var results = [];
 
-  var collateral = collateralInDeliveryToken(callPut, strike, bound, baseTokens, baseDecimals, rateDecimals);
+  var collateral = collateralInDeliveryToken(callPut, strike, bound, tokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
   var payoff = null;
   if (callPut == 0) {
     if (bound.eq(0) || bound.gt(strike)) {
       if (spot.gt(0)) {
         if (spot.gt(strike)) {
           if (bound.gt(strike) && spot.gt(bound)) {
-            payoff = bound.sub(strike);
+            payoff = shiftRightThenLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
           } else {
-            payoff = spot.sub(strike);
+            payoff = shiftRightThenLeft(spot.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
           }
-          payoff = payoff.shift(rateDecimals).mul(baseTokens).div(spot).shift(-baseDecimals);
         } else {
           payoff = new BigNumber(0);
         }
+      } else {
+        payoff = new BigNumber(0);
       }
     }
   } else {
     if (bound.lt(strike)) {
       if (spot.lt(strike)) {
         if (bound.eq(0) || (bound.gt(0) && spot.gte(bound))) {
-          payoff = strike.sub(spot).mul(baseTokens).shift(-baseDecimals);
+          payoff = shiftRightThenLeft(strike.sub(spot).mul(tokens), quoteDecimals, parseInt(decimals) + rateDecimals);
         } else {
-          payoff = strike.sub(bound).mul(baseTokens).shift(-baseDecimals);
+          payoff = shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, parseInt(decimals) + rateDecimals);
         }
       } else {
         payoff = new BigNumber(0);
@@ -310,79 +316,3 @@ function payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, baseDec
   }
   return results;
 }
-
-// function payoffInDeliveryTokenOld(callPut, strike, bound, spot, baseTokens, baseDecimals, rateDecimals) {
-//   var results = [];
-//
-//   BigNumber.config({ DECIMAL_PLACES: 0 });
-//   // console.log("payoffInDeliveryToken - callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", spot: " + spot.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
-//
-//   var collateralInQuoteToken;
-//   var payoffInQuoteToken;
-//   var collateralPayoffInQuoteToken;
-//
-//   if (callPut == 0) {
-//     if (spot.gt(0) && (bound.eq(0) || bound.gt(strike))) {
-//       if (spot.gt(strike)) {
-//         if (bound.gt(strike) && spot.gt(bound)) {
-//           payoffInQuoteToken = bound.minus(strike);
-//         } else {
-//           payoffInQuoteToken = spot.minus(strike);
-//         }
-//       } else {
-//         payoffInQuoteToken = new BigNumber("0");
-//       }
-//
-//       if (bound.lte(strike)) {
-//         collateralInQuoteToken = spot;
-//       } else {
-//         collateralInQuoteToken = bound.sub(strike).mul(spot).div(bound);
-//       }
-//       collateralPayoffInQuoteToken = collateralInQuoteToken.minus(payoffInQuoteToken);
-//
-//       var collateral = collateralInQuoteToken.shift(rateDecimals).div(spot);
-//       var payoff = payoffInQuoteToken.shift(rateDecimals).div(spot);
-//       var collateralPayoff = collateralPayoffInQuoteToken.shift(rateDecimals).div(spot);
-//
-//       collateral = collateral.mul(baseTokens).shift(-baseDecimals);
-//       payoff = payoff.mul(baseTokens).shift(-baseDecimals);
-//       collateralPayoff = collateralPayoff.mul(baseTokens).shift(-baseDecimals);
-//
-//       results = [payoff, collateralPayoff, collateral];
-//       results.push(payoffInQuoteToken.mul(baseTokens).shift(-baseDecimals));
-//       results.push(collateralPayoffInQuoteToken.mul(baseTokens).shift(-baseDecimals));
-//       results.push(collateralInQuoteToken.mul(baseTokens).shift(-baseDecimals));
-//
-//     } else {
-//       results = [null, null, null, null, null];
-//     }
-//
-//   } else {
-//     if (spot.gte(0) && strike.gt(0) && bound.gte(0) && bound.lt(strike)) {
-//       if (spot.lt(strike)) {
-//         if (bound.eq(0) || (bound.gt(0) && spot.gte(bound))) {
-//           payoffInQuoteToken = strike.minus(spot);
-//         } else {
-//           payoffInQuoteToken = strike.minus(bound);
-//         }
-//       } else {
-//         payoffInQuoteToken = new BigNumber("0");
-//       }
-//
-//       collateralInQuoteToken = strike.minus(bound);
-//       collateralPayoffInQuoteToken = collateralInQuoteToken.minus(payoffInQuoteToken);
-//
-//       payoff = payoffInQuoteToken.mul(baseTokens).shift(-baseDecimals);
-//       collateral = collateralInQuoteToken.mul(baseTokens).shift(-baseDecimals);
-//       collateralPayoff = collateralPayoffInQuoteToken.mul(baseTokens).shift(-baseDecimals);
-//
-//       results = [payoff, collateralPayoff, collateral];
-//       results.push(spot.eq(0) ? null : payoff.shift(rateDecimals).div(spot));
-//       results.push(spot.eq(0) ? null : collateralPayoff.shift(rateDecimals).div(spot));
-//       results.push(spot.eq(0) ? null : collateral.shift(rateDecimals).div(spot));
-//     } else {
-//       results = [null, null, null, null, null];
-//     }
-//   }
-//   return results;
-// }
