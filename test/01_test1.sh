@@ -406,7 +406,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   var closeAmount = optino.balanceOf.call(seller1).mul(3).div(9);
@@ -438,7 +438,7 @@ if (false) {
 }
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = new BigNumber("250").shift(rateDecimals);

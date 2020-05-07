@@ -805,7 +805,7 @@ contract OptinoToken is BasicToken {
 
     event Close(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
     event Payoff(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
-    event LogInfo(string note, address addr, uint number);
+    // event LogInfo(string note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         factory = _factory;
@@ -828,7 +828,7 @@ contract OptinoToken is BasicToken {
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
-        emit LogInfo("burn msg.sender", msg.sender, tokens);
+        // emit LogInfo("burn msg.sender", msg.sender, tokens);
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
         balances[address(0)] = balances[address(0)].add(tokens);
@@ -902,10 +902,10 @@ contract OptinoToken is BasicToken {
     function closeFor(address tokenOwner, uint tokens) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "closeFor: Not authorised");
         if (!isCover) {
-            emit LogInfo("closeFor msg.sender for Optino token. Transferring to Cover token", msg.sender, tokens);
+            // emit LogInfo("closeFor msg.sender for Optino token. Transferring to Cover token", msg.sender, tokens);
             OptinoToken(payable(pair)).closeFor(tokenOwner, tokens);
         } else {
-            emit LogInfo("closeFor msg.sender for Cover token", msg.sender, tokens);
+            // emit LogInfo("closeFor msg.sender for Cover token", msg.sender, tokens);
             require(tokens <= ERC20(pair).balanceOf(tokenOwner), "closeFor: Insufficient optino tokens");
             require(tokens <= ERC20(this).balanceOf(tokenOwner), "closeFor: Insufficient cover tokens");
             require(OptinoToken(payable(pair)).burn(tokenOwner, tokens), "closeFor: Burn optino tokens failure");
@@ -920,14 +920,14 @@ contract OptinoToken is BasicToken {
         settleFor(msg.sender);
     }
     function settleFor(address tokenOwner) public {
-        emit LogInfo("settleFor start msg.sender", msg.sender, 0);
+        // emit LogInfo("settleFor start msg.sender", msg.sender, 0);
         // require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "settleFor: Invalid msg.sender");
         if (!isCover) {
-            emit LogInfo("settleFor msg.sender for Optino token. Transferring to Cover token", msg.sender, 0);
+            // emit LogInfo("settleFor msg.sender for Optino token. Transferring to Cover token", msg.sender, 0);
             OptinoToken(payable(pair)).settleFor(tokenOwner);
         } else {
-            emit LogInfo("settleFor msg.sender for Cover token", msg.sender, 0);
-            emit LogInfo("settleFor tokenOwner for Cover token", tokenOwner, 0);
+            // emit LogInfo("settleFor msg.sender for Cover token", msg.sender, 0);
+            // emit LogInfo("settleFor tokenOwner for Cover token", tokenOwner, 0);
             uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0, "settleFor: No optino or cover tokens");
