@@ -926,12 +926,14 @@ contract OptinoToken is BasicToken {
         settleFor(msg.sender);
     }
     function settleFor(address tokenOwner) public {
+        emit LogInfo("settleFor start msg.sender", msg.sender, 0);
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
             emit LogInfo("settleFor msg.sender for Optino token. Transferring to Cover token", msg.sender, 0);
             OptinoToken(payable(pair)).settleFor(tokenOwner);
         } else {
             emit LogInfo("settleFor msg.sender for Cover token", msg.sender, 0);
+            emit LogInfo("settleFor tokenOwner for Cover token", tokenOwner, 0);
             uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0);

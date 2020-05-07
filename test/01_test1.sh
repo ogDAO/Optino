@@ -406,14 +406,15 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   var closeAmount = optino.balanceOf.call(seller1).mul(3).div(9);
   // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + closeGroup1_Message + " ----------");
-  var closeGroup1_1Tx = optino.closeFor(seller1, closeAmount, {from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  var closeGroup1_1Tx = optino.close(closeAmount, {from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  // var closeGroup1_1Tx = optino.closeFor(seller1, closeAmount, {from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
@@ -437,7 +438,7 @@ if (true) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = new BigNumber("250").shift(rateDecimals);
@@ -448,7 +449,8 @@ if (false) {
   var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
-  var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  // var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  var settleGroup1_2Tx = optino.settleFor(seller1, {from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
