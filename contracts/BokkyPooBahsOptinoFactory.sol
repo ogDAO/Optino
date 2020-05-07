@@ -481,13 +481,6 @@ contract Owned {
         owner = newOwner;
         newOwner = address(0);
     }
-    function recoverTokens(address token, uint tokens) public onlyOwner {
-        if (token == address(0)) {
-            payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
-        } else {
-            ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
-        }
-    }
 }
 
 
@@ -850,13 +843,13 @@ contract OptinoToken is BasicToken {
         pair = _pair;
         seriesNumber = _seriesNumber;
         isCover = _isCover;
-        (bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
         configKey = _configKey;
         callPut = _callPut;
         expiry = _expiry;
         strike = _strike;
         bound = _bound;
-        (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+        (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
         if (callPut == 0) {
             collateralToken = _baseToken;
             collateralDecimals = _decimalsData._getBaseDecimals();
@@ -880,35 +873,35 @@ contract OptinoToken is BasicToken {
 
     function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken) {
         _seriesKey = seriesKey;
-        (_configKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (_configKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
     }
     function getConfigData() public view returns (address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp) {
-        (_baseToken, _quoteToken, _priceFeed, _decimalsData, _maxTerm, _fee, _description, _timestamp) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(configKey);
+        (_baseToken, _quoteToken, _priceFeed, _decimalsData, _maxTerm, _fee, _description, _timestamp) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(configKey);
     }
 
     function spot() public view returns (uint _spot) {
-        return BokkyPooBahsOptinoFactory(factory).getSeriesSpot(seriesKey);
+        return BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesSpot(seriesKey);
     }
     function currentSpot() public view returns (uint _currentSpot) {
-        return BokkyPooBahsOptinoFactory(factory).getSeriesCurrentSpot(seriesKey);
+        return BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesCurrentSpot(seriesKey);
     }
     function setSpot() public returns (uint _spot) {
-        return BokkyPooBahsOptinoFactory(factory).setSeriesSpot(seriesKey);
+        return BokkyPooBahsOptinoFactory(address(uint160(factory))).setSeriesSpot(seriesKey);
     }
     function payoffDeliveryInBaseOrQuote() public view returns (uint _callPut) {
         // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
-        (/*_configKey*/, _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
+        (/*_configKey*/, _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
     }
     function payoff(uint _spot, uint _tokens) public view returns (uint _payoff) {
-        (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
-        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+        (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
+        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
         return Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, _decimalsData);
     }
 
     function currentPayoffPerUnitBaseToken() public view returns (uint _currentPayoffPerUnitBaseToken) {
         uint _spot = currentSpot();
-        (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
-        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+        (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
+        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
         uint _tokens = 10 ** _decimals;
         uint _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, _decimalsData);
         uint _collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
@@ -920,8 +913,8 @@ contract OptinoToken is BasicToken {
         if (_spot == 0) {
             return 0;
         } else {
-            (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
-            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+            (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
+            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
             uint _tokens = 10 ** _decimals;
             uint _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, _decimalsData);
             uint _collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
@@ -957,8 +950,8 @@ contract OptinoToken is BasicToken {
             require(_tokens <= ERC20(pair).balanceOf(tokenOwner));
             require(OptinoToken(payable(pair)).burn(tokenOwner, _tokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, _tokens));
-            (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
-            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+            (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesByKey(seriesKey);
+            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getConfigByKey(_configKey);
             uint collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
             transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
             emit Close(pair, collateralToken, tokenOwner, collateral);
@@ -984,7 +977,7 @@ contract OptinoToken is BasicToken {
             uint _payoff;
             uint _collateral;
 
-            (/*_baseToken*/, /*_quoteToken*/, uint _decimalsData, /*_callPut*/, /*_strike*/, /*_bound*/) = BokkyPooBahsOptinoFactory(factory).getSeriesAndConfigCalcDataByKey(seriesKey);
+            (/*_baseToken*/, /*_quoteToken*/, uint _decimalsData, /*_callPut*/, /*_strike*/, /*_bound*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getSeriesAndConfigCalcDataByKey(seriesKey);
 
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
@@ -1002,6 +995,14 @@ contract OptinoToken is BasicToken {
                 transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
             }
             emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff);
+        }
+    }
+    function recoverTokens(address token, uint tokens) public onlyOwner {
+        require(token != collateralToken || this.totalSupply() == 0, "recoverTokens: Cannot recover collateral tokens until totalSupply is 0");
+        if (token == address(0)) {
+            payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
+        } else {
+            ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
         }
     }
 }
@@ -1251,6 +1252,8 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         _collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, config.decimalsData);
         _fee = _collateral._mul(config.fee)._div(10 ** FEEDECIMALS);
     }
+    receive() external payable {
+    }
 
     // ----------------------------------------------------------------------------
     // Helper functions
@@ -1270,6 +1273,17 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
                 _name = "(not implemented)";
             }
             (_decimals, _totalSupply, _balance, _allowance) = (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender));
+        }
+    }
+    function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
+        if (address(optinoToken) != address(0)) {
+            optinoToken.recoverTokens(token, tokens);
+        } else {
+            if (token == address(0)) {
+                payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
+            } else {
+                ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
+            }
         }
     }
 }
