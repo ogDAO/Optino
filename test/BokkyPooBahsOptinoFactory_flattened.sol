@@ -628,7 +628,6 @@ library SeriesLibrary {
 }
 
 
-
 // ----------------------------------------------------------------------------
 // ApproveAndCall Fallback
 // NOTE for contracts implementing this interface:
@@ -686,7 +685,7 @@ contract BasicToken is Token, Owned {
     using SafeMath for uint;
 
     string _symbol;
-    string  _name;
+    string _name;
     uint _decimals; // Note that this is `uint` instead of `uint8`. decimals() will return `uint8`
     uint _totalSupply;
 
@@ -833,6 +832,8 @@ contract OptinoToken is BasicToken {
     address public pair;
     uint public seriesNumber;
     bool public isCover;
+    address public collateralToken;
+    uint public collateralDecimals;
 
     // Duplicated data - to get around stack too deep
     uint public callPut;
@@ -855,7 +856,14 @@ contract OptinoToken is BasicToken {
         expiry = _expiry;
         strike = _strike;
         bound = _bound;
-        (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+        (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, string memory _description, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+        if (callPut == 0) {
+            collateralToken = _baseToken;
+            collateralDecimals = _decimalsData._getBaseDecimals();
+        } else {
+            collateralToken = _quoteToken;
+            collateralDecimals = _decimalsData._getQuoteDecimals();
+        }
         string memory _symbol = NameUtils._toSymbol(_isCover, _callPut, _seriesNumber);
         string memory _name = NameUtils._toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimalsData._getRateDecimals());
         super._initToken(factory, _symbol, _name, _decimals);
@@ -950,12 +958,10 @@ contract OptinoToken is BasicToken {
             require(OptinoToken(payable(pair)).burn(tokenOwner, _tokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, _tokens));
             (bytes32 _configKey, uint _callPut, /*_expiry*/, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = BokkyPooBahsOptinoFactory(factory).getSeriesByKey(seriesKey);
-            (address _baseToken, address _quoteToken, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
+            (/*_baseToken*/, /*_quoteToken*/, /*_priceFeed*/, uint _decimalsData, /*_maxTerm*/, /*_fee*/, /*_description*/, /*_timestamp*/) = BokkyPooBahsOptinoFactory(factory).getConfigByKey(_configKey);
             uint collateral = OptinoFormulae.collateralInDeliveryToken(_callPut, _strike, _bound, _tokens, _decimalsData);
-            address token = _callPut == 0 ? _baseToken : _quoteToken;
-            uint decimals = _callPut == 0 ? _decimalsData._getBaseDecimals() : _decimalsData._getQuoteDecimals();
-            transferOut(token, tokenOwner, collateral, decimals);
-            emit Close(pair, token, tokenOwner, collateral);
+            transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
+            emit Close(pair, collateralToken, tokenOwner, collateral);
         }
     }
     function settle() public {
@@ -978,26 +984,24 @@ contract OptinoToken is BasicToken {
             uint _payoff;
             uint _collateral;
 
-            (address _baseToken, address _quoteToken, uint _decimalsData, /*_callPut*/, /*_strike*/, /*_bound*/) = BokkyPooBahsOptinoFactory(factory).getSeriesAndConfigCalcDataByKey(seriesKey);
+            (/*_baseToken*/, /*_quoteToken*/, uint _decimalsData, /*_callPut*/, /*_strike*/, /*_bound*/) = BokkyPooBahsOptinoFactory(factory).getSeriesAndConfigCalcDataByKey(seriesKey);
 
             require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens));
             require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens));
 
             _payoff = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, optinoTokens, _decimalsData);
-            address token = callPut == 0 ? _baseToken : _quoteToken;
-            uint decimals = callPut == 0 ? _decimalsData._getBaseDecimals() : _decimalsData._getQuoteDecimals();
             if (_payoff > 0) {
-                transferOut(token, tokenOwner, _payoff, decimals);
+                transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
             }
-            emit Payoff(pair, token, tokenOwner, _payoff);
+            emit Payoff(pair, collateralToken, tokenOwner, _payoff);
 
             _payoff = OptinoFormulae.payoffInDeliveryToken(callPut, strike, bound, _spot, coverTokens, _decimalsData);
             _collateral = OptinoFormulae.collateralInDeliveryToken(callPut, strike, bound, coverTokens, _decimalsData);
             uint _coverPayoff = _collateral._sub(_payoff);
             if (_coverPayoff > 0) {
-                transferOut(token, tokenOwner, _coverPayoff, decimals);
+                transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
             }
-            emit Payoff(address(this), token, tokenOwner, _coverPayoff);
+            emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff);
         }
     }
 }
