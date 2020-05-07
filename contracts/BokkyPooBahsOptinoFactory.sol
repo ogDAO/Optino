@@ -1165,9 +1165,7 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     // Mint optino and cover tokens
     // ----------------------------------------------------------------------------
     function mint(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _coverToken) {
-        return _mint(OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, baseTokens), uiFeeAccount);
-    }
-    function _mint(OptinoData memory optinoData, address uiFeeAccount) internal returns (address _optinoToken, address _coverToken) {
+        OptinoData memory optinoData = OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, baseTokens);
         // Check parameters not checked in SeriesLibrary and ConfigLibrary
         require(optinoData.expiry > block.timestamp, "_mint: expiry must be in the future");
         require(optinoData.tokens > 0, "_mint: tokens must be non-zero");
