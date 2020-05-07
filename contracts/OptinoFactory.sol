@@ -466,7 +466,7 @@ contract Owned {
 
 // ----------------------------------------------------------------------------
 // Config - [baseToken, quoteToken, priceFeed] =>
-//   [baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description, timestamp]
+//   [decimalsData, maxTerm, fee, description, timestamp]
 // ----------------------------------------------------------------------------
 library ConfigLib {
     using Decimals for uint;
