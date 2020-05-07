@@ -741,7 +741,7 @@ library OptinoV1 {
     using SafeMath for uint;
     using Decimals for uint;
 
-    function shiftRightLeft(uint amount, uint right, uint left) internal pure returns (uint _result) {
+    function shiftRightThenLeft(uint amount, uint right, uint left) internal pure returns (uint _result) {
         if (right == left) {
             return amount;
         } else if (right > left) {
@@ -756,13 +756,13 @@ library OptinoV1 {
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "collateral: Call bound must = 0 or > strike");
             if (bound <= strike) {
-                return shiftRightLeft(tokens, baseDecimals, decimals);
+                return shiftRightThenLeft(tokens, baseDecimals, decimals);
             } else {
-                return shiftRightLeft(bound.sub(strike).mul(tokens).div(bound), baseDecimals, decimals);
+                return shiftRightThenLeft(bound.sub(strike).mul(tokens).div(bound), baseDecimals, decimals);
             }
         } else {
             require(bound < strike, "collateral: Put bound must = 0 or < strike");
-            return shiftRightLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** rateDecimals);
+            return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** rateDecimals);
         }
     }
     function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
@@ -771,18 +771,18 @@ library OptinoV1 {
             require(bound == 0 || bound > strike, "payoff: Call bound must = 0 or > strike");
             if (spot > 0 && spot > strike) {
                 if (bound > strike && spot > bound) {
-                    return shiftRightLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
+                    return shiftRightThenLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
                 } else {
-                    return shiftRightLeft(spot.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
+                    return shiftRightThenLeft(spot.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
                 }
             }
         } else {
             require(bound < strike, "payoff: Put bound must = 0 or < strike");
             if (spot < strike) {
                  if (bound == 0 || (bound > 0 && spot >= bound)) {
-                     return shiftRightLeft(strike.sub(spot).mul(tokens), quoteDecimals, decimals + rateDecimals);
+                     return shiftRightThenLeft(strike.sub(spot).mul(tokens), quoteDecimals, decimals + rateDecimals);
                  } else {
-                     return shiftRightLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals + rateDecimals);
+                     return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals + rateDecimals);
                  }
             }
         }
@@ -811,6 +811,7 @@ contract OptinoToken is BasicToken {
 
     event Close(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
     event Payoff(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
+    event LogInfo(string note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         factory = _factory;
@@ -833,6 +834,7 @@ contract OptinoToken is BasicToken {
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
+        emit LogInfo("burn msg.sender", msg.sender, tokens);
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
         balances[address(0)] = balances[address(0)].add(tokens);
@@ -906,8 +908,10 @@ contract OptinoToken is BasicToken {
     function closeFor(address tokenOwner, uint tokens) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
+            emit LogInfo("closeFor msg.sender for Optino token. Transferring to Cover token", msg.sender, tokens);
             OptinoToken(payable(pair)).closeFor(tokenOwner, tokens);
         } else {
+            emit LogInfo("closeFor msg.sender for Cover token", msg.sender, tokens);
             require(tokens <= ERC20(this).balanceOf(tokenOwner));
             require(tokens <= ERC20(pair).balanceOf(tokenOwner));
             require(OptinoToken(payable(pair)).burn(tokenOwner, tokens));
@@ -924,8 +928,10 @@ contract OptinoToken is BasicToken {
     function settleFor(address tokenOwner) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
+            emit LogInfo("settleFor msg.sender for Optino token. Transferring to Cover token", msg.sender, 0);
             OptinoToken(payable(pair)).settleFor(tokenOwner);
         } else {
+            emit LogInfo("settleFor msg.sender for Cover token", msg.sender, 0);
             uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0);
@@ -1198,7 +1204,7 @@ contract OptinoFactory is Owned, CloneFactory {
     function collateralInBaseOrQuote(uint callPut) public pure returns (uint _baseOrQuote) {
         _baseOrQuote = callPut;
     }
-    /// @dev Compute the payoff in the collateral tokens
+    /// @dev Compute the payoff in collateral tokens
     /// @param callPut 0 for call, 1 for put
     /// @param strike Strike rate
     /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put

@@ -616,6 +616,12 @@ function printOptinoFactoryContractDetails() {
             " tokens=" + result.args.tokens.shift(-collateralDecimals));
         });
         optinoTokenPayoffEvents.stopWatching();
+        var optinoTokenLogInfoEvents = optinoTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+        j = 0;
+        optinoTokenLogInfoEvents.watch(function (error, result) {
+          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+        });
+        optinoTokenLogInfoEvents.stopWatching();
 
         var coverTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(coverToken);
         var coverTokenDecimals = coverTokenContract.decimals.call();
@@ -659,6 +665,12 @@ function printOptinoFactoryContractDetails() {
             " tokens=" + result.args.tokens.shift(-collateralDecimals));
         });
         coverTokenPayoffEvents.stopWatching();
+        var coverTokenLogInfoEvents = coverTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+        j = 0;
+        coverTokenLogInfoEvents.watch(function (error, result) {
+          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+        });
+        coverTokenLogInfoEvents.stopWatching();
 
     }
 
