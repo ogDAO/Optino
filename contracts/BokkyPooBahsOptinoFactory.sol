@@ -1083,7 +1083,7 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         return configData._length();
     }
     function getConfigByIndex(uint i) public view returns (bytes32 _configKey, address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp) {
-        require(i < configData._length(), "getConfigByIndex: Invalid config index");
+        require(i < configData._length(), "getConfigByIndex: Invalid index");
         ConfigLibrary.Config memory config = configData.entries[configData.index[i]];
         return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.decimalsData, config.maxTerm, config.fee, config.description, config.timestamp);
     }
@@ -1137,25 +1137,25 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         return seriesData._length();
     }
     function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, uint _timestamp, address _optinoToken, address _coverToken) {
-        require(i < seriesData._length(), "getSeriesByIndex: Invalid config index");
+        require(i < seriesData._length(), "getSeriesByIndex: Invalid index");
         SeriesLibrary.Series memory series = seriesData.entries[seriesData.index[i]];
         ConfigLibrary.Config memory config = configData.entries[series.configKey];
         return (series.key, config.key, series.callPut, series.expiry, series.strike, series.bound, series.timestamp, series.optinoToken, series.coverToken);
     }
     function getSeriesByKey(bytes32 key) public view returns (bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken) {
         SeriesLibrary.Series memory series = seriesData.entries[key];
-        require(series.timestamp > 0, "mint: invalid series key");
+        require(series.timestamp > 0, "getSeriesByKey: Invalid key");
         return (series.configKey, series.callPut, series.expiry, series.strike, series.bound, series.optinoToken, series.coverToken);
     }
     function getSeriesAndConfigCalcDataByKey(bytes32 key) public view returns (address _baseToken, address _quoteToken, uint _decimalsData, uint _callPut, uint _strike, uint _bound) {
         SeriesLibrary.Series memory series = seriesData.entries[key];
-        require(series.timestamp > 0, "mint: invalid series key");
+        require(series.timestamp > 0, "getSeriesAndConfigCalcDataByKey: Invalid key");
         ConfigLibrary.Config memory config = configData.entries[series.configKey];
         return (config.baseToken, config.quoteToken, config.decimalsData, series.callPut, series.strike, series.bound);
     }
     function _getSeries(OptinoData memory optinoData) internal view returns (SeriesLibrary.Series storage _series) {
         ConfigLibrary.Config memory config = _getConfig(optinoData);
-        require(config.timestamp > 0, "mint: invalid config");
+        require(config.timestamp > 0, "_getSeries: Invalid config");
         bytes32 key = SeriesLibrary._generateKey(config.key, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound);
         return seriesData.entries[key];
     }
@@ -1167,12 +1167,12 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     function mint(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint baseTokens, address uiFeeAccount) public payable returns (address _optinoToken, address _coverToken) {
         OptinoData memory optinoData = OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, baseTokens);
         // Check parameters not checked in SeriesLibrary and ConfigLibrary
-        require(optinoData.expiry > block.timestamp, "_mint: expiry must be in the future");
-        require(optinoData.tokens > 0, "_mint: tokens must be non-zero");
+        require(optinoData.expiry > block.timestamp, "mint: expiry must >= now");
+        require(optinoData.tokens > 0, "mint: tokens must be > 0");
 
         // Check config registered
         ConfigLibrary.Config memory config = _getConfig(optinoData);
-        require(config.timestamp > 0, "_mint: Invalid config");
+        require(config.timestamp > 0, "mint: Invalid config");
 
         SeriesLibrary.Series storage series = _getSeries(optinoData);
 
@@ -1180,7 +1180,7 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
         OptinoToken coverToken;
         // Series has not been created yet
         if (series.timestamp == 0) {
-            require(optinoData.expiry < (block.timestamp + config.maxTerm), "_mint: expiry > config.maxTerm");
+            require(optinoData.expiry < (block.timestamp + config.maxTerm), "mint: expiry must be <= now + config.maxTerm");
             optinoToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             coverToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             addSeries(optinoData, config.key, address(optinoToken), address(coverToken));
@@ -1204,28 +1204,28 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
             ownerFee = ownerFee - uiFee;
         }
         if (collateralToken == ETH) {
-            require(msg.value >= (collateral + ownerFee + uiFee), "_mint: Insufficient ETH sent");
-            require(payable(coverToken).send(collateral), "_mint: coverToken.send(collateral) failure");
+            require(msg.value >= (collateral + ownerFee + uiFee), "mint: Insufficient ETH sent");
+            require(payable(coverToken).send(collateral), "mint: Send ETH to coverToken failure");
             if (ownerFee > 0) {
-                require(payable(owner).send(ownerFee), "_mint: owner.send(ownerFee) failure");
+                require(payable(owner).send(ownerFee), "mint: Send ETH fee to owner failure");
             }
             if (uiFee > 0) {
-                require(payable(uiFeeAccount).send(uiFee), "_mint: uiFeeAccount.send(uiFee) failure");
+                require(payable(uiFeeAccount).send(uiFee), "mint: Send ETH fee to uiFeeAccount failure");
             }
             uint refund = msg.value - collateral - ownerFee - uiFee;
             if (refund > 0) {
-                require(msg.sender.send(refund), "_mint: msg.sender.send(refund) failure");
+                require(msg.sender.send(refund), "mint: Send ETH refund failure");
             }
         } else {
-            require(ERC20(collateralToken).transferFrom(msg.sender, address(coverToken), collateral), "_mint: collateralToken.transferFrom(msg.sender, coverToken, collateral) failure");
+            require(ERC20(collateralToken).transferFrom(msg.sender, address(coverToken), collateral), "mint: Send ERC20 to coverToken failure");
             if (ownerFee > 0) {
-                require(ERC20(collateralToken).transferFrom(msg.sender, owner, ownerFee), "_mint: collateralToken.transferFrom(msg.sender, factory, ownerFee) failure");
+                require(ERC20(collateralToken).transferFrom(msg.sender, owner, ownerFee), "mint: Send ERC20 fee to owner failure");
             }
             if (uiFee > 0) {
-                require(ERC20(collateralToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "_mint: collateralToken.transferFrom(msg.sender, uiFeeAccount, uiFee) failure");
+                require(ERC20(collateralToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "mint: Send ERC20 fee to uiFeeAccount failure");
             }
             if (msg.value > 0) {
-                require(msg.sender.send(msg.value), "_mint: msg.sender.send(refund) failure");
+                require(msg.sender.send(msg.value), "mint: Send ETH refund failure");
             }
         }
         emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, collateralToken, collateral, ownerFee, uiFee);
