@@ -1116,9 +1116,18 @@ contract OptinoFactory is Owned, CloneFactory {
         return seriesData.entries[key];
     }
 
-    // ----------------------------------------------------------------------------
-    // Mint optino and cover tokens
-    // ----------------------------------------------------------------------------
+    /// @dev Mint Optino and Cover tokens
+    /// @param baseToken Base token ERC20 contract address, or 0x00 for ETH
+    /// @param quoteToken Quote token ERC20 contract address, or 0x00 for ETH
+    /// @param priceFeed Price feed adaptor contract address
+    /// @param callPut 0 for call, 1 for put
+    /// @param expiry Expiry date, unixtime
+    /// @param strike Strike rate
+    /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
+    /// @param tokens Number of Optino and Cover tokens to mint
+    /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
+    /// @return _optinoToken Existing or newly created Optino token contract address
+    /// @return _coverToken Existing or newly created Cover token contract address
     function mint(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (address _optinoToken, address _coverToken) {
         require(expiry > block.timestamp, "mint: expiry must >= now");
         require(tokens > 0, "mint: tokens must be > 0");
@@ -1183,12 +1192,22 @@ contract OptinoFactory is Owned, CloneFactory {
         return (series.optinoToken, series.coverToken);
     }
 
-    // ----------------------------------------------------------------------------
-    // Info functions
-    // ----------------------------------------------------------------------------
+    /// @dev Is the collateral in the base token (call) or quote token (put) ?
+    /// @param callPut 0 for call, 1 for put
+    /// @return _baseOrQuote 0 for base token, 1 for quote token
     function collateralInBaseOrQuote(uint callPut) public pure returns (uint _baseOrQuote) {
         _baseOrQuote = callPut;
     }
+    /// @dev Compute the payoff in the collateral tokens
+    /// @param callPut 0 for call, 1 for put
+    /// @param strike Strike rate
+    /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
+    /// @param spot Spot rate
+    /// @param tokens Number of Optino and Cover tokens to compute the payoff for
+    /// @param baseDecimals Base token contract decimals
+    /// @param quoteDecimals Quote token contract decimals
+    /// @param rateDecimals `strike`, `bound`, `spot` decimals
+    /// @return _payoff The computed payoff
     function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint baseDecimals, uint quoteDecimals, uint rateDecimals) public pure returns (uint _payoff) {
         return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     }
