@@ -186,14 +186,13 @@ contract CloneFactory {
 // ----------------------------------------------------------------------------
 library NameUtils {
     // TODO: Remove 'z' before deployment to reduce symbol space pollution
-    bytes constant CALL = "zCOPT";
-    bytes constant PUT = "zPOPT";
+    bytes constant OPTINOSYMBOL = "zOPT";
+    bytes constant COVERSYMBOL = "zCOV";
     bytes constant VANILLACALLNAME = "Vanilla Call";
     bytes constant VANILLAPUTNAME = "Vanilla Put";
     bytes constant CAPPEDCALLNAME = "Capped Call";
     bytes constant FLOOREDPUTNAME = "Floored Put";
     bytes constant OPTINO = "Optino";
-    bytes constant COVER = "C";
     bytes constant COVERNAME = "Cover";
     uint8 constant SPACE = 32;
     uint8 constant DASH = 45;
@@ -288,23 +287,18 @@ library NameUtils {
         } while (i > 0);
         b[j++] = byte(CHAR_Z);
     }
-    function toSymbol(bool cover, uint callPut, uint id) internal pure returns (string memory s) {
+    function toSymbol(bool cover, uint id) internal pure returns (string memory s) {
         bytes memory b = new bytes(64);
         uint i;
         uint j;
         uint num;
-        if (callPut == 0) {
-            for (i = 0; i < CALL.length; i++) {
-                b[j++] = CALL[i];
+        if (cover) {
+            for (i = 0; i < COVERSYMBOL.length; i++) {
+                b[j++] = COVERSYMBOL[i];
             }
         } else {
-            for (i = 0; i < PUT.length; i++) {
-                b[j++] = PUT[i];
-            }
-        }
-        if (cover) {
-            for (i = 0; i < COVER.length; i++) {
-                b[j++] = COVER[i];
+            for (i = 0; i < OPTINOSYMBOL.length; i++) {
+                b[j++] = OPTINOSYMBOL[i];
             }
         }
         i = 8;
@@ -829,7 +823,7 @@ contract OptinoToken is BasicToken {
             collateralToken = _quoteToken;
             collateralDecimals = _decimalsData.getQuoteDecimals();
         }
-        string memory _symbol = NameUtils.toSymbol(_isCover, _callPut, _seriesNumber);
+        string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
         string memory _name = NameUtils.toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimalsData.getRateDecimals());
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
