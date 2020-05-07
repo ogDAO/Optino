@@ -441,16 +441,19 @@ if (true) {
   var rate = new BigNumber("250").shift(rateDecimals);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
-  waitUntil("optino.expiry()", optino.expiry.call(), 0);
+  // waitUntil("optino.expiry()", optino.expiry.call(), 0);
+  waitUntil("optino.expiry()", expiry, 0);
   var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
-  var settleGroup1_1Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
-  failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - optino.settle()");
+  failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - priceFeed.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
   printTxData("settleGroup1_1Tx", settleGroup1_1Tx);
+  failIfTxStatusError(settleGroup1_2Tx, settleGroup1_Message + " - seller1 -> optino.settle()");
+  printTxData("settleGroup1_2Tx", settleGroup1_2Tx);
   console.log("RESULT: ");
   printPriceFeedContractDetails();
   console.log("RESULT: ");

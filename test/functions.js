@@ -582,6 +582,7 @@ function printOptinoFactoryContractDetails() {
         console.log("RESULT:     .owner/new=" + getShortAddressName(optinoTokenContract.owner.call()) + "/" + getShortAddressName(optinoTokenContract.newOwner.call()));
         console.log("RESULT:     .details='" + optinoTokenContract.symbol.call() + "' '" + optinoTokenContract.name.call() + "' " + optinoTokenDecimals + " dp");
         console.log("RESULT:     .totalSupply=" + optinoTokenContract.totalSupply.call().shift(-optinoTokenDecimals));
+        console.log("RESULT:     .closedOrSettled=" + optinoTokenContract.balanceOf.call(NULLACCOUNT).shift(-optinoTokenDecimals));
         // console.log("RESULT:     .factory/baseToken/quoteToken/priceFeed=" + getShortAddressName(optinoTokenContract.factory.call()) + "/" + getShortAddressName(optinoTokenContract.baseToken.call()) + "/" + getShortAddressName(optinoTokenContract.quoteToken.call()) + "/" + getShortAddressName(optinoTokenContract.priceFeed.call()));
         // console.log("RESULT:     .callPut/expiry/strike/bound=" + optinoTokenContract.callPut.call() + "/" + optinoTokenContract.expiry.call() + "/" + optinoTokenContract.strike.call().shift(-rateDecimals) + "/" + optinoTokenContract.bound.call().shift(-rateDecimals));
         // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + optinoTokenContract.description.call() + "/" + getShortAddressName(optinoTokenContract.pair.call()) + "/" + optinoTokenContract.seriesNumber.call() + "/" + optinoTokenContract.isCover.call());
@@ -622,6 +623,7 @@ function printOptinoFactoryContractDetails() {
         console.log("RESULT:     .owner/new=" + getShortAddressName(coverTokenContract.owner.call()) + "/" + getShortAddressName(coverTokenContract.newOwner.call()));
         console.log("RESULT:     .details='" + coverTokenContract.symbol.call() + "' '" + coverTokenContract.name.call() + "' " + coverTokenDecimals + " dp");
         console.log("RESULT:     .totalSupply=" + coverTokenContract.totalSupply.call().shift(-coverTokenDecimals));
+        console.log("RESULT:     .closedOrSettled=" + coverTokenContract.balanceOf.call(NULLACCOUNT).shift(-coverTokenDecimals));
         // console.log("RESULT:     .factory/baseToken/quoteToken/priceFeed=" + getShortAddressName(coverTokenContract.factory.call()) + "/" + getShortAddressName(coverTokenContract.baseToken.call()) + "/" + getShortAddressName(coverTokenContract.quoteToken.call()) + "/" + getShortAddressName(coverTokenContract.priceFeed.call()));
         // console.log("RESULT:     .callPut/expiry/strike/bound=" + coverTokenContract.callPut.call() + "/" + coverTokenContract.expiry.call() + "/" + coverTokenContract.strike.call().shift(-rateDecimals) + "/" + coverTokenContract.bound.call().shift(-rateDecimals));
         // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + coverTokenContract.description.call() + "/" + getShortAddressName(coverTokenContract.pair.call()) + "/" + coverTokenContract.seriesNumber.call() + "/" + coverTokenContract.isCover.call());

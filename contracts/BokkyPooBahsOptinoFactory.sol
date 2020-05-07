@@ -878,26 +878,26 @@ contract OptinoToken is BasicToken {
         (uint _callPut, /*_strike*/, /*_bound*/, /*_decimalsData*/) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
         _baseOrQuote = _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
-    function payoffForSpot(uint _spot, uint _tokens) public view returns (uint _payoff) {
+    function payoffForSpot(uint _spot, uint tokens) public view returns (uint _payoff) {
         (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
-        return Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, _decimalsData);
+        return Optino.payoff(_callPut, _strike, _bound, _spot, tokens, _decimalsData);
     }
-    function currentPayoff(uint _tokens) public view returns (uint _currentPayoff) {
+    function currentPayoff(uint tokens) public view returns (uint _currentPayoff) {
         uint _spot = currentSpot();
         (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
-        uint _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, _decimalsData);
-        uint _collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
+        uint _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, tokens, _decimalsData);
+        uint _collateral = Optino.collateral(_callPut, _strike, _bound, tokens, _decimalsData);
         return isCover ? _collateral._sub(_payoff) : _payoff;
     }
-    function payoff(uint _tokens) public view returns (uint __payoff) {
+    function payoff(uint tokens) public view returns (uint __payoff) {
         uint _spot = spot();
         // Not set
         if (_spot == 0) {
             return 0;
         } else {
             (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
-            uint _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, _decimalsData);
-            uint _collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
+            uint _payoff = Optino.payoff(_callPut, _strike, _bound, _spot, tokens, _decimalsData);
+            uint _collateral = Optino.collateral(_callPut, _strike, _bound, tokens, _decimalsData);
             return isCover ? _collateral._sub(_payoff) : _payoff;
         }
     }
@@ -918,20 +918,20 @@ contract OptinoToken is BasicToken {
             require(ERC20(token).transfer(tokenOwner, tokens));
         }
     }
-    function close(uint _baseTokens) public {
-        closeFor(msg.sender, _baseTokens);
+    function close(uint tokens) public {
+        closeFor(msg.sender, tokens);
     }
-    function closeFor(address tokenOwner, uint _tokens) public {
+    function closeFor(address tokenOwner, uint tokens) public {
         require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this));
         if (!isCover) {
-            OptinoToken(payable(pair)).closeFor(tokenOwner, _tokens);
+            OptinoToken(payable(pair)).closeFor(tokenOwner, tokens);
         } else {
-            require(_tokens <= ERC20(this).balanceOf(tokenOwner));
-            require(_tokens <= ERC20(pair).balanceOf(tokenOwner));
-            require(OptinoToken(payable(pair)).burn(tokenOwner, _tokens));
-            require(OptinoToken(payable(this)).burn(tokenOwner, _tokens));
+            require(tokens <= ERC20(this).balanceOf(tokenOwner));
+            require(tokens <= ERC20(pair).balanceOf(tokenOwner));
+            require(OptinoToken(payable(pair)).burn(tokenOwner, tokens));
+            require(OptinoToken(payable(this)).burn(tokenOwner, tokens));
             (uint _callPut, uint _strike, uint _bound, uint _decimalsData) = BokkyPooBahsOptinoFactory(address(uint160(factory))).getCalcData(seriesKey);
-            uint collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, _decimalsData);
+            uint collateral = Optino.collateral(_callPut, _strike, _bound, tokens, _decimalsData);
             transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
             emit Close(pair, collateralToken, tokenOwner, collateral);
         }
@@ -1215,20 +1215,20 @@ contract BokkyPooBahsOptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     // Info functions
     // ----------------------------------------------------------------------------
-    function collateralInBaseOrQuote(uint _callPut) public pure returns (uint _baseOrQuote) {
-        _baseOrQuote = _callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
+    function collateralInBaseOrQuote(uint callPut) public pure returns (uint _baseOrQuote) {
+        _baseOrQuote = callPut; // Call on ETH/DAI - payoff in baseToken (ETH); Put on ETH/DAI - payoff in quoteToken (DAI)
     }
-    function payoff(uint _callPut, uint _strike, uint _bound, uint _spot, uint _tokens, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals) public pure returns (uint _payoff) {
-        return Optino.payoff(_callPut, _strike, _bound, _spot, _tokens, Decimals._setDecimals(OPTINODECIMALS, _baseDecimals, _quoteDecimals, _rateDecimals));
+    function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint baseDecimals, uint quoteDecimals, uint rateDecimals) public pure returns (uint _payoff) {
+        return Optino.payoff(callPut, strike, bound, spot, tokens, Decimals._setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     }
-    function collateral(uint _callPut, uint _strike, uint _bound, uint _tokens, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals) public pure returns (uint _collateral) {
-        return Optino.collateral(_callPut, _strike, _bound, _tokens, Decimals._setDecimals(OPTINODECIMALS, _baseDecimals, _quoteDecimals, _rateDecimals));
+    function collateral(uint callPut, uint strike, uint bound, uint tokens, uint baseDecimals, uint quoteDecimals, uint rateDecimals) public pure returns (uint _collateral) {
+        return Optino.collateral(callPut, strike, bound, tokens, Decimals._setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     }
-    function collateralAndFee(address baseToken, address quoteToken, address priceFeed, uint _callPut, uint _strike, uint _bound, uint _tokens) public view returns (uint _collateral, uint _fee) {
+    function collateralAndFee(address baseToken, address quoteToken, address priceFeed, uint callPut, uint strike, uint bound, uint tokens) public view returns (uint _collateral, uint _fee) {
         bytes32 key = ConfigLib._generateKey(baseToken, quoteToken, priceFeed);
         ConfigLib.Config memory config = configData.entries[key];
         require(config.timestamp > 0, "collateralAndFee: Invalid baseToken/quoteToken/priceFeed");
-        _collateral = Optino.collateral(_callPut, _strike, _bound, _tokens, config.decimalsData);
+        _collateral = Optino.collateral(callPut, strike, bound, tokens, config.decimalsData);
         _fee = _collateral._mul(config.fee)._div(10 ** FEEDECIMALS);
     }
     receive() external payable {
