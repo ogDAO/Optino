@@ -17,8 +17,8 @@ pragma solidity ^0.6.6;
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten:
+// OptinoToken deployment on Ropsten: 0x813f2e19e4Bdf3f4cA15075E5821a1f3620EA356
+// OptinoFactory deployment on Ropsten: 0x3aEEf7CF6405C859861CF869963d100fe11eC23B
 //
 // Web UI at https://optino.xyz, https://bokkypoobah.github.io/Optino,
 // https://github.com/bokkypoobah/Optino, https://optino.eth and
@@ -466,7 +466,7 @@ contract Owned {
 
 // ----------------------------------------------------------------------------
 // Config - [baseToken, quoteToken, priceFeed] =>
-//   [decimalsData, maxTerm, fee, description, timestamp]
+//   [baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, description, timestamp]
 // ----------------------------------------------------------------------------
 library ConfigLib {
     using Decimals for uint;
