@@ -642,13 +642,13 @@ const VanillaOptinoExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.value + ", " + this.hasValue + ")");
+            logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.baseTokens + ")");
             var factoryAddress = store.getters['vanillaOptinoFactory/address']
-            var factory = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(factoryAddress);
+            var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
             logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + this.expiry + "='" + new Date(this.expiry * 1000).toUTCString() + "', '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
             var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
             logInfo("vanillaOptinoExplorer", "  value=" + value);
-            factory.mintOptinoTokens(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), this.expiry, new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
+            factory.mint(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), this.expiry, new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
               if (!error) {
                 logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
                 store.dispatch('connection/addTx', tx);

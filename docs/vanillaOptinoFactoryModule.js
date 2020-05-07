@@ -148,7 +148,7 @@ const VanillaOptinoFactory = {
 const vanillaOptinoFactoryModule = {
   namespaced: true,
   state: {
-    address: VANILLAOPTINOFACTORYADDRESS,
+    address: OPTINOFACTORYADDRESS,
     optinoTokenTemplate: "",
     owner: "(loading)",
     configData: [],
@@ -211,7 +211,7 @@ const vanillaOptinoFactoryModule = {
           commit('updateParams', rootState.route.params.param);
         }
 
-        var contract = web3.eth.contract(VANILLAOPTINOFACTORYABI).at(state.address);
+        var contract = web3.eth.contract(OPTINOFACTORYABI).at(state.address);
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
           var _optinoTokenTemplate = promisify(cb => contract.optinoTokenTemplate(cb));
           var optinoTokenTemplate = await _optinoTokenTemplate;
@@ -234,18 +234,22 @@ const vanillaOptinoFactoryModule = {
             var baseToken = config[1];
             var quoteToken = config[2];
             var priceFeed = config[3];
-            var baseDecimals = config[4];
-            var quoteDecimals = config[5];
-            var rateDecimals = config[6];
-            var maxTerm = config[7];
-            var fee = config[8];
-            var description = config[9];
-            var timestamp = config[10];
+            var decimalsData = config[4];
+            var decimals = parseInt(decimalsData / 1000000 % 100);
+            var baseDecimals = parseInt(decimalsData / 10000 % 100);
+            var quoteDecimals = parseInt(decimalsData / 100 % 100);
+            var rateDecimals = parseInt(decimalsData % 100);
+            var maxTerm = config[5];
+            var fee = config[6];
+            var description = config[7];
+            var timestamp = config[8];
             var maxTermString = getTermFromSeconds(maxTerm);
+
+            // bytes32 _configKey, address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp
 
             // TODO: Check timestamp for updated info
             if (i >= state.configData.length) {
-              commit('updateConfig', { index: i, config: { index: i, configKey: configKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, baseDecimals: baseDecimals, quoteDecimals: quoteDecimals, rateDecimals: rateDecimals, maxTerm: maxTerm, fee: fee, description: description, timestamp: timestamp, maxTermString: maxTermString } });
+              commit('updateConfig', { index: i, config: { index: i, configKey: configKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, decimals: decimals, baseDecimals: baseDecimals, quoteDecimals: quoteDecimals, rateDecimals: rateDecimals, maxTerm: maxTerm, fee: fee, description: description, timestamp: timestamp, maxTermString: maxTermString } });
             }
 
             // TODO: Fix updating of token info. Refresh for now
@@ -253,7 +257,7 @@ const vanillaOptinoFactoryModule = {
               if (!(t in state.tokenData)) {
                 // Commit first so it does not get redone
                 commit('updateToken', { key: t, token: { address: t } });
-                var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], VANILLAOPTINOFACTORYADDRESS, cb));
+                var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], OPTINOFACTORYADDRESS, cb));
                 var tokenInfo = await _tokenInfo;
                 var totalSupply;
                 var balance;
@@ -290,7 +294,7 @@ const vanillaOptinoFactoryModule = {
               if (!(t in state.tokenData)) {
                 // Commit first so it does not get redone
                 commit('updateToken', { key: t, token: { address: t } });
-                var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], VANILLAOPTINOFACTORYADDRESS, cb));
+                var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], OPTINOFACTORYADDRESS, cb));
                 var tokenInfo = await _tokenInfo;
                 var totalSupply;
                 var balance;
