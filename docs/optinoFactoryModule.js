@@ -1,4 +1,4 @@
-const VanillaOptinoFactory = {
+const OptinoFactory = {
   template: `
     <div>
       <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337 && network != 3">
@@ -6,8 +6,8 @@ const VanillaOptinoFactory = {
           Please switch to the Geth Devnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
-      <b-button v-b-toggle.vanillaOptinoFactory size="sm" block variant="outline-info">Vanilla Optino Factory {{ address.substring(0, 6) }}</b-button>
-      <b-collapse id="vanillaOptinoFactory" visible class="mt-2">
+      <b-button v-b-toggle.optinoFactory size="sm" block variant="outline-info">Optino Factory {{ address.substring(0, 6) }}</b-button>
+      <b-collapse id="optinoFactory" visible class="mt-2">
         <b-card no-body class="border-0" v-if="network == 1337 || network == 3">
           <b-row>
             <b-col cols="4" class="small">Factory</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + address + '#code'" class="card-link" target="_blank">{{ address }}</b-link></b-col>
@@ -127,25 +127,25 @@ const VanillaOptinoFactory = {
       return store.getters['connection/explorer'];
     },
     address() {
-      return store.getters['vanillaOptinoFactory/address'];
+      return store.getters['optinoFactory/address'];
     },
     optinoTokenTemplate() {
-      return store.getters['vanillaOptinoFactory/optinoTokenTemplate'];
+      return store.getters['optinoFactory/optinoTokenTemplate'];
     },
     owner() {
-      return store.getters['vanillaOptinoFactory/owner'];
+      return store.getters['optinoFactory/owner'];
     },
     configData() {
-      return store.getters['vanillaOptinoFactory/configData'];
+      return store.getters['optinoFactory/configData'];
     },
     seriesData() {
-      return store.getters['vanillaOptinoFactory/seriesData'];
+      return store.getters['optinoFactory/seriesData'];
     },
   },
 };
 
 
-const vanillaOptinoFactoryModule = {
+const optinoFactoryModule = {
   namespaced: true,
   state: {
     address: OPTINOFACTORYADDRESS,
@@ -169,44 +169,44 @@ const vanillaOptinoFactoryModule = {
   mutations: {
     updateConfig(state, {index, config}) {
       Vue.set(state.configData, index, config);
-      logDebug("vanillaOptinoFactoryModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
+      logDebug("optinoFactoryModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
     },
     updateSeries(state, {index, series}) {
       Vue.set(state.seriesData, index, series);
-      logDebug("vanillaOptinoFactoryModule", "updateSeries(" + index + ", " + JSON.stringify(series) + ")")
+      logDebug("optinoFactoryModule", "updateSeries(" + index + ", " + JSON.stringify(series) + ")")
     },
     updateToken(state, {key, token}) {
       Vue.set(state.tokenData, key, token);
-      logDebug("vanillaOptinoFactoryModule", "updateToken(" + key + ", " + JSON.stringify(token) + ")")
+      logDebug("optinoFactoryModule", "updateToken(" + key + ", " + JSON.stringify(token) + ")")
     },
     updateOptinoTokenTemplate(state, optinoTokenTemplate) {
       state.optinoTokenTemplate = optinoTokenTemplate;
-      logDebug("vanillaOptinoFactoryModule", "updateOptinoTokenTemplate('" + optinoTokenTemplate + "')")
+      logDebug("optinoFactoryModule", "updateOptinoTokenTemplate('" + optinoTokenTemplate + "')")
     },
     updateOwner(state, owner) {
       state.owner = owner;
-      logDebug("vanillaOptinoFactoryModule", "updateOwner('" + owner + "')")
+      logDebug("optinoFactoryModule", "updateOwner('" + owner + "')")
     },
     updateParams(state, params) {
       state.params = params;
-      logDebug("vanillaOptinoFactoryModule", "updateParams('" + params + "')")
+      logDebug("optinoFactoryModule", "updateParams('" + params + "')")
     },
     updateExecuting(state, executing) {
       state.executing = executing;
-      logDebug("vanillaOptinoFactoryModule", "updateExecuting(" + executing + ")")
+      logDebug("optinoFactoryModule", "updateExecuting(" + executing + ")")
     },
   },
   actions: {
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-      logDebug("vanillaOptinoFactoryModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
+      logDebug("optinoFactoryModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
       if (!state.executing) {
         commit('updateExecuting', true);
-        logDebug("vanillaOptinoFactoryModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("optinoFactoryModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
 
         var paramsChanged = false;
         if (state.params != rootState.route.params.param) {
-          logDebug("vanillaOptinoFactoryModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
+          logDebug("optinoFactoryModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
           paramsChanged = true;
           commit('updateParams', rootState.route.params.param);
         }
@@ -225,11 +225,11 @@ const vanillaOptinoFactoryModule = {
           }
           var _configDataLength = promisify(cb => contract.configDataLength(cb));
           var configDataLength = await _configDataLength;
-          logDebug("vanillaOptinoFactoryModule", "execWeb3() configDataLength: " + configDataLength);
+          logDebug("optinoFactoryModule", "execWeb3() configDataLength: " + configDataLength);
           for (var i = 0; i < configDataLength; i++) {
             var _config = promisify(cb => contract.getConfigByIndex(new BigNumber(i).toString(), cb));
             var config = await _config;
-            logDebug("vanillaOptinoFactoryModule", "execWeb3() config: " + JSON.stringify(config));
+            logDebug("optinoFactoryModule", "execWeb3() config: " + JSON.stringify(config));
             var configKey = config[0];
             var baseToken = config[1];
             var quoteToken = config[2];
@@ -275,11 +275,11 @@ const vanillaOptinoFactoryModule = {
           }
           var _seriesDataLength = promisify(cb => contract.seriesDataLength(cb));
           var seriesDataLength = await _seriesDataLength;
-          logDebug("vanillaOptinoFactoryModule", "execWeb3() seriesDataLength: " + seriesDataLength);
+          logDebug("optinoFactoryModule", "execWeb3() seriesDataLength: " + seriesDataLength);
           for (var i = 0; i < seriesDataLength; i++) {
             var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(i).toString(), cb));
             var series = await _series;
-            logDebug("vanillaOptinoFactoryModule", "execWeb3() config: " + JSON.stringify(series));
+            logDebug("optinoFactoryModule", "execWeb3() config: " + JSON.stringify(series));
             var seriesKey = series[0];
             var configKey = series[1];
             var callPut = series[2];
@@ -316,9 +316,9 @@ const vanillaOptinoFactoryModule = {
           }
         }
         commit('updateExecuting', false);
-        logDebug("vanillaOptinoFactoryModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("optinoFactoryModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       } else {
-        logDebug("vanillaOptinoFactoryModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("optinoFactoryModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       }
     },
   },

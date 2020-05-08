@@ -333,19 +333,17 @@ const Connection = {
       }
 
       if (store.getters['connection/isOk']) {
-        await store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        // await store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         await store.dispatch('priceFeed/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        await store.dispatch('vanillaOptinoFactory/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        await store.dispatch('optinoFactory/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // await store.dispatch('tokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        if (this.$route.name == "DeployTokenContract") {
-          await store.dispatch('deployTokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        } else if (this.$route.name == "TokenContractExplorer" /* || this.$route.name == "GoblokStatus" */) {
-          await store.dispatch('tokenContractExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        // } else if (this.$route.name == "VanillaOptinoExplorer") {
-          // await store.dispatch('vanillaOptinoExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        } else if (this.$route.name == "PriceFeedExplorer") {
-          await store.dispatch('priceFeedExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        }
+        // if (this.$route.name == "DeployTokenContract") {
+        //   await store.dispatch('deployTokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        // } else if (this.$route.name == "TokenContractExplorer" /* || this.$route.name == "GoblokStatus" */) {
+        //   await store.dispatch('tokenContractExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        // } else if (this.$route.name == "PriceFeedExplorer") {
+        //   await store.dispatch('priceFeedExplorer/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        // }
       }
       logDebug("Connection", "execWeb3() end[" + this.count + "]");
     },

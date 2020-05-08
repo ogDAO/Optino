@@ -106,8 +106,9 @@ const DataService = {
     var dataServiceUrl = window.location.href.includes("localhost") ? "http://localhost/api/" : "https://goblok.world/api/";
     logDebug("DataService", "dataServiceUrl: " + dataServiceUrl);
     store.dispatch('dataService/setDataServiceUrl', dataServiceUrl);
-    this.reschedule = true;
-    this.timeoutCallback();
+    // Disabled
+    // this.reschedule = true;
+    // this.timeoutCallback();
   },
   destroyed() {
     logDebug("DataService", "destroyed() Called");

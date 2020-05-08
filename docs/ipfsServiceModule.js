@@ -143,8 +143,9 @@ $ ipfs daemon
   },
   mounted() {
     logDebug("IpfsService", "mounted() Called");
-    this.reschedule = true;
-    this.timeoutCallback();
+    // Disabled
+    // this.reschedule = true;
+    // this.timeoutCallback();
   },
   destroyed() {
     logDebug("IpfsService", "destroyed() Called");

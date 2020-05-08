@@ -1,10 +1,10 @@
-const VanillaOptinoExplorer = {
+const OptinoExplorer = {
   template: `
   <div>
     <div>
       <b-row>
         <b-col cols="12" md="9">
-          <b-card no-body header="Vanilla Optino Explorer" class="border-0">
+          <b-card no-body header="Optino Explorer" class="border-0">
             <br />
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
@@ -217,27 +217,7 @@ const VanillaOptinoExplorer = {
                       </b-input-group>
                     </b-form-group>
 
-                    <!--
-                    <b-form-group label-cols="3" label="baseTokensPlusFee (ETH)" v-if="callPut == 0 && baseToken == address0">
-                      <b-input-group :append="tokenData[baseToken].symbol">
-                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="baseTokensPlusFee (Tokens)" v-if="callPut == 0 && baseToken != '' && baseToken != address0" :description="'Allowance ' + tokenData[baseToken].allowance.shift(-baseDecimals).toString()">
-                      <b-input-group :append="tokenData[baseToken].symbol">
-                        <b-form-input type="text" v-model.trim="baseTokensPlusFee"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    -->
-
                     <b-card :title="collateralSymbol" v-if="collateralToken != null && collateralToken != ADDRESS0">
-                      <!--
-                      <b-form-group label-cols="3" label="Current allowance">
-                        <b-input-group>
-                          <b-form-input type="text" v-model.trim="strike"></b-form-input>
-                        </b-input-group>
-                      </b-form-group>
-                      -->
                       <b-card-text>
                       Current allowance {{ tokenData[collateralToken].allowance.shift(-collateralDecimals).toString() }}
                       </b-card-text>
@@ -273,7 +253,7 @@ const VanillaOptinoExplorer = {
           <br />
           <priceFeed></priceFeed>
           <br />
-          <vanillaOptinoFactory></vanillaOptinoFactory>
+          <optinoFactory></optinoFactory>
           <!--
           <br />
           <tokenContract></tokenContract>
@@ -424,6 +404,7 @@ const VanillaOptinoExplorer = {
         var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
         var bound = this.bound == null ? new BigNumber(0) : new BigNumber(this.bound).shift(rateDecimals);
         var baseTokens = this.baseTokens == null ? new BigNumber(1).shift(baseDecimals) : new BigNumber(this.baseTokens).shift(baseDecimals);
+        logDebug("collateral", JSON.stringify(collateral));
         var collateral = collateral(callPut, strike, bound, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
         logDebug("collateral", JSON.stringify(collateral));
         if (callPut == 0) {
@@ -433,7 +414,7 @@ const VanillaOptinoExplorer = {
         }
         return collateral;
       } catch (e) {
-        return new BigNumber(0);
+        return new BigNumber(0).toString();
       }
     },
     collateralPlusFee() {
@@ -449,13 +430,13 @@ const VanillaOptinoExplorer = {
         }
       } catch (e) {
       }
-      return new BigNumber(0);
+      return new BigNumber(0).toString();
     },
     configData() {
-      return store.getters['vanillaOptinoFactory/configData'];
+      return store.getters['optinoFactory/configData'];
     },
     configOptions() {
-      var configData = store.getters['vanillaOptinoFactory/configData'];
+      var configData = store.getters['optinoFactory/configData'];
       var results = [];
       results.push({ value: "", text: "(select a Config or a Series)" });
       configData.forEach(function(e) {
@@ -464,11 +445,11 @@ const VanillaOptinoExplorer = {
       return results;
     },
     seriesData() {
-      return store.getters['vanillaOptinoFactory/seriesData'];
+      return store.getters['optinoFactory/seriesData'];
     },
     seriesOptions() {
-      var seriesData = store.getters['vanillaOptinoFactory/seriesData'];
-      var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
+      var seriesData = store.getters['optinoFactory/seriesData'];
+      var tokenData = store.getters['optinoFactory/tokenData'];
       var results = [];
       results.push({ value: null, text: "(none)" });
       seriesData.forEach(function(e) {
@@ -478,10 +459,10 @@ const VanillaOptinoExplorer = {
       return results;
     },
     tokenData() {
-      return store.getters['vanillaOptinoFactory/tokenData'];
+      return store.getters['optinoFactory/tokenData'];
     },
     tokenOptions() {
-      var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
+      var tokenData = store.getters['optinoFactory/tokenData'];
       var results = [];
       results.push({ value: null, text: "(select Config or Series above)", disabled: true });
 
@@ -502,7 +483,7 @@ const VanillaOptinoExplorer = {
     configSelected(config) {
       logDebug("configSelected", "configSelected(" +JSON.stringify(config) + ")");
       if (config != null) {
-        var configData = store.getters['vanillaOptinoFactory/configData'];
+        var configData = store.getters['optinoFactory/configData'];
         var t = this;
         configData.forEach(function(e) {
           if (config == e.configKey) {
@@ -524,9 +505,9 @@ const VanillaOptinoExplorer = {
     seriesSelected(series) {
       logDebug("seriesSelected", "seriesSelected(" +JSON.stringify(series) + ")");
       if (series != null) {
-        var seriesData = store.getters['vanillaOptinoFactory/seriesData'];
-        var configData = store.getters['vanillaOptinoFactory/configData'];
-        var tokenData = store.getters['vanillaOptinoFactory/tokenData'];
+        var seriesData = store.getters['optinoFactory/seriesData'];
+        var configData = store.getters['optinoFactory/configData'];
+        var tokenData = store.getters['optinoFactory/tokenData'];
         var t = this;
         seriesData.forEach(function(s) {
           if (series == s.seriesKey) {
@@ -591,7 +572,7 @@ const VanillaOptinoExplorer = {
       event.preventDefault();
     },
     setCollateralAllowance(event) {
-      logDebug("vanillaOptinoExplorer", "setCollateralAllowance()");
+      logDebug("optinoExplorer", "setCollateralAllowance()");
       this.$bvModal.msgBoxConfirm('Set collateral allowance ' + this.collateralAllowance + ' ?', {
           title: 'Please Confirm',
           size: 'sm',
@@ -605,18 +586,18 @@ const VanillaOptinoExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            var factoryAddress = store.getters['vanillaOptinoFactory/address']
+            var factoryAddress = store.getters['optinoFactory/address']
             var tokenContract = web3.eth.contract(ERC20ABI).at(this.collateralToken);
-            logInfo("vanillaOptinoExplorer", "setCollateralAllowance tokenContract.approve('" + factoryAddress + "', '" + this.collateralAllowance + "')");
+            logInfo("optinoExplorer", "setCollateralAllowance tokenContract.approve('" + factoryAddress + "', '" + this.collateralAllowance + "')");
             // TODO need to use baseDecimals/quoteDecimals
             var value = new BigNumber(this.collateralAllowance).shift(this.collateralDecimals).toString();
-            logInfo("vanillaOptinoExplorer", "  value=" + value);
+            logInfo("optinoExplorer", "  value=" + value);
             tokenContract.approve(factoryAddress, value, { from: store.getters['connection/coinbase'] }, function(error, tx) {
               if (!error) {
-                logInfo("vanillaOptinoExplorer", "setCollateralAllowance() tokenContract.approve() tx: " + tx);
+                logInfo("optinoExplorer", "setCollateralAllowance() tokenContract.approve() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logInfo("vanillaOptinoExplorer", "setCollateralAllowance() tokenContract.approve() error: ");
+                logInfo("optinoExplorer", "setCollateralAllowance() tokenContract.approve() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
@@ -630,7 +611,7 @@ const VanillaOptinoExplorer = {
         });
     },
     mintOptinos(event) {
-      logDebug("vanillaOptinoExplorer", "mintOptinos()");
+      logDebug("optinoExplorer", "mintOptinos()");
       this.$bvModal.msgBoxConfirm('Mint ' + this.baseTokens + ' optinos?', {
           title: 'Please Confirm',
           size: 'sm',
@@ -644,18 +625,18 @@ const VanillaOptinoExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("vanillaOptinoExplorer", "mintOptinos(" + this.baseTokens + ")");
-            var factoryAddress = store.getters['vanillaOptinoFactory/address']
+            logInfo("optinoExplorer", "mintOptinos(" + this.baseTokens + ")");
+            var factoryAddress = store.getters['optinoFactory/address']
             var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
-            logInfo("vanillaOptinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + this.expiry + "='" + new Date(this.expiry * 1000).toUTCString() + "', '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
+            logInfo("optinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + this.expiry + "='" + new Date(this.expiry * 1000).toUTCString() + "', '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
             var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
-            logInfo("vanillaOptinoExplorer", "  value=" + value);
+            logInfo("optinoExplorer", "  value=" + value);
             factory.mint(this.baseToken, this.quoteToken, this.priceFeed, new BigNumber(this.callPut).toString(), this.expiry, new BigNumber(this.strike).shift(18).toString(), new BigNumber(this.bound).shift(18).toString(), new BigNumber(this.baseTokens).shift(18).toString(), store.getters['connection/coinbase'], { from: store.getters['connection/coinbase'], value: value }, function(error, tx) {
               if (!error) {
-                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
+                logInfo("optinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logInfo("vanillaOptinoExplorer", "mintOptinos() factory.mintOptino() error: ");
+                logInfo("optinoExplorer", "mintOptinos() factory.mintOptino() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
@@ -671,7 +652,7 @@ const VanillaOptinoExplorer = {
   },
 };
 
-const vanillaOptinoExplorerModule = {
+const optinoExplorerModule = {
   namespaced: true,
   state: {
   },

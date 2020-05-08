@@ -10,9 +10,9 @@ const routes = [{
     component: TokenContractExplorer,
     name: 'TokenContractExplorer',
   }, {
-    path: '/vanillaOptinoExplorer/:param',
-    component: VanillaOptinoExplorer,
-    name: 'VanillaOptinoExplorer',
+    path: '/optinoExplorer/:param',
+    component: OptinoExplorer,
+    name: 'OptinoExplorer',
   }, {
     path: '/priceFeedExplorer/:param',
     component: PriceFeedExplorer,

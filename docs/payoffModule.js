@@ -15,9 +15,9 @@ const Payoff = {
     callPut: [String, Number, Object],
     strike: [String, Number, Object],
     bound: [String, Number, Object],
-    baseTokens: [String, Number],
-    baseDecimals: [String, Number],
-    rateDecimals: [String, Number],
+    baseTokens: [String, Number, Object],
+    baseDecimals: [String, Number, Object],
+    rateDecimals: [String, Number, Object],
     spotFrom: {
       type: [String, Number, Object],
       default: "0",
@@ -31,11 +31,11 @@ const Payoff = {
       default: "1000",
     },
     baseSymbol: {
-      type: [String],
+      type: [String, Number, Object],
       default: "ETH",
     },
     quoteSymbol: {
-      type: [String],
+      type: [String, Number, Object],
       default: "DAI",
     },
   },

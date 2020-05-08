@@ -7,7 +7,7 @@ Vue.component('tokenContract', TokenContract);
 Vue.component('tokens', Tokens);
 Vue.component('payoff', Payoff);
 Vue.component('priceFeed', PriceFeed);
-Vue.component('vanillaOptinoFactory', VanillaOptinoFactory);
+Vue.component('optinoFactory', OptinoFactory);
 Vue.component('dataService', DataService);
 Vue.component('ipfsService', IpfsService);
 Vue.component('flat-pickr', VueFlatpickr);
@@ -56,11 +56,11 @@ const store = new Vuex.Store({
     tokens: tokensModule,
     payoff: payoffModule,
     priceFeed: priceFeedModule,
-    vanillaOptinoFactory: vanillaOptinoFactoryModule,
+    optinoFactory: optinoFactoryModule,
     dataService: dataServiceModule,
     ipfsService: ipfsServiceModule,
     tokenContractExplorer: tokenContractExplorerModule,
-    vanillaOptinoExplorer: vanillaOptinoExplorerModule,
+    optinoExplorer: optinoExplorerModule,
     priceFeedExplorer: priceFeedExplorerModule,
     goblokIpfsExplorer: goblokIpfsExplorerModule,
     goblokApi: apiReferenceModule,
