@@ -616,15 +616,15 @@ function printOptinoFactoryContractDetails() {
             " tokens=" + result.args.tokens.shift(-collateralDecimals));
         });
         optinoTokenPayoffEvents.stopWatching();
-        // var optinoTokenLogInfoEvents = optinoTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        // j = 0;
-        // optinoTokenLogInfoEvents.watch(function (error, result) {
-        //   console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
-        //     " note=" + result.args.note +
-        //     " addr=" + getShortAddressName(result.args.addr) +
-        //     " number=" + result.args.number);
-        // });
-        // optinoTokenLogInfoEvents.stopWatching();
+        var optinoTokenLogInfoEvents = optinoTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+        j = 0;
+        optinoTokenLogInfoEvents.watch(function (error, result) {
+          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
+            " note=" + result.args.note +
+            " addr=" + getShortAddressName(result.args.addr) +
+            " number=" + result.args.number);
+        });
+        optinoTokenLogInfoEvents.stopWatching();
 
         var coverTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(coverToken);
         var coverTokenDecimals = coverTokenContract.decimals.call();
@@ -680,6 +680,7 @@ function printOptinoFactoryContractDetails() {
 
     }
 
+    console.log("RESULT: Here");
     var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
@@ -687,41 +688,66 @@ function printOptinoFactoryContractDetails() {
     });
     ownershipTransferredEvents.stopWatching();
 
-    var configAddedEvents = contract.ConfigAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-    i = 0;
-    configAddedEvents.watch(function (error, result) {
-      console.log("RESULT: ConfigAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    configAddedEvents.stopWatching();
+    // var configAddedEvents = contract.ConfigAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    // i = 0;
+    // configAddedEvents.watch(function (error, result) {
+    //   console.log("RESULT: ConfigAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    // });
+    // configAddedEvents.stopWatching();
 
-    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    // var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    // i = 0;
+    // seriesAddedEvents.watch(function (error, result) {
+    //   console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    // });
+    // seriesAddedEvents.stopWatching();
+    //
+    var seriesFeedPairAdded = contract.FeedPairAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
-    seriesAddedEvents.watch(function (error, result) {
-      console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    seriesFeedPairAdded.watch(function (error, result) {
+      console.log("RESULT: FeedPairAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
-    seriesAddedEvents.stopWatching();
+    seriesFeedPairAdded.stopWatching();
+
+    var seriesAddedV1Events = contract.SeriesAddedV1({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    i = 0;
+    seriesAddedV1Events.watch(function (error, result) {
+      console.log("RESULT: SeriesAddedV1 " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    });
+    seriesAddedV1Events.stopWatching();
 
     var optinoMintedEvents = contract.OptinoMinted({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     optinoMintedEvents.watch(function (error, result) {
       // event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, address collateralToken, uint collateral, uint ownerFee, uint uiFee);
-      // console.log("RESULT: OptinoMinted " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-      var series = seriesData[result.args.seriesKey];
-      var collateralDecimals = series.collateralDecimals;
-      collateralDecimals = 0;
-      console.log("RESULT: collateralDecimals=" + collateralDecimals);
-      console.log("RESULT: series=" + JSON.stringify(series));
-      console.log("RESULT: OptinoMinted " + j++ + " #" + result.blockNumber +
-        " seriesKey=" + result.args.seriesKey +
-        " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-        " coverToken=" + getShortAddressName(result.args.coverToken) +
-        " tokens=" + result.args.tokens.shift(-optinoTokenDecimals) +
-        " collateralToken=" + getShortAddressName(result.args.collateralToken) +
-        " collateral=" + result.args.collateral.shift(-collateralDecimals) +
-        " ownerFee=" + result.args.ownerFee.shift(-collateralDecimals) +
-        " uiFee=" + result.args.uiFee.shift(-collateralDecimals));
+      console.log("RESULT: OptinoMinted " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      // var series = seriesData[result.args.seriesKey];
+      // var collateralDecimals = series.collateralDecimals;
+      // collateralDecimals = 0;
+      // console.log("RESULT: collateralDecimals=" + collateralDecimals);
+      // console.log("RESULT: series=" + JSON.stringify(series));
+      // console.log("RESULT: OptinoMinted " + j++ + " #" + result.blockNumber +
+      //   " seriesKey=" + result.args.seriesKey +
+      //   " optinoToken=" + getShortAddressName(result.args.optinoToken) +
+      //   " coverToken=" + getShortAddressName(result.args.coverToken) +
+      //   " tokens=" + result.args.tokens.shift(-optinoTokenDecimals) +
+      //   " collateralToken=" + getShortAddressName(result.args.collateralToken) +
+      //   " collateral=" + result.args.collateral.shift(-collateralDecimals) +
+      //   " ownerFee=" + result.args.ownerFee.shift(-collateralDecimals) +
+      //   " uiFee=" + result.args.uiFee.shift(-collateralDecimals));
     });
     optinoMintedEvents.stopWatching();
+
+    var optinoTokenLogInfoEvents = contract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    j = 0;
+    optinoTokenLogInfoEvents.watch(function (error, result) {
+      console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
+        " note=" + result.args.note +
+        " addr=" + getShortAddressName(result.args.addr) +
+        " number=" + result.args.number);
+    });
+    optinoTokenLogInfoEvents.stopWatching();
+    console.log("RESULT: There");
 
     _optinoFactoryFromBlock = latestBlock + 1;
   }
