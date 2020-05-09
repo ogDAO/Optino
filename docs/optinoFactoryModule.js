@@ -282,11 +282,11 @@ const optinoFactoryModule = {
             logDebug("optinoFactoryModule", "execWeb3() config: " + JSON.stringify(series));
             var seriesKey = series[0];
             var configKey = series[1];
-            var callPut = series[2];
-            var expiry = series[3];
+            var callPut = series[2].toString();
+            var expiry = series[3].toString();
             var strike = new BigNumber(series[4]);
             var bound = new BigNumber(series[5]);
-            var timestamp = series[6];
+            var timestamp = series[6].toString();
             var optinoToken = series[7];
             var coverToken = series[8];
             // TODO: Fix updating of token info. Refresh for now

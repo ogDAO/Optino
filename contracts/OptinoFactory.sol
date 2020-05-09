@@ -116,7 +116,7 @@ library BokkyPooBahsDateTimeLibrary {
 
 
 // ----------------------------------------------------------------------------
-// CloneFactory.sol - from
+// CloneFactory.sol
 // https://github.com/optionality/clone-factory/blob/32782f82dfc5a00d103a7e61a17a5dedbd1e8e9d/contracts/CloneFactory.sol
 // ----------------------------------------------------------------------------
 /*
@@ -480,7 +480,7 @@ library ConfigLib {
         address priceFeed;
         uint decimalsData;
         uint maxTerm;
-        uint fee;
+        uint fee; // TODO: Remove
         string description;
     }
     struct Data {
@@ -499,9 +499,6 @@ library ConfigLib {
     function generateKey(address baseToken, address quoteToken, address priceFeed) internal pure returns (bytes32 hash) {
         return keccak256(abi.encodePacked(baseToken, quoteToken, priceFeed));
     }
-    // function hasKey(Data storage self, bytes32 key) internal view returns (bool) {
-    //     return self.entries[key].timestamp > 0;
-    // }
     function add(Data storage self, address baseToken, address quoteToken, address priceFeed, uint decimalsData, uint maxTerm, uint fee, string memory description) internal {
         require(baseToken != quoteToken, "ConfigLib.add: baseToken cannot be the same as quoteToken");
         require(priceFeed != address(0), "ConfigLib.add: priceFeed cannot be null");
@@ -599,22 +596,40 @@ library SeriesLib {
 
 
 // ----------------------------------------------------------------------------
-// ApproveAndCall Fallback
-// NOTE for contracts implementing this interface:
-// 1. An error must be thrown if there are errors executing `transferFrom(...)`
-// 2. The calling token contract must be checked to prevent malicious behaviour
+// AdaptorFeed
 // ----------------------------------------------------------------------------
-interface ApproveAndCallFallback {
-    function receiveApproval(address from, uint256 tokens, address token, bytes calldata data) external;
-}
-
-
-// ----------------------------------------------------------------------------
-// PriceFeedAdaptor
-// ----------------------------------------------------------------------------
-interface PriceFeedAdaptor {
+interface AdaptorFeed {
     function spot() external view returns (uint value, bool hasValue);
 }
+
+
+// ----------------------------------------------------------------------------
+// MakerDAO Oracles v2
+// ----------------------------------------------------------------------------
+interface MakerFeed {
+    function peek() external view returns (bytes32 _value, bool _hasValue);
+}
+
+// ----------------------------------------------------------------------------
+// Chainlink AggregatorInterface
+// import "@chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol";
+// ----------------------------------------------------------------------------
+// pragma solidity ^0.6.0;
+
+interface AggregatorInterface {
+  function latestAnswer() external view returns (int256);
+  function latestTimestamp() external view returns (uint256);
+  function latestRound() external view returns (uint256);
+  function getAnswer(uint256 roundId) external view returns (int256);
+  function getTimestamp(uint256 roundId) external view returns (uint256);
+  function decimals() external view returns (uint8);
+
+  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
+  event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
+}
+// ----------------------------------------------------------------------------
+// End Chainlink AggregatorInterface
+// ----------------------------------------------------------------------------
 
 
 // ----------------------------------------------------------------------------
@@ -635,22 +650,20 @@ interface ERC20 {
 
 
 // ----------------------------------------------------------------------------
-// Token = ERC20 + symbol + name + decimals + approveAndCall + mint
+// ERC20Plus = ERC20 + symbol + name + decimals + mint
 // ----------------------------------------------------------------------------
-interface Token is ERC20 {
+interface ERC20Plus is ERC20 {
     function symbol() external view returns (string memory);
     function name() external view returns (string memory);
     function decimals() external view returns (uint8);
-    function approveAndCall(address spender, uint tokens, bytes calldata data) external returns (bool success);
     function mint(address tokenOwner, uint tokens) external returns (bool success);
 }
 
 
 // ----------------------------------------------------------------------------
-// Basic token = ERC20 + symbol + name + decimals + approveAndCall + mint
-//               + ownership
+// Basic token = ERC20 + symbol + name + decimals + mint + ownership
 // ----------------------------------------------------------------------------
-contract BasicToken is Token, Owned {
+contract BasicToken is ERC20Plus, Owned {
     using SafeMath for uint;
 
     string _symbol;
@@ -702,13 +715,6 @@ contract BasicToken is Token, Owned {
     }
     function allowance(address tokenOwner, address spender) override external view returns (uint remaining) {
         return allowed[tokenOwner][spender];
-    }
-    // NOTE Only use this call with a trusted spender contract
-    function approveAndCall(address spender, uint tokens, bytes calldata data) override external returns (bool success) {
-        allowed[msg.sender][spender] = tokens;
-        emit Approval(msg.sender, spender, tokens);
-        ApproveAndCallFallback(spender).receiveApproval(msg.sender, tokens, address(this), data);
-        return true;
     }
     function mint(address tokenOwner, uint tokens) override external onlyOwner returns (bool success) {
         balances[tokenOwner] = balances[tokenOwner].add(tokens);
@@ -975,10 +981,105 @@ contract OptinoToken is BasicToken {
 }
 
 
+library FeedLib {
+    enum FeedType {
+        CHAINLINK,
+        MAKER,
+        ADAPTOR
+    }
+
+    function getSpot(address feed, FeedType feedType) internal view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
+        if (feedType == FeedType.CHAINLINK) {
+            int _iRate = AggregatorInterface(feed).latestAnswer();
+            _hasData = _iRate > 0;
+            _rate = _hasData ? uint(_iRate) : 0;
+            _decimals = AggregatorInterface(feed).decimals();
+            _timestamp = AggregatorInterface(feed).latestTimestamp();
+        } else if (feedType == FeedType.MAKER) {
+            bytes32 _bRate;
+            (_bRate, _hasData) = MakerFeed(feed).peek();
+            _rate = uint(_bRate);
+            if (!_hasData) {
+                _rate = 0;
+            }
+            _decimals = 18;
+            _timestamp = block.timestamp;
+        } else {
+            (_rate, _hasData) = AdaptorFeed(feed).spot();
+            if (!_hasData) {
+                _rate = 0;
+            }
+            _decimals = 18;
+            _timestamp = block.timestamp;
+        }
+    }
+}
+
+
+contract FactoryData {
+    using FeedLib for FeedLib.FeedType;
+
+    struct Token {
+        uint timestamp;
+        uint index;
+        address token;
+        string symbol;
+        uint8 decimals;
+    }
+
+    struct Feed {
+        uint timestamp;
+        uint index;
+        address feed;
+        string name;
+        FeedLib.FeedType feedType;
+        uint8 decimals;
+    }
+
+    mapping(address => Token) tokenData;
+    address[] tokenIndex;
+    mapping(address => Feed) feedData;
+    address[] feedIndex;
+
+    function _addToken(ERC20Plus token) internal {
+        require(tokenData[address(token)].token == address(0), "_addToken: Cannot add duplicate");
+        string memory _symbol;
+        try token.symbol() returns (string memory s) {
+            _symbol = s;
+        } catch {
+            revert("addToken: Cannot retrieve symbol");
+        }
+        uint8 _decimals;
+        try token.decimals() returns (uint8 d) {
+            _decimals = d;
+        } catch {
+            revert("addToken: Cannot retrieve decimals");
+        }
+        tokenIndex.push(address(token));
+        tokenData[address(token)] = Token(block.timestamp, tokenIndex.length - 1, address(token), _symbol, _decimals);
+    }
+
+    function _addFeed(address feed, string memory name, FeedLib.FeedType _feedType, uint8 _decimals) internal {
+        require(feedData[feed].feed == address(0), "_addFeed: Cannot add duplicate");
+        (uint _spot, bool _hasData, uint _feedDecimals, uint _timestamp) = FeedLib.getSpot(feed, _feedType);
+        require(_spot > 0, "_addFeed: Spot must >= 0");
+        require(_hasData, "_addFeed: Feed has no data");
+        require(_feedDecimals == _decimals, "_addFeed: Feed decimals mismatch");
+        require(_timestamp + 24 * 60 * 60 > block.timestamp, "_addFeed: Feed timestamp > 1 day old");
+        feedIndex.push(feed);
+        feedData[feed] = Feed(block.timestamp, feedIndex.length - 1, feed, name, _feedType, _decimals);
+    }
+
+    function getSpot(address feed, FeedLib.FeedType _feedType) public view returns (uint _spot, bool _hasData, uint _feedDecimals, uint _timestamp) {
+        (_spot, _hasData, _feedDecimals, _timestamp) = FeedLib.getSpot(feed, _feedType);
+    }
+
+}
+
 /// @title Optino Factory - Deploy optino and cover token contracts
 /// @author BokkyPooBah, Bok Consulting Pty Ltd - <https://github.com/bokkypoobah>
 /// @notice If `newAddress` is not null, it will point to the upgraded contract
-contract OptinoFactory is Owned, CloneFactory {
+contract OptinoFactory is Owned, FactoryData, CloneFactory {
     using SafeMath for uint;
     using Decimals for uint;
     using ConfigLib for ConfigLib.Data;
@@ -997,15 +1098,20 @@ contract OptinoFactory is Owned, CloneFactory {
         uint tokens;
     }
 
+
     address private constant ETH = address(0);
     uint public constant OPTINODECIMALS = 18;
     uint public constant FEEDECIMALS = 18;
+    uint public constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
+
     // Manually set spot 7 days after expiry, if priceFeed fails (spot == 0 or hasValue == 0)
     uint public constant GRACEPERIOD = 7 * 24 * 60 * 60;
 
     // Set to new contract address if this contract is deprecated
     address public newAddress;
     address public optinoTokenTemplate;
+
+    uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     ConfigLib.Data private configData;
     SeriesLib.Data private seriesData;
@@ -1016,7 +1122,8 @@ contract OptinoFactory is Owned, CloneFactory {
     event SeriesAdded(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
 
-    event ContractDeprecated(address _newAddress);
+    event ContractDeprecated(address newAddress);
+    event FeeUpdated(uint fee);
     event EthersReceived(address indexed sender, uint ethers);
     event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, address collateralToken, uint collateral, uint ownerFee, uint uiFee);
 
@@ -1029,20 +1136,25 @@ contract OptinoFactory is Owned, CloneFactory {
         emit ContractDeprecated(_newAddress);
         newAddress = _newAddress;
     }
+    function updateFee(uint _fee) public onlyOwner {
+        require(_fee <= MAXFEE, "setFee: fee must <= MAXFEE");
+        emit FeeUpdated(_fee);
+        fee = _fee;
+    }
 
     // ----------------------------------------------------------------------------
     // Config
     // ----------------------------------------------------------------------------
-    function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint fee, string memory description) public onlyOwner {
+    function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint _fee, string memory description) public onlyOwner {
         if (!configData.initialised) {
             configData.initConfig();
         }
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals);
-        configData.add(baseToken, quoteToken, priceFeed, decimalsData, maxTerm, fee, description);
+        configData.add(baseToken, quoteToken, priceFeed, decimalsData, maxTerm, _fee, description);
     }
-    function updateConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint fee, string memory description) public onlyOwner {
+    function updateConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint _fee, string memory description) public onlyOwner {
         require(configData.initialised, "updateConfig: Not initialised");
-        configData.update(baseToken, quoteToken, priceFeed, maxTerm, fee, description);
+        configData.update(baseToken, quoteToken, priceFeed, maxTerm, _fee, description);
     }
     function configDataLength() public view returns (uint _length) {
         return configData.length();
@@ -1073,7 +1185,7 @@ contract OptinoFactory is Owned, CloneFactory {
     function getSeriesCurrentSpot(bytes32 seriesKey) public view returns (uint _currentSpot) {
         SeriesLib.Series memory series = seriesData.entries[seriesKey];
         ConfigLib.Config memory config = configData.entries[series.configKey];
-        (uint _spot, bool hasValue) = PriceFeedAdaptor(config.priceFeed).spot();
+        (uint _spot, bool hasValue) = AdaptorFeed(config.priceFeed).spot();
         if (hasValue) {
             return _spot;
         }
@@ -1159,7 +1271,7 @@ contract OptinoFactory is Owned, CloneFactory {
 
         uint collateral = OptinoV1.collateral(callPut, strike, bound, optinoData.tokens, config.decimalsData);
         address collateralToken = callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
-        uint ownerFee = collateral.mul(config.fee).div(10 ** FEEDECIMALS);
+        uint ownerFee = collateral.mul(fee).div(10 ** FEEDECIMALS);
         uint uiFee;
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
             uiFee = ownerFee / 2;
@@ -1224,7 +1336,7 @@ contract OptinoFactory is Owned, CloneFactory {
         ConfigLib.Config memory config = configData.entries[key];
         require(config.timestamp > 0, "collateralAndFee: Invalid baseToken/quoteToken/priceFeed");
         _collateral = OptinoV1.collateral(callPut, strike, bound, tokens, config.decimalsData);
-        _fee = _collateral.mul(config.fee).div(10 ** FEEDECIMALS);
+        _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
     }
 
     // ----------------------------------------------------------------------------
@@ -1243,7 +1355,7 @@ contract OptinoFactory is Owned, CloneFactory {
             }
         }
     }
-    function getTokenInfo(Token token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
+    function getTokenInfo(ERC20Plus token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
         if (address(token) == ETH) {
             return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
         } else {

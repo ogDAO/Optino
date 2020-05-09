@@ -100,6 +100,10 @@ const Payoff = {
       }
       // console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
 
+      function convert(n) {
+        return n && new BigNumber(n).shift(-rateDecimals);
+      }
+
       var spotFrom = new BigNumber(this.spotFrom).shift(rateDecimals);
       var spotTo = new BigNumber(this.spotTo).shift(rateDecimals);
       var spotStep = new BigNumber(this.spotStep).shift(rateDecimals);
@@ -107,7 +111,8 @@ const Payoff = {
       for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
         // console.log("spot: " + spot.toString());
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
-        console.log("payoffInDeliveryToken: " + spot + " => " + JSON.stringify(result));
+        var x = result.map(convert);
+        console.log("payoffInDeliveryToken: " + spot.shift(-rateDecimals).toString() + " => " + JSON.stringify(x));
         payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
         coverPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
         collateralInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));

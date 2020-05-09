@@ -345,8 +345,8 @@ var floor = new BigNumber("100.000").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var tokens = new BigNumber("10").shift(OPTINODECIMALS);
 var value = web3.toWei("100", "ether").toString();
-// var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
-var _uiFeeAccount = uiFeeAccount;
+var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
+// var _uiFeeAccount = uiFeeAccount;
 var collateralDecimals = callPut == 0 ? baseDecimals : quoteDecimals;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
@@ -406,7 +406,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   var closeAmount = optino.balanceOf.call(seller1).mul(3).div(9);
@@ -438,7 +438,7 @@ if (true) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = new BigNumber("250").shift(rateDecimals);
