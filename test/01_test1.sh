@@ -379,13 +379,16 @@ var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from:
 while (txpool.status.pending > 0) {
 }
 
+// console.log("RESULT: getOptinoTokens before");
 var optinos = getOptinoTokens();
-console.log("RESULT: optinos=" + JSON.stringify(optinos));
+// console.log("RESULT: optinos=" + JSON.stringify(optinos));
+// console.log("RESULT: optinos.length=" + optinos.length);
+// console.log("RESULT: getOptinoTokens after");
 for (var optinosIndex = 0; optinosIndex < optinos.length; optinosIndex++) {
-  console.log(optinos[optinosIndex]);
-  addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "optinoToken" : "coverToken");
+  addAccount(optinos[optinosIndex], optinosIndex%2 == 0 ? "OptinoToken" : "CoverToken");
   addTokenContractAddressAndAbi(optinosIndex + 2, optinos[optinosIndex], optinoTokenAbi);
 }
+// console.log("RESULT: getOptinoTokens after after");
 var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
 var cover = web3.eth.contract(optinoTokenAbi).at(optinos[1]);
 

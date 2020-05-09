@@ -819,14 +819,15 @@ contract OptinoToken is BasicToken {
         pair = _pair;
         seriesNumber = _seriesNumber;
         isCover = _isCover;
+        emit LogInfo("_mint b", msg.sender, 0);
         // (bytes32 _feedPairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKeyV1(seriesKeyV1);
         // feedPairKey = _feedPairKey;
         // (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) = factory.getFeedPairByKeyV1(feedPairKey);
         // collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
         // collateralDecimals = factory.getTokenDecimals(collateralToken);
-        // string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
+        string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
         // string memory _name = NameUtils.toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimalsData.getRateDecimals());
-        // super.initToken(address(factory), "_symbol", "_name", _decimals);
+        super.initToken(address(factory), _symbol, "_name", _decimals);
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
@@ -1078,7 +1079,8 @@ contract FactoryData {
     // [_feedPairKey, callPut, expiry, strike, bound] => SeriesV1
     mapping(bytes32 => SeriesV1) seriesDataV1;
     // [feedPairIndex][seriesIndex] => seriesKeyV1
-    bytes32[][] seriesIndexV1;
+    // bytes32[][] seriesIndexV1;
+    mapping(uint => bytes32[]) seriesIndexV1;
 
 
     function addToken(ERC20Plus token) public /* TODO onlyOwner */ {
@@ -1195,7 +1197,7 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     event SeriesSpotUpdatedV1(bytes32 indexed seriesKeyV1, uint spot);
 
     event FeedPairAdded(bytes32 indexed feedPairKey, uint indexed feedPairIndex, address indexed baseToken, address quoteToken, address feed, bool customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals);
-    event SeriesAddedV1(bytes32 indexed feedPairKey, bytes32 indexed seriesKeyV1, uint indexed feedPairIndex, uint seriesIndexV1, uint callPut, uint expiry, uint strike, uint bound, address _optinoToken, address _coverToken);
+    event SeriesAddedV1(bytes32 indexed feedPairKey, bytes32 indexed seriesKeyV1, uint indexed feedPairIndex, uint seriesIndexV1, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
 
     event ContractDeprecated(address newAddress);
     event FeeUpdated(uint fee);
@@ -1307,11 +1309,10 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
 
         FeedPair memory feedPair = feedPairData[_feedPairKey];
         emit LogInfo("addSeriesV1.feedPair.index", address(0), feedPair.index);
-
-        // seriesIndexV1[feedPair.index].push(_seriesKeyV1);
-        // uint seriesIndex = seriesIndexV1[feedPair.index].length - 1;
-        // seriesDataV1[_seriesKeyV1] = SeriesV1(block.timestamp, seriesIndex, _seriesKeyV1, _feedPairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken, 0);
-        // emit SeriesAddedV1(_feedPairKey, _seriesKeyV1, feedPair.index, seriesIndex, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken);
+        seriesIndexV1[feedPair.index].push(_seriesKeyV1);
+        uint seriesIndex = seriesIndexV1[feedPair.index].length - 1;
+        seriesDataV1[_seriesKeyV1] = SeriesV1(block.timestamp, seriesIndex, _seriesKeyV1, _feedPairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken, 0);
+        emit SeriesAddedV1(_feedPairKey, _seriesKeyV1, feedPair.index, seriesIndex, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken);
     }
     function makeSeriesKeyV1(bytes32 _feedPairKey, OptinoDataV1 memory optinoData) internal pure returns (bytes32 _seriesKeyV1) {
         return keccak256(abi.encodePacked(_feedPairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound));
@@ -1423,6 +1424,7 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
 
     // V1
     function getSeriesByKeyV1(bytes32 seriesKeyV1) public view returns (bytes32 _feedPairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken) {
+        // emit LogInfo
         SeriesV1 memory seriesV1 = seriesDataV1[seriesKeyV1];
         require(seriesV1.timestamp > 0, "getSeriesByKeyV1: Invalid key");
         return (seriesV1.feedPairKey, seriesV1.callPut, seriesV1.expiry, seriesV1.strike, seriesV1.bound, seriesV1.optinoToken, seriesV1.coverToken);
@@ -1514,11 +1516,13 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
             seriesV1.optinoToken = address(_optinoToken);
             seriesV1.coverToken = address(_coverToken);
             addSeriesV1(_feedPairKey, optinoData, address(_optinoToken), address(_coverToken));
-            emit LogInfo("_mint", address(0), 0);
-            // seriesV1 = seriesDataV1[_seriesKeyV1];
-            // emit LogInfo("_mint", msg.sender, optinoData.tokens);
-            // _optinoToken.initOptinoToken(this, _seriesKeyV1, address(_coverToken), feedPair.index * 1000000 + seriesV1.index, false, OPTINODECIMALS);
-            // _coverToken.initOptinoToken(this, _seriesKeyV1, address(_optinoToken), feedPair.index * 1000000 + seriesV1.index, true, OPTINODECIMALS);
+            emit LogInfo("_mint a", address(0), 0);
+            seriesV1 = seriesDataV1[_seriesKeyV1];
+            emit LogInfo("_mint b", msg.sender, optinoData.tokens);
+            _optinoToken.initOptinoToken(this, _seriesKeyV1, address(_coverToken), feedPair.index * 5000000 + seriesV1.index, true, OPTINODECIMALS);
+            _coverToken.initOptinoToken(this, _seriesKeyV1, address(_optinoToken), feedPair.index * 1000000 + seriesV1.index, true, OPTINODECIMALS);
+            // optinoToken.initOptinoToken(this, series.key, address(coverToken), seriesData.length(), false, OPTINODECIMALS);
+            // coverToken.initOptinoToken(this, series.key, address(optinoToken), seriesData.length(), true, OPTINODECIMALS);
         } else {
             // _optinoToken = OptinoToken(payable(seriesV1.optinoToken));
             // _coverToken = OptinoToken(payable(seriesV1.coverToken));

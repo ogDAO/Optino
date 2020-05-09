@@ -494,6 +494,7 @@ function addOptinoFactoryContractAddressAndAbi(address, factoryAbi, optinoAbi) {
 
 var _optinoFactoryFromBlock = 0;
 function getOptinoTokens() {
+  console.log("RESULT: getOptinoTokens start");
   if (_optinoFactoryFromBlock == 0) {
     _optinoFactoryFromBlock = baseBlock;
   }
@@ -505,10 +506,10 @@ function getOptinoTokens() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    var seriesAddedEvents = contract.SeriesAddedV1({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     seriesAddedEvents.watch(function (error, result) {
-      // console.log("RESULT: got SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      console.log("RESULT: got SeriesAddedV1 " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
       optinos.push(result.args.optinoToken);
       optinos.push(result.args.coverToken);
     });
