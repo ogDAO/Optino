@@ -231,7 +231,7 @@ var optinoFactoryContract = web3.eth.contract(optinoFactoryAbi);
 // console.log("DATA: optinoFactoryContract=" + JSON.stringify(optinoFactoryContract));
 var optinoFactoryTx = null;
 var optinoFactoryAddress = null;
-var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deployer, data: optinoFactoryBin, gas: 5000000, gasPrice: defaultGasPrice},
+var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deployer, data: optinoFactoryBin, gas: 6000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {

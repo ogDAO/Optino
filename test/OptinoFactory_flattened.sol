@@ -1036,12 +1036,29 @@ contract FactoryData {
         uint8 decimals;
     }
 
+    struct FeedPair {
+        uint timestamp;
+        uint index;
+        address baseToken;
+        address quoteToken;
+        address feed;
+        bool customFeed;
+        FeedLib.FeedType customFeedType;
+        uint customFeedDecimals;
+    }
+
+    address public constant ETH = address(0);
+    uint public constant OPTINODECIMALS = 18;
+    uint public constant ONEDAY = 24 * 60 * 60;
+
     mapping(address => Token) tokenData;
     address[] tokenIndex;
     mapping(address => Feed) feedData;
     address[] feedIndex;
+    mapping(bytes32 => FeedPair) feedPairData;
+    bytes32[] feedPairIndex;
 
-    function _addToken(ERC20Plus token) internal {
+    function addToken(ERC20Plus token) public /* TODO onlyOwner */ {
         require(tokenData[address(token)].token == address(0), "_addToken: Cannot add duplicate");
         string memory _symbol;
         try token.symbol() returns (string memory s) {
@@ -1059,22 +1076,36 @@ contract FactoryData {
         tokenData[address(token)] = Token(block.timestamp, tokenIndex.length - 1, address(token), _symbol, _decimals);
     }
 
-    function _addFeed(address feed, string memory name, FeedLib.FeedType _feedType, uint8 _decimals) internal {
+    function getTokenDecimals(address token) public view returns (uint8 _decimals) {
+        if (token == ETH) {
+            return 18;
+        } else {
+            try ERC20Plus(token).decimals() returns (uint8 d) {
+                _decimals = d;
+            } catch {
+                require(tokenData[token].token == token, "getTokenDecimals: Token unlisted");
+                _decimals = tokenData[token].decimals;
+            }
+        }
+    }
+
+    function addFeed(address feed, string memory name, FeedLib.FeedType _feedType, uint8 _decimals) public /* TODO onlyOwner */ {
         require(feedData[feed].feed == address(0), "_addFeed: Cannot add duplicate");
         (uint _spot, bool _hasData, uint _feedDecimals, uint _timestamp) = FeedLib.getSpot(feed, _feedType);
         require(_spot > 0, "_addFeed: Spot must >= 0");
         require(_hasData, "_addFeed: Feed has no data");
         require(_feedDecimals == _decimals, "_addFeed: Feed decimals mismatch");
-        require(_timestamp + 24 * 60 * 60 > block.timestamp, "_addFeed: Feed timestamp > 1 day old");
+        require(_timestamp + ONEDAY > block.timestamp, "_addFeed: Feed stale");
         feedIndex.push(feed);
         feedData[feed] = Feed(block.timestamp, feedIndex.length - 1, feed, name, _feedType, _decimals);
     }
-
     function getSpot(address feed, FeedLib.FeedType _feedType) public view returns (uint _spot, bool _hasData, uint _feedDecimals, uint _timestamp) {
         (_spot, _hasData, _feedDecimals, _timestamp) = FeedLib.getSpot(feed, _feedType);
     }
 
+
 }
+
 
 /// @title Optino Factory - Deploy optino and cover token contracts
 /// @author BokkyPooBah, Bok Consulting Pty Ltd - <https://github.com/bokkypoobah>
@@ -1099,8 +1130,6 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     }
 
 
-    address private constant ETH = address(0);
-    uint public constant OPTINODECIMALS = 18;
     uint public constant FEEDECIMALS = 18;
     uint public constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
 
@@ -1173,6 +1202,85 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
         return configData.entries[key];
     }
 
+    // struct FeedPair {
+    //     uint timestamp;
+    //     uint index;
+    //     address baseToken;
+    //     address quoteToken;
+    //     address feed;
+    //     bool customFeed;
+    //     FeedLib.FeedType customFeedType;
+    //     uint customFeedDecimals;
+    // }
+
+    struct OptinoDataV1 {
+        address baseToken;
+        address quoteToken;
+        address feed;
+        bool customFeed;
+        FeedLib.FeedType customFeedType;
+        uint customFeedDecimals;
+        uint callPut;
+        uint expiry;
+        uint strike;
+        uint bound;
+        uint tokens;
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // PairWithFeed
+    // ----------------------------------------------------------------------------
+    function getOrAddFeedPair(OptinoDataV1 memory optinoData) internal returns (bytes32 _feedPairKey) {
+        require(optinoData.baseToken != address(0), "getOrAddFeedPair: baseToken must not = 0");
+        require(optinoData.quoteToken != address(0), "getOrAddFeedPair: quoteToken must not = 0");
+        require(optinoData.baseToken != optinoData.quoteToken, "getOrAddFeedPair: baseToken must not = quoteToken");
+        // TODO check feed & other data
+        require(optinoData.feed != address(0), "getOrAddFeedPair: feed cannot be null");
+        _feedPairKey = makeFeedPairKey(optinoData);
+        FeedPair memory feedPair = feedPairData[_feedPairKey];
+        if (feedPair.timestamp == 0) {
+            feedPairIndex.push(_feedPairKey);
+            feedPairData[_feedPairKey] = FeedPair(block.timestamp, feedPairIndex.length - 1, optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.customFeed, FeedLib.FeedType(optinoData.customFeedType), optinoData.customFeedDecimals);
+        }
+    }
+    function makeFeedPairKey(OptinoDataV1 memory optinoData) internal pure returns (bytes32 hash) {
+        return keccak256(abi.encodePacked(optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.customFeed, uint(optinoData.customFeedType), optinoData.customFeedDecimals));
+    }
+    // function add(Data storage self, bytes32 configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken) internal {
+    //     require(callPut < 2, "SeriesLib.add: callPut must be 0 or 1");
+    //     require(expiry > block.timestamp, "SeriesLib.add: expiry must be > now");
+    //     require(strike > 0, "SeriesLib.add: strike must be > 0");
+    //     require(optinoToken != address(0), "SeriesLib.add: Invalid optinoToken");
+    //     require(coverToken != address(0), "SeriesLib.add: Invalid coverToken");
+    //     if (callPut == 0) {
+    //         require(bound == 0 || bound > strike, "SeriesLib.add: Call bound must = 0 or > strike");
+    //     } else {
+    //         require(bound < strike, "SeriesLib.add: Put bound must = 0 or < strike");
+    //     }
+
+    //     bytes32 key = generateKey(configKey, callPut, expiry, strike, bound);
+    //     require(self.entries[key].timestamp == 0, "SeriesLib.add: Cannot add duplicate");
+    //     self.index.push(key);
+    //     self.entries[key] = Series(block.timestamp, self.index.length - 1, key, configKey, callPut, expiry, strike, bound, optinoToken, coverToken, 0);
+    //     emit SeriesAdded(key, configKey, callPut, expiry, strike, bound, optinoToken, coverToken);
+    // }
+    // function updateSpot(Data storage self, bytes32 key, uint spot) internal {
+    //     Series storage _value = self.entries[key];
+    //     require(_value.timestamp > 0, "SeriesLib.updateSpot: Invalid key");
+    //     require(block.timestamp >= _value.expiry, "SeriesLib.updateSpot: Not expired yet");
+    //     require(_value.spot == 0, "SeriesLib.updateSpot: spot already set");
+    //     require(spot > 0, "SeriesLib.updateSpot: spot must > 0");
+    //     _value.timestamp = block.timestamp;
+    //     _value.spot = spot;
+    //     emit SeriesSpotUpdated(key, _value.configKey, _value.callPut, _value.expiry, _value.strike, _value.bound, spot);
+    // }
+    function feedPairLength() public view returns (uint) {
+        return feedPairIndex.length;
+    }
+
+
+
     // ----------------------------------------------------------------------------
     // Series
     // ----------------------------------------------------------------------------
@@ -1233,6 +1341,21 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
         return seriesData.entries[key];
     }
 
+    // struct OptinoDataV1 {
+    //     address baseToken;
+    //     address quoteToken;
+    //     address feed;
+    //     bool customFeed;
+    //     FeedLib.FeedType customFeedType;
+    //     uint customFeedDecimals;
+    //     uint callPut;
+    //     uint expiry;
+    //     uint strike;
+    //     uint bound;
+    //     uint tokens;
+    // }
+
+
     /// @dev Mint Optino and Cover tokens
     /// @param baseToken Base token ERC20 contract address, or 0x00 for ETH
     /// @param quoteToken Quote token ERC20 contract address, or 0x00 for ETH
@@ -1250,6 +1373,9 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
         require(tokens > 0, "mint: tokens must be > 0");
 
         OptinoData memory optinoData = OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, tokens);
+        // OptinoDataV1 memory optinoDataV1 = OptinoDataV1(baseToken, quoteToken, priceFeed, false, FeedLib.FeedType(0), 0, callPut, expiry, strike, bound, tokens);
+        // bytes32 _feedPairKey = getOrAddFeedPair(optinoDataV1);
+
         ConfigLib.Config memory config = getConfig(optinoData);
         require(config.timestamp > 0, "mint: Invalid config");
 
@@ -1269,8 +1395,8 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
             coverToken = OptinoToken(payable(series.coverToken));
         }
 
-        uint collateral = OptinoV1.collateral(callPut, strike, bound, optinoData.tokens, config.decimalsData);
-        address collateralToken = callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
+        uint collateral = OptinoV1.collateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, config.decimalsData);
+        address collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
         uint ownerFee = collateral.mul(fee).div(10 ** FEEDECIMALS);
         uint uiFee;
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
@@ -1355,7 +1481,7 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
             }
         }
     }
-    function getTokenInfo(ERC20Plus token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
+    function getTokenInfoPublic(ERC20Plus token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
         if (address(token) == ETH) {
             return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
         } else {
