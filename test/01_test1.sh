@@ -231,7 +231,7 @@ var optinoFactoryContract = web3.eth.contract(optinoFactoryAbi);
 // console.log("DATA: optinoFactoryContract=" + JSON.stringify(optinoFactoryContract));
 var optinoFactoryTx = null;
 var optinoFactoryAddress = null;
-var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deployer, data: optinoFactoryBin, gas: 6000000, gasPrice: defaultGasPrice},
+var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deployer, data: optinoFactoryBin, gas: 7500000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -367,6 +367,7 @@ for (spot = 0; spot < 400; spot += 50) {
 }
 
 var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
+// var data = optinoFactory.mintCustom.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, 1, 17, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 console.log("RESULT: data: " + data);
 var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 5000000, gasPrice: defaultGasPrice });
 

@@ -464,6 +464,7 @@ contract Owned {
 }
 
 
+/*
 // ----------------------------------------------------------------------------
 // Config - [baseToken, quoteToken, priceFeed] =>
 //   [decimalsData, maxTerm, fee, description, timestamp]
@@ -525,8 +526,10 @@ library ConfigLib {
         return self.index.length;
     }
 }
+*/
 
 
+/*
 // ----------------------------------------------------------------------------
 // Series - [configKey(baseToken, quoteToken, priceFeed), callPut, expiry, strike, bound] =>
 // [optinoToken, coverToken, spot, timestamp]
@@ -593,29 +596,10 @@ library SeriesLib {
         return self.index.length;
     }
 }
+*/
 
 
-// ----------------------------------------------------------------------------
-// AdaptorFeed
-// ----------------------------------------------------------------------------
-interface AdaptorFeed {
-    function spot() external view returns (uint value, bool hasValue);
-}
-
-
-// ----------------------------------------------------------------------------
-// MakerDAO Oracles v2
-// ----------------------------------------------------------------------------
-interface MakerFeed {
-    function peek() external view returns (bytes32 _value, bool _hasValue);
-}
-
-// ----------------------------------------------------------------------------
-// Chainlink AggregatorInterface
-// import "@chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol";
-// ----------------------------------------------------------------------------
-// pragma solidity ^0.6.0;
-
+/// @notice Chainlink AggregatorInterface @chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol
 interface AggregatorInterface {
   function latestAnswer() external view returns (int256);
   function latestTimestamp() external view returns (uint256);
@@ -627,15 +611,29 @@ interface AggregatorInterface {
   event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
   event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
 }
-// ----------------------------------------------------------------------------
-// End Chainlink AggregatorInterface
-// ----------------------------------------------------------------------------
+
+
+/// @notice MakerDAO Oracles v2
+interface MakerFeed {
+    function peek() external view returns (bytes32 _value, bool _hasValue);
+}
+
+
+/// @notice Compound V1PriceOracle @ 0xddc46a3b076aec7ab3fc37420a8edd2959764ec4
+interface V1PriceOracleInterface {
+    function assetPrices(address asset) external view returns (uint);
+}
 
 
 // ----------------------------------------------------------------------------
-// ERC Token Standard #20 Interface
-// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
+// AdaptorFeed
 // ----------------------------------------------------------------------------
+interface AdaptorFeed {
+    function spot() external view returns (uint value, bool hasValue);
+}
+
+
+/// @notice ERC20 https://eips.ethereum.org/EIPS/eip-20
 interface ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
@@ -794,7 +792,7 @@ library OptinoV1 {
 // OptinoToken = basic token + burn + payoff + close + settle
 // ----------------------------------------------------------------------------
 contract OptinoToken is BasicToken {
-    using SeriesLib for SeriesLib.Series;
+    // using SeriesLib for SeriesLib.Series;
     using Decimals for uint;
     address private constant ETH = address(0);
     uint public constant COLLECTDUSTMINIMUMDECIMALS = 6; // Collect dust only if token has >= 6 decimal places
@@ -820,13 +818,15 @@ contract OptinoToken is BasicToken {
         seriesNumber = _seriesNumber;
         isCover = _isCover;
         emit LogInfo("_mint b", msg.sender, 0);
-        // (bytes32 _feedPairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKeyV1(seriesKeyV1);
-        // feedPairKey = _feedPairKey;
-        // (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) = factory.getFeedPairByKeyV1(feedPairKey);
-        // collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
-        // collateralDecimals = factory.getTokenDecimals(collateralToken);
+        (bytes32 _feedPairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKeyV1(seriesKeyV1);
+        feedPairKey = _feedPairKey;
+        (address _baseToken, address _quoteToken, address _feed, bool _customFeed, /* FeedLib.FeedType customFeedType */, uint8 customFeedDecimals) = factory.getFeedPairByKeyV1(feedPairKey);
+        collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
+        collateralDecimals = factory.getTokenDecimals(collateralToken);
         string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
-        // string memory _name = NameUtils.toName(_description, _isCover, _callPut, _expiry, _strike, _bound, _decimalsData.getRateDecimals());
+        // TODO
+        // uint8 rateDecimals = 18;
+        // string memory _name = NameUtils.toName("_description", _isCover, _callPut, _expiry, _strike, _bound, 18);
         super.initToken(address(factory), _symbol, "_name", _decimals);
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
@@ -986,6 +986,7 @@ library FeedLib {
     enum FeedType {
         CHAINLINK,
         MAKER,
+        COMPOUND,
         ADAPTOR
     }
 
@@ -1006,6 +1007,13 @@ library FeedLib {
             if (!_hasData) {
                 _rate = 0;
             }
+            _decimals = 18;
+            _timestamp = block.timestamp;
+        } else if (feedType == FeedType.COMPOUND) {
+            // TODO - Remove COMPOUND, or add a parameter to save asset
+            uint _uRate = V1PriceOracleInterface(feed).assetPrices(address(0));
+            _rate = uint(_uRate);
+            _hasData = _rate > 0;
             _decimals = 18;
             _timestamp = block.timestamp;
         } else {
@@ -1143,21 +1151,21 @@ contract FactoryData {
 contract OptinoFactory is Owned, FactoryData, CloneFactory {
     using SafeMath for uint;
     using Decimals for uint;
-    using ConfigLib for ConfigLib.Data;
-    using ConfigLib for ConfigLib.Config;
-    using SeriesLib for SeriesLib.Data;
-    using SeriesLib for SeriesLib.Series;
+    // using ConfigLib for ConfigLib.Data;
+    // using ConfigLib for ConfigLib.Config;
+    // using SeriesLib for SeriesLib.Data;
+    // using SeriesLib for SeriesLib.Series;
 
-    struct OptinoData {
-        address baseToken;
-        address quoteToken;
-        address priceFeed;
-        uint callPut;
-        uint expiry;
-        uint strike;
-        uint bound;
-        uint tokens;
-    }
+    // struct OptinoData {
+    //     address baseToken;
+    //     address quoteToken;
+    //     address priceFeed;
+    //     uint callPut;
+    //     uint expiry;
+    //     uint strike;
+    //     uint bound;
+    //     uint tokens;
+    // }
 
     struct OptinoDataV1 {
         address baseToken;
@@ -1186,18 +1194,18 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
 
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
-    ConfigLib.Data private configData;
-    SeriesLib.Data private seriesData;
+    // ConfigLib.Data private configData;
+    // SeriesLib.Data private seriesData;
 
     // ConfigLib & SeriesLib copy of events to be generated in the ABI
-    event ConfigAdded(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint decimalsData, uint maxTerm, uint fee, string description);
-    event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
-    event SeriesAdded(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
-    event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
-    event SeriesSpotUpdatedV1(bytes32 indexed seriesKeyV1, uint spot);
+    // event ConfigAdded(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint decimalsData, uint maxTerm, uint fee, string description);
+    // event ConfigUpdated(bytes32 indexed configKey, address indexed baseToken, address indexed quoteToken, address priceFeed, uint maxTerm, uint fee, string description);
+    // event SeriesAdded(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
+    // event SeriesSpotUpdated(bytes32 indexed seriesKey, bytes32 indexed configKey, uint callPut, uint expiry, uint strike, uint bound, uint spot);
 
     event FeedPairAdded(bytes32 indexed feedPairKey, uint indexed feedPairIndex, address indexed baseToken, address quoteToken, address feed, bool customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals);
     event SeriesAddedV1(bytes32 indexed feedPairKey, bytes32 indexed seriesKeyV1, uint indexed feedPairIndex, uint seriesIndexV1, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
+    event SeriesSpotUpdatedV1(bytes32 indexed seriesKeyV1, uint spot);
 
     event ContractDeprecated(address newAddress);
     event FeeUpdated(uint fee);
@@ -1223,37 +1231,37 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     // ----------------------------------------------------------------------------
     // Config
     // ----------------------------------------------------------------------------
-    function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint _fee, string memory description) public onlyOwner {
-        if (!configData.initialised) {
-            configData.initConfig();
-        }
-        uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals);
-        configData.add(baseToken, quoteToken, priceFeed, decimalsData, maxTerm, _fee, description);
-    }
-    function updateConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint _fee, string memory description) public onlyOwner {
-        require(configData.initialised, "updateConfig: Not initialised");
-        configData.update(baseToken, quoteToken, priceFeed, maxTerm, _fee, description);
-    }
-    function configDataLength() public view returns (uint _length) {
-        return configData.length();
-    }
-    function getConfigByIndex(uint i) public view returns (bytes32 _configKey, address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp) {
-        require(i < configData.length(), "getConfigByIndex: Invalid index");
-        ConfigLib.Config memory config = configData.entries[configData.index[i]];
-        return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.decimalsData, config.maxTerm, config.fee, config.description, config.timestamp);
-    }
-    function getConfigByKey(bytes32 key) public view returns (address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp) {
-        ConfigLib.Config memory config = configData.entries[key];
-        return (config.baseToken, config.quoteToken, config.priceFeed, config.decimalsData, config.maxTerm, config.fee, config.description, config.timestamp);
-    }
+    // function addConfig(address baseToken, address quoteToken, address priceFeed, uint baseDecimals, uint quoteDecimals, uint rateDecimals, uint maxTerm, uint _fee, string memory description) public onlyOwner {
+    //     if (!configData.initialised) {
+    //         configData.initConfig();
+    //     }
+    //     uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals);
+    //     configData.add(baseToken, quoteToken, priceFeed, decimalsData, maxTerm, _fee, description);
+    // }
+    // function updateConfig(address baseToken, address quoteToken, address priceFeed, uint maxTerm, uint _fee, string memory description) public onlyOwner {
+    //     require(configData.initialised, "updateConfig: Not initialised");
+    //     configData.update(baseToken, quoteToken, priceFeed, maxTerm, _fee, description);
+    // }
+    // function configDataLength() public view returns (uint _length) {
+    //     return configData.length();
+    // }
+    // function getConfigByIndex(uint i) public view returns (bytes32 _configKey, address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp) {
+    //     require(i < configData.length(), "getConfigByIndex: Invalid index");
+    //     ConfigLib.Config memory config = configData.entries[configData.index[i]];
+    //     return (config.key, config.baseToken, config.quoteToken, config.priceFeed, config.decimalsData, config.maxTerm, config.fee, config.description, config.timestamp);
+    // }
+    // function getConfigByKey(bytes32 key) public view returns (address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp) {
+    //     ConfigLib.Config memory config = configData.entries[key];
+    //     return (config.baseToken, config.quoteToken, config.priceFeed, config.decimalsData, config.maxTerm, config.fee, config.description, config.timestamp);
+    // }
     function getFeedPairByKeyV1(bytes32 feedPairKey) public view returns (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) {
         FeedPair memory feedPair = feedPairData[feedPairKey];
         return (feedPair.baseToken, feedPair.quoteToken, feedPair.feed, feedPair.customFeed, feedPair.customFeedType, feedPair.customFeedDecimals);
     }
-    function getConfig(OptinoData memory optinoData) internal view returns (ConfigLib.Config memory _config) {
-        bytes32 key = ConfigLib.generateKey(optinoData.baseToken, optinoData.quoteToken, optinoData.priceFeed);
-        return configData.entries[key];
-    }
+    // function getConfig(OptinoData memory optinoData) internal view returns (ConfigLib.Config memory _config) {
+    //     bytes32 key = ConfigLib.generateKey(optinoData.baseToken, optinoData.quoteToken, optinoData.priceFeed);
+    //     return configData.entries[key];
+    // }
 
 
     // ----------------------------------------------------------------------------
@@ -1322,12 +1330,12 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     // ----------------------------------------------------------------------------
     // Series
     // ----------------------------------------------------------------------------
-    function addSeries(OptinoData memory optinoData, bytes32 configKey, address optinoToken, address coverToken) internal {
-        if (!seriesData.initialised) {
-            seriesData.initSeries();
-        }
-        seriesData.add(configKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, optinoToken, coverToken);
-    }
+    // function addSeries(OptinoData memory optinoData, bytes32 configKey, address optinoToken, address coverToken) internal {
+    //     if (!seriesData.initialised) {
+    //         seriesData.initSeries();
+    //     }
+    //     seriesData.add(configKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, optinoToken, coverToken);
+    // }
     // function getSeriesCurrentSpot(bytes32 seriesKey) public view returns (uint _currentSpot) {
     //     SeriesLib.Series memory series = seriesData.entries[seriesKey];
     //     ConfigLib.Config memory config = configData.entries[series.configKey];
@@ -1350,31 +1358,10 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
         return 0;
     }
 
-    // struct Feed {
-    //     uint timestamp;
-    //     uint index;
-    //     address feed;
-    //     string name;
-    //     FeedLib.FeedType feedType;
-    //     uint8 decimals;
+    // function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
+    //     SeriesLib.Series memory series = seriesData.entries[seriesKey];
+    //     return series.spot;
     // }
-
-    // struct FeedPair {
-    //     uint timestamp;
-    //     uint index;
-    //     address baseToken;
-    //     address quoteToken;
-    //     address feed;
-    //     bool customFeed;
-    //     FeedLib.FeedType customFeedType;
-    //     uint8 customFeedDecimals;
-    // }
-
-
-    function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
-        SeriesLib.Series memory series = seriesData.entries[seriesKey];
-        return series.spot;
-    }
     // V1
     function getSeriesSpotV1(bytes32 seriesKeyV1) public view returns (uint _spot) {
         SeriesV1 memory series = seriesDataV1[seriesKeyV1];
@@ -1400,15 +1387,21 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     }
 
     // TODO V1
-    function setSeriesSpotIfPriceFeedFails(bytes32 seriesKey, uint spot) public onlyOwner {
-        require(seriesData.initialised, "setSeriesSpotIfPriceFeedFails: Not initialised");
-        SeriesLib.Series memory series = seriesData.entries[seriesKey];
+    function setSeriesSpotIfPriceFeedFailsV1(bytes32 seriesKeyV1, uint spot) public onlyOwner {
+        // require(seriesData.initialised, "setSeriesSpotIfPriceFeedFails: Not initialised");
+        SeriesV1 memory series = seriesDataV1[seriesKeyV1];
+        // SeriesLib.Series memory series = seriesData.entries[seriesKey];
         require(block.timestamp >= series.expiry + GRACEPERIOD);
-        seriesData.updateSpot(seriesKey, spot);
+        // seriesData.updateSpot(seriesKey, spot);
+        require(series.spot == 0, "setSeriesSpotIfPriceFeedFailsV1: spot already set");
+        require(spot > 0, "setSeriesSpotIfPriceFeedFailsV1: spot must > 0");
+        series.timestamp = block.timestamp;
+        series.spot = spot;
+        emit SeriesSpotUpdatedV1(seriesKeyV1, spot);
     }
-    function seriesDataLength() public view returns (uint _seriesDataLength) {
-        return seriesData.length();
-    }
+    // function seriesDataLength() public view returns (uint _seriesDataLength) {
+    //     return seriesData.length();
+    // }
     // TODO V1
     // function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, bytes32 _configKey, uint _callPut, uint _expiry, uint _strike, uint _bound, uint _timestamp, address _optinoToken, address _coverToken) {
     //     require(i < seriesData.length(), "getSeriesByIndex: Invalid index");
@@ -1462,14 +1455,52 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         return _mint(OptinoDataV1(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
-    function transferCollateral(OptinoDataV1 memory optinoData, address uiFeeAccount, bytes32 _feedPairKey, bytes32 _seriesKeyV1) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
-        FeedPair memory feedPair = feedPairData[_feedPairKey];
-        SeriesV1 memory seriesV1 = seriesDataV1[_seriesKeyV1];
 
-        (/*_spot*/, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(optinoData.feed, optinoData.customFeedType);
-        uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(optinoData.baseToken), getTokenDecimals(optinoData.quoteToken), feedPair.customFeed ? feedPair.customFeedDecimals : _feedDecimals);
-        _collateral = OptinoV1.collateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, decimalsData);
-        _collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
+    function doIt(bytes32 _seriesKeyV1, uint tokens) internal returns (address _collateralToken, uint _collateral) {
+        SeriesV1 memory seriesV1 = seriesDataV1[_seriesKeyV1];
+        FeedPair memory feedPair = feedPairData[seriesV1.feedPairKey];
+        Feed memory feed = feedData[feedPair.feed];
+        FeedLib.FeedType feedType = feedPair.customFeed ? feedPair.customFeedType : feed.feedType;
+        emit LogInfo("doIt 1", feedPair.feed, uint(feedType));
+        (uint _spot, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(feedPair.feed, feedType);
+        emit LogInfo("doIt 2", feedPair.feed, _spot);
+        emit LogInfo("doIt 3", feedPair.feed, uint(_feedDecimals));
+        if (feedPair.customFeed) {
+            _feedDecimals = feedPair.customFeedDecimals;
+        }
+        emit LogInfo("doIt 4", feedPair.feed, uint(_feedDecimals));
+        uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(feedPair.baseToken), getTokenDecimals(feedPair.quoteToken), feedPair.customFeed ? feedPair.customFeedDecimals : _feedDecimals);
+        _collateralToken = seriesV1.callPut == 0 ? feedPair.baseToken : feedPair.quoteToken;
+        _collateral = OptinoV1.collateral(seriesV1.callPut, seriesV1.strike, seriesV1.bound, tokens, decimalsData);
+    }
+
+    function transferCollateral(OptinoDataV1 memory optinoData, address uiFeeAccount, bytes32 _seriesKeyV1) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
+        SeriesV1 memory seriesV1 = seriesDataV1[_seriesKeyV1];
+        /*
+        FeedPair memory feedPair = feedPairData[seriesV1.feedPairKey];
+        Feed memory feed = feedData[feedPair.feed];
+        // uint8 feedDecimals = feedPair.customFeed ? feedPair.customFeedDecimals : feed.decimals;
+        FeedLib.FeedType feedType = feedPair.customFeed ? feedPair.customFeedType : feed.feedType;
+
+        // return (feedPair.baseToken, feedPair.quoteToken, feedPair.feed, feedPair.customFeed, feedPair.customFeedType, feedPair.customFeedDecimals);
+
+        emit LogInfo("transferCollateral 1", optinoData.feed, uint(feedType));
+        */
+        // (uint _spot, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(optinoData.feed, feedType);
+        /*
+        emit LogInfo("transferCollateral 2", optinoData.feed, _spot);
+        emit LogInfo("transferCollateral 3", optinoData.feed, uint(_feedDecimals));
+        if (feedPair.customFeed) {
+            _feedDecimals = feedPair.customFeedDecimals;
+        }
+        emit LogInfo("transferCollateral 4", optinoData.feed, uint(_feedDecimals));
+        */
+        // uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(optinoData.baseToken), getTokenDecimals(optinoData.quoteToken), feedPair.customFeed ? feedPair.customFeedDecimals : _feedDecimals);
+        // _collateral = OptinoV1.collateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, decimalsData);
+        (_collateralToken, _collateral) = doIt(_seriesKeyV1, optinoData.tokens);
+        emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
+        // (/*_spot*/, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(optinoData.feed, optinoData.customFeedType);
+        // _collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
         _ownerFee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
             _uiFee = _ownerFee / 2;
@@ -1519,19 +1550,19 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
             emit LogInfo("_mint a", address(0), 0);
             seriesV1 = seriesDataV1[_seriesKeyV1];
             emit LogInfo("_mint b", msg.sender, optinoData.tokens);
-            _optinoToken.initOptinoToken(this, _seriesKeyV1, address(_coverToken), feedPair.index * 5000000 + seriesV1.index, true, OPTINODECIMALS);
-            _coverToken.initOptinoToken(this, _seriesKeyV1, address(_optinoToken), feedPair.index * 1000000 + seriesV1.index, true, OPTINODECIMALS);
+            _optinoToken.initOptinoToken(this, _seriesKeyV1, address(_coverToken), (feedPair.index + 3) * 100000 + seriesV1.index + 5, true, OPTINODECIMALS);
+            _coverToken.initOptinoToken(this, _seriesKeyV1, address(_optinoToken), (feedPair.index + 3) * 100000 + seriesV1.index + 5, true, OPTINODECIMALS);
             // optinoToken.initOptinoToken(this, series.key, address(coverToken), seriesData.length(), false, OPTINODECIMALS);
             // coverToken.initOptinoToken(this, series.key, address(optinoToken), seriesData.length(), true, OPTINODECIMALS);
         } else {
-            // _optinoToken = OptinoToken(payable(seriesV1.optinoToken));
-            // _coverToken = OptinoToken(payable(seriesV1.coverToken));
+            _optinoToken = OptinoToken(payable(seriesV1.optinoToken));
+            _coverToken = OptinoToken(payable(seriesV1.coverToken));
         }
-        //
-        // (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee) = transferCollateral(optinoData, uiFeeAccount, _feedPairKey, _seriesKeyV1);
-        //
-        // _optinoToken.mint(msg.sender, optinoData.tokens);
-        // _coverToken.mint(msg.sender, optinoData.tokens);
+
+        (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee) = transferCollateral(optinoData, uiFeeAccount, _seriesKeyV1);
+
+        _optinoToken.mint(msg.sender, optinoData.tokens);
+        _coverToken.mint(msg.sender, optinoData.tokens);
 
         emit OptinoMinted(seriesV1.key, seriesV1.optinoToken, seriesV1.coverToken, optinoData.tokens, address(0) /*_collateralToken*/, 0 /*_collateral*/, 0/*_ownerFee*/, 0/*_uiFee*/);
     }
@@ -1640,13 +1671,14 @@ contract OptinoFactory is Owned, FactoryData, CloneFactory {
     function collateral(uint callPut, uint strike, uint bound, uint tokens, uint baseDecimals, uint quoteDecimals, uint rateDecimals) public pure returns (uint _collateral) {
         return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     }
-    function collateralAndFee(address baseToken, address quoteToken, address priceFeed, uint callPut, uint strike, uint bound, uint tokens) public view returns (uint _collateral, uint _fee) {
-        bytes32 key = ConfigLib.generateKey(baseToken, quoteToken, priceFeed);
-        ConfigLib.Config memory config = configData.entries[key];
-        require(config.timestamp > 0, "collateralAndFee: Invalid baseToken/quoteToken/priceFeed");
-        _collateral = OptinoV1.collateral(callPut, strike, bound, tokens, config.decimalsData);
-        _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
-    }
+    // TODO V1
+    // function collateralAndFee(address baseToken, address quoteToken, address priceFeed, uint callPut, uint strike, uint bound, uint tokens) public view returns (uint _collateral, uint _fee) {
+    //     bytes32 key = ConfigLib.generateKey(baseToken, quoteToken, priceFeed);
+    //     ConfigLib.Config memory config = configData.entries[key];
+    //     require(config.timestamp > 0, "collateralAndFee: Invalid baseToken/quoteToken/priceFeed");
+    //     _collateral = OptinoV1.collateral(callPut, strike, bound, tokens, config.decimalsData);
+    //     _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
+    // }
 
     // ----------------------------------------------------------------------------
     // Misc
