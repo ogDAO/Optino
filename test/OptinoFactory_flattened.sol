@@ -655,22 +655,22 @@ contract OptinoToken is BasicToken {
     event LogInfo(string note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
-        factory = _factory;
-        seriesKey = _seriesKey;
-        pair = _pair;
-        seriesNumber = _seriesNumber;
-        isCover = _isCover;
+        (factory, seriesKey, pair, seriesNumber, isCover) = (_factory, _seriesKey, _pair, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
-        (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
+        (bytes32 _pairKey, uint _callPut, /*uint _expiry*/, /*uint _strike*/, /*uint _bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
-        (address _baseToken, address _quoteToken, address _feed, bool _customFeed, /* FeedLib.FeedType customFeedType */, uint8 customFeedDecimals) = factory.getPairByKey(pairKey);
+        (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPairByKey(pairKey);
         collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
         collateralDecimals = factory.getTokenDecimals(collateralToken);
-        string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
+        // string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
         // TODO
         // uint8 rateDecimals = 18;
         // string memory _name = NameUtils.toName("_description", _isCover, _callPut, _expiry, _strike, _bound, 18);
-        super.initToken(address(factory), _symbol, "_name", _decimals);
+        (string memory _symbol, string memory _name) = makeName();
+        super.initToken(address(factory), _symbol, _name, _decimals);
+    }
+    function makeName() internal returns (string memory _symbol, string memory _name) {
+        return ("symbol", "name");
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
@@ -725,15 +725,15 @@ contract OptinoToken is BasicToken {
             return isCover ? _collateral.sub(_payoff) : _payoff;
         }
     }
-    function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-        // if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-        //     if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
-        //         return balance;
-        //     }
-        // }
-        return amount;
-    }
-    function transferOut(address token, address tokenOwner, uint tokens, uint decimals, bool isEmpty) internal returns (uint _tokensTransferred){
+    // function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
+    //     if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
+    //         if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
+    //             return balance;
+    //         }
+    //     }
+    //     return amount;
+    // }
+    function transferOut(address token, address tokenOwner, uint tokens, uint /*decimals*/, bool isEmpty) internal returns (uint _tokensTransferred){
         // emit LogInfo("transferOut tokens", tokenOwner, tokens);
         // emit LogInfo("transferOut decimals", tokenOwner, decimals);
         if (token == ETH) {
@@ -1109,7 +1109,7 @@ contract OptinoFactory is Owned, CloneFactory {
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
         FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = FeedLib.getSpot(pair.feed, feedType);
+        (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feed, feedType);
         _currentSpot = _hasData ? _spot : 0;
     }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
