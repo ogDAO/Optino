@@ -666,11 +666,8 @@ contract OptinoToken is BasicToken {
         // TODO
         // uint8 rateDecimals = 18;
         // string memory _name = NameUtils.toName("_description", _isCover, _callPut, _expiry, _strike, _bound, 18);
-        (string memory _symbol, string memory _name) = makeName();
+        (string memory _symbol, string memory _name) = factory.makeName(_seriesKey, _seriesNumber, _isCover);
         super.initToken(address(factory), _symbol, _name, _decimals);
-    }
-    function makeName() internal returns (string memory _symbol, string memory _name) {
-        return ("symbol", "name");
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
@@ -680,13 +677,13 @@ contract OptinoToken is BasicToken {
         emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
-    function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
-        _seriesKey = seriesKey;
-        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeriesByKey(seriesKey);
-    }
     function getPairData() public view returns (bytes32 _pairKey, address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType _customFeedType, uint8 _customFeedDecimals) {
         _pairKey = pairKey;
         (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = factory.getPairByKey(pairKey);
+    }
+    function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
+        _seriesKey = seriesKey;
+        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeriesByKey(seriesKey);
     }
 
     function spot() public view returns (uint _spot) {
@@ -934,13 +931,12 @@ contract OptinoFactory is Owned, CloneFactory {
         uint tokens;
     }
 
-
-    uint public constant FEEDECIMALS = 18;
-    uint public constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
-    address public constant ETH = address(0);
+    uint private constant FEEDECIMALS = 18;
+    uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
+    address private constant ETH = address(0);
     uint8 public constant OPTINODECIMALS = 18;
-    uint public constant ONEDAY = 24 * 60 * 60;
-    uint public constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
+    uint private constant ONEDAY = 24 * 60 * 60;
+    uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     // Set to new contract address if this contract is deprecated
     address public newAddress;
@@ -1010,7 +1006,7 @@ contract OptinoFactory is Owned, CloneFactory {
             try ERC20Plus(token).decimals() returns (uint8 d) {
                 _decimals = d;
             } catch {
-                require(tokenData[token].token == token, "getTokenDecimals: Token without decimals() need to be registered");
+                require(tokenData[token].token == token, "getTokenDecimals: Token not registered");
                 _decimals = tokenData[token].decimals;
             }
         }
@@ -1056,7 +1052,7 @@ contract OptinoFactory is Owned, CloneFactory {
             require(_timestamp + ONEDAY > block.timestamp, "getOrAddPair: Feed stale");
             if (optinoData.customFeed) {
                 if (optinoData.customFeedType == FeedLib.FeedType.CHAINLINK) {
-                    require(optinoData.customFeedDecimals == _feedDecimals, "getOrAddPair: customFeedDecimals does not match Chainlink contract decimals");
+                    require(optinoData.customFeedDecimals == _feedDecimals, "getOrAddPair: customFeedDecimals must = Chainlink decimals");
                 }
             }
             pairIndex.push(_pairKey);
@@ -1097,7 +1093,7 @@ contract OptinoFactory is Owned, CloneFactory {
         require(seriesData[_seriesKey].timestamp == 0, "addSeries: Cannot add duplicate");
 
         Pair memory pair = pairData[_pairKey];
-        emit LogInfo("addSeries.pair.index", msg.sender, pair.index);
+        // emit LogInfo("addSeries.pair.index", msg.sender, pair.index);
         seriesIndex[pair.index].push(_seriesKey);
         uint _seriesIndex = seriesIndex[pair.index].length - 1;
         seriesData[_seriesKey] = Series(block.timestamp, _seriesIndex, _seriesKey, _pairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken, 0);
@@ -1162,6 +1158,16 @@ contract OptinoFactory is Owned, CloneFactory {
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), feedDecimals);
         return (series.callPut, series.strike, series.bound, decimalsData);
     }
+    function makeName(bytes32 seriesKey, uint _seriesNumber, bool _isCover) public view returns (string memory _symbol, string memory _name) {
+        _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
+
+        Series memory series = seriesData[seriesKey];
+        require(series.timestamp > 0, "getCalcData: Invalid key");
+        Pair memory pair = pairData[series.pairKey];
+        Feed memory feed = feedData[pair.feed];
+        uint8 feedDecimals = pair.customFeed ? pair.customFeedDecimals : feed.decimals;
+        _name = NameUtils.toName("_description", _isCover, series.callPut, series.expiry, series.strike, series.bound, feedDecimals);
+    }
 
     /// @notice Mint Optino and Cover tokens
     /// @param baseToken Base token ERC20 contract address, or 0x00 for ETH
@@ -1179,31 +1185,32 @@ contract OptinoFactory is Owned, CloneFactory {
         return _mint(OptinoData(baseToken, quoteToken, priceFeed, false, FeedLib.FeedType(0), 0, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
     /// @notice Mint with custom feed
-    function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-        return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
-    }
+    // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+    //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
+    // }
     function computeCollateral(bytes32 _seriesKey, uint tokens) internal returns (address _collateralToken, uint _collateral) {
         Series memory series = seriesData[_seriesKey];
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
         FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        emit LogInfo("computeCollateral feedType", pair.feed, uint(feedType));
-        (uint _spot, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(pair.feed, feedType);
-        emit LogInfo("computeCollateral _spot", pair.feed, _spot);
+        // emit LogInfo("computeCollateral feedType", pair.feed, uint(feedType));
+        // TODO - Check
+        (/*uint _spot*/, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(pair.feed, feedType);
+        // emit LogInfo("computeCollateral _spot", pair.feed, _spot);
         if (pair.customFeed) {
             _feedDecimals = pair.customFeedDecimals;
         }
-        emit LogInfo("computeCollateral _feedDecimals", pair.feed, uint(_feedDecimals));
+        // emit LogInfo("computeCollateral _feedDecimals", pair.feed, uint(_feedDecimals));
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), pair.customFeed ? pair.customFeedDecimals : _feedDecimals);
         _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
-        emit LogInfo("computeCollateral decimalsData", pair.feed, decimalsData);
+        // emit LogInfo("computeCollateral decimalsData", pair.feed, decimalsData);
         _collateral = OptinoV1.collateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
-        emit LogInfo("computeCollateral _collateral", msg.sender, _collateral);
+        // emit LogInfo("computeCollateral _collateral", msg.sender, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
         (_collateralToken, _collateral) = computeCollateral(_seriesKey, optinoData.tokens);
-        emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
+        // emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
 
         _ownerFee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
@@ -1249,9 +1256,9 @@ contract OptinoFactory is Owned, CloneFactory {
             series.coverToken = address(_coverToken);
             addSeries(_pairKey, optinoData, address(_optinoToken), address(_coverToken));
             series = seriesData[_seriesKey];
-            emit LogInfo("mint optinoToken", msg.sender, optinoData.tokens);
+            // emit LogInfo("mint optinoToken", msg.sender, optinoData.tokens);
             _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 100000 + series.index + 5, false, OPTINODECIMALS);
-            emit LogInfo("mint coverToken", msg.sender, optinoData.tokens);
+            // emit LogInfo("mint coverToken", msg.sender, optinoData.tokens);
             _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
         } else {
             _optinoToken = OptinoToken(payable(series.optinoToken));
@@ -1263,28 +1270,29 @@ contract OptinoFactory is Owned, CloneFactory {
         emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, _collateralToken, _collateral, _ownerFee, _uiFee);
     }
 
-    /// @dev Is the collateral in the base token (call) or quote token (put) ?
-    /// @param callPut 0 for call, 1 for put
-    /// @return _baseOrQuote 0 for base token, 1 for quote token
-    function collateralInBaseOrQuote(uint callPut) public pure returns (uint _baseOrQuote) {
-        _baseOrQuote = callPut;
-    }
-    /// @dev Compute the payoff in collateral tokens
-    /// @param callPut 0 for call, 1 for put
-    /// @param strike Strike rate
-    /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
-    /// @param spot Spot rate
-    /// @param tokens Number of Optino and Cover tokens to compute the payoff for
-    /// @param baseDecimals Base token contract decimals
-    /// @param quoteDecimals Quote token contract decimals
-    /// @param rateDecimals `strike`, `bound`, `spot` decimals
-    /// @return _payoff The computed payoff
-    function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _payoff) {
-        return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
-    }
-    function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _collateral) {
-        return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
-    }
+    // @dev Is the collateral in the base token (call) or quote token (put) ?
+    // @param callPut 0 for call, 1 for put
+    // @return _baseOrQuote 0 for base token, 1 for quote token
+    // function collateralInBaseOrQuote(uint callPut) public pure returns (uint _baseOrQuote) {
+    //     _baseOrQuote = callPut;
+    // }
+    // @dev Compute the payoff in collateral tokens
+    // @param callPut 0 for call, 1 for put
+    // @param strike Strike rate
+    // @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
+    // @param spot Spot rate
+    // @param tokens Number of Optino and Cover tokens to compute the payoff for
+    // @param baseDecimals Base token contract decimals
+    // @param quoteDecimals Quote token contract decimals
+    // @param rateDecimals `strike`, `bound`, `spot` decimals
+    // @return _payoff The computed payoff
+    // function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _payoff) {
+    //     return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
+    // }
+    // function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _collateral) {
+    //     return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
+    // }
+
     // TODO V1
     // function collateralAndFee(address baseToken, address quoteToken, address priceFeed, uint callPut, uint strike, uint bound, uint tokens) public view returns (uint _collateral, uint _fee) {
     //     bytes32 key = ConfigLib.generateKey(baseToken, quoteToken, priceFeed);
