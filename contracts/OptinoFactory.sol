@@ -660,7 +660,7 @@ contract OptinoToken is BasicToken {
         seriesNumber = _seriesNumber;
         isCover = _isCover;
         emit LogInfo("_mint b", msg.sender, 0);
-        (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
+        (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
         (address _baseToken, address _quoteToken, address _feed, bool _customFeed, /* FeedLib.FeedType customFeedType */, uint8 customFeedDecimals) = factory.getPairByKey(pairKey);
         collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
@@ -679,13 +679,13 @@ contract OptinoToken is BasicToken {
         emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
-    function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken) {
+    function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
         _seriesKey = seriesKey;
-        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken) = factory.getSeriesByKey(seriesKey);
+        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeriesByKey(seriesKey);
     }
-    function getPairData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken) {
-        _seriesKey = seriesKey;
-        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken) = factory.getSeriesByKey(seriesKey);
+    function getPair() public view returns (bytes32 _pairKey, address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType _customFeedType, uint8 _customFeedDecimals) {
+        _pairKey = pairKey;
+        (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = factory.getPairByKey(pairKey);
     }
 
     function spot() public view returns (uint _spot) {
@@ -1057,6 +1057,7 @@ contract OptinoFactory is Owned, CloneFactory {
             emit PairAdded(_pairKey, pairIndex.length - 1, optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.customFeed, FeedLib.FeedType(optinoData.customFeedType), optinoData.customFeedDecimals);
         }
     }
+    // TODO Add timestamp?
     function getPairByIndex(uint i) public view returns (bytes32 _pairKey, address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType _customFeedType,  uint8 _customFeedDecimals) {
         require(i < pairIndex.length, "getPairByIndex: Invalid index");
         _pairKey = pairIndex[i];
@@ -1134,7 +1135,7 @@ contract OptinoFactory is Owned, CloneFactory {
         series.spot = spot;
         emit SeriesSpotUpdated(seriesKey, spot);
     }
-    function seriesDataLength(uint _pairIndex) public view returns (uint _seriesDataLength) {
+    function seriesLength(uint _pairIndex) public view returns (uint _seriesLength) {
         return seriesIndex[_pairIndex].length;
     }
 
@@ -1146,10 +1147,10 @@ contract OptinoFactory is Owned, CloneFactory {
         Series memory series = seriesData[_seriesKey];
         (_callPut, _expiry, _strike, _bound, _timestamp, _optinoToken, _coverToken) = (series.callPut, series.expiry, series.strike, series.bound, series.timestamp, series.optinoToken, series.coverToken);
     }
-    function getSeriesByKey(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken) {
+    function getSeriesByKey(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
         Series memory series = seriesData[seriesKey];
         require(series.timestamp > 0, "getSeriesByKey: Invalid key");
-        return (series.pairKey, series.callPut, series.expiry, series.strike, series.bound, series.optinoToken, series.coverToken);
+        return (series.pairKey, series.callPut, series.expiry, series.strike, series.bound, series.optinoToken, series.coverToken, series.spot);
     }
     function getCalcData(bytes32 seriesKey) public view returns (uint _callPut, uint _strike, uint _bound, uint _decimalsData) {
         Series memory series = seriesData[seriesKey];
@@ -1161,13 +1162,25 @@ contract OptinoFactory is Owned, CloneFactory {
         return (series.callPut, series.strike, series.bound, decimalsData);
     }
 
+    /// @notice Mint Optino and Cover tokens
+    /// @param baseToken Base token ERC20 contract address, or 0x00 for ETH
+    /// @param quoteToken Quote token ERC20 contract address, or 0x00 for ETH
+    /// @param priceFeed Price feed adaptor contract address
+    /// @param callPut 0 for call, 1 for put
+    /// @param expiry Expiry date, unixtime
+    /// @param strike Strike rate
+    /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
+    /// @param tokens Number of Optino and Cover tokens to mint
+    /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
+    /// @return _optinoToken Existing or newly created Optino token contract address
+    /// @return _coverToken Existing or newly created Cover token contract address
     function mint(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         return _mint(OptinoData(baseToken, quoteToken, priceFeed, false, FeedLib.FeedType(0), 0, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
+    /// @notice Mint with custom feed
     function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
-
     function computeCollateral(bytes32 _seriesKey, uint tokens) internal returns (address _collateralToken, uint _collateral) {
         Series memory series = seriesData[_seriesKey];
         Pair memory pair = pairData[series.pairKey];
@@ -1185,7 +1198,6 @@ contract OptinoFactory is Owned, CloneFactory {
         _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
         _collateral = OptinoV1.collateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
     }
-
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
         (_collateralToken, _collateral) = computeCollateral(_seriesKey, optinoData.tokens);
@@ -1254,88 +1266,6 @@ contract OptinoFactory is Owned, CloneFactory {
 
         emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, _collateralToken, _collateral, _ownerFee, _uiFee);
     }
-
-
-    /*
-    /// @dev Mint Optino and Cover tokens
-    /// @param baseToken Base token ERC20 contract address, or 0x00 for ETH
-    /// @param quoteToken Quote token ERC20 contract address, or 0x00 for ETH
-    /// @param priceFeed Price feed adaptor contract address
-    /// @param callPut 0 for call, 1 for put
-    /// @param expiry Expiry date, unixtime
-    /// @param strike Strike rate
-    /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
-    /// @param tokens Number of Optino and Cover tokens to mint
-    /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
-    /// @return _optinoToken Existing or newly created Optino token contract address
-    /// @return _coverToken Existing or newly created Cover token contract address
-    function mintOld(address baseToken, address quoteToken, address priceFeed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (address _optinoToken, address _coverToken) {
-        require(expiry > block.timestamp, "mint: expiry must >= now");
-        require(tokens > 0, "mint: tokens must be > 0");
-
-        OptinoData memory optinoData = OptinoData(baseToken, quoteToken, priceFeed, callPut, expiry, strike, bound, tokens);
-        // OptinoData memory optinoDataV1 = OptinoData(baseToken, quoteToken, priceFeed, false, FeedLib.FeedType(0), 0, callPut, expiry, strike, bound, tokens);
-        // bytes32 _pairKey = getOrAddPair(optinoDataV1);
-
-        ConfigLib.Config memory config = getConfig(optinoData);
-        require(config.timestamp > 0, "mint: Invalid config");
-
-        OptinoToken optinoToken;
-        OptinoToken coverToken;
-        SeriesLib.Series storage series = getSeries(optinoData);
-        if (series.timestamp == 0) {
-            require(expiry < (block.timestamp + config.maxTerm), "mint: expiry must be <= now + config.maxTerm");
-            optinoToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
-            coverToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
-            addSeries(optinoData, config.key, address(optinoToken), address(coverToken));
-            series = getSeries(optinoData);
-            optinoToken.initOptinoToken(this, series.key, address(coverToken), seriesData.length(), false, OPTINODECIMALS);
-            coverToken.initOptinoToken(this, series.key, address(optinoToken), seriesData.length(), true, OPTINODECIMALS);
-        } else {
-            optinoToken = OptinoToken(payable(series.optinoToken));
-            coverToken = OptinoToken(payable(series.coverToken));
-        }
-
-        uint collateral = OptinoV1.collateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, config.decimalsData);
-        address collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
-        uint ownerFee = collateral.mul(fee).div(10 ** FEEDECIMALS);
-        uint uiFee;
-        if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
-            uiFee = ownerFee / 2;
-            ownerFee = ownerFee - uiFee;
-        }
-        uint ethRefund;
-        if (collateralToken == ETH) {
-            require(msg.value >= (collateral + ownerFee + uiFee), "mint: Insufficient ETH sent");
-            require(payable(coverToken).send(collateral), "mint: Send ETH to coverToken failure");
-            if (ownerFee > 0) {
-                require(payable(owner).send(ownerFee), "mint: Send ETH fee to owner failure");
-            }
-            if (uiFee > 0) {
-                require(payable(uiFeeAccount).send(uiFee), "mint: Send ETH fee to uiFeeAccount failure");
-            }
-            ethRefund = msg.value - collateral - ownerFee - uiFee;
-        } else {
-            require(ERC20(collateralToken).transferFrom(msg.sender, address(coverToken), collateral), "mint: Send ERC20 to coverToken failure");
-            if (ownerFee > 0) {
-                require(ERC20(collateralToken).transferFrom(msg.sender, owner, ownerFee), "mint: Send ERC20 fee to owner failure");
-            }
-            if (uiFee > 0) {
-                require(ERC20(collateralToken).transferFrom(msg.sender, uiFeeAccount, uiFee), "mint: Send ERC20 fee to uiFeeAccount failure");
-            }
-            ethRefund = msg.value;
-        }
-        if (ethRefund > 0) {
-            require(msg.sender.send(ethRefund), "mint: Send ETH refund failure");
-        }
-
-        optinoToken.mint(msg.sender, optinoData.tokens);
-        coverToken.mint(msg.sender, optinoData.tokens);
-
-        emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, collateralToken, collateral, ownerFee, uiFee);
-        return (series.optinoToken, series.coverToken);
-    }
-    */
 
     /// @dev Is the collateral in the base token (call) or quote token (put) ?
     /// @param callPut 0 for call, 1 for put

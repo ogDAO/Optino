@@ -529,163 +529,95 @@ function printOptinoFactoryContractDetails() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    /*
-    var configData = {};
-    var configDataLength = contract.configDataLength.call();
-    console.log("RESULT: optinoFactory.configDataLength=" + configDataLength);
-    for (i = 0; i < configDataLength; i++) {
-        // function getConfigByIndex(uint i) public view returns (bytes32 _configKey, address _baseToken, address _quoteToken,
-        // address _priceFeed, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals, uint _maxTerm, uint _fee,
-        // string memory _description, uint _timestamp) {
-        var config = contract.getConfigByIndex.call(i);
-        var key = config[0];
-        var baseToken = getShortAddressName(config[1]);
-        var quoteToken = getShortAddressName(config[2]);
-        var priceFeed = getShortAddressName(config[3]);
-        var decimalsData = parseInt(config[4]);
-        var decimals = parseInt(decimalsData / 1000000 % 100);
-        var baseDecimals = parseInt(decimalsData / 10000 % 100);
-        var quoteDecimals = parseInt(decimalsData / 100 % 100);
-        var rateDecimals = parseInt(decimalsData % 100);
-        var maxTerm = config[5];
-        var fee = config[6];
-        var description = config[7];
-        var timestamp = config[8];
-        configData[key] = { key: key, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, decimalsData: decimalsData, decimals: decimals, baseDecimals: baseDecimals, quoteDecimals: quoteDecimals, rateDecimals: rateDecimals };
-        console.log("RESULT: optinoToken.getConfigByIndex(" + i + "). key=" + key + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", priceFeed=" + priceFeed + ", decimalsData=" + decimalsData + ", decimals=" + decimals + ", baseDecimals=" + baseDecimals + ", quoteDecimals=" + quoteDecimals + ", rateDecimals=" + rateDecimals + ", maxTerm=" + maxTerm + ", fee=" + fee + ", description='" + description + "', timestamp=" + timestamp);
-    }
-    */
-
-    /*
+    var pairData = {};
     var seriesData = {};
-    var seriesDataLength = contract.seriesDataLength.call();
-    console.log("RESULT: optinoFactory.seriesDataLength=" + seriesDataLength);
-    for (i = 0; i < seriesDataLength; i++) {
-        var series = contract.getSeriesByIndex.call(i);
-        console.log("RESULT: optinoFactory.seriesData=" + JSON.stringify(series));
-        var key = series[0];
-        var configKey = series[1];
-        var callPut = series[2];
-        var expiry = series[3];
-        var strike = series[4];
-        var bound = series[5];
-        var timestamp = series[6];
-        var optinoToken = series[7];
-        var coverToken = series[8];
-        console.log("RESULT: optinoToken.getSeriesByIndex(" + i + "). key=" + key + ", configKey=" + configKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
+    var pairLength = contract.pairLength.call();
+    console.log("RESULT: optinoFactory.pairLength=" + pairLength);
+    for (var pairIndex = 0; pairIndex < pairLength; pairIndex++) {
+        var pair = contract.getPairByIndex.call(pairIndex);
+        // console.log("RESULT: optinoToken.getPairByIndex(" + i + ")=" + JSON.stringify(pair));
+        var pairKey = pair[0];
+        var baseToken = getShortAddressName(pair[1]);
+        var quoteToken = getShortAddressName(pair[2]);
+        var feed = getShortAddressName(pair[3]);
+        var customFeed = pair[4];
+        var customFeedType = pair[5].toString();
+        var customFeedDecimals = pair[6].toString();
+        pairData[pairKey] = { pairKey: pairKey, baseToken: baseToken, quoteToken: quoteToken, feed: feed, customFeed: customFeed, customFeedType: customFeedType, customFeedDecimals: customFeedDecimals };
+        console.log("RESULT: optinoToken.getPairByIndex(" + pairIndex + "). pairKey=" + pairKey + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", feed=" + feed + ", customFeed=" + customFeed + ", customFeedType=" + customFeedType + ", customFeedDecimals=" + customFeedDecimals);
+        var seriesLength = contract.seriesLength.call(pairIndex);
+        console.log("RESULT: optinoFactory.seriesLength(" + pairIndex + ")=" + seriesLength);
+        for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
+          var series = contract.getSeriesByIndex.call(pairIndex, seriesIndex);
+          // console.log("RESULT: optinoFactory.getSeriesByIndex(" + pairIndex + ", " + seriesIndex + ")=" + JSON.stringify(series));
+          var seriesKey = series[0];
+          var pairKey = series[1];
+          var callPut = series[2];
+          var expiry = series[3];
+          var strike = series[4];
+          var bound = series[5];
+          var timestamp = series[6];
+          var optinoToken = series[7];
+          var coverToken = series[8];
+          console.log("RESULT:   optinoFactory.getSeriesByIndex(" + pairIndex + ", " + seriesIndex + "). seriesKey=" + seriesKey + ", pairKey=" + pairKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
 
-        var config = configData[configKey];
-        var rateDecimals = config.rateDecimals;
-        var collateralDecimals = callPut == "0" ? config.baseDecimals : config.quoteDecimals;
-        seriesData[key] = { key: key, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike, bound: bound, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken, collateralDecimals: collateralDecimals };
-
-        var optinoTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(optinoToken);
-        var optinoTokenDecimals = optinoTokenContract.decimals.call();
-        var oneToken = new BigNumber("1").shift(optinoTokenDecimals);
-        console.log("RESULT: - optinoToken:");
-        console.log("RESULT:     .owner/new=" + getShortAddressName(optinoTokenContract.owner.call()) + "/" + getShortAddressName(optinoTokenContract.newOwner.call()));
-        console.log("RESULT:     .details='" + optinoTokenContract.symbol.call() + "' '" + optinoTokenContract.name.call() + "' " + optinoTokenDecimals + " dp");
-        console.log("RESULT:     .totalSupply=" + optinoTokenContract.totalSupply.call().shift(-optinoTokenDecimals));
-        console.log("RESULT:     .closedOrSettled=" + optinoTokenContract.balanceOf.call(NULLACCOUNT).shift(-optinoTokenDecimals));
-        // console.log("RESULT:     .factory/baseToken/quoteToken/priceFeed=" + getShortAddressName(optinoTokenContract.factory.call()) + "/" + getShortAddressName(optinoTokenContract.baseToken.call()) + "/" + getShortAddressName(optinoTokenContract.quoteToken.call()) + "/" + getShortAddressName(optinoTokenContract.priceFeed.call()));
-        // console.log("RESULT:     .callPut/expiry/strike/bound=" + optinoTokenContract.callPut.call() + "/" + optinoTokenContract.expiry.call() + "/" + optinoTokenContract.strike.call().shift(-rateDecimals) + "/" + optinoTokenContract.bound.call().shift(-rateDecimals));
-        // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + optinoTokenContract.description.call() + "/" + getShortAddressName(optinoTokenContract.pair.call()) + "/" + optinoTokenContract.seriesNumber.call() + "/" + optinoTokenContract.isCover.call());
-        console.log("RESULT:     .currentSpot/currentPayoff(1)=" + optinoTokenContract.currentSpot.call().shift(-rateDecimals) + "/" + optinoTokenContract.currentPayoff.call(oneToken).shift(-collateralDecimals));
-        console.log("RESULT:     .spot/payoff(1)=" + optinoTokenContract.spot.call().shift(-rateDecimals) + "/" + optinoTokenContract.payoff.call(oneToken).shift(-collateralDecimals));
-        var optinoTokenTransferEvents = optinoTokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        var j = 0;
-        optinoTokenTransferEvents.watch(function (error, result) {
-          console.log("RESULT:     .Transfer " + j++ + " #" + result.blockNumber +
-            " from=" + getShortAddressName(result.args.from) +
-            " to=" + getShortAddressName(result.args.to) + " tokens=" + result.args.tokens.shift(-optinoTokenDecimals));
-        });
-        optinoTokenTransferEvents.stopWatching();
-        var optinoTokenCloseEvents = optinoTokenContract.Close({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        j = 0;
-        optinoTokenCloseEvents.watch(function (error, result) {
-          console.log("RESULT:     .Close " + j++ + " #" + result.blockNumber +
-            " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-            " token=" + getShortAddressName(result.args.token) +
-            " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
-            " tokens=" + result.args.tokens.shift(-collateralDecimals));
-        });
-        optinoTokenCloseEvents.stopWatching();
-        var optinoTokenPayoffEvents = optinoTokenContract.Payoff({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        j = 0;
-        optinoTokenPayoffEvents.watch(function (error, result) {
-          console.log("RESULT:     .Payoff " + j++ + " #" + result.blockNumber +
-            " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-            " token=" + getShortAddressName(result.args.token) +
-            " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
-            " tokens=" + result.args.tokens.shift(-collateralDecimals));
-        });
-        optinoTokenPayoffEvents.stopWatching();
-        var optinoTokenLogInfoEvents = optinoTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        j = 0;
-        optinoTokenLogInfoEvents.watch(function (error, result) {
-          console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
-            " note=" + result.args.note +
-            " addr=" + getShortAddressName(result.args.addr) +
-            " number=" + result.args.number);
-        });
-        optinoTokenLogInfoEvents.stopWatching();
-
-        var coverTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(coverToken);
-        var coverTokenDecimals = coverTokenContract.decimals.call();
-        console.log("RESULT: - coverToken:");
-        console.log("RESULT:     .owner/new=" + getShortAddressName(coverTokenContract.owner.call()) + "/" + getShortAddressName(coverTokenContract.newOwner.call()));
-        console.log("RESULT:     .details='" + coverTokenContract.symbol.call() + "' '" + coverTokenContract.name.call() + "' " + coverTokenDecimals + " dp");
-        console.log("RESULT:     .totalSupply=" + coverTokenContract.totalSupply.call().shift(-coverTokenDecimals));
-        console.log("RESULT:     .closedOrSettled=" + coverTokenContract.balanceOf.call(NULLACCOUNT).shift(-coverTokenDecimals));
-        // console.log("RESULT:     .factory/baseToken/quoteToken/priceFeed=" + getShortAddressName(coverTokenContract.factory.call()) + "/" + getShortAddressName(coverTokenContract.baseToken.call()) + "/" + getShortAddressName(coverTokenContract.quoteToken.call()) + "/" + getShortAddressName(coverTokenContract.priceFeed.call()));
-        // console.log("RESULT:     .callPut/expiry/strike/bound=" + coverTokenContract.callPut.call() + "/" + coverTokenContract.expiry.call() + "/" + coverTokenContract.strike.call().shift(-rateDecimals) + "/" + coverTokenContract.bound.call().shift(-rateDecimals));
-        // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + coverTokenContract.description.call() + "/" + getShortAddressName(coverTokenContract.pair.call()) + "/" + coverTokenContract.seriesNumber.call() + "/" + coverTokenContract.isCover.call());
-        console.log("RESULT:     .currentSpot/currentPayoff(1)=" + coverTokenContract.currentSpot.call().shift(-rateDecimals) + "/" + coverTokenContract.currentPayoff.call(oneToken).shift(-collateralDecimals));
-        console.log("RESULT:     .spot/payoff(1)=" + coverTokenContract.spot.call().shift(-rateDecimals) + "/" + coverTokenContract.payoff.call(oneToken).shift(-collateralDecimals));
-        var coverTokenTransferEvents = coverTokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        j = 0;
-        coverTokenTransferEvents.watch(function (error, result) {
-          console.log("RESULT:     .Transfer " + j++ + " #" + result.blockNumber +
-            " from=" + getShortAddressName(result.args.from) +
-            " to=" + getShortAddressName(result.args.to) + " tokens=" + result.args.tokens.shift(-optinoTokenDecimals));
-        });
-        coverTokenTransferEvents.stopWatching();
-
-        var coverTokenCloseEvents = coverTokenContract.Close({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        j = 0;
-        coverTokenCloseEvents.watch(function (error, result) {
-          console.log("RESULT:     .Close " + j++ + " #" + result.blockNumber +
-            " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-            " token=" + getShortAddressName(result.args.token) +
-            " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
-            " tokens=" + result.args.tokens.shift(-collateralDecimals));
-        });
-        coverTokenCloseEvents.stopWatching();
-
-        var coverTokenPayoffEvents = coverTokenContract.Payoff({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        j = 0;
-        coverTokenPayoffEvents.watch(function (error, result) {
-          console.log("RESULT:     .Payoff " + j++ + " #" + result.blockNumber +
-            " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-            " token=" + getShortAddressName(result.args.token) +
-            " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
-            " tokens=" + result.args.tokens.shift(-collateralDecimals));
-        });
-        coverTokenPayoffEvents.stopWatching();
-        // var coverTokenLogInfoEvents = coverTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-        // j = 0;
-        // coverTokenLogInfoEvents.watch(function (error, result) {
-        //   console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
-        //     " note=" + result.args.note +
-        //     " addr=" + getShortAddressName(result.args.addr) +
-        //     " number=" + result.args.number);
-        // });
-        // coverTokenLogInfoEvents.stopWatching();
-
+          [optinoToken, coverToken].forEach(function (tokenAddress) {
+            console.log("RESULT:     token: " + getShortAddressName(tokenAddress));
+            var tokenContract = web3.eth.contract(_optinoTokenContractAbi).at(tokenAddress);
+            var tokenDecimals = tokenContract.decimals.call();
+            var oneToken = new BigNumber("1").shift(tokenDecimals);
+            console.log("RESULT:       .oneToken: " + oneToken);
+            console.log("RESULT:       .owner/new=" + getShortAddressName(tokenContract.owner.call()) + "/" + getShortAddressName(tokenContract.newOwner.call()));
+            console.log("RESULT:       .details='" + tokenContract.symbol.call() + "' '" + tokenContract.name.call() + "' " + tokenDecimals + " dp");
+            console.log("RESULT:       .totalSupply=" + tokenContract.totalSupply.call().shift(-tokenDecimals));
+            // console.log("RESULT: - optinoToken:");
+            // console.log("RESULT:     .closedOrSettled=" + optinoTokenContract.balanceOf.call(NULLACCOUNT).shift(-optinoTokenDecimals));
+            // // console.log("RESULT:     .factory/baseToken/quoteToken/feed=" + getShortAddressName(optinoTokenContract.factory.call()) + "/" + getShortAddressName(optinoTokenContract.baseToken.call()) + "/" + getShortAddressName(optinoTokenContract.quoteToken.call()) + "/" + getShortAddressName(optinoTokenContract.feed.call()));
+            // // console.log("RESULT:     .callPut/expiry/strike/bound=" + optinoTokenContract.callPut.call() + "/" + optinoTokenContract.expiry.call() + "/" + optinoTokenContract.strike.call().shift(-rateDecimals) + "/" + optinoTokenContract.bound.call().shift(-rateDecimals));
+            // // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + optinoTokenContract.description.call() + "/" + getShortAddressName(optinoTokenContract.pair.call()) + "/" + optinoTokenContract.seriesNumber.call() + "/" + optinoTokenContract.isCover.call());
+            // console.log("RESULT:     .currentSpot/currentPayoff(1)=" + optinoTokenContract.currentSpot.call().shift(-rateDecimals) + "/" + optinoTokenContract.currentPayoff.call(oneToken).shift(-collateralDecimals));
+            // console.log("RESULT:     .spot/payoff(1)=" + optinoTokenContract.spot.call().shift(-rateDecimals) + "/" + optinoTokenContract.payoff.call(oneToken).shift(-collateralDecimals));
+            // var optinoTokenTransferEvents = optinoTokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+            // var j = 0;
+            // optinoTokenTransferEvents.watch(function (error, result) {
+            //   console.log("RESULT:     .Transfer " + j++ + " #" + result.blockNumber +
+            //     " from=" + getShortAddressName(result.args.from) +
+            //     " to=" + getShortAddressName(result.args.to) + " tokens=" + result.args.tokens.shift(-optinoTokenDecimals));
+            // });
+            // optinoTokenTransferEvents.stopWatching();
+            // var optinoTokenCloseEvents = optinoTokenContract.Close({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+            // j = 0;
+            // optinoTokenCloseEvents.watch(function (error, result) {
+            //   console.log("RESULT:     .Close " + j++ + " #" + result.blockNumber +
+            //     " optinoToken=" + getShortAddressName(result.args.optinoToken) +
+            //     " token=" + getShortAddressName(result.args.token) +
+            //     " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
+            //     " tokens=" + result.args.tokens.shift(-collateralDecimals));
+            // });
+            // optinoTokenCloseEvents.stopWatching();
+            // var optinoTokenPayoffEvents = optinoTokenContract.Payoff({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+            // j = 0;
+            // optinoTokenPayoffEvents.watch(function (error, result) {
+            //   console.log("RESULT:     .Payoff " + j++ + " #" + result.blockNumber +
+            //     " optinoToken=" + getShortAddressName(result.args.optinoToken) +
+            //     " token=" + getShortAddressName(result.args.token) +
+            //     " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
+            //     " tokens=" + result.args.tokens.shift(-collateralDecimals));
+            // });
+            // optinoTokenPayoffEvents.stopWatching();
+            // var optinoTokenLogInfoEvents = optinoTokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+            // j = 0;
+            // optinoTokenLogInfoEvents.watch(function (error, result) {
+            //   console.log("RESULT:     .LogInfo " + j++ + " #" + result.blockNumber +
+            //     " note=" + result.args.note +
+            //     " addr=" + getShortAddressName(result.args.addr) +
+            //     " number=" + result.args.number);
+            // });
+            // optinoTokenLogInfoEvents.stopWatching();
+          });
+        }
     }
-    */
 
-    console.log("RESULT: Here");
     var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     ownershipTransferredEvents.watch(function (error, result) {
@@ -707,19 +639,19 @@ function printOptinoFactoryContractDetails() {
     // });
     // seriesAddedEvents.stopWatching();
     //
-    var seriesFeedPairAdded = contract.FeedPairAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    var pairAddedEvents = contract.PairAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
-    seriesFeedPairAdded.watch(function (error, result) {
-      console.log("RESULT: FeedPairAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    pairAddedEvents.watch(function (error, result) {
+      console.log("RESULT: PairAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
-    seriesFeedPairAdded.stopWatching();
+    pairAddedEvents.stopWatching();
 
-    var seriesAddedV1Events = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
-    seriesAddedV1Events.watch(function (error, result) {
+    seriesAddedEvents.watch(function (error, result) {
       console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
-    seriesAddedV1Events.stopWatching();
+    seriesAddedEvents.stopWatching();
 
     var optinoMintedEvents = contract.OptinoMinted({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
@@ -752,7 +684,6 @@ function printOptinoFactoryContractDetails() {
         " number=" + result.args.number);
     });
     optinoTokenLogInfoEvents.stopWatching();
-    console.log("RESULT: There");
 
     _optinoFactoryFromBlock = latestBlock + 1;
   }

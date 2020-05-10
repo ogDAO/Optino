@@ -243,8 +243,8 @@ var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deploye
         addOptinoFactoryContractAddressAndAbi(optinoFactoryAddress, optinoFactoryAbi, optinoTokenAbi);
         console.log("DATA: var optinoFactoryAddress=\"" + optinoFactoryAddress + "\";");
         console.log("DATA: var optinoFactoryAbi=" + JSON.stringify(optinoFactoryAbi) + ";");
-        console.log("DATA: var optinoTokenAbi=" + JSON.stringify(optinoTokenAbi) + ";");
-        console.log("DATA: var optinoToken=eth.contract(optinoFactoryAbi).at(optinoFactoryAddress);");
+        // console.log("DATA: var optinoTokenAbi=" + JSON.stringify(optinoTokenAbi) + ";");
+        console.log("DATA: var optinoFactory=eth.contract(optinoFactoryAbi).at(optinoFactoryAddress);");
       }
     }
   }
