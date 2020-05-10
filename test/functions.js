@@ -506,10 +506,10 @@ function getOptinoTokens() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var seriesAddedEvents = contract.SeriesAddedV1({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    var seriesAddedEvents = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     seriesAddedEvents.watch(function (error, result) {
-      console.log("RESULT: got SeriesAddedV1 " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      console.log("RESULT: got SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
       optinos.push(result.args.optinoToken);
       optinos.push(result.args.coverToken);
     });
@@ -714,10 +714,10 @@ function printOptinoFactoryContractDetails() {
     });
     seriesFeedPairAdded.stopWatching();
 
-    var seriesAddedV1Events = contract.SeriesAddedV1({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    var seriesAddedV1Events = contract.SeriesAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     seriesAddedV1Events.watch(function (error, result) {
-      console.log("RESULT: SeriesAddedV1 " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      console.log("RESULT: SeriesAdded " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     seriesAddedV1Events.stopWatching();
 
