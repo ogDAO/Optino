@@ -660,7 +660,7 @@ contract OptinoToken is BasicToken {
         pair = _pair;
         seriesNumber = _seriesNumber;
         isCover = _isCover;
-        emit LogInfo("_mint b", msg.sender, 0);
+        emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
         (address _baseToken, address _quoteToken, address _feed, bool _customFeed, /* FeedLib.FeedType customFeedType */, uint8 customFeedDecimals) = factory.getPairByKey(pairKey);
@@ -1088,7 +1088,6 @@ contract OptinoFactory is Owned, CloneFactory {
         require(optinoData.strike > 0, "addSeries: strike must be > 0");
         require(_optinoToken != address(0), "addSeries: Invalid optinoToken");
         require(_coverToken != address(0), "addSeries: Invalid coverToken");
-        emit LogInfo("addSeries", address(0), 0);
         if (optinoData.callPut == 0) {
             require(optinoData.bound == 0 || optinoData.bound > optinoData.strike, "addSeries: Call bound must = 0 or > strike");
         } else {
@@ -1098,7 +1097,7 @@ contract OptinoFactory is Owned, CloneFactory {
         require(seriesData[_seriesKey].timestamp == 0, "addSeries: Cannot add duplicate");
 
         Pair memory pair = pairData[_pairKey];
-        emit LogInfo("addSeries.pair.index", address(0), pair.index);
+        emit LogInfo("addSeries.pair.index", msg.sender, pair.index);
         seriesIndex[pair.index].push(_seriesKey);
         uint _seriesIndex = seriesIndex[pair.index].length - 1;
         seriesData[_seriesKey] = Series(block.timestamp, _seriesIndex, _seriesKey, _pairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken, 0);
@@ -1188,19 +1187,18 @@ contract OptinoFactory is Owned, CloneFactory {
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
         FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        emit LogInfo("computeCollateral 1", pair.feed, uint(feedType));
+        emit LogInfo("computeCollateral feedType", pair.feed, uint(feedType));
         (uint _spot, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(pair.feed, feedType);
-        emit LogInfo("computeCollateral 2", pair.feed, _spot);
-        emit LogInfo("computeCollateral 3", pair.feed, uint(_feedDecimals));
+        emit LogInfo("computeCollateral _spot", pair.feed, _spot);
         if (pair.customFeed) {
             _feedDecimals = pair.customFeedDecimals;
         }
-        emit LogInfo("computeCollateral 4", pair.feed, uint(_feedDecimals));
+        emit LogInfo("computeCollateral _feedDecimals", pair.feed, uint(_feedDecimals));
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), pair.customFeed ? pair.customFeedDecimals : _feedDecimals);
         _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
-        emit LogInfo("computeCollateral 5", pair.feed, decimalsData);
+        emit LogInfo("computeCollateral decimalsData", pair.feed, decimalsData);
         _collateral = OptinoV1.collateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
-        emit LogInfo("computeCollateral 6", pair.feed, _collateral);
+        emit LogInfo("computeCollateral _collateral", msg.sender, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
@@ -1250,10 +1248,10 @@ contract OptinoFactory is Owned, CloneFactory {
             series.optinoToken = address(_optinoToken);
             series.coverToken = address(_coverToken);
             addSeries(_pairKey, optinoData, address(_optinoToken), address(_coverToken));
-            emit LogInfo("_mint a", address(0), 0);
             series = seriesData[_seriesKey];
-            emit LogInfo("_mint b", msg.sender, optinoData.tokens);
+            emit LogInfo("mint optinoToken", msg.sender, optinoData.tokens);
             _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 100000 + series.index + 5, false, OPTINODECIMALS);
+            emit LogInfo("mint coverToken", msg.sender, optinoData.tokens);
             _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
         } else {
             _optinoToken = OptinoToken(payable(series.optinoToken));
