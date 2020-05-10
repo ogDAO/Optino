@@ -341,10 +341,10 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "1"; // 0 Call, 1 Put
+var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
-var cap = new BigNumber("0").shift(rateDecimals);
+var cap = new BigNumber("300").shift(rateDecimals);
 var floor = new BigNumber("0").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var tokens = new BigNumber("10").shift(OPTINODECIMALS);
@@ -414,11 +414,11 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
-  var closeAmount = optino.balanceOf.call(seller1);
-  // var closeAmount = optino.balanceOf.call(seller1).mul(3).div(9);
+  // var closeAmount = optino.balanceOf.call(seller1);
+  var closeAmount = optino.balanceOf.call(seller1).mul(3).div(4);
   // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + closeGroup1_Message + " ----------");
@@ -485,16 +485,17 @@ if (false) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var transferThenSettleGroup1_Message = "Transfer, then settle Optino & Cover";
-  var rate = new BigNumber("300").shift(rateDecimals);
+  var rate = new BigNumber("250").shift(rateDecimals);
   var transferAmount = optino.balanceOf.call(seller1).mul(4).div(8);
   console.log("RESULT: transferAmount=" + transferAmount.shift(-OPTINODECIMALS).toString());
   // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + transferThenSettleGroup1_Message + " ----------");
-  waitUntil("optino.expiry()", optino.expiry.call(), 0);
+  waitUntil("optino.expiry()", expiry, 0);
+  // waitUntil("optino.expiry()", optino.expiry.call(), 0);
 
   var transferThenSettleGroup1_1Tx = optino.transfer(buyer1, transferAmount.toString(), {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
   var transferThenSettleGroup1_2Tx = cover.transfer(buyer2, transferAmount.toString(), {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});

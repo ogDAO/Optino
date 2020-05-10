@@ -643,7 +643,7 @@ contract OptinoToken is BasicToken {
     OptinoFactory public factory;
     bytes32 public seriesKey;
     bytes32 public pairKey;
-    address public pair;
+    OptinoToken public pair;
     uint public seriesNumber;
     bool public isCover;
     address public collateralToken;
@@ -654,7 +654,7 @@ contract OptinoToken is BasicToken {
     event Payoff(address indexed optinoToken, address indexed collateralToken, address indexed tokenOwner, uint tokens, uint8 collateralDecimals);
     event LogInfo(string note, address addr, uint number);
 
-    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
+    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         factory = _factory;
         seriesKey = _seriesKey;
         pair = _pair;
@@ -674,7 +674,7 @@ contract OptinoToken is BasicToken {
     }
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
-        require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
         balances[address(0)] = balances[address(0)].add(tokens);
         emit Transfer(tokenOwner, address(0), tokens);
@@ -726,11 +726,11 @@ contract OptinoToken is BasicToken {
         }
     }
     function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-        if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-            if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
-                return balance;
-            }
-        }
+        // if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
+        //     if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
+        //         return balance;
+        //     }
+        // }
         return amount;
     }
     function transferOut(address token, address tokenOwner, uint tokens, uint decimals) internal {
@@ -748,7 +748,7 @@ contract OptinoToken is BasicToken {
         closeFor(msg.sender, tokens);
     }
     function closeFor(address tokenOwner, uint tokens) public {
-        require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "closeFor: Not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "closeFor: Not authorised");
         if (!isCover) {
             // emit LogInfo("closeFor msg.sender for Optino token. Transferring to Cover token", msg.sender, tokens);
             OptinoToken(payable(pair)).closeFor(tokenOwner, tokens);
@@ -761,7 +761,7 @@ contract OptinoToken is BasicToken {
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             uint collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
             transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
-            emit Close(pair, collateralToken, tokenOwner, collateral, collateralDecimals);
+            emit Close(address(pair), collateralToken, tokenOwner, collateral, collateralDecimals);
         }
     }
     function settle() public {
@@ -787,15 +787,19 @@ contract OptinoToken is BasicToken {
             if (optinoTokens > 0) {
                 require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "settleFor: Burn optino tokens failure");
             }
+            bool isEmpty1 = pair.totalSupply() + this.totalSupply() == 0;
+            emit LogInfo("settleFor isEmpty1", msg.sender, isEmpty1 ? 1 : 0);
             if (coverTokens > 0) {
                 require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens), "settleFor: Burn cover tokens failure");
             }
+            bool isEmpty2 = pair.totalSupply() + this.totalSupply() == 0;
+            emit LogInfo("settleFor isEmpty2", msg.sender, isEmpty2 ? 1 : 0);
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
                     transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
                 }
-                emit Payoff(pair, collateralToken, tokenOwner, _payoff, collateralDecimals);
+                emit Payoff(address(pair), collateralToken, tokenOwner, _payoff, collateralDecimals);
             }
             if (coverTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
@@ -1008,7 +1012,7 @@ contract OptinoFactory is Owned, CloneFactory {
         }
     }
 
-    function addFeed(address feed, string memory name, FeedLib.FeedType _feedType, uint8 _decimals) public /* TODO onlyOwner */ {
+    function addFeed(address feed, string memory name, FeedLib.FeedType _feedType, uint8 _decimals) public onlyOwner {
         require(feedData[feed].feed == address(0), "addFeed: Cannot add duplicate");
         (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = FeedLib.getSpot(feed, _feedType);
         require(_spot > 0, "addFeed: Spot must >= 0");
@@ -1245,8 +1249,8 @@ contract OptinoFactory is Owned, CloneFactory {
             emit LogInfo("_mint a", address(0), 0);
             series = seriesData[_seriesKey];
             emit LogInfo("_mint b", msg.sender, optinoData.tokens);
-            _optinoToken.initOptinoToken(this, _seriesKey, address(_coverToken), (pair.index + 3) * 100000 + series.index + 5, false, OPTINODECIMALS);
-            _coverToken.initOptinoToken(this, _seriesKey, address(_optinoToken), (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
+            _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 100000 + series.index + 5, false, OPTINODECIMALS);
+            _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
         } else {
             _optinoToken = OptinoToken(payable(series.optinoToken));
             _coverToken = OptinoToken(payable(series.coverToken));
