@@ -299,7 +299,7 @@ var deployGroup2_8Tx = quoteToken.mint(buyer2, quoteTokens.toString(), {from: de
 var deployGroup2_9Tx = optinoFactory.addFeed(priceFeedAddress, "Maker ETH/USD", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 // var deployGroup2_9Tx = optinoFactory.addConfig(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
-var deployGroup2_10Tx = optinoFactory.addConfig(ethAddress, quoteTokenAddress, priceFeedAdaptorAddress, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+// var deployGroup2_10Tx = optinoFactory.addConfig(ethAddress, quoteTokenAddress, priceFeedAdaptorAddress, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -324,8 +324,8 @@ printTxData("deployGroup2_8Tx", deployGroup2_8Tx);
 failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addFeed(priceFeed, 'Maker ETH/USD', MAKER, 18)");
 // failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
 printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
-failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
-printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
+// failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
+// printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
 failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - seller1 -> baseToken.approve(optinoFactory, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_11Tx", deployGroup2_11Tx);
 failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - seller1 -> quoteToken.approve(optinoFactory, " + quoteTokens.shift(-baseDecimals).toString() + ")");
@@ -341,7 +341,7 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "0"; // 0 Call, 1 Put
+var callPut = "1"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
 var cap = new BigNumber("300").shift(rateDecimals);
@@ -446,10 +446,10 @@ if (false) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = new BigNumber("250").shift(rateDecimals);
+  var rate = new BigNumber("166.666666666666666667").shift(rateDecimals);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
   // waitUntil("optino.expiry()", optino.expiry.call(), 0);
@@ -457,8 +457,8 @@ if (false) {
   var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
-  // var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
-  var settleGroup1_2Tx = optino.settleFor(seller1, {from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
+  var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
+  // var settleGroup1_2Tx = optino.settleFor(seller1, {from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();

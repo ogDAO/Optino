@@ -193,7 +193,7 @@ library NameUtils {
     uint8 constant CHAR_T = 84;
     uint8 constant CHAR_Z = 90;
 
-    function numToBytes(uint number, uint decimals) internal pure returns (bytes memory b, uint _length) {
+    function numToBytes(uint number, uint8 decimals) internal pure returns (bytes memory b, uint _length) {
         uint i;
         uint j;
         uint result;
@@ -300,7 +300,7 @@ library NameUtils {
         } while (i > 0);
         s = string(b);
     }
-    function toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint decimals) internal pure returns (string memory s) {
+    function toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint8 decimals) internal pure returns (string memory s) {
         bytes memory b = new bytes(256);
         uint i;
         uint j;
@@ -397,24 +397,24 @@ library SafeMath {
 
 /// @notice Decimals
 library Decimals {
-    function setDecimals(uint decimals, uint baseDecimals, uint quoteDecimals, uint rateDecimals) internal pure returns (uint _decimalsData) {
+    function setDecimals(uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) internal pure returns (uint _decimalsData) {
         require(decimals <= 18 && baseDecimals <= 18 && quoteDecimals <= 18 && rateDecimals <= 18, "Decimals.setDecimals: All decimals must be <= 18");
         return decimals * 1000000 + baseDecimals * 10000 + quoteDecimals * 100 + rateDecimals;
     }
-    function getDecimals(uint decimalsData) internal pure returns (uint _decimals) {
-        return decimalsData / 1000000 % 100;
+    function getDecimals(uint decimalsData) internal pure returns (uint8 _decimals) {
+        return uint8(decimalsData / 1000000 % 100);
     }
-    function getBaseDecimals(uint decimalsData) internal pure returns (uint _baseDecimals) {
-        return decimalsData / 10000 % 100;
+    function getBaseDecimals(uint decimalsData) internal pure returns (uint8 _baseDecimals) {
+        return uint8(decimalsData / 10000 % 100);
     }
-    function getQuoteDecimals(uint decimalsData) internal pure returns (uint _quoteDecimals) {
-        return decimalsData / 100 % 100;
+    function getQuoteDecimals(uint decimalsData) internal pure returns (uint8 _quoteDecimals) {
+        return uint8(decimalsData / 100 % 100);
     }
-    function getRateDecimals(uint decimalsData) internal pure returns (uint _rateDecimals) {
-        return decimalsData % 100;
+    function getRateDecimals(uint decimalsData) internal pure returns (uint8 _rateDecimals) {
+        return uint8(decimalsData % 100);
     }
-    function getAllDecimals(uint decimalsData) internal pure returns (uint _decimals, uint _baseDecimals, uint _quoteDecimals, uint _rateDecimals) {
-        return (decimalsData / 1000000 % 100, decimalsData / 10000 % 100, decimalsData / 100 % 100, decimalsData % 100);
+    function getAllDecimals(uint decimalsData) internal pure returns (uint8 _decimals, uint8 _baseDecimals, uint8 _quoteDecimals, uint8 _rateDecimals) {
+        return (uint8(decimalsData / 1000000 % 100), uint8(decimalsData / 10000 % 100), uint8(decimalsData / 100 % 100), uint8(decimalsData % 100));
     }
 }
 
@@ -583,17 +583,17 @@ library OptinoV1 {
     using SafeMath for uint;
     using Decimals for uint;
 
-    function shiftRightThenLeft(uint amount, uint right, uint left) internal pure returns (uint _result) {
+    function shiftRightThenLeft(uint amount, uint8 right, uint8 left) internal pure returns (uint _result) {
         if (right == left) {
             return amount;
         } else if (right > left) {
-            return amount.mul(10 ** (right - left));
+            return amount.mul(10 ** uint(right - left));
         } else {
-            return amount.div(10 ** (left - right));
+            return amount.div(10 ** uint(left - right));
         }
     }
     function collateral(uint callPut, uint strike, uint bound, uint tokens, uint decimalsData) internal pure returns (uint _collateral) {
-        (uint decimals, uint baseDecimals, uint quoteDecimals, uint rateDecimals) = decimalsData.getAllDecimals();
+        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.getAllDecimals();
         require(strike > 0, "collateral: strike must be > 0");
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "collateral: Call bound must = 0 or > strike");
@@ -604,11 +604,11 @@ library OptinoV1 {
             }
         } else {
             require(bound < strike, "collateral: Put bound must = 0 or < strike");
-            return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** rateDecimals);
+            return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** uint(rateDecimals));
         }
     }
     function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
-        (uint decimals, uint baseDecimals, uint quoteDecimals, uint rateDecimals) = decimalsData.getAllDecimals();
+        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.getAllDecimals();
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "payoff: Call bound must = 0 or > strike");
             if (spot > 0 && spot > strike) {
@@ -647,10 +647,11 @@ contract OptinoToken is BasicToken {
     uint public seriesNumber;
     bool public isCover;
     address public collateralToken;
-    uint public collateralDecimals;
+    uint8 public collateralDecimals;
 
-    event Close(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
-    event Payoff(address indexed optinoToken, address indexed token, address indexed tokenOwner, uint tokens);
+    // TODO - Improve data
+    event Close(address indexed optinoToken, address indexed collateralToken, address indexed tokenOwner, uint tokens, uint8 collateralDecimals);
+    event Payoff(address indexed optinoToken, address indexed collateralToken, address indexed tokenOwner, uint tokens, uint8 collateralDecimals);
     event LogInfo(string note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  address _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
@@ -689,7 +690,7 @@ contract OptinoToken is BasicToken {
     }
 
     function spot() public view returns (uint _spot) {
-        return factory.getSeriesSpot(seriesKey);
+        _spot = factory.getSeriesSpot(seriesKey);
     }
     function currentSpot() public view returns (uint _currentSpot) {
         return factory.getSeriesCurrentSpot(seriesKey);
@@ -733,6 +734,8 @@ contract OptinoToken is BasicToken {
         return amount;
     }
     function transferOut(address token, address tokenOwner, uint tokens, uint decimals) internal {
+        // emit LogInfo("transferOut tokens", tokenOwner, tokens);
+        // emit LogInfo("transferOut decimals", tokenOwner, decimals);
         if (token == ETH) {
             tokens = collectDust(tokens, address(this).balance, decimals);
             payable(tokenOwner).transfer(tokens);
@@ -758,7 +761,7 @@ contract OptinoToken is BasicToken {
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             uint collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
             transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
-            emit Close(pair, collateralToken, tokenOwner, collateral);
+            emit Close(pair, collateralToken, tokenOwner, collateral, collateralDecimals);
         }
     }
     function settle() public {
@@ -777,14 +780,17 @@ contract OptinoToken is BasicToken {
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0, "settleFor: No optino or cover tokens");
             uint _spot = spot();
+            // emit LogInfo("settleFor _spot 1", msg.sender, _spot);
             if (_spot == 0) {
                 setSpot();
                 _spot = spot();
             }
+            // emit LogInfo("settleFor _spot 2", msg.sender, _spot);
             require(_spot > 0);
             uint _payoff;
             uint _collateral;
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
+            // emit LogInfo("settleFor decimalsData=factory.getCalcData(seriesKey)", msg.sender, decimalsData);
             if (optinoTokens > 0) {
                 require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "settleFor: Burn optino tokens failure");
             }
@@ -794,9 +800,10 @@ contract OptinoToken is BasicToken {
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
+                    // emit LogInfo("settleFor optino._payoff", tokenOwner, _payoff);
                     transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
                 }
-                emit Payoff(pair, collateralToken, tokenOwner, _payoff);
+                emit Payoff(pair, collateralToken, tokenOwner, _payoff, collateralDecimals);
             }
             if (coverTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
@@ -805,7 +812,7 @@ contract OptinoToken is BasicToken {
                 if (_coverPayoff > 0) {
                     transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
                 }
-                emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff);
+                emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
             }
         }
     }
@@ -931,7 +938,7 @@ contract OptinoFactory is Owned, CloneFactory {
     uint public constant FEEDECIMALS = 18;
     uint public constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
     address public constant ETH = address(0);
-    uint public constant OPTINODECIMALS = 18;
+    uint8 public constant OPTINODECIMALS = 18;
     uint public constant ONEDAY = 24 * 60 * 60;
     uint public constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
@@ -1103,21 +1110,17 @@ contract OptinoFactory is Owned, CloneFactory {
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
         FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = FeedLib.getSpot(pair.feed, pair.customFeedType);
-        if (_hasData) {
-            return _spot;
-        }
-        return 0;
+        (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = FeedLib.getSpot(pair.feed, feedType);
+        _currentSpot = _hasData ? _spot : 0;
     }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
         Series memory series = seriesData[seriesKey];
-        return series.spot;
+        _spot = series.spot;
     }
     function setSeriesSpot(bytes32 seriesKey) public {
-        Series memory series = seriesData[seriesKey];
+        Series storage series = seriesData[seriesKey];
         require(series.timestamp > 0, "setSeriesSpot: Invalid key");
         uint _spot = getSeriesCurrentSpot(seriesKey);
-
         require(block.timestamp >= series.expiry, "setSeriesSpot: Not expired yet");
         require(series.spot == 0, "setSeriesSpot: spot already set");
         require(_spot > 0, "setSeriesSpot: spot must > 0");
@@ -1125,9 +1128,8 @@ contract OptinoFactory is Owned, CloneFactory {
         series.spot = _spot;
         emit SeriesSpotUpdated(seriesKey, _spot);
     }
-
     function setSeriesSpotIfPriceFeedFailsV1(bytes32 seriesKey, uint spot) public onlyOwner {
-        Series memory series = seriesData[seriesKey];
+        Series storage series = seriesData[seriesKey];
         require(block.timestamp >= series.expiry + GRACEPERIOD);
         require(series.spot == 0, "setSeriesSpotIfPriceFeedFailsV1: spot already set");
         require(spot > 0, "setSeriesSpotIfPriceFeedFailsV1: spot must > 0");
@@ -1252,7 +1254,7 @@ contract OptinoFactory is Owned, CloneFactory {
             emit LogInfo("_mint a", address(0), 0);
             series = seriesData[_seriesKey];
             emit LogInfo("_mint b", msg.sender, optinoData.tokens);
-            _optinoToken.initOptinoToken(this, _seriesKey, address(_coverToken), (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
+            _optinoToken.initOptinoToken(this, _seriesKey, address(_coverToken), (pair.index + 3) * 100000 + series.index + 5, false, OPTINODECIMALS);
             _coverToken.initOptinoToken(this, _seriesKey, address(_optinoToken), (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
         } else {
             _optinoToken = OptinoToken(payable(series.optinoToken));
@@ -1283,10 +1285,10 @@ contract OptinoFactory is Owned, CloneFactory {
     /// @param quoteDecimals Quote token contract decimals
     /// @param rateDecimals `strike`, `bound`, `spot` decimals
     /// @return _payoff The computed payoff
-    function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint baseDecimals, uint quoteDecimals, uint rateDecimals) public pure returns (uint _payoff) {
+    function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _payoff) {
         return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     }
-    function collateral(uint callPut, uint strike, uint bound, uint tokens, uint baseDecimals, uint quoteDecimals, uint rateDecimals) public pure returns (uint _collateral) {
+    function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _collateral) {
         return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     }
     // TODO V1
