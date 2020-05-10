@@ -344,11 +344,11 @@ var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "1"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
-var cap = new BigNumber("300").shift(rateDecimals);
-var floor = new BigNumber("100.000").shift(rateDecimals);
+var cap = new BigNumber("0").shift(rateDecimals);
+var floor = new BigNumber("0").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var tokens = new BigNumber("10").shift(OPTINODECIMALS);
-var value = web3.toWei("100", "ether").toString();
+var value = web3.toWei("100000", "ether").toString();
 var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
 // var _uiFeeAccount = uiFeeAccount;
 var collateralDecimals = callPut == 0 ? baseDecimals : quoteDecimals;
@@ -449,7 +449,7 @@ if (false) {
 if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = new BigNumber("166.666666666666666667").shift(rateDecimals);
+  var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
   // waitUntil("optino.expiry()", optino.expiry.call(), 0);

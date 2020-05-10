@@ -399,7 +399,7 @@ library SafeMath {
 library Decimals {
     function setDecimals(uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) internal pure returns (uint _decimalsData) {
         require(decimals <= 18 && baseDecimals <= 18 && quoteDecimals <= 18 && rateDecimals <= 18, "Decimals.setDecimals: All decimals must be <= 18");
-        return decimals * 1000000 + baseDecimals * 10000 + quoteDecimals * 100 + rateDecimals;
+        return uint(decimals) * 1000000 + uint(baseDecimals) * 10000 + uint(quoteDecimals) * 100 + uint(rateDecimals);
     }
     function getDecimals(uint decimalsData) internal pure returns (uint8 _decimals) {
         return uint8(decimalsData / 1000000 % 100);
@@ -1198,7 +1198,9 @@ contract OptinoFactory is Owned, CloneFactory {
         emit LogInfo("computeCollateral 4", pair.feed, uint(_feedDecimals));
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), pair.customFeed ? pair.customFeedDecimals : _feedDecimals);
         _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
+        emit LogInfo("computeCollateral 5", pair.feed, decimalsData);
         _collateral = OptinoV1.collateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
+        emit LogInfo("computeCollateral 6", pair.feed, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
@@ -1238,13 +1240,10 @@ contract OptinoFactory is Owned, CloneFactory {
     function _mint(OptinoData memory optinoData, address uiFeeAccount) internal returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         require(optinoData.expiry > block.timestamp, "mint: expiry must >= now");
         require(optinoData.tokens > 0, "mint: tokens must be > 0");
-
         bytes32 _pairKey = getOrAddPair(optinoData);
         Pair memory pair = pairData[_pairKey];
-
         bytes32 _seriesKey = makeSeriesKey(_pairKey, optinoData);
         Series storage series = seriesData[_seriesKey];
-
         if (series.timestamp == 0) {
             _optinoToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             _coverToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
@@ -1260,12 +1259,9 @@ contract OptinoFactory is Owned, CloneFactory {
             _optinoToken = OptinoToken(payable(series.optinoToken));
             _coverToken = OptinoToken(payable(series.coverToken));
         }
-
         (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee) = transferCollateral(optinoData, uiFeeAccount, _seriesKey);
-
         _optinoToken.mint(msg.sender, optinoData.tokens);
         _coverToken.mint(msg.sender, optinoData.tokens);
-
         emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, _collateralToken, _collateral, _ownerFee, _uiFee);
     }
 
