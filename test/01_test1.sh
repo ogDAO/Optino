@@ -447,7 +447,7 @@ if (false) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);
@@ -485,7 +485,7 @@ if (false) {
 }
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var transferThenSettleGroup1_Message = "Transfer, then settle Optino & Cover";
   var rate = new BigNumber("250").shift(rateDecimals);

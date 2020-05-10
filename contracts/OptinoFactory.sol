@@ -733,15 +733,17 @@ contract OptinoToken is BasicToken {
         // }
         return amount;
     }
-    function transferOut(address token, address tokenOwner, uint tokens, uint decimals) internal {
+    function transferOut(address token, address tokenOwner, uint tokens, uint decimals, bool isEmpty) internal returns (uint _tokensTransferred){
         // emit LogInfo("transferOut tokens", tokenOwner, tokens);
         // emit LogInfo("transferOut decimals", tokenOwner, decimals);
         if (token == ETH) {
-            tokens = collectDust(tokens, address(this).balance, decimals);
-            payable(tokenOwner).transfer(tokens);
+            // tokens = collectDust(tokens, address(this).balance, decimals);
+            _tokensTransferred = isEmpty ? address(this).balance : tokens;
+            payable(tokenOwner).transfer(_tokensTransferred);
         } else {
-            tokens = collectDust(tokens, ERC20(token).balanceOf(address(this)), decimals);
-            require(ERC20(token).transfer(tokenOwner, tokens), "transferOut: Transfer failure");
+            _tokensTransferred = isEmpty ? ERC20(token).balanceOf(address(this)) : tokens;
+            // tokens = collectDust(tokens, ERC20(token).balanceOf(address(this)), decimals);
+            require(ERC20(token).transfer(tokenOwner, _tokensTransferred), "transferOut: Transfer failure");
         }
     }
     function close(uint tokens) public {
@@ -760,7 +762,9 @@ contract OptinoToken is BasicToken {
             require(OptinoToken(payable(this)).burn(tokenOwner, tokens), "closeFor: Burn cover tokens failure");
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             uint collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
-            transferOut(collateralToken, tokenOwner, collateral, collateralDecimals);
+            bool isEmpty = pair.totalSupply() + this.totalSupply() == 0;
+            // emit LogInfo("closeFor isEmpty", msg.sender, isEmpty ? 1 : 0);
+            collateral = transferOut(collateralToken, tokenOwner, collateral, collateralDecimals, isEmpty);
             emit Close(address(pair), collateralToken, tokenOwner, collateral, collateralDecimals);
         }
     }
@@ -788,16 +792,16 @@ contract OptinoToken is BasicToken {
                 require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "settleFor: Burn optino tokens failure");
             }
             bool isEmpty1 = pair.totalSupply() + this.totalSupply() == 0;
-            emit LogInfo("settleFor isEmpty1", msg.sender, isEmpty1 ? 1 : 0);
+            // emit LogInfo("settleFor isEmpty1", msg.sender, isEmpty1 ? 1 : 0);
             if (coverTokens > 0) {
                 require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens), "settleFor: Burn cover tokens failure");
             }
             bool isEmpty2 = pair.totalSupply() + this.totalSupply() == 0;
-            emit LogInfo("settleFor isEmpty2", msg.sender, isEmpty2 ? 1 : 0);
+            // emit LogInfo("settleFor isEmpty2", msg.sender, isEmpty2 ? 1 : 0);
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
-                    transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
+                    _payoff = transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals, isEmpty1);
                 }
                 emit Payoff(address(pair), collateralToken, tokenOwner, _payoff, collateralDecimals);
             }
@@ -806,7 +810,7 @@ contract OptinoToken is BasicToken {
                 _collateral = OptinoV1.collateral(callPut, strike, bound, coverTokens, decimalsData);
                 uint _coverPayoff = _collateral.sub(_payoff);
                 if (_coverPayoff > 0) {
-                    transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
+                    _coverPayoff = transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals, isEmpty2);
                 }
                 emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
             }
