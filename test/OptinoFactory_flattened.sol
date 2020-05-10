@@ -768,29 +768,22 @@ contract OptinoToken is BasicToken {
         settleFor(msg.sender);
     }
     function settleFor(address tokenOwner) public {
-        // emit LogInfo("settleFor start msg.sender", msg.sender, 0);
         // require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "settleFor: Invalid msg.sender");
         if (!isCover) {
-            // emit LogInfo("settleFor msg.sender for Optino token. Transferring to Cover token", msg.sender, 0);
             OptinoToken(payable(pair)).settleFor(tokenOwner);
         } else {
-            // emit LogInfo("settleFor msg.sender for Cover token", msg.sender, 0);
-            // emit LogInfo("settleFor tokenOwner for Cover token", tokenOwner, 0);
             uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0, "settleFor: No optino or cover tokens");
             uint _spot = spot();
-            // emit LogInfo("settleFor _spot 1", msg.sender, _spot);
             if (_spot == 0) {
                 setSpot();
                 _spot = spot();
             }
-            // emit LogInfo("settleFor _spot 2", msg.sender, _spot);
             require(_spot > 0);
             uint _payoff;
             uint _collateral;
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
-            // emit LogInfo("settleFor decimalsData=factory.getCalcData(seriesKey)", msg.sender, decimalsData);
             if (optinoTokens > 0) {
                 require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "settleFor: Burn optino tokens failure");
             }
@@ -800,7 +793,6 @@ contract OptinoToken is BasicToken {
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
-                    // emit LogInfo("settleFor optino._payoff", tokenOwner, _payoff);
                     transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals);
                 }
                 emit Payoff(pair, collateralToken, tokenOwner, _payoff, collateralDecimals);
