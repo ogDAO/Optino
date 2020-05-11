@@ -481,7 +481,7 @@ interface AdaptorFeed {
 }
 
 
-/// @notice ERC20 https://eips.ethereum.org/EIPS/eip-20
+/// @notice ERC20 https://eips.ethereum.org/EIPS/eip-20 with optional symbol, name and decimals
 interface ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
@@ -492,20 +492,15 @@ interface ERC20 {
     function transfer(address to, uint tokens) external returns (bool success);
     function approve(address spender, uint tokens) external returns (bool success);
     function transferFrom(address from, address to, uint tokens) external returns (bool success);
-}
 
-
-/// @notice ERC20Plus = ERC20 + symbol + name + decimals + mint
-interface ERC20Plus is ERC20 {
     function symbol() external view returns (string memory);
     function name() external view returns (string memory);
     function decimals() external view returns (uint8);
-    function mint(address tokenOwner, uint tokens) external returns (bool success);
 }
 
 
 /// @notice Basic token = ERC20 + symbol + name + decimals + mint + ownership
-contract BasicToken is ERC20Plus, Owned {
+contract BasicToken is ERC20, Owned {
     using SafeMath for uint;
 
     string _symbol;
@@ -558,7 +553,7 @@ contract BasicToken is ERC20Plus, Owned {
     function allowance(address tokenOwner, address spender) override external view returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
-    function mint(address tokenOwner, uint tokens) override external onlyOwner returns (bool success) {
+    function mint(address tokenOwner, uint tokens) external onlyOwner returns (bool success) {
         balances[tokenOwner] = balances[tokenOwner].add(tokens);
         _totalSupply = _totalSupply.add(tokens);
         emit Transfer(address(0), tokenOwner, tokens);
@@ -980,7 +975,7 @@ contract OptinoFactory is Owned, CloneFactory {
         fee = _fee;
     }
 
-    function addToken(ERC20Plus token) public onlyOwner {
+    function addToken(ERC20 token) public onlyOwner {
         require(tokenData[address(token)].token == address(0), "addToken: Cannot add duplicate");
         string memory _symbol;
         try token.symbol() returns (string memory s) {
@@ -1004,7 +999,7 @@ contract OptinoFactory is Owned, CloneFactory {
         if (token == ETH) {
             return 18;
         } else {
-            try ERC20Plus(token).decimals() returns (uint8 d) {
+            try ERC20(token).decimals() returns (uint8 d) {
                 _decimals = d;
             } catch {
                 require(tokenData[token].token == token, "getTokenDecimals: Token not registered");
@@ -1187,7 +1182,7 @@ contract OptinoFactory is Owned, CloneFactory {
     function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
-    function computeCollateral(bytes32 _seriesKey, uint tokens) internal returns (address _collateralToken, uint _collateral) {
+    function computeCollateral(bytes32 _seriesKey, uint tokens) internal view returns (address _collateralToken, uint _collateral) {
         Series memory series = seriesData[_seriesKey];
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
@@ -1315,7 +1310,7 @@ contract OptinoFactory is Owned, CloneFactory {
             }
         }
     }
-    function getTokenInfoPublic(ERC20Plus token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
+    function getTokenInfoPublic(ERC20 token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
         if (address(token) == ETH) {
             return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
         } else {
