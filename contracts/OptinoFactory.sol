@@ -279,7 +279,7 @@ library NameUtils {
         b[j++] = byte(CHAR_Z);
     }
     function toSymbol(bool cover, uint id) internal pure returns (string memory s) {
-        bytes memory b = new bytes(64);
+        bytes memory b = new bytes(20);
         uint i;
         uint j;
         uint num;
@@ -292,7 +292,7 @@ library NameUtils {
                 b[j++] = OPTINOSYMBOL[i];
             }
         }
-        i = 8;
+        i = 10;
         do {
             i--;
             num = id / 10 ** i;
@@ -1161,7 +1161,7 @@ contract OptinoFactory is Owned, CloneFactory {
     }
     function getNameData(bytes32 seriesKey) public view returns (bool _isCustom, string memory _feedName, uint _callPut, uint _expiry, uint _strike, uint _bound, uint8 _feedDecimals) {
         Series memory series = seriesData[seriesKey];
-        require(series.timestamp > 0, "makeName: Invalid key");
+        require(series.timestamp > 0, "getNameData: Invalid key");
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
         (_isCustom, _feedName, _callPut, _expiry) = (pair.customFeed, feed.name, series.callPut, series.expiry);
@@ -1255,10 +1255,8 @@ contract OptinoFactory is Owned, CloneFactory {
             series.coverToken = address(_coverToken);
             addSeries(_pairKey, optinoData, address(_optinoToken), address(_coverToken));
             series = seriesData[_seriesKey];
-            // emit LogInfo("mint optinoToken", msg.sender, optinoData.tokens);
-            _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 100000 + series.index + 5, false, OPTINODECIMALS);
-            // emit LogInfo("mint coverToken", msg.sender, optinoData.tokens);
-            _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 100000 + series.index + 5, true, OPTINODECIMALS);
+            _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 1000000 + series.index + 5, false, OPTINODECIMALS);
+            _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 1000000 + series.index + 5, true, OPTINODECIMALS);
         } else {
             _optinoToken = OptinoToken(payable(series.optinoToken));
             _coverToken = OptinoToken(payable(series.coverToken));
@@ -1306,7 +1304,6 @@ contract OptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     receive() external payable {
     }
-    /* Temp
     function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
         if (address(optinoToken) != address(0)) {
             optinoToken.recoverTokens(token, tokens);
@@ -1334,5 +1331,5 @@ contract OptinoFactory is Owned, CloneFactory {
             }
             (_decimals, _totalSupply, _balance, _allowance) = (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender));
         }
-    }*/
+    }
 }
