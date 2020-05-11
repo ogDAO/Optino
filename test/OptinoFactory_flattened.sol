@@ -326,21 +326,15 @@ library NameUtils {
             }
         }
         b[j++] = byte(SPACE);
-        for (i = 0; i < OPTINO.length; i++) {
-            b[j++] = OPTINO[i];
-        }
-        b[j++] = byte(SPACE);
 
         if (cover) {
             for (i = 0; i < COVERNAME.length; i++) {
                 b[j++] = COVERNAME[i];
             }
-            b[j++] = byte(SPACE);
-        }
-
-        bytes memory _description = bytes(description);
-        for (i = 0; i < _description.length; i++) {
-            b[j++] = _description[i];
+        } else {
+            for (i = 0; i < OPTINO.length; i++) {
+                b[j++] = OPTINO[i];
+            }
         }
         b[j++] = byte(SPACE);
 
@@ -368,6 +362,12 @@ library NameUtils {
             for (i = 0; i < b4.length && i < l4; i++) {
                 b[j++] = b4[i];
             }
+        }
+        b[j++] = byte(SPACE);
+
+        bytes memory _description = bytes(description);
+        for (i = 0; i < _description.length; i++) {
+            b[j++] = _description[i];
         }
         s = string(b);
     }
@@ -634,11 +634,10 @@ library OptinoV1 {
 
 /// @notice OptinoToken = basic token + burn + payoff + close + settle
 contract OptinoToken is BasicToken {
-    // using SeriesLib for SeriesLib.Series;
     using Decimals for uint;
     address private constant ETH = address(0);
-    uint public constant COLLECTDUSTMINIMUMDECIMALS = 6; // Collect dust only if token has >= 6 decimal places
-    uint public constant COLLECTDUSTDECIMALS = 2; // Collect dust if less < 10**2 = 100
+    // uint public constant COLLECTDUSTMINIMUMDECIMALS = 6; // Collect dust only if token has >= 6 decimal places
+    // uint public constant COLLECTDUSTDECIMALS = 2; // Collect dust if less < 10**2 = 100
 
     OptinoFactory public factory;
     bytes32 public seriesKey;
@@ -662,13 +661,15 @@ contract OptinoToken is BasicToken {
         (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPairByKey(pairKey);
         collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
         collateralDecimals = factory.getTokenDecimals(collateralToken);
-        // string memory _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
-        // TODO
-        // uint8 rateDecimals = 18;
-        // string memory _name = NameUtils.toName("_description", _isCover, _callPut, _expiry, _strike, _bound, 18);
-        (string memory _symbol, string memory _name) = factory.makeName(_seriesKey, _seriesNumber, _isCover);
+        (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
+    function makeName(uint _seriesNumber, bool _isCover) internal view returns (string memory _symbol, string memory _name) {
+        (bool _isCustom, string memory _feedName, uint _callPut, uint _expiry, uint _strike, uint _bound, uint8 _feedDecimals) = factory.getNameData(seriesKey);
+        _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
+        _name = NameUtils.toName(_isCustom ? "Custom" : _feedName, _isCover, _callPut, _expiry, _strike, _bound, _feedDecimals);
+    }
+
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
         require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
@@ -1158,15 +1159,13 @@ contract OptinoFactory is Owned, CloneFactory {
         uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), feedDecimals);
         return (series.callPut, series.strike, series.bound, decimalsData);
     }
-    function makeName(bytes32 seriesKey, uint _seriesNumber, bool _isCover) public view returns (string memory _symbol, string memory _name) {
-        _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
-
+    function getNameData(bytes32 seriesKey) public view returns (bool _isCustom, string memory _feedName, uint _callPut, uint _expiry, uint _strike, uint _bound, uint8 _feedDecimals) {
         Series memory series = seriesData[seriesKey];
-        require(series.timestamp > 0, "getCalcData: Invalid key");
+        require(series.timestamp > 0, "makeName: Invalid key");
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
-        uint8 feedDecimals = pair.customFeed ? pair.customFeedDecimals : feed.decimals;
-        _name = NameUtils.toName("_description", _isCover, series.callPut, series.expiry, series.strike, series.bound, feedDecimals);
+        (_isCustom, _feedName, _callPut, _expiry) = (pair.customFeed, feed.name, series.callPut, series.expiry);
+        (_strike, _bound, _feedDecimals) = (series.strike, series.bound, pair.customFeed ? pair.customFeedDecimals : feed.decimals);
     }
 
     /// @notice Mint Optino and Cover tokens
@@ -1185,9 +1184,9 @@ contract OptinoFactory is Owned, CloneFactory {
         return _mint(OptinoData(baseToken, quoteToken, priceFeed, false, FeedLib.FeedType(0), 0, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
     /// @notice Mint with custom feed
-    // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-    //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
-    // }
+    function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+        return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
+    }
     function computeCollateral(bytes32 _seriesKey, uint tokens) internal returns (address _collateralToken, uint _collateral) {
         Series memory series = seriesData[_seriesKey];
         Pair memory pair = pairData[series.pairKey];
