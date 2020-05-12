@@ -398,26 +398,102 @@ library SafeMath {
 /// @notice Decimals
 library Decimals {
     function setDecimals(uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) internal pure returns (uint _decimalsData) {
-        require(decimals <= 18 && baseDecimals <= 18 && quoteDecimals <= 18 && rateDecimals <= 18, "Decimals.setDecimals: All decimals must be <= 18");
-        return uint(decimals) * 1000000 + uint(baseDecimals) * 10000 + uint(quoteDecimals) * 100 + uint(rateDecimals);
-    }
-    function getDecimals(uint decimalsData) internal pure returns (uint8 _decimals) {
-        return uint8(decimalsData / 1000000 % 100);
-    }
-    function getBaseDecimals(uint decimalsData) internal pure returns (uint8 _baseDecimals) {
-        return uint8(decimalsData / 10000 % 100);
-    }
-    function getQuoteDecimals(uint decimalsData) internal pure returns (uint8 _quoteDecimals) {
-        return uint8(decimalsData / 100 % 100);
-    }
-    function getRateDecimals(uint decimalsData) internal pure returns (uint8 _rateDecimals) {
-        return uint8(decimalsData % 100);
+        require(decimals <= 18 && baseDecimals <= 18 && quoteDecimals <= 18 && rateDecimals <= 18, "All decimals must be <= 18");
+        _decimalsData = uint(decimals) << 24 | uint(baseDecimals) << 16 | uint(quoteDecimals) << 8 | uint(rateDecimals);
     }
     function getAllDecimals(uint decimalsData) internal pure returns (uint8 _decimals, uint8 _baseDecimals, uint8 _quoteDecimals, uint8 _rateDecimals) {
-        return (uint8(decimalsData / 1000000 % 100), uint8(decimalsData / 10000 % 100), uint8(decimalsData / 100 % 100), uint8(decimalsData % 100));
+        _decimals = uint8(decimalsData >> 24);
+        _baseDecimals = uint8(decimalsData >> 16);
+        _quoteDecimals = uint8(decimalsData >> 8);
+        _rateDecimals = uint8(decimalsData);
     }
+    function getDecimals(uint decimalsData) internal pure returns (uint8 _decimals) {
+        _decimals = uint8(decimalsData >> 24);
+    }
+    function getBaseDecimals(uint decimalsData) internal pure returns (uint8 _baseDecimals) {
+        _baseDecimals = uint8(decimalsData >> 16);
+    }
+    function getQuoteDecimals(uint decimalsData) internal pure returns (uint8 _quoteDecimals) {
+        _quoteDecimals = uint8(decimalsData >> 8);
+    }
+    function getRateDecimals(uint decimalsData) internal pure returns (uint8 _rateDecimals) {
+        _rateDecimals = uint8(decimalsData);
+    }
+    // event LogIt(bytes32 data, uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals);
+    // function test() public {
+    //     uint8 decimals = 1;
+    //     uint8 baseDecimals = 2;
+    //     uint8 quoteDecimals = 3;
+    //     uint8 rateDecimals = 4;
+    //     uint data = setDecimals(decimals, baseDecimals, quoteDecimals, rateDecimals);
+    //     emit LogIt(bytes32(data), decimals, baseDecimals, quoteDecimals, rateDecimals);
+    //     emit LogIt(bytes32(data), getDecimals(data), getBaseDecimals(data), getQuoteDecimals(data), getRateDecimals(data));
+    // }
 }
 
+
+contract Parameters {
+    function setParameters(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
+        _data = bytes32(uint(feed2) << 48 | uint(inverse1) << 40 | uint(inverse2) << 32 | uint(type1) << 24 | uint(type2) << 16 | uint(decimals1) << 8 | uint(decimals2));
+    }
+    function getParameters(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
+        feed2 = address(uint(data) >> 48);
+        inverse1 = uint8(uint(data) >> 40);
+        inverse2 = uint8(uint(data) >> 32);
+        type1 = uint8(uint(data) >> 24);
+        type2 = uint8(uint(data) >> 16);
+        decimals1 = uint8(uint(data) >> 8);
+        decimals2 = uint8(uint(data));
+    }
+    function getFeed2(bytes32 data) public pure returns (address feed2) {
+        feed2 = address(uint(data) >> 48);
+    }
+    function getInverse1(bytes32 data) public pure returns (uint8 inverse1) {
+        inverse1 = uint8(uint(data) >> 40);
+    }
+    function getInverse2(bytes32 data) public pure returns (uint8 inverse2) {
+        inverse2 = uint8(uint(data) >> 32);
+    }
+    function getType1(bytes32 data) public pure returns (uint8 type1) {
+        type1 = uint8(uint(data) >> 24);
+    }
+    function getType2(bytes32 data) public pure returns (uint8 type2) {
+        type2 = uint8(uint(data) >> 16);
+    }
+    function getDecimals1(bytes32 data) public pure returns (uint8 decimals1) {
+        decimals1 = uint8(uint(data) >> 8);
+    }
+    function getDecimals2(bytes32 data) public pure returns (uint8 decimals2) {
+        decimals2 = uint8(uint(data));
+    }
+    // event LogIt(bytes32 data, address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2);
+    // function testIt1() public {
+    //     address feed2 = msg.sender;
+    //     uint8 inverse1 = 1;
+    //     uint8 inverse2 = 2;
+    //     uint8 type1 = 3;
+    //     uint8 type2 = 4;
+    //     uint8 decimals1 = 5;
+    //     uint8 decimals2 = 6;
+    //     bytes32 data = setParameters(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    //     emit LogIt(data, feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    //     (address _feed2, uint8 _inverse1, uint8 _inverse2, uint8 _type1, uint8 _type2, uint8 _decimals1, uint8 _decimals2) = getParameters(data);
+    //     emit LogIt(data, _feed2, _inverse1, _inverse2, _type1, _type2, _decimals1, _decimals2);
+    // }
+    //
+    // function testIt2() public {
+    //     address feed2 = msg.sender;
+    //     uint8 inverse1 = 21;
+    //     uint8 inverse2 = 32;
+    //     uint8 type1 = 43;
+    //     uint8 type2 = 54;
+    //     uint8 decimals1 = 65;
+    //     uint8 decimals2 = 76;
+    //     bytes32 data = setParameters(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    //     emit LogIt(data, feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    //     emit LogIt(data, getFeed2(data), getInverse1(data), getInverse2(data), getType1(data), getType2(data), getDecimals1(data), getDecimals2(data));
+    // }
+}
 
 /// @notice Ownership
 contract Owned {
@@ -804,6 +880,7 @@ contract OptinoToken is BasicToken {
 /// @notice Feed library
 library FeedLib {
     enum FeedType {
+        // NOTUSED,
         CHAINLINK,
         MAKER,
         COMPOUND,
@@ -836,13 +913,15 @@ library FeedLib {
             _hasData = _rate > 0;
             _decimals = 18;
             _timestamp = block.timestamp;
-        } else {
+        } else if (feedType == FeedType.ADAPTOR) {
             (_rate, _hasData) = AdaptorFeed(feed).spot();
             if (!_hasData) {
                 _rate = 0;
             }
             _decimals = 18;
             _timestamp = block.timestamp;
+        } else {
+            revert("not used");
         }
     }
 }
