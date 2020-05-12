@@ -397,26 +397,26 @@ library SafeMath {
 
 /// @notice Decimals
 library Decimals {
-    function setDecimals(uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) internal pure returns (uint _decimalsData) {
+    function set(uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) internal pure returns (uint _decimalsData) {
         require(decimals <= 18 && baseDecimals <= 18 && quoteDecimals <= 18 && rateDecimals <= 18, "All decimals must be <= 18");
         _decimalsData = uint(decimals) << 24 | uint(baseDecimals) << 16 | uint(quoteDecimals) << 8 | uint(rateDecimals);
     }
-    function getAllDecimals(uint decimalsData) internal pure returns (uint8 _decimals, uint8 _baseDecimals, uint8 _quoteDecimals, uint8 _rateDecimals) {
+    function get(uint decimalsData) internal pure returns (uint8 _decimals, uint8 _baseDecimals, uint8 _quoteDecimals, uint8 _rateDecimals) {
         _decimals = uint8(decimalsData >> 24);
         _baseDecimals = uint8(decimalsData >> 16);
         _quoteDecimals = uint8(decimalsData >> 8);
         _rateDecimals = uint8(decimalsData);
     }
-    function getDecimals(uint decimalsData) internal pure returns (uint8 _decimals) {
+    function decimals(uint decimalsData) internal pure returns (uint8 _decimals) {
         _decimals = uint8(decimalsData >> 24);
     }
-    function getBaseDecimals(uint decimalsData) internal pure returns (uint8 _baseDecimals) {
+    function baseDecimals(uint decimalsData) internal pure returns (uint8 _baseDecimals) {
         _baseDecimals = uint8(decimalsData >> 16);
     }
-    function getQuoteDecimals(uint decimalsData) internal pure returns (uint8 _quoteDecimals) {
+    function quoteDecimals(uint decimalsData) internal pure returns (uint8 _quoteDecimals) {
         _quoteDecimals = uint8(decimalsData >> 8);
     }
-    function getRateDecimals(uint decimalsData) internal pure returns (uint8 _rateDecimals) {
+    function rateDecimals(uint decimalsData) internal pure returns (uint8 _rateDecimals) {
         _rateDecimals = uint8(decimalsData);
     }
     // event LogIt(bytes32 data, uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals);
@@ -425,18 +425,18 @@ library Decimals {
     //     uint8 baseDecimals = 2;
     //     uint8 quoteDecimals = 3;
     //     uint8 rateDecimals = 4;
-    //     uint data = setDecimals(decimals, baseDecimals, quoteDecimals, rateDecimals);
+    //     uint data = set(decimals, baseDecimals, quoteDecimals, rateDecimals);
     //     emit LogIt(bytes32(data), decimals, baseDecimals, quoteDecimals, rateDecimals);
-    //     emit LogIt(bytes32(data), getDecimals(data), getBaseDecimals(data), getQuoteDecimals(data), getRateDecimals(data));
+    //     emit LogIt(bytes32(data), decimals(data), baseDecimals(data), quoteDecimals(data), rateDecimals(data));
     // }
 }
 
 
 contract Parameters {
-    function setParameters(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
+    function set(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
         _data = bytes32(uint(feed2) << 48 | uint(inverse1) << 40 | uint(inverse2) << 32 | uint(type1) << 24 | uint(type2) << 16 | uint(decimals1) << 8 | uint(decimals2));
     }
-    function getParameters(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
+    function get(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
         feed2 = address(uint(data) >> 48);
         inverse1 = uint8(uint(data) >> 40);
         inverse2 = uint8(uint(data) >> 32);
@@ -445,26 +445,26 @@ contract Parameters {
         decimals1 = uint8(uint(data) >> 8);
         decimals2 = uint8(uint(data));
     }
-    function getFeed2(bytes32 data) public pure returns (address feed2) {
-        feed2 = address(uint(data) >> 48);
+    function feed2(bytes32 data) public pure returns (address _feed2) {
+        _feed2 = address(uint(data) >> 48);
     }
-    function getInverse1(bytes32 data) public pure returns (uint8 inverse1) {
-        inverse1 = uint8(uint(data) >> 40);
+    function inverse1(bytes32 data) public pure returns (uint8 _inverse1) {
+        _inverse1 = uint8(uint(data) >> 40);
     }
-    function getInverse2(bytes32 data) public pure returns (uint8 inverse2) {
-        inverse2 = uint8(uint(data) >> 32);
+    function inverse2(bytes32 data) public pure returns (uint8 _inverse2) {
+        _inverse2 = uint8(uint(data) >> 32);
     }
-    function getType1(bytes32 data) public pure returns (uint8 type1) {
-        type1 = uint8(uint(data) >> 24);
+    function type1(bytes32 data) public pure returns (uint8 _type1) {
+        _type1 = uint8(uint(data) >> 24);
     }
-    function getType2(bytes32 data) public pure returns (uint8 type2) {
-        type2 = uint8(uint(data) >> 16);
+    function type2(bytes32 data) public pure returns (uint8 _type2) {
+        _type2 = uint8(uint(data) >> 16);
     }
-    function getDecimals1(bytes32 data) public pure returns (uint8 decimals1) {
-        decimals1 = uint8(uint(data) >> 8);
+    function decimals1(bytes32 data) public pure returns (uint8 _decimals1) {
+        _decimals1 = uint8(uint(data) >> 8);
     }
-    function getDecimals2(bytes32 data) public pure returns (uint8 decimals2) {
-        decimals2 = uint8(uint(data));
+    function decimals2(bytes32 data) public pure returns (uint8 _decimals2) {
+        _decimals2 = uint8(uint(data));
     }
     // event LogIt(bytes32 data, address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2);
     // function testIt1() public {
@@ -475,9 +475,9 @@ contract Parameters {
     //     uint8 type2 = 4;
     //     uint8 decimals1 = 5;
     //     uint8 decimals2 = 6;
-    //     bytes32 data = setParameters(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    //     bytes32 data = set(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
     //     emit LogIt(data, feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
-    //     (address _feed2, uint8 _inverse1, uint8 _inverse2, uint8 _type1, uint8 _type2, uint8 _decimals1, uint8 _decimals2) = getParameters(data);
+    //     (address _feed2, uint8 _inverse1, uint8 _inverse2, uint8 _type1, uint8 _type2, uint8 _decimals1, uint8 _decimals2) = get(data);
     //     emit LogIt(data, _feed2, _inverse1, _inverse2, _type1, _type2, _decimals1, _decimals2);
     // }
     //
@@ -489,9 +489,9 @@ contract Parameters {
     //     uint8 type2 = 54;
     //     uint8 decimals1 = 65;
     //     uint8 decimals2 = 76;
-    //     bytes32 data = setParameters(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    //     bytes32 data = set(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
     //     emit LogIt(data, feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
-    //     emit LogIt(data, getFeed2(data), getInverse1(data), getInverse2(data), getType1(data), getType2(data), getDecimals1(data), getDecimals2(data));
+    //     emit LogIt(data, feed2(data), inverse1(data), inverse2(data), type1(data), type2(data), decimals1(data), decimals2(data));
     // }
 }
 
@@ -663,7 +663,7 @@ library OptinoV1 {
         }
     }
     function collateral(uint callPut, uint strike, uint bound, uint tokens, uint decimalsData) internal pure returns (uint _collateral) {
-        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.getAllDecimals();
+        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.get();
         require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
@@ -678,7 +678,7 @@ library OptinoV1 {
         }
     }
     function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
-        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.getAllDecimals();
+        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.get();
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
             if (spot > 0 && spot > strike) {
@@ -1235,7 +1235,7 @@ contract OptinoFactory is Owned, CloneFactory {
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
         uint8 feedDecimals = pair.customFeed ? pair.customFeedDecimals : feed.decimals;
-        uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), feedDecimals);
+        uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), feedDecimals);
         return (series.callPut, series.strike, series.bound, decimalsData);
     }
     function getNameData(bytes32 seriesKey) public view returns (bool _isCustom, string memory _feedName, uint _callPut, uint _expiry, uint _strike, uint _bound, uint8 _feedDecimals) {
@@ -1279,7 +1279,7 @@ contract OptinoFactory is Owned, CloneFactory {
             _feedDecimals = pair.customFeedDecimals;
         }
         // emit LogInfo("computeCollateral _feedDecimals", pair.feed, uint(_feedDecimals));
-        uint decimalsData = Decimals.setDecimals(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), pair.customFeed ? pair.customFeedDecimals : _feedDecimals);
+        uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), pair.customFeed ? pair.customFeedDecimals : _feedDecimals);
         _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
         // emit LogInfo("computeCollateral decimalsData", pair.feed, decimalsData);
         _collateral = OptinoV1.collateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
@@ -1363,10 +1363,10 @@ contract OptinoFactory is Owned, CloneFactory {
     // @param rateDecimals `strike`, `bound`, `spot` decimals
     // @return _payoff The computed payoff
     // function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _payoff) {
-    //     return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
+    //     return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.set(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     // }
     // function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _collateral) {
-    //     return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.setDecimals(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
+    //     return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.set(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
     // }
 
     // TODO V1
