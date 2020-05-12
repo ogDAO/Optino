@@ -428,12 +428,12 @@ contract Owned {
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
     modifier onlyOwner {
-        require(msg.sender == owner, "onlyOwner: Not owner");
+        require(msg.sender == owner, "Not owner");
         _;
     }
 
     function initOwned(address _owner) internal {
-        require(!initialised, "initOwned: Already initialised");
+        require(!initialised, "Already initialised");
         owner = address(uint160(_owner));
         initialised = true;
     }
@@ -441,7 +441,6 @@ contract Owned {
         newOwner = _newOwner;
     }
     function acceptOwnership() public {
-        require(msg.sender == newOwner, "acceptOwnership: Not new owner");
         emit OwnershipTransferred(owner, newOwner);
         owner = newOwner;
         newOwner = address(0);
@@ -589,23 +588,23 @@ library OptinoV1 {
     }
     function collateral(uint callPut, uint strike, uint bound, uint tokens, uint decimalsData) internal pure returns (uint _collateral) {
         (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.getAllDecimals();
-        require(strike > 0, "collateral: strike must be > 0");
+        require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
-            require(bound == 0 || bound > strike, "collateral: Call bound must = 0 or > strike");
+            require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
             if (bound <= strike) {
                 return shiftRightThenLeft(tokens, baseDecimals, decimals);
             } else {
                 return shiftRightThenLeft(bound.sub(strike).mul(tokens).div(bound), baseDecimals, decimals);
             }
         } else {
-            require(bound < strike, "collateral: Put bound must = 0 or < strike");
+            require(bound < strike, "Put bound must = 0 or < strike");
             return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** uint(rateDecimals));
         }
     }
     function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
         (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.getAllDecimals();
         if (callPut == 0) {
-            require(bound == 0 || bound > strike, "payoff: Call bound must = 0 or > strike");
+            require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
             if (spot > 0 && spot > strike) {
                 if (bound > strike && spot > bound) {
                     return shiftRightThenLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
@@ -614,7 +613,7 @@ library OptinoV1 {
                 }
             }
         } else {
-            require(bound < strike, "payoff: Put bound must = 0 or < strike");
+            require(bound < strike, "Put bound must = 0 or < strike");
             if (spot < strike) {
                  if (bound == 0 || (bound > 0 && spot >= bound)) {
                      return shiftRightThenLeft(strike.sub(spot).mul(tokens), quoteDecimals, decimals + rateDecimals);
@@ -630,9 +629,6 @@ library OptinoV1 {
 /// @notice OptinoToken = basic token + burn + payoff + close + settle
 contract OptinoToken is BasicToken {
     using Decimals for uint;
-    address private constant ETH = address(0);
-    // uint public constant COLLECTDUSTMINIMUMDECIMALS = 6; // Collect dust only if token has >= 6 decimal places
-    // uint public constant COLLECTDUSTDECIMALS = 2; // Collect dust if less < 10**2 = 100
 
     OptinoFactory public factory;
     bytes32 public seriesKey;
@@ -667,7 +663,7 @@ contract OptinoToken is BasicToken {
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
-        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "OptinoToken.burn: msg.sender not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "Not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
         balances[address(0)] = balances[address(0)].add(tokens);
         emit Transfer(tokenOwner, address(0), tokens);
@@ -718,46 +714,34 @@ contract OptinoToken is BasicToken {
             return isCover ? _collateral.sub(_payoff) : _payoff;
         }
     }
-    // function collectDust(uint amount, uint balance, uint decimals) pure internal returns (uint) {
-    //     if (decimals > COLLECTDUSTMINIMUMDECIMALS) {
-    //         if (amount < balance && amount + 10**COLLECTDUSTDECIMALS > balance) {
-    //             return balance;
-    //         }
-    //     }
-    //     return amount;
-    // }
-    function transferOut(address token, address tokenOwner, uint tokens, uint /*decimals*/, bool isEmpty) internal returns (uint _tokensTransferred){
-        // emit LogInfo("transferOut tokens", tokenOwner, tokens);
-        // emit LogInfo("transferOut decimals", tokenOwner, decimals);
-        if (token == ETH) {
-            // tokens = collectDust(tokens, address(this).balance, decimals);
+    function transferOut(address tokenOwner, uint tokens, bool isEmpty) internal returns (uint _tokensTransferred){
+        if (collateralToken == address(0)) {
             _tokensTransferred = isEmpty ? address(this).balance : tokens;
             payable(tokenOwner).transfer(_tokensTransferred);
         } else {
-            _tokensTransferred = isEmpty ? ERC20(token).balanceOf(address(this)) : tokens;
-            // tokens = collectDust(tokens, ERC20(token).balanceOf(address(this)), decimals);
-            require(ERC20(token).transfer(tokenOwner, _tokensTransferred), "transferOut: Transfer failure");
+            _tokensTransferred = isEmpty ? ERC20(collateralToken).balanceOf(address(this)) : tokens;
+            require(ERC20(collateralToken).transfer(tokenOwner, _tokensTransferred), "transferOut: Transfer failure");
         }
     }
     function close(uint tokens) public {
         closeFor(msg.sender, tokens);
     }
     function closeFor(address tokenOwner, uint tokens) public {
-        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "closeFor: Not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "Not authorised");
         if (!isCover) {
             // emit LogInfo("closeFor msg.sender for Optino token. Transferring to Cover token", msg.sender, tokens);
             OptinoToken(payable(pair)).closeFor(tokenOwner, tokens);
         } else {
             // emit LogInfo("closeFor msg.sender for Cover token", msg.sender, tokens);
-            require(tokens <= ERC20(pair).balanceOf(tokenOwner), "closeFor: Insufficient optino tokens");
-            require(tokens <= ERC20(this).balanceOf(tokenOwner), "closeFor: Insufficient cover tokens");
-            require(OptinoToken(payable(pair)).burn(tokenOwner, tokens), "closeFor: Burn optino tokens failure");
-            require(OptinoToken(payable(this)).burn(tokenOwner, tokens), "closeFor: Burn cover tokens failure");
+            require(tokens <= ERC20(pair).balanceOf(tokenOwner), "Insufficient optino tokens");
+            require(tokens <= ERC20(this).balanceOf(tokenOwner), "Insufficient cover tokens");
+            require(OptinoToken(payable(pair)).burn(tokenOwner, tokens), "Burn optino tokens failure");
+            require(OptinoToken(payable(this)).burn(tokenOwner, tokens), "Burn cover tokens failure");
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             uint collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
             bool isEmpty = pair.totalSupply() + this.totalSupply() == 0;
             // emit LogInfo("closeFor isEmpty", msg.sender, isEmpty ? 1 : 0);
-            collateral = transferOut(collateralToken, tokenOwner, collateral, collateralDecimals, isEmpty);
+            collateral = transferOut(tokenOwner, collateral, isEmpty);
             emit Close(address(pair), collateralToken, tokenOwner, collateral, collateralDecimals);
         }
     }
@@ -765,13 +749,12 @@ contract OptinoToken is BasicToken {
         settleFor(msg.sender);
     }
     function settleFor(address tokenOwner) public {
-        // require(msg.sender == tokenOwner || msg.sender == pair || msg.sender == address(this), "settleFor: Invalid msg.sender");
         if (!isCover) {
             OptinoToken(payable(pair)).settleFor(tokenOwner);
         } else {
             uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
             uint coverTokens = ERC20(this).balanceOf(tokenOwner);
-            require (optinoTokens > 0 || coverTokens > 0, "settleFor: No optino or cover tokens");
+            require (optinoTokens > 0 || coverTokens > 0, "No optino or cover tokens");
             uint _spot = spot();
             if (_spot == 0) {
                 setSpot();
@@ -782,19 +765,17 @@ contract OptinoToken is BasicToken {
             uint _collateral;
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             if (optinoTokens > 0) {
-                require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "settleFor: Burn optino tokens failure");
+                require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "Burn optino tokens failure");
             }
             bool isEmpty1 = pair.totalSupply() + this.totalSupply() == 0;
-            // emit LogInfo("settleFor isEmpty1", msg.sender, isEmpty1 ? 1 : 0);
             if (coverTokens > 0) {
-                require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens), "settleFor: Burn cover tokens failure");
+                require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens), "Burn cover tokens failure");
             }
             bool isEmpty2 = pair.totalSupply() + this.totalSupply() == 0;
-            // emit LogInfo("settleFor isEmpty2", msg.sender, isEmpty2 ? 1 : 0);
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
-                    _payoff = transferOut(collateralToken, tokenOwner, _payoff, collateralDecimals, isEmpty1);
+                    _payoff = transferOut(tokenOwner, _payoff, isEmpty1);
                 }
                 emit Payoff(address(pair), collateralToken, tokenOwner, _payoff, collateralDecimals);
             }
@@ -803,14 +784,14 @@ contract OptinoToken is BasicToken {
                 _collateral = OptinoV1.collateral(callPut, strike, bound, coverTokens, decimalsData);
                 uint _coverPayoff = _collateral.sub(_payoff);
                 if (_coverPayoff > 0) {
-                    _coverPayoff = transferOut(collateralToken, tokenOwner, _coverPayoff, collateralDecimals, isEmpty2);
+                    _coverPayoff = transferOut(tokenOwner, _coverPayoff, isEmpty2);
                 }
                 emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
             }
         }
     }
     function recoverTokens(address token, uint tokens) public onlyOwner {
-        require(token != collateralToken || this.totalSupply() == 0, "recoverTokens: Cannot recover collateral tokens until totalSupply is 0");
+        require(token != collateralToken || this.totalSupply() == 0, "Cannot recover collateral tokens until totalSupply is 0");
         if (token == address(0)) {
             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
         } else {
@@ -930,7 +911,6 @@ contract OptinoFactory is Owned, CloneFactory {
 
     uint private constant FEEDECIMALS = 18;
     uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
-    address private constant ETH = address(0);
     uint8 public constant OPTINODECIMALS = 18;
     uint private constant ONEDAY = 24 * 60 * 60;
     uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
@@ -1001,7 +981,7 @@ contract OptinoFactory is Owned, CloneFactory {
         return tokenDecimalsIndex.length;
     }
     function getTokenDecimals(address token) public view returns (uint8 _decimals) {
-        if (token == ETH) {
+        if (token == address(0)) {
             return 18;
         } else {
             try ERC20(token).decimals() returns (uint8 d) {
@@ -1144,7 +1124,7 @@ contract OptinoFactory is Owned, CloneFactory {
         series.spot = _spot;
         emit SeriesSpotUpdated(seriesKey, _spot);
     }
-    function setSeriesSpotIfPriceFeedFailsV1(bytes32 seriesKey, uint spot) public onlyOwner {
+    function setSeriesSpotIfPriceFeedFails(bytes32 seriesKey, uint spot) public onlyOwner {
         Series storage series = seriesData[seriesKey];
         require(block.timestamp >= series.expiry + GRACEPERIOD);
         require(series.spot == 0, "spot already set");
@@ -1237,7 +1217,7 @@ contract OptinoFactory is Owned, CloneFactory {
             _ownerFee = _ownerFee - _uiFee;
         }
         uint ethRefund;
-        if (_collateralToken == ETH) {
+        if (_collateralToken == address(0)) {
             require(msg.value >= (_collateral + _ownerFee + _uiFee), "Insufficient ETH sent");
             require(payable(series.coverToken).send(_collateral), "Send ETH to coverToken failure");
             if (_ownerFee > 0) {
@@ -1328,28 +1308,34 @@ contract OptinoFactory is Owned, CloneFactory {
     //     if (address(optinoToken) != address(0)) {
     //         optinoToken.recoverTokens(token, tokens);
     //     } else {
-    //         if (token == ETH) {
+    //         if (token == address(0)) {
     //             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
     //         } else {
     //             ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
     //         }
     //     }
     // }
-    function getTokenInfoPublic(ERC20 token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
-        if (address(token) == ETH) {
+    function getTokenInfo(address token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
+        if (token == address(0)) {
             return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
         } else {
-            try token.symbol() returns (string memory s) {
+            try ERC20(token).symbol() returns (string memory s) {
                 _symbol = s;
             } catch {
                 _symbol = "(not implemented)";
             }
-            try token.name() returns (string memory n) {
+            try ERC20(token).name() returns (string memory n) {
                 _name = n;
             } catch {
                 _name = "(not implemented)";
             }
-            (_decimals, _totalSupply, _balance, _allowance) = (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender));
+            try ERC20(token).decimals() returns (uint8 d) {
+                _decimals = d;
+            } catch {
+                require(tokenDecimalsData[address(token)].token == token, "Token not registered");
+                _decimals = tokenDecimalsData[token].decimals;
+            }
+            (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
         }
     }
 }
