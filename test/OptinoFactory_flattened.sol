@@ -10,7 +10,7 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.971-pre-release
+// Optino Factory v0.972-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
@@ -651,9 +651,9 @@ contract OptinoToken is BasicToken {
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         (factory, seriesKey, pair, seriesNumber, isCover) = (_factory, _seriesKey, _pair, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
-        (bytes32 _pairKey, uint _callPut, /*uint _expiry*/, /*uint _strike*/, /*uint _bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
+        (bytes32 _pairKey, uint _callPut, /*uint _expiry*/, /*uint _strike*/, /*uint _bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeries(seriesKey);
         pairKey = _pairKey;
-        (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPairByKey(pairKey);
+        (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPair(pairKey);
         collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
         collateralDecimals = factory.getTokenDecimals(collateralToken);
         (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
@@ -675,11 +675,11 @@ contract OptinoToken is BasicToken {
     }
     function getPairData() public view returns (bytes32 _pairKey, address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType _customFeedType, uint8 _customFeedDecimals) {
         _pairKey = pairKey;
-        (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = factory.getPairByKey(pairKey);
+        (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = factory.getPair(pairKey);
     }
     function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
         _seriesKey = seriesKey;
-        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeriesByKey(seriesKey);
+        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeries(seriesKey);
     }
 
     function spot() public view returns (uint _spot) {
@@ -875,12 +875,12 @@ contract OptinoFactory is Owned, CloneFactory {
     using Decimals for uint;
     using FeedLib for FeedLib.FeedType;
 
-    struct Token {
+    struct TokenDecimals {
         uint timestamp;
         uint index;
         address token;
-        string symbol;
         uint8 decimals;
+        bool locked;
     }
     struct Feed {
         uint timestamp;
@@ -934,13 +934,12 @@ contract OptinoFactory is Owned, CloneFactory {
     uint private constant ONEDAY = 24 * 60 * 60;
     uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
-    // Set to new contract address if this contract is deprecated
-    address public newAddress;
     address public optinoTokenTemplate;
+    string public message = "v0.972-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
-    mapping(address => Token) tokenData;
-    address[] tokenIndex;
+    mapping(address => TokenDecimals) tokenDecimalsData;
+    address[] tokenDecimalsIndex;
     mapping(address => Feed) feedData;
     address[] feedIndex;
     // [baseToken, quoteToken, feed, customFeed, customFeedType, customFeedDecimals] => Pair
@@ -951,8 +950,9 @@ contract OptinoFactory is Owned, CloneFactory {
     // [pairIndex] => [seriesIndex] => seriesKey
     mapping(uint => bytes32[]) seriesIndex;
 
-    event ContractDeprecated(address newAddress);
+    event MessageUpdated(string _message);
     event FeeUpdated(uint fee);
+    event TokenDecimalsUpdated(address indexed token, uint8 decimals, bool locked);
     event PairAdded(bytes32 indexed pairKey, uint indexed pairIndex, address indexed baseToken, address quoteToken, address feed, bool customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals);
     event SeriesAdded(bytes32 indexed pairKey, bytes32 indexed seriesKey, uint indexed pairIndex, uint seriesIndex, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
@@ -964,36 +964,40 @@ contract OptinoFactory is Owned, CloneFactory {
         super.initOwned(msg.sender);
         optinoTokenTemplate = _optinoTokenTemplate;
     }
-    function deprecateContract(address _newAddress) public onlyOwner {
-        require(newAddress == address(0), "deprecateContract: Cannot set to null");
-        emit ContractDeprecated(_newAddress);
-        newAddress = _newAddress;
+    function updateMessage(string memory _message) public onlyOwner {
+        emit MessageUpdated(_message);
+        message = _message;
     }
     function updateFee(uint _fee) public onlyOwner {
         require(_fee <= MAXFEE, "updateFee: fee must <= MAXFEE");
         emit FeeUpdated(_fee);
         fee = _fee;
     }
-
-    function addToken(ERC20 token) public onlyOwner {
-        require(tokenData[address(token)].token == address(0), "addToken: Cannot add duplicate");
-        string memory _symbol;
-        try token.symbol() returns (string memory s) {
-            _symbol = s;
-        } catch {
-            revert("addToken: Cannot retrieve symbol");
+    function setTokenDecimals(address token, uint8 decimals) public onlyOwner {
+        require(!tokenDecimalsData[token].locked, "setTokenDecimals: Locked");
+        require(ERC20(token).totalSupply() >= 0, "setTokenDecimals: Token totalSupply failure");
+        if (tokenDecimalsData[token].token == address(0)) {
+            tokenDecimalsIndex.push(token);
+            tokenDecimalsData[token] = TokenDecimals(block.timestamp, tokenDecimalsIndex.length - 1, token, decimals, false);
+        } else {
+            tokenDecimalsData[token].decimals = decimals;
         }
-        uint8 _decimals;
-        try token.decimals() returns (uint8 d) {
-            _decimals = d;
-        } catch {
-            revert("addToken: Cannot retrieve decimals");
-        }
-        tokenIndex.push(address(token));
-        tokenData[address(token)] = Token(block.timestamp, tokenIndex.length - 1, address(token), _symbol, _decimals);
+        emit TokenDecimalsUpdated(token, decimals, false);
     }
-    function tokenLength() public view returns (uint) {
-        return tokenIndex.length;
+    function lockTokenDecimals(address token) public onlyOwner {
+        require(!tokenDecimalsData[token].locked, "lockTokenDecimals: Locked");
+        tokenDecimalsData[token].locked = true;
+        emit TokenDecimalsUpdated(token, tokenDecimalsData[token].decimals, true);
+    }
+    function getTokenDecimalsByIndex(uint i) public view returns (address _token, uint8 _decimals, bool _locked) {
+        require(i < tokenDecimalsIndex.length, "tokenDecimals: Invalid index");
+        _token = tokenDecimalsIndex[i];
+        TokenDecimals memory _tokenDecimals = tokenDecimalsData[_token];
+        (_decimals, _locked) = (_tokenDecimals.decimals, _tokenDecimals.locked);
+
+    }
+    function tokenDecimalsLength() public view returns (uint) {
+        return tokenDecimalsIndex.length;
     }
     function getTokenDecimals(address token) public view returns (uint8 _decimals) {
         if (token == ETH) {
@@ -1002,8 +1006,8 @@ contract OptinoFactory is Owned, CloneFactory {
             try ERC20(token).decimals() returns (uint8 d) {
                 _decimals = d;
             } catch {
-                require(tokenData[token].token == token, "getTokenDecimals: Token not registered");
-                _decimals = tokenData[token].decimals;
+                require(tokenDecimalsData[token].token == token, "getTokenDecimals: Token not registered");
+                _decimals = tokenDecimalsData[token].decimals;
             }
         }
     }
@@ -1063,7 +1067,7 @@ contract OptinoFactory is Owned, CloneFactory {
         Pair memory pair = pairData[_pairKey];
         (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = (pair.baseToken, pair.quoteToken, pair.feed, pair.customFeed, pair.customFeedType, pair.customFeedDecimals);
     }
-    function getPairByKey(bytes32 pairKey) public view returns (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) {
+    function getPair(bytes32 pairKey) public view returns (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) {
         Pair memory pair = pairData[pairKey];
         return (pair.baseToken, pair.quoteToken, pair.feed, pair.customFeed, pair.customFeedType, pair.customFeedDecimals);
     }
@@ -1140,9 +1144,9 @@ contract OptinoFactory is Owned, CloneFactory {
         Series memory series = seriesData[_seriesKey];
         (_callPut, _expiry, _strike, _bound, _timestamp, _optinoToken, _coverToken) = (series.callPut, series.expiry, series.strike, series.bound, series.timestamp, series.optinoToken, series.coverToken);
     }
-    function getSeriesByKey(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
+    function getSeries(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
         Series memory series = seriesData[seriesKey];
-        require(series.timestamp > 0, "getSeriesByKey: Invalid key");
+        require(series.timestamp > 0, "getSeries: Invalid key");
         return (series.pairKey, series.callPut, series.expiry, series.strike, series.bound, series.optinoToken, series.coverToken, series.spot);
     }
     function getCalcData(bytes32 seriesKey) public view returns (uint _callPut, uint _strike, uint _bound, uint _decimalsData) {

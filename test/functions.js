@@ -525,9 +525,18 @@ function printOptinoFactoryContractDetails() {
     var contract = web3.eth.contract(_optinoFactoryContractAbi).at(_optinoFactoryContractAddress);
     // console.log("RESULT: contract=" + JSON.stringify(contract));
     console.log("RESULT: optinoFactory.owner/new=" + getShortAddressName(contract.owner.call()) + "/" + getShortAddressName(contract.newOwner.call()));
+    console.log("RESULT: optinoFactory.optinoTokenTemplate=" + getShortAddressName(contract.optinoTokenTemplate.call()));
+    console.log("RESULT: optinoFactory.message/fee='" + contract.message.call() + "'/" + contract.fee.call().shift(-16) + "%");
 
     var latestBlock = eth.blockNumber;
     var i;
+
+    var tokenDecimalsLength = contract.tokenDecimalsLength.call();
+    console.log("RESULT: optinoFactory.tokenDecimalsLength=" + tokenDecimalsLength);
+    for (var tokenDecimalsIndex = 0; tokenDecimalsIndex < tokenDecimalsLength; tokenDecimalsIndex++) {
+      var tokenDecimals = contract.getTokenDecimalsByIndex.call(tokenDecimalsIndex);
+      console.log("RESULT: optinoFactory.getTokenDecimalsByIndex(" + tokenDecimalsIndex + "). " + JSON.stringify(tokenDecimals));
+    }
 
     var pairData = {};
     var seriesData = {};
@@ -544,7 +553,7 @@ function printOptinoFactoryContractDetails() {
         var customFeedType = pair[5].toString();
         var customFeedDecimals = pair[6].toString();
         pairData[pairKey] = { pairKey: pairKey, baseToken: baseToken, quoteToken: quoteToken, feed: feed, customFeed: customFeed, customFeedType: customFeedType, customFeedDecimals: customFeedDecimals };
-        console.log("RESULT: optinoToken.getPairByIndex(" + pairIndex + "). pairKey=" + pairKey + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", feed=" + feed + ", customFeed=" + customFeed + ", customFeedType=" + customFeedType + ", customFeedDecimals=" + customFeedDecimals);
+        console.log("RESULT: optinoFactory.getPairByIndex(" + pairIndex + "). pairKey=" + pairKey + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", feed=" + feed + ", customFeed=" + customFeed + ", customFeedType=" + customFeedType + ", customFeedDecimals=" + customFeedDecimals);
         var seriesLength = contract.seriesLength.call(pairIndex);
         console.log("RESULT: optinoFactory.seriesLength(" + pairIndex + ")=" + seriesLength);
         for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
@@ -637,12 +646,12 @@ function printOptinoFactoryContractDetails() {
     });
     ownershipTransferredEvents.stopWatching();
 
-    var contractDeprecatedEvents = contract.ContractDeprecated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    var messageUpdatedEvents = contract.MessageUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
-    contractDeprecatedEvents.watch(function (error, result) {
-      console.log("RESULT: ContractDeprecated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    messageUpdatedEvents.watch(function (error, result) {
+      console.log("RESULT: MessageUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
-    contractDeprecatedEvents.stopWatching();
+    messageUpdatedEvents.stopWatching();
 
     var feeUpdatedEvents = contract.FeeUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
@@ -650,6 +659,13 @@ function printOptinoFactoryContractDetails() {
       console.log("RESULT: FeeUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     feeUpdatedEvents.stopWatching();
+
+    var tokenDecimalsUpdatedEvents = contract.TokenDecimalsUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    i = 0;
+    tokenDecimalsUpdatedEvents.watch(function (error, result) {
+      console.log("RESULT: TokenDecimalsUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    });
+    tokenDecimalsUpdatedEvents.stopWatching();
 
     var pairAddedEvents = contract.PairAdded({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
