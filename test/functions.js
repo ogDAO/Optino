@@ -616,21 +616,20 @@ function printOptinoFactoryContractDetails() {
             optinoTokenCloseEvents.watch(function (error, result) {
               console.log("RESULT:       .Close " + j++ + " #" + result.blockNumber +
                 " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-                " collateralToken=" + getShortAddressName(result.args.collateralToken) +
+                " coverToken=" + getShortAddressName(result.args.coverToken) +
                 " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
-                " tokens=" + result.args.tokens.shift(-collateralDecimals) +
-                " collateralDecimals=" + result.args.collateralDecimals);
+                " tokens=" + result.args.tokens.shift(-tokenDecimals) +
+                " collateralRefunded=" + result.args.collateralRefunded.shift(-collateralDecimals));
             });
             optinoTokenCloseEvents.stopWatching();
             var optinoTokenPayoffEvents = tokenContract.Payoff({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
             j = 0;
             optinoTokenPayoffEvents.watch(function (error, result) {
               console.log("RESULT:       .Payoff " + j++ + " #" + result.blockNumber +
-                " optinoToken=" + getShortAddressName(result.args.optinoToken) +
-                " collateralToken=" + getShortAddressName(result.args.collateralToken) +
+                " optinoOrCoverToken=" + getShortAddressName(result.args.optinoOrCoverToken) +
                 " tokenOwner=" + getShortAddressName(result.args.tokenOwner) +
-                " tokens=" + result.args.tokens.shift(-collateralDecimals) +
-                " collateralDecimals=" + result.args.collateralDecimals);
+                " tokens=" + result.args.tokens.shift(-tokenDecimals) +
+                " collateralPaid=" + result.args.collateralPaid.shift(-collateralDecimals));
             });
             optinoTokenPayoffEvents.stopWatching();
             var optinoTokenLogInfoEvents = tokenContract.LogInfo({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });

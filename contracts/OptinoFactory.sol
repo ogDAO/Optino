@@ -432,11 +432,11 @@ library Decimals {
 }
 
 
-contract Parameters {
-    function set(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
+library Parameters {
+    function encode(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) internal pure returns (bytes32 _data) {
         _data = bytes32(uint(feed2) << 48 | uint(inverse1) << 40 | uint(inverse2) << 32 | uint(type1) << 24 | uint(type2) << 16 | uint(decimals1) << 8 | uint(decimals2));
     }
-    function get(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
+    function decode(bytes32 data) internal pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
         feed2 = address(uint(data) >> 48);
         inverse1 = uint8(uint(data) >> 40);
         inverse2 = uint8(uint(data) >> 32);
@@ -445,25 +445,25 @@ contract Parameters {
         decimals1 = uint8(uint(data) >> 8);
         decimals2 = uint8(uint(data));
     }
-    function feed2(bytes32 data) public pure returns (address _feed2) {
+    function feed2(bytes32 data) internal pure returns (address _feed2) {
         _feed2 = address(uint(data) >> 48);
     }
-    function inverse1(bytes32 data) public pure returns (uint8 _inverse1) {
+    function inverse1(bytes32 data) internal pure returns (uint8 _inverse1) {
         _inverse1 = uint8(uint(data) >> 40);
     }
-    function inverse2(bytes32 data) public pure returns (uint8 _inverse2) {
+    function inverse2(bytes32 data) internal pure returns (uint8 _inverse2) {
         _inverse2 = uint8(uint(data) >> 32);
     }
-    function type1(bytes32 data) public pure returns (uint8 _type1) {
+    function type1(bytes32 data) internal pure returns (uint8 _type1) {
         _type1 = uint8(uint(data) >> 24);
     }
-    function type2(bytes32 data) public pure returns (uint8 _type2) {
+    function type2(bytes32 data) internal pure returns (uint8 _type2) {
         _type2 = uint8(uint(data) >> 16);
     }
-    function decimals1(bytes32 data) public pure returns (uint8 _decimals1) {
+    function decimals1(bytes32 data) internal pure returns (uint8 _decimals1) {
         _decimals1 = uint8(uint(data) >> 8);
     }
-    function decimals2(bytes32 data) public pure returns (uint8 _decimals2) {
+    function decimals2(bytes32 data) internal pure returns (uint8 _decimals2) {
         _decimals2 = uint8(uint(data));
     }
     // event LogIt(bytes32 data, address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2);
@@ -716,16 +716,16 @@ contract OptinoToken is BasicToken {
     uint8 public collateralDecimals;
 
     // TODO - Improve data
-    event Close(address indexed optinoToken, address indexed collateralToken, address indexed tokenOwner, uint tokens, uint8 collateralDecimals);
-    event Payoff(address indexed optinoToken, address indexed collateralToken, address indexed tokenOwner, uint tokens, uint8 collateralDecimals);
+    event Close(OptinoToken indexed optinoToken, OptinoToken indexed coverToken, address indexed tokenOwner, uint tokens, uint collateralRefunded);
+    event Payoff(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPaid);
     event LogInfo(string note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         (factory, seriesKey, pair, seriesNumber, isCover) = (_factory, _seriesKey, _pair, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
-        (bytes32 _pairKey, uint _callPut, /*uint _expiry*/, /*uint _strike*/, /*uint _bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
+        (bytes32 _pairKey, uint _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
-        (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPairByKey(pairKey);
+        (address _baseToken, address _quoteToken, /*_feed*/, /*_customFeed*/, /*customFeedType */, /*customFeedDecimals*/) = factory.getPairByKey(pairKey);
         collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
         collateralDecimals = factory.getTokenDecimals(collateralToken);
         (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
@@ -805,20 +805,17 @@ contract OptinoToken is BasicToken {
     function closeFor(address tokenOwner, uint tokens) public {
         require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "Not authorised");
         if (!isCover) {
-            // emit LogInfo("closeFor msg.sender for Optino token. Transferring to Cover token", msg.sender, tokens);
-            OptinoToken(payable(pair)).closeFor(tokenOwner, tokens);
+            pair.closeFor(tokenOwner, tokens);
         } else {
-            // emit LogInfo("closeFor msg.sender for Cover token", msg.sender, tokens);
-            require(tokens <= ERC20(pair).balanceOf(tokenOwner), "Insufficient optino tokens");
-            require(tokens <= ERC20(this).balanceOf(tokenOwner), "Insufficient cover tokens");
-            require(OptinoToken(payable(pair)).burn(tokenOwner, tokens), "Burn optino tokens failure");
-            require(OptinoToken(payable(this)).burn(tokenOwner, tokens), "Burn cover tokens failure");
+            require(tokens <= pair.balanceOf(tokenOwner), "Insufficient optino tokens");
+            require(tokens <= this.balanceOf(tokenOwner), "Insufficient cover tokens");
+            require(pair.burn(tokenOwner, tokens), "Burn optino tokens failure");
+            require(this.burn(tokenOwner, tokens), "Burn cover tokens failure");
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
-            uint collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
+            uint collateralRefund = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
             bool isEmpty = pair.totalSupply() + this.totalSupply() == 0;
-            // emit LogInfo("closeFor isEmpty", msg.sender, isEmpty ? 1 : 0);
-            collateral = transferOut(tokenOwner, collateral, isEmpty);
-            emit Close(address(pair), collateralToken, tokenOwner, collateral, collateralDecimals);
+            collateralRefund = transferOut(tokenOwner, collateralRefund, isEmpty);
+            emit Close(pair, this, tokenOwner, tokens, collateralRefund);
         }
     }
     function settle() public {
@@ -826,10 +823,10 @@ contract OptinoToken is BasicToken {
     }
     function settleFor(address tokenOwner) public {
         if (!isCover) {
-            OptinoToken(payable(pair)).settleFor(tokenOwner);
+            pair.settleFor(tokenOwner);
         } else {
-            uint optinoTokens = ERC20(pair).balanceOf(tokenOwner);
-            uint coverTokens = ERC20(this).balanceOf(tokenOwner);
+            uint optinoTokens = pair.balanceOf(tokenOwner);
+            uint coverTokens = this.balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0, "No optino or cover tokens");
             uint _spot = spot();
             if (_spot == 0) {
@@ -853,7 +850,7 @@ contract OptinoToken is BasicToken {
                 if (_payoff > 0) {
                     _payoff = transferOut(tokenOwner, _payoff, isEmpty1);
                 }
-                emit Payoff(address(pair), collateralToken, tokenOwner, _payoff, collateralDecimals);
+                emit Payoff(pair, tokenOwner, optinoTokens, _payoff);
             }
             if (coverTokens > 0) {
                 _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
@@ -862,7 +859,7 @@ contract OptinoToken is BasicToken {
                 if (_coverPayoff > 0) {
                     _coverPayoff = transferOut(tokenOwner, _coverPayoff, isEmpty2);
                 }
-                emit Payoff(address(this), collateralToken, tokenOwner, _coverPayoff, collateralDecimals);
+                emit Payoff(this, tokenOwner, coverTokens, _coverPayoff);
             }
         }
     }
@@ -1263,9 +1260,9 @@ contract OptinoFactory is Owned, CloneFactory {
         return _mint(OptinoData(baseToken, quoteToken, priceFeed, false, FeedLib.FeedType(0), 0, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
     /// @notice Mint with custom feed
-    function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-        return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
-    }
+    // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+    //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
+    // }
     function computeCollateral(bytes32 _seriesKey, uint tokens) internal view returns (address _collateralToken, uint _collateral) {
         Series memory series = seriesData[_seriesKey];
         Pair memory pair = pairData[series.pairKey];
@@ -1416,5 +1413,11 @@ contract OptinoFactory is Owned, CloneFactory {
             }
             (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
         }
+    }
+    function encodeParameters(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
+        return Parameters.encode(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+    }
+    function decodeParameters(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
+        return Parameters.decode(data);
     }
 }
