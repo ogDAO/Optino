@@ -538,6 +538,13 @@ function printOptinoFactoryContractDetails() {
       console.log("RESULT: optinoFactory.getTokenDecimalsByIndex(" + tokenDecimalsIndex + "). " + JSON.stringify(tokenDecimals));
     }
 
+    var feedLength = contract.feedLength.call();
+    console.log("RESULT: optinoFactory.feedLength=" + feedLength);
+    for (var feedIndex = 0; feedIndex < feedLength; feedIndex++) {
+      var tokenDecimals = contract.getFeedByIndex.call(feedIndex);
+      console.log("RESULT: optinoFactory.getFeedByIndex(" + feedIndex + "). " + JSON.stringify(tokenDecimals));
+    }
+
     var pairData = {};
     var seriesData = {};
     var pairLength = contract.pairLength.call();
@@ -659,6 +666,13 @@ function printOptinoFactoryContractDetails() {
       console.log("RESULT: FeeUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     feeUpdatedEvents.stopWatching();
+
+    var feedUpdatedEvents = contract.FeedUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
+    i = 0;
+    feedUpdatedEvents.watch(function (error, result) {
+      console.log("RESULT: FeedUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+    });
+    feedUpdatedEvents.stopWatching();
 
     var tokenDecimalsUpdatedEvents = contract.TokenDecimalsUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
