@@ -651,9 +651,9 @@ contract OptinoToken is BasicToken {
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         (factory, seriesKey, pair, seriesNumber, isCover) = (_factory, _seriesKey, _pair, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
-        (bytes32 _pairKey, uint _callPut, /*uint _expiry*/, /*uint _strike*/, /*uint _bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeries(seriesKey);
+        (bytes32 _pairKey, uint _callPut, /*uint _expiry*/, /*uint _strike*/, /*uint _bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
-        (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPair(pairKey);
+        (address _baseToken, address _quoteToken, /*address _feed*/, /*bool _customFeed*/, /* FeedLib.FeedType customFeedType */, /*uint8 customFeedDecimals*/) = factory.getPairByKey(pairKey);
         collateralToken = _callPut == 0 ? _baseToken : _quoteToken;
         collateralDecimals = factory.getTokenDecimals(collateralToken);
         (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
@@ -675,11 +675,11 @@ contract OptinoToken is BasicToken {
     }
     function getPairData() public view returns (bytes32 _pairKey, address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType _customFeedType, uint8 _customFeedDecimals) {
         _pairKey = pairKey;
-        (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = factory.getPair(pairKey);
+        (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = factory.getPairByKey(pairKey);
     }
     function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
         _seriesKey = seriesKey;
-        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeries(seriesKey);
+        (_pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, _spot) = factory.getSeriesByKey(seriesKey);
     }
 
     function spot() public view returns (uint _spot) {
@@ -1067,7 +1067,7 @@ contract OptinoFactory is Owned, CloneFactory {
         Pair memory pair = pairData[_pairKey];
         (_baseToken, _quoteToken, _feed, _customFeed, _customFeedType, _customFeedDecimals) = (pair.baseToken, pair.quoteToken, pair.feed, pair.customFeed, pair.customFeedType, pair.customFeedDecimals);
     }
-    function getPair(bytes32 pairKey) public view returns (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) {
+    function getPairByKey(bytes32 pairKey) public view returns (address _baseToken, address _quoteToken, address _feed, bool _customFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals) {
         Pair memory pair = pairData[pairKey];
         return (pair.baseToken, pair.quoteToken, pair.feed, pair.customFeed, pair.customFeedType, pair.customFeedDecimals);
     }
@@ -1144,9 +1144,9 @@ contract OptinoFactory is Owned, CloneFactory {
         Series memory series = seriesData[_seriesKey];
         (_callPut, _expiry, _strike, _bound, _timestamp, _optinoToken, _coverToken) = (series.callPut, series.expiry, series.strike, series.bound, series.timestamp, series.optinoToken, series.coverToken);
     }
-    function getSeries(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
+    function getSeriesByKey(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
         Series memory series = seriesData[seriesKey];
-        require(series.timestamp > 0, "getSeries: Invalid key");
+        require(series.timestamp > 0, "getSeriesByKey: Invalid key");
         return (series.pairKey, series.callPut, series.expiry, series.strike, series.bound, series.optinoToken, series.coverToken, series.spot);
     }
     function getCalcData(bytes32 seriesKey) public view returns (uint _callPut, uint _strike, uint _bound, uint _decimalsData) {

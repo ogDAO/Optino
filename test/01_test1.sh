@@ -299,7 +299,7 @@ var deployGroup2_8Tx = quoteToken.mint(buyer2, quoteTokens.toString(), {from: de
 var deployGroup2_9Tx = optinoFactory.addFeed(priceFeedAddress, "Maker ETH/USD", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 // var deployGroup2_9Tx = optinoFactory.addConfig(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
-// var deployGroup2_10Tx = optinoFactory.addConfig(ethAddress, quoteTokenAddress, priceFeedAdaptorAddress, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "ETH/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_10Tx = optinoFactory.setTokenDecimals(quoteTokenAddress, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -324,8 +324,8 @@ printTxData("deployGroup2_8Tx", deployGroup2_8Tx);
 failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addFeed(priceFeed, 'Maker ETH/USD', MAKER, 18)");
 // failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
 printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
-// failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.addConfig(ETH, QUOTE, priceFeed, ethDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
-// printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
+failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.setTokenDecimals(QUOTE, 18)");
+printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
 failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - seller1 -> baseToken.approve(optinoFactory, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_11Tx", deployGroup2_11Tx);
 failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - seller1 -> quoteToken.approve(optinoFactory, " + quoteTokens.shift(-baseDecimals).toString() + ")");
