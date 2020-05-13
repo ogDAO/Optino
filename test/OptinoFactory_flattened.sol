@@ -670,7 +670,7 @@ library OptinoV1 {
             return amount.div(10 ** uint(left - right));
         }
     }
-    function collateral(uint callPut, uint strike, uint bound, uint tokens, uint decimalsData) internal pure returns (uint _collateral) {
+    function computeCollateral(uint callPut, uint strike, uint bound, uint tokens, uint decimalsData) internal pure returns (uint _collateral) {
         (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.get();
         require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
@@ -685,7 +685,7 @@ library OptinoV1 {
             return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** uint(rateDecimals));
         }
     }
-    function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
+    function computePayoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint decimalsData) internal pure returns (uint _payoff) {
         (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = decimalsData.get();
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
@@ -782,13 +782,13 @@ contract OptinoToken is BasicToken, Parameters {
     }
     function payoffForSpot(uint _spot, uint tokens) public view returns (uint _payoff) {
         (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
-        return OptinoV1.payoff(callPut, strike, bound, _spot, tokens, decimalsData);
+        return OptinoV1.computePayoff(callPut, strike, bound, _spot, tokens, decimalsData);
     }
     function currentPayoff(uint tokens) public view returns (uint _currentPayoff) {
         uint _spot = currentSpot();
         (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
-        uint _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, tokens, decimalsData);
-        uint _collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
+        uint _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, tokens, decimalsData);
+        uint _collateral = OptinoV1.computeCollateral(callPut, strike, bound, tokens, decimalsData);
         return isCover ? _collateral.sub(_payoff) : _payoff;
     }
     function payoff(uint tokens) public view returns (uint __payoff) {
@@ -798,8 +798,8 @@ contract OptinoToken is BasicToken, Parameters {
             return 0;
         } else {
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
-            uint _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, tokens, decimalsData);
-            uint _collateral = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
+            uint _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, tokens, decimalsData);
+            uint _collateral = OptinoV1.computeCollateral(callPut, strike, bound, tokens, decimalsData);
             return isCover ? _collateral.sub(_payoff) : _payoff;
         }
     }
@@ -825,7 +825,7 @@ contract OptinoToken is BasicToken, Parameters {
             require(pair.burn(tokenOwner, tokens), "Burn optino tokens failure");
             require(this.burn(tokenOwner, tokens), "Burn cover tokens failure");
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
-            uint collateralRefund = OptinoV1.collateral(callPut, strike, bound, tokens, decimalsData);
+            uint collateralRefund = OptinoV1.computeCollateral(callPut, strike, bound, tokens, decimalsData);
             bool isEmpty = pair.totalSupply() + this.totalSupply() == 0;
             collateralRefund = transferOut(tokenOwner, collateralRefund, isEmpty);
             emit Close(pair, this, tokenOwner, tokens, collateralRefund);
@@ -859,15 +859,15 @@ contract OptinoToken is BasicToken, Parameters {
             }
             bool isEmpty2 = pair.totalSupply() + this.totalSupply() == 0;
             if (optinoTokens > 0) {
-                _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
+                _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
                     _payoff = transferOut(tokenOwner, _payoff, isEmpty1);
                 }
                 emit Payoff(pair, tokenOwner, optinoTokens, _payoff);
             }
             if (coverTokens > 0) {
-                _payoff = OptinoV1.payoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
-                _collateral = OptinoV1.collateral(callPut, strike, bound, coverTokens, decimalsData);
+                _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
+                _collateral = OptinoV1.computeCollateral(callPut, strike, bound, coverTokens, decimalsData);
                 uint _coverPayoff = _collateral.sub(_payoff);
                 if (_coverPayoff > 0) {
                     _coverPayoff = transferOut(tokenOwner, _coverPayoff, isEmpty2);
@@ -1298,7 +1298,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), 18/*pair.customFeed ? pair.customFeedDecimals : _feedDecimals*/);
         _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
         // emit LogInfo("computeCollateral decimalsData", pair.feed, decimalsData);
-        _collateral = OptinoV1.collateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
+        _collateral = OptinoV1.computeCollateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
         // emit LogInfo("computeCollateral _collateral", msg.sender, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){

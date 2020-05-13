@@ -433,11 +433,11 @@ library Decimals {
 
 
 contract Parameters {
-    function encodeParameters(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) internal pure returns (bytes32 _data) {
+    function encodeParameters(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
         require(inverse1 < 2 && inverse2 < 2 && (decimals1 == uint8(0xff) || decimals1 <= 18) && (decimals2 == uint8(0xff) || decimals2 <= 18), "Invalid parameters");
         _data = bytes32(uint(feed2) << 48 | uint(inverse1) << 40 | uint(inverse2) << 32 | uint(type1) << 24 | uint(type2) << 16 | uint(decimals1) << 8 | uint(decimals2));
     }
-    function decodeParameters(bytes32 data) internal pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
+    function decodeParameters(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
         feed2 = address(uint(data) >> 48);
         inverse1 = uint8(uint(data) >> 40);
         inverse2 = uint8(uint(data) >> 32);
@@ -447,7 +447,7 @@ contract Parameters {
         decimals2 = uint8(uint(data));
         require(inverse1 < 2 && inverse2 < 2 && (decimals1 == uint8(0xff) || decimals1 <= 18) && (decimals2 == uint8(0xff) || decimals2 <= 18), "Invalid parameters");
     }
-    function nullParameters() internal pure returns (bytes32 _data) {
+    function nullParameters() public pure returns (bytes32 _data) {
         return encodeParameters(address(0), uint8(0), uint8(0), uint8(0xff), uint8(0xff), uint8(0xff), uint8(0xff));
     }
     function isNullParameters(bytes32 data) internal pure returns (bool) {
