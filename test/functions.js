@@ -556,11 +556,9 @@ function printOptinoFactoryContractDetails() {
         var baseToken = getShortAddressName(pair[1]);
         var quoteToken = getShortAddressName(pair[2]);
         var feed = getShortAddressName(pair[3]);
-        var customFeed = pair[4];
-        var customFeedType = pair[5].toString();
-        var customFeedDecimals = pair[6].toString();
-        pairData[pairKey] = { pairKey: pairKey, baseToken: baseToken, quoteToken: quoteToken, feed: feed, customFeed: customFeed, customFeedType: customFeedType, customFeedDecimals: customFeedDecimals };
-        console.log("RESULT: optinoFactory.getPairByIndex(" + pairIndex + "). pairKey=" + pairKey + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", feed=" + feed + ", customFeed=" + customFeed + ", customFeedType=" + customFeedType + ", customFeedDecimals=" + customFeedDecimals);
+        var parameters = pair[4];
+        pairData[pairKey] = { pairKey: pairKey, baseToken: baseToken, quoteToken: quoteToken, feed: feed, parameters: parameters };
+        console.log("RESULT: optinoFactory.getPairByIndex(" + pairIndex + "). pairKey=" + pairKey + ", baseToken=" + baseToken + ", quoteToken=" + quoteToken + ", feed=" + feed + ", parameters=" + parameters);
         var seriesLength = contract.seriesLength.call(pairIndex);
         console.log("RESULT: optinoFactory.seriesLength(" + pairIndex + ")=" + seriesLength);
         for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
@@ -586,6 +584,7 @@ function printOptinoFactoryContractDetails() {
             var collateralDecimals = tokenContract.collateralDecimals.call();
             var oneToken = new BigNumber("1").shift(tokenDecimals);
             var pairData = tokenContract.getPairData.call();
+            var pairParameters = tokenContract.getPairParameters.call();
             var seriesData = tokenContract.getSeriesData.call();
             console.log("RESULT:       .isCover=" + tokenContract.isCover.call());
             console.log("RESULT:       .owner/new=" + getShortAddressName(tokenContract.owner.call()) + "/" + getShortAddressName(tokenContract.newOwner.call()));
@@ -594,6 +593,7 @@ function printOptinoFactoryContractDetails() {
             console.log("RESULT:       .collateralToken: " + getShortAddressName(collateralToken));
             console.log("RESULT:       .collateralDecimals: " + collateralDecimals);
             console.log("RESULT:       .pairData: " + JSON.stringify(pairData));
+            console.log("RESULT:       .pairParameters: " + JSON.stringify(pairParameters));
             console.log("RESULT:       .seriesData: " + JSON.stringify(seriesData));
             // console.log("RESULT: - optinoToken:");
             // console.log("RESULT:     .closedOrSettled=" + optinoTokenContract.balanceOf.call(NULLACCOUNT).shift(-optinoTokenDecimals));
