@@ -950,16 +950,16 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         uint index;
         address token;
         uint8 decimals;
-        bool locked;
+        uint8 locked;
     }
     struct Feed {
         uint timestamp;
         uint index;
         address feed;
         string name;
-        FeedLib.FeedType feedType;
+        uint8 feedType;
         uint8 decimals;
-        bool locked;
+        uint8 locked;
     }
     struct Pair {
         uint timestamp;
@@ -1018,8 +1018,8 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
 
     event MessageUpdated(string _message);
     event FeeUpdated(uint fee);
-    event TokenDecimalsUpdated(address indexed token, uint8 decimals, bool locked);
-    event FeedUpdated(address indexed feed, string name, FeedLib.FeedType feedType, uint8 decimals, bool locked);
+    event TokenDecimalsUpdated(address indexed token, uint8 decimals, uint8 locked);
+    event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals, uint8 locked);
     event PairAdded(bytes32 indexed pairKey, uint indexed pairIndex, address indexed baseToken, address quoteToken, address feed, bytes32 parameters);
     event SeriesAdded(bytes32 indexed pairKey, bytes32 indexed seriesKey, uint indexed pairIndex, uint seriesIndex, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
@@ -1041,22 +1041,22 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         fee = _fee;
     }
     function updateTokenDecimals(address token, uint8 decimals) public onlyOwner {
-        require(!tokenDecimalsData[token].locked, "Locked");
+        require(tokenDecimalsData[token].locked == 0, "Locked");
         require(ERC20(token).totalSupply() >= 0, "Token totalSupply failure");
         if (tokenDecimalsData[token].token == address(0)) {
             tokenDecimalsIndex.push(token);
-            tokenDecimalsData[token] = TokenDecimals(block.timestamp, tokenDecimalsIndex.length - 1, token, decimals, false);
+            tokenDecimalsData[token] = TokenDecimals(block.timestamp, tokenDecimalsIndex.length - 1, token, decimals, 0);
         } else {
             tokenDecimalsData[token].decimals = decimals;
         }
-        emit TokenDecimalsUpdated(token, decimals, false);
+        emit TokenDecimalsUpdated(token, decimals, 0);
     }
     function lockTokenDecimals(address token) public onlyOwner {
-        require(!tokenDecimalsData[token].locked, "Locked");
-        tokenDecimalsData[token].locked = true;
-        emit TokenDecimalsUpdated(token, tokenDecimalsData[token].decimals, true);
+        require(tokenDecimalsData[token].locked == 0, "Locked");
+        tokenDecimalsData[token].locked = 1;
+        emit TokenDecimalsUpdated(token, tokenDecimalsData[token].decimals, 1);
     }
-    function getTokenDecimalsByIndex(uint i) public view returns (address _token, uint8 _decimals, bool _locked) {
+    function getTokenDecimalsByIndex(uint i) public view returns (address _token, uint8 _decimals, uint8 _locked) {
         require(i < tokenDecimalsIndex.length, "Invalid index");
         _token = tokenDecimalsIndex[i];
         TokenDecimals memory _tokenDecimals = tokenDecimalsData[_token];
@@ -1078,9 +1078,9 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         }
     }
 
-    function updateFeed(address feed, string memory name, FeedLib.FeedType feedType, uint8 decimals) public onlyOwner {
-        require(!feedData[feed].locked, "Locked");
-        (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, uint _timestamp) = FeedLib.getSpot(feed, feedType);
+    function updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals) public onlyOwner {
+        require(feedData[feed].locked == 0, "Locked");
+        (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, uint _timestamp) = FeedLib.getSpot(feed, FeedLib.FeedType(feedType));
         require(_spot > 0, "Spot must >= 0");
         require(_hasData, "Feed has no data");
         // TODO
@@ -1088,21 +1088,21 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         require(_timestamp + ONEDAY > block.timestamp, "Feed stale");
         if (feedData[feed].feed == address(0)) {
             feedIndex.push(feed);
-            feedData[feed] = Feed(block.timestamp, feedIndex.length - 1, feed, name, feedType, decimals, false);
+            feedData[feed] = Feed(block.timestamp, feedIndex.length - 1, feed, name, feedType, decimals, 0);
         } else {
             feedData[feed].name = name;
             feedData[feed].feedType = feedType;
             feedData[feed].decimals = decimals;
         }
-        emit FeedUpdated(feed, name, feedType, decimals, false);
+        emit FeedUpdated(feed, name, feedType, decimals, 0);
     }
     function lockFeed(address feed) public onlyOwner {
-        require(!feedData[feed].locked, "Locked");
-        feedData[feed].locked = true;
+        require(feedData[feed].locked == 0, "Locked");
+        feedData[feed].locked = 1;
         Feed memory _feed = feedData[feed];
-        emit FeedUpdated(feed, _feed.name, _feed.feedType, _feed.decimals, _feed.locked);
+        emit FeedUpdated(feed, _feed.name, _feed.feedType, _feed.decimals, 1);
     }
-    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, FeedLib.FeedType _feedType, uint8 _decimals, bool _locked) {
+    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8 _feedType, uint8 _decimals, uint8 _locked) {
         require(i < feedIndex.length, "Invalid index");
         _feed = feedIndex[i];
         Feed memory feed = feedData[_feed];
