@@ -434,9 +434,10 @@ library Decimals {
 
 library Parameters {
     function encode(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) internal pure returns (bytes32 _data) {
+        require(inverse1 < 2 && inverse2 < 2 && (decimals1 == uint8(0xff) || decimals1 <= 18) && (decimals2 == uint8(0xff) || decimals2 <= 18), "Invalid parameters");
         _data = bytes32(uint(feed2) << 48 | uint(inverse1) << 40 | uint(inverse2) << 32 | uint(type1) << 24 | uint(type2) << 16 | uint(decimals1) << 8 | uint(decimals2));
     }
-    function decode(bytes32 data) internal pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
+    function decodeParameters(bytes32 data) internal pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
         feed2 = address(uint(data) >> 48);
         inverse1 = uint8(uint(data) >> 40);
         inverse2 = uint8(uint(data) >> 32);
@@ -444,26 +445,33 @@ library Parameters {
         type2 = uint8(uint(data) >> 16);
         decimals1 = uint8(uint(data) >> 8);
         decimals2 = uint8(uint(data));
+        require(inverse1 < 2 && inverse2 < 2 && (decimals1 == uint8(0xff) || decimals1 <= 18) && (decimals2 == uint8(0xff) || decimals2 <= 18), "Invalid parameters");
     }
-    function feed2(bytes32 data) internal pure returns (address _feed2) {
+    function nullParameters() internal pure returns (bytes32 _data) {
+        return encode(address(0), uint8(0), uint8(0), uint8(0xff), uint8(0xff), uint8(0xff), uint8(0xff));
+    }
+    function isNullParameters(bytes32 data) internal pure returns (bool) {
+        return data == encode(address(0), uint8(0), uint8(0), uint8(0xff), uint8(0xff), uint8(0xff), uint8(0xff));
+    }
+    function getFeed2(bytes32 data) internal pure returns (address _feed2) {
         _feed2 = address(uint(data) >> 48);
     }
-    function inverse1(bytes32 data) internal pure returns (uint8 _inverse1) {
+    function getInverse1(bytes32 data) internal pure returns (uint8 _inverse1) {
         _inverse1 = uint8(uint(data) >> 40);
     }
-    function inverse2(bytes32 data) internal pure returns (uint8 _inverse2) {
+    function getInverse2(bytes32 data) internal pure returns (uint8 _inverse2) {
         _inverse2 = uint8(uint(data) >> 32);
     }
-    function type1(bytes32 data) internal pure returns (uint8 _type1) {
+    function getType1(bytes32 data) internal pure returns (uint8 _type1) {
         _type1 = uint8(uint(data) >> 24);
     }
-    function type2(bytes32 data) internal pure returns (uint8 _type2) {
+    function getType2(bytes32 data) internal pure returns (uint8 _type2) {
         _type2 = uint8(uint(data) >> 16);
     }
-    function decimals1(bytes32 data) internal pure returns (uint8 _decimals1) {
+    function getDecimals1(bytes32 data) internal pure returns (uint8 _decimals1) {
         _decimals1 = uint8(uint(data) >> 8);
     }
-    function decimals2(bytes32 data) internal pure returns (uint8 _decimals2) {
+    function getDecimals2(bytes32 data) internal pure returns (uint8 _decimals2) {
         _decimals2 = uint8(uint(data));
     }
     // event LogIt(bytes32 data, address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2);
@@ -751,7 +759,7 @@ contract OptinoToken is BasicToken {
     }
     function getPairParameters() public view returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
         (/*_baseToken*/, /*_quoteToken*/, /*_feed*/, bytes32 _parameters) = factory.getPairByKey(pairKey);
-        return Parameters.decode(_parameters);
+        return Parameters.decodeParameters(_parameters);
     }
 
     function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint _callPut, uint _expiry, uint _strike, uint _bound, address _optinoToken, address _coverToken, uint _spot) {
@@ -978,7 +986,7 @@ contract OptinoFactory is Owned, CloneFactory {
         address baseToken;
         address quoteToken;
         address feed;
-        bytes32 parameters;
+        bytes32 pairParameters;
         uint callPut;
         uint expiry;
         uint strike;
@@ -1108,7 +1116,7 @@ contract OptinoFactory is Owned, CloneFactory {
     }
 
     function makePairKey(OptinoData memory optinoData) internal pure returns (bytes32 _pairKey) {
-        return keccak256(abi.encodePacked(optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.parameters));
+        return keccak256(abi.encodePacked(optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.pairParameters));
     }
     function getOrAddPair(OptinoData memory optinoData) internal returns (bytes32 _pairKey) {
         _pairKey = makePairKey(optinoData);
@@ -1137,8 +1145,8 @@ contract OptinoFactory is Owned, CloneFactory {
             //     }
             // }
             pairIndex.push(_pairKey);
-            pairData[_pairKey] = Pair(block.timestamp, pairIndex.length - 1, optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.parameters);
-            emit PairAdded(_pairKey, pairIndex.length - 1, optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.parameters);
+            pairData[_pairKey] = Pair(block.timestamp, pairIndex.length - 1, optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.pairParameters);
+            emit PairAdded(_pairKey, pairIndex.length - 1, optinoData.baseToken, optinoData.quoteToken, optinoData.feed, optinoData.pairParameters);
         }
     }
     // TODO Add timestamp?
@@ -1254,7 +1262,7 @@ contract OptinoFactory is Owned, CloneFactory {
     /// @param baseToken Base token ERC20 contract address, or 0x00 for ETH
     /// @param quoteToken Quote token ERC20 contract address, or 0x00 for ETH
     /// @param feed Price feed adaptor contract address
-    /// @param parameters Additional parameters - see `encodeParameters` and `decodeParameters`
+    /// @param pairParameters Additional pair parameters - see `nullParameters`, `encodeParameters` and `decodeParameters`
     /// @param callPut 0 for call, 1 for put
     /// @param expiry Expiry date, unixtime
     /// @param strike Strike rate
@@ -1263,9 +1271,12 @@ contract OptinoFactory is Owned, CloneFactory {
     /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
     /// @return _optinoToken Existing or newly created Optino token contract address
     /// @return _coverToken Existing or newly created Cover token contract address
-    function mint(address baseToken, address quoteToken, address feed, bytes32 parameters, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-        return _mint(OptinoData(baseToken, quoteToken, feed, parameters, callPut, expiry, strike, bound, tokens), uiFeeAccount);
+    function mint(address baseToken, address quoteToken, address feed, bytes32 pairParameters, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+        return _mint(OptinoData(baseToken, quoteToken, feed, pairParameters, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     }
+    // function mintRegular(address baseToken, address quoteToken, address feed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+    //     return _mint(OptinoData(baseToken, quoteToken, feed, nullParameters(), callPut, expiry, strike, bound, tokens), uiFeeAccount);
+    // }
     /// @notice Mint with custom feed
     // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
@@ -1388,17 +1399,17 @@ contract OptinoFactory is Owned, CloneFactory {
     // ----------------------------------------------------------------------------
     receive() external payable {
     }
-    // function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
-    //     if (address(optinoToken) != address(0)) {
-    //         optinoToken.recoverTokens(token, tokens);
-    //     } else {
-    //         if (token == address(0)) {
-    //             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
-    //         } else {
-    //             ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
-    //         }
-    //     }
-    // }
+    function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
+        if (address(optinoToken) != address(0)) {
+            optinoToken.recoverTokens(token, tokens);
+        } else {
+            if (token == address(0)) {
+                payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
+            } else {
+                ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
+            }
+        }
+    }
     function getTokenInfo(address token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
         if (token == address(0)) {
             return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
@@ -1426,9 +1437,12 @@ contract OptinoFactory is Owned, CloneFactory {
         return Parameters.encode(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
     }
     function nullParameters() public pure returns (bytes32 _data) {
-        return Parameters.encode(address(0), uint8(0), uint8(0), uint8(0), uint8(0), uint8(0), uint8(0));
+        return Parameters.nullParameters();
+    }
+    function isNullParameters(bytes32 _data) public pure returns (bool) {
+        return Parameters.isNullParameters(_data);
     }
     function decodeParameters(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
-        return Parameters.decode(data);
+        return Parameters.decodeParameters(data);
     }
 }

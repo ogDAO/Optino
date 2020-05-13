@@ -231,7 +231,7 @@ var optinoFactoryContract = web3.eth.contract(optinoFactoryAbi);
 // console.log("DATA: optinoFactoryContract=" + JSON.stringify(optinoFactoryContract));
 var optinoFactoryTx = null;
 var optinoFactoryAddress = null;
-var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deployer, data: optinoFactoryBin, gas: 7500000, gasPrice: defaultGasPrice},
+var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deployer, data: optinoFactoryBin, gas: 6000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -367,11 +367,14 @@ for (spot = 0; spot < 400; spot += 50) {
     coverPayoff.toString() + " (" + coverPayoff.shift(-collateralDecimals).toString() + ")");
 }*/
 
-var parameters = optinoFactory.nullParameters.call();
-console.log("RESULT: parameters: " + parameters);
-var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
+var pairParameters = optinoFactory.nullParameters.call();
+console.log("RESULT: pairParameters: " + pairParameters);
+
+var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
+// var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mintCustom.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, 1, 17, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 console.log("RESULT: data: " + data);
+
 var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 5000000, gasPrice: defaultGasPrice });
 
 // console.log("RESULT: optinoFactory.mint(" + baseTokenAddress + ", " + quoteTokenAddress + ", " + priceFeedAdaptorAddress + ", " + callPut + ", " + expiry + ", " + strike + ", " + bound + ", " + tokens + ", " + _uiFeeAccount + ")");
@@ -417,7 +420,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   // var closeAmount = optino.balanceOf.call(seller1);
@@ -450,7 +453,7 @@ if (true) {
 }
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);
