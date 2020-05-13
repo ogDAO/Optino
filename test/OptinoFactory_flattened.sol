@@ -1281,7 +1281,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
-    function computeCollateral(bytes32 _seriesKey, uint tokens) internal view returns (address _collateralToken, uint _collateral) {
+    function computeRequiredCollateral(bytes32 _seriesKey, uint tokens) internal view returns (address _collateralToken, uint _collateral) {
         Series memory series = seriesData[_seriesKey];
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
@@ -1303,7 +1303,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
-        (_collateralToken, _collateral) = computeCollateral(_seriesKey, optinoData.tokens);
+        (_collateralToken, _collateral) = computeRequiredCollateral(_seriesKey, optinoData.tokens);
         // emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
 
         _ownerFee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
@@ -1433,16 +1433,4 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
             (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
         }
     }
-    // function encodeParameters(address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) public pure returns (bytes32 _data) {
-    //     return Parameters.encode(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
-    // }
-    // function nullParameters() public pure returns (bytes32 _data) {
-    //     return Parameters.nullParameters();
-    // }
-    // function isNullParameters(bytes32 _data) public pure returns (bool) {
-    //     return Parameters.isNullParameters(_data);
-    // }
-    // function decodeParameters(bytes32 data) public pure returns (address feed2, uint8 inverse1, uint8 inverse2, uint8 type1, uint8 type2, uint8 decimals1, uint8 decimals2) {
-    //     return Parameters.decodeParameters(data);
-    // }
 }
