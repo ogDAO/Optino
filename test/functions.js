@@ -586,12 +586,12 @@ function printOptinoFactoryContractDetails() {
             var pairData = tokenContract.getPairData.call();
             var pairParameters = tokenContract.getPairParameters.call();
             var seriesData = tokenContract.getSeriesData.call();
-            console.log("RESULT:       .isCover=" + tokenContract.isCover.call());
             console.log("RESULT:       .owner/new=" + getShortAddressName(tokenContract.owner.call()) + "/" + getShortAddressName(tokenContract.newOwner.call()));
             console.log("RESULT:       .details='" + tokenContract.symbol.call() + "' '" + tokenContract.name.call() + "' " + tokenDecimals + " dp");
             console.log("RESULT:       .totalSupply=" + tokenContract.totalSupply.call().shift(-tokenDecimals));
-            console.log("RESULT:       .collateralToken: " + getShortAddressName(collateralToken));
-            console.log("RESULT:       .collateralDecimals: " + collateralDecimals);
+            console.log("RESULT:       .seriesKey/pairKey/seriesNumber=" + tokenContract.seriesKey.call() + "/" + tokenContract.pairKey.call() + "/" + tokenContract.seriesNumber.call());
+            console.log("RESULT:       .isCover/pair=" + tokenContract.isCover.call() + "/" + getShortAddressName(tokenContract.pair.call()));
+            console.log("RESULT:       .collateralToken/decimals: " + getShortAddressName(collateralToken) + "/" + collateralDecimals);
             console.log("RESULT:       .pairData: " + JSON.stringify(pairData));
             console.log("RESULT:       .pairParameters: " + JSON.stringify(pairParameters));
             console.log("RESULT:       .seriesData: " + JSON.stringify(seriesData));
@@ -665,13 +665,6 @@ function printOptinoFactoryContractDetails() {
       console.log("RESULT: FeeUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     feeUpdatedEvents.stopWatching();
-
-    var feedUpdatedEvents = contract.FeedUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
-    i = 0;
-    feedUpdatedEvents.watch(function (error, result) {
-      console.log("RESULT: FeedUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
-    });
-    feedUpdatedEvents.stopWatching();
 
     var tokenDecimalsUpdatedEvents = contract.TokenDecimalsUpdated({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
