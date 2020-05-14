@@ -719,7 +719,7 @@ contract OptinoToken is BasicToken, Parameters {
     bytes32 public pairKey;
     uint public seriesNumber;
     bool public isCover;
-    OptinoToken public other;
+    OptinoToken public optinoPair;
     address public collateralToken;
     uint8 public collateralDecimals;
 
@@ -728,8 +728,8 @@ contract OptinoToken is BasicToken, Parameters {
     event Payoff(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPaid);
     event LogInfo(string note, address addr, uint number);
 
-    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _other, uint _seriesNumber, bool _isCover, uint _decimals) public {
-        (factory, seriesKey, other, seriesNumber, isCover) = (_factory, _seriesKey, _other, _seriesNumber, _isCover);
+    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, uint _seriesNumber, bool _isCover, uint _decimals) public {
+        (factory, seriesKey, optinoPair, seriesNumber, isCover) = (_factory, _seriesKey, _optinoPair, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
@@ -747,7 +747,7 @@ contract OptinoToken is BasicToken, Parameters {
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
-        require(msg.sender == tokenOwner || msg.sender == address(other) || msg.sender == address(this), "Not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(optinoPair) || msg.sender == address(this), "Not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
         balances[address(0)] = balances[address(0)].add(tokens);
         emit Transfer(tokenOwner, address(0), tokens);
@@ -816,19 +816,19 @@ contract OptinoToken is BasicToken, Parameters {
         closeFor(msg.sender, tokens);
     }
     function closeFor(address tokenOwner, uint tokens) public {
-        require(msg.sender == tokenOwner || msg.sender == address(other) || msg.sender == address(this), "Not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(optinoPair) || msg.sender == address(this), "Not authorised");
         if (!isCover) {
-            other.closeFor(tokenOwner, tokens);
+            optinoPair.closeFor(tokenOwner, tokens);
         } else {
-            require(tokens <= other.balanceOf(tokenOwner), "Insufficient optino tokens");
+            require(tokens <= optinoPair.balanceOf(tokenOwner), "Insufficient optino tokens");
             require(tokens <= this.balanceOf(tokenOwner), "Insufficient cover tokens");
-            require(other.burn(tokenOwner, tokens), "Burn optino tokens failure");
+            require(optinoPair.burn(tokenOwner, tokens), "Burn optino tokens failure");
             require(this.burn(tokenOwner, tokens), "Burn cover tokens failure");
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             uint collateralRefund = OptinoV1.computeCollateral(callPut, strike, bound, tokens, decimalsData);
-            bool isEmpty = other.totalSupply() + this.totalSupply() == 0;
+            bool isEmpty = optinoPair.totalSupply() + this.totalSupply() == 0;
             collateralRefund = transferOut(tokenOwner, collateralRefund, isEmpty);
-            emit Close(other, this, tokenOwner, tokens, collateralRefund);
+            emit Close(optinoPair, this, tokenOwner, tokens, collateralRefund);
         }
     }
     function settle() public {
@@ -836,9 +836,9 @@ contract OptinoToken is BasicToken, Parameters {
     }
     function settleFor(address tokenOwner) public {
         if (!isCover) {
-            other.settleFor(tokenOwner);
+            optinoPair.settleFor(tokenOwner);
         } else {
-            uint optinoTokens = other.balanceOf(tokenOwner);
+            uint optinoTokens = optinoPair.balanceOf(tokenOwner);
             uint coverTokens = this.balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0, "No optino or cover tokens");
             uint _spot = spot();
@@ -851,19 +851,19 @@ contract OptinoToken is BasicToken, Parameters {
             uint _collateral;
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             if (optinoTokens > 0) {
-                require(OptinoToken(payable(other)).burn(tokenOwner, optinoTokens), "Burn optino tokens failure");
+                require(OptinoToken(payable(optinoPair)).burn(tokenOwner, optinoTokens), "Burn optino tokens failure");
             }
-            bool isEmpty1 = other.totalSupply() + this.totalSupply() == 0;
+            bool isEmpty1 = optinoPair.totalSupply() + this.totalSupply() == 0;
             if (coverTokens > 0) {
                 require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens), "Burn cover tokens failure");
             }
-            bool isEmpty2 = other.totalSupply() + this.totalSupply() == 0;
+            bool isEmpty2 = optinoPair.totalSupply() + this.totalSupply() == 0;
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
                     _payoff = transferOut(tokenOwner, _payoff, isEmpty1);
                 }
-                emit Payoff(other, tokenOwner, optinoTokens, _payoff);
+                emit Payoff(optinoPair, tokenOwner, optinoTokens, _payoff);
             }
             if (coverTokens > 0) {
                 _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
