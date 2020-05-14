@@ -1192,44 +1192,74 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
         Series memory series = seriesData[seriesKey];
         Pair memory pair = pairData[series.pairKey];
-        Feed memory feed = feedData[pair.feed];
+        Feed memory feed1 = feedData[pair.feed];
 
         uint8 _feedDecimals1;
         uint8 _feedType1;
         if (isNullParameters(pair.parameters)) {
             require(feedData[pair.feed].feed == pair.feed, "Feed not registered");
-            _feedDecimals1 = feedData[pair.feed].decimals;
-            _feedType1 = feedData[pair.feed].feedType;
-            emit LogInfo("getSeriesCurrentSpot _feedDecimals1=feed.decimals", msg.sender, uint(_feedDecimals1));
-            emit LogInfo("getSeriesCurrentSpot Using feed.feedType1", msg.sender, uint(_feedType1));
+            _feedDecimals1 = feed1.decimals;
+            _feedType1 = feed1.feedType;
+            emit LogInfo("getSeriesCurrentSpot A _feedDecimals1=feed.decimals", msg.sender, uint(_feedDecimals1));
+            emit LogInfo("getSeriesCurrentSpot A feed.feedType1", msg.sender, uint(_feedType1));
         } else {
-            // if (getFeed2(pair.parameters) == address(0)) {
-                if (getDecimals1(pair.parameters) == uint8(0xff)) {
-                    _feedDecimals1 = feedData[pair.feed].decimals;
-                    emit LogInfo("getSeriesCurrentSpot Custom, _feedDecimals1=feed.decimals", msg.sender, uint(_feedDecimals1));
-                } else {
-                    _feedDecimals1 = getDecimals1(pair.parameters);
-                    emit LogInfo("getSeriesCurrentSpot Custom, _feedDecimals1=data.pairParameters.decimals1", msg.sender, uint(_feedDecimals1));
-                }
-                if (getType1(pair.parameters) == uint8(0xff)) {
-                    _feedType1 = feedData[pair.feed].feedType;
-                } else {
-                    _feedType1 = getType1(pair.parameters);
-                }
-            // }
+            _feedDecimals1 = getDecimals1(pair.parameters);
+            if (getDecimals1(pair.parameters) == uint8(0xff)) {
+                _feedDecimals1 = feed1.decimals;
+                emit LogInfo("getSeriesCurrentSpot B _feedDecimals1=feed1.decimals", msg.sender, uint(_feedDecimals1));
+            } else {
+                emit LogInfo("getSeriesCurrentSpot B _feedDecimals1=getDecimals1(pair.parameters)", msg.sender, uint(_feedDecimals1));
+            }
+            _feedType1 = getType1(pair.parameters);
+            if (_feedType1 == uint8(0xff)) {
+                _feedType1 = feed1.feedType;
+                emit LogInfo("getSeriesCurrentSpot C _feedType1=feed1.feedType", msg.sender, uint(_feedType1));
+            } else {
+                emit LogInfo("getSeriesCurrentSpot C _feedType1=getType1(pair.parameters)", msg.sender, uint(_feedType1));
+            }
         }
-
-        // TODO
-        // FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
         (uint _spot1, bool _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feed, FeedLib.FeedType(_feedType1));
+        emit LogInfo("getSeriesCurrentSpot D _spot1", msg.sender, _spot1);
+
+        address feed2 = getFeed2(pair.parameters);
+        uint8 _feedDecimals2;
+        uint8 _feedType2;
+        uint _spot2;
+        bool _hasData2;
+        if (feed2 != address(0)) {
+            _feedDecimals2 = getDecimals2(pair.parameters);
+            if (getDecimals2(pair.parameters) == uint8(0xff)) {
+                _feedDecimals2 = feedData[feed2].decimals;
+                emit LogInfo("getSeriesCurrentSpot E _feedDecimals2=feed2.decimals", msg.sender, uint(_feedDecimals2));
+            } else {
+                emit LogInfo("getSeriesCurrentSpot E _feedDecimals2=getDecimals2(pair.parameters)", msg.sender, uint(_feedDecimals2));
+            }
+            _feedType2 = getType2(pair.parameters);
+            if (_feedType2 == uint8(0xff)) {
+                _feedType2 = feedData[feed2].feedType;
+                emit LogInfo("getSeriesCurrentSpot F _feedType2=feed2.feedType", msg.sender, uint(_feedType2));
+            } else {
+                emit LogInfo("getSeriesCurrentSpot F _feedType2=getType2(pair.parameters)", msg.sender, uint(_feedType2));
+            }
+            (_spot2, _hasData2, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(feed2, FeedLib.FeedType(_feedType2));
+            emit LogInfo("getSeriesCurrentSpot G _spot2", msg.sender, _spot2);
+        }
         if (getInverse1(pair.parameters) == 1) {
+            _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
+            emit LogInfo("getSeriesCurrentSpot G _spot1 Inverted", msg.sender, _spot1);
+        }
+        if (feed2 != address(0)) {
+            if (getInverse2(pair.parameters) == 1) {
+                _spot2 = (10 ** (uint(_feedDecimals2) * 2)).div(_spot2);
+                emit LogInfo("getSeriesCurrentSpot H _spot2 Inverted", msg.sender, _spot2);
+            }
+        }
+        if (feed2 == address(0)) {
             _currentSpot = _hasData1 ? _spot1 : 0;
-            emit LogInfo("getSeriesCurrentSpot Inverse1 _currentSpot Not Inversed", msg.sender, _currentSpot);
-            emit LogInfo("getSeriesCurrentSpot Inverse1 _spot1", msg.sender, _spot1);
-            _currentSpot = _hasData1 ? (10 ** (uint(_feedDecimals1) * 2)).div(_spot1) : 0;
-            emit LogInfo("getSeriesCurrentSpot Inverse1 _currentSpot SHOULD BE", msg.sender, _currentSpot);
+            emit LogInfo("getSeriesCurrentSpot I _currentSpot 1 feed", msg.sender, _currentSpot);
         } else {
-            _currentSpot = _hasData1 ? _spot1 : 0;
+            _currentSpot = _hasData1 && _hasData2 ? _spot1.mul(_spot2).div(10 ** uint(_feedDecimals1)) : 0;
+            emit LogInfo("getSeriesCurrentSpot I _currentSpot 2 feeds", msg.sender, _currentSpot);
         }
     }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
@@ -1277,7 +1307,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         Series memory series = seriesData[seriesKey];
         require(series.timestamp > 0, "Invalid key");
         Pair memory pair = pairData[series.pairKey];
-        Feed memory feed = feedData[pair.feed];
+        // Feed memory feed = feedData[pair.feed];
         // TODO
         // uint8 feedDecimals = pair.customFeed ? pair.customFeedDecimals : feed.decimals;
         uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), 18/*feedDecimals*/);

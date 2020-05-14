@@ -378,8 +378,8 @@ console.log("RESULT: ");
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 4; // + 2 * 60*60;
-var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
-var cap = new BigNumber("300").shift(rateDecimals);
+var strike = new BigNumber("150.000000000000000000").shift(rateDecimals);
+var cap = new BigNumber("200").shift(rateDecimals);
 var floor = new BigNumber("0").shift(rateDecimals);
 var bound = callPut == "0" ? cap : floor;
 var tokens = new BigNumber("10").shift(OPTINODECIMALS);
@@ -404,12 +404,12 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 
 // var pairParameters = optinoFactory.nullParameters.call();
 var feed2 = priceFeed2Address;
-var inverse1 = 0;
-var inverse2 = 0;
+var inverse1 = 1;
+var inverse2 = 1;
 var type1 = 0xff;
 var type2 = 0xff;
-var decimals1 = 0xff;
-var decimals2 = 0xff;
+var decimals1 = 17;
+var decimals2 = 17;
 var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
 console.log("RESULT: pairParameters: " + pairParameters);
 var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeed1Address, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
@@ -497,21 +497,25 @@ if (false) {
 if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
-  var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);
-  // -----------------------------------------------------------------------------
+  // var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);
+  // var priceFeed1Value = new BigNumber("190.901").shift(rateDecimals); // ETH/USD 190.901
+  // var priceFeed2Value = new BigNumber("1.695").shift(rateDecimals); // MKR/ETH 1.695
+  // console.log("DATA: priceFeed1Value ETH/USD=" + priceFeed1Value.shift(-rateDecimals).toString());
+  // console.log("DATA: priceFeed2Value MKR/ETH=" + priceFeed2Value.shift(-rateDecimals).toString());
+// -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
   // waitUntil("optino.expiry()", optino.expiry.call(), 0);
   waitUntil("optino.expiry()", expiry, 0);
-  var settleGroup1_1Tx = priceFeed1.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
-  while (txpool.status.pending > 0) {
-  }
+  // var settleGroup1_1Tx = priceFeed1.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+  // while (txpool.status.pending > 0) {
+  // }
   var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
   // var settleGroup1_2Tx = optino.settleFor(seller1, {from: buyer1, gas: 2000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   printBalances();
-  failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - priceFeed1.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
-  printTxData("settleGroup1_1Tx", settleGroup1_1Tx);
+  // failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - priceFeed1.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
+  // printTxData("settleGroup1_1Tx", settleGroup1_1Tx);
   failIfTxStatusError(settleGroup1_2Tx, settleGroup1_Message + " - seller1 -> optino.settle()");
   printTxData("settleGroup1_2Tx", settleGroup1_2Tx);
   console.log("RESULT: ");
