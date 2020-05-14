@@ -776,10 +776,11 @@ contract OptinoToken is BasicToken, Parameters {
     function setSpot() public {
         factory.setSeriesSpot(seriesKey);
     }
-    function collateralInBaseOrQuote() public view returns (uint _baseOrQuote) {
-        (uint callPut, /*strike*/, /*bound*/, /*decimalsData*/) = factory.getCalcData(seriesKey);
-        _baseOrQuote = callPut;
-    }
+    // function collateralInBaseOrQuote() public view returns (uint _baseOrQuote) {
+    //     (uint callPut, /*strike*/, /*bound*/, /*decimalsData*/) = factory.getCalcData(seriesKey);
+    //     _baseOrQuote = callPut;
+    // }
+    // TODO Payoff for spot
     function payoffForSpot(uint _spot, uint tokens) public view returns (uint _payoff) {
         (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
         return OptinoV1.computePayoff(callPut, strike, bound, _spot, tokens, decimalsData);
@@ -1346,7 +1347,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
 
-    function computeRequiredCollateral(OptinoData memory optinoData) internal returns (address _collateralToken, uint _collateral) {
+    function computeRequiredCollateral(OptinoData memory optinoData) private returns (address _collateralToken, uint _collateral) {
         uint8 _feedDecimals;
         if (isNullParameters(optinoData.pairParameters)) {
             require(feedData[optinoData.feed].feed == optinoData.feed, "Feed not registered");
@@ -1377,7 +1378,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         _collateral = OptinoV1.computeCollateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, decimalsData);
         emit LogInfo("computeRequiredCollateral results", _collateralToken, _collateral);
     }
-    function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
+    function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) private returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
         (_collateralToken, _collateral) = computeRequiredCollateral(optinoData);
         // emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
