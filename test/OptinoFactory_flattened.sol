@@ -770,7 +770,7 @@ contract OptinoToken is BasicToken, Parameters {
     function spot() public view returns (uint _spot) {
         _spot = factory.getSeriesSpot(seriesKey);
     }
-    function currentSpot() public view returns (uint _currentSpot) {
+    function currentSpot() public /* view */ returns (uint _currentSpot) {
         return factory.getSeriesCurrentSpot(seriesKey);
     }
     function setSpot() public {
@@ -784,7 +784,7 @@ contract OptinoToken is BasicToken, Parameters {
         (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
         return OptinoV1.computePayoff(callPut, strike, bound, _spot, tokens, decimalsData);
     }
-    function currentPayoff(uint tokens) public view returns (uint _currentPayoff) {
+    function currentPayoff(uint tokens) public /* view*/ returns (uint _currentPayoff) {
         uint _spot = currentSpot();
         (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
         uint _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, tokens, decimalsData);
@@ -994,9 +994,9 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         uint tokens;
     }
 
+    uint8 public constant OPTINODECIMALS = 18;
     uint private constant FEEDECIMALS = 18;
     uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
-    uint8 public constant OPTINODECIMALS = 18;
     uint private constant ONEDAY = 24 * 60 * 60;
     uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
@@ -1008,7 +1008,7 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     address[] tokenDecimalsIndex;
     mapping(address => Feed) feedData;
     address[] feedIndex;
-    // [baseToken, quoteToken, feed, customFeed, customFeedType, customFeedDecimals] => Pair
+    // [baseToken, quoteToken, feed, parameters] => Pair
     mapping(bytes32 => Pair) pairData;
     bytes32[] pairIndex;
     // [_pairKey, callPut, expiry, strike, bound] => Series
@@ -1189,14 +1189,49 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
         emit SeriesAdded(_pairKey, _seriesKey, pair.index, _seriesIndex, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken);
     }
 
-    function getSeriesCurrentSpot(bytes32 seriesKey) public view returns (uint _currentSpot) {
+    function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
         Series memory series = seriesData[seriesKey];
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feed];
+
+        uint8 _feedDecimals;
+        uint8 _feedType;
+        if (isNullParameters(pair.parameters)) {
+            require(feedData[pair.feed].feed == pair.feed, "Feed not registered");
+            _feedDecimals = feedData[pair.feed].decimals;
+            _feedType = feedData[pair.feed].feedType;
+            emit LogInfo("getSeriesCurrentSpot Using feed.decimals", msg.sender, uint(_feedDecimals));
+            emit LogInfo("getSeriesCurrentSpot Using feed.feedType", msg.sender, uint(_feedType));
+        } else {
+            if (getFeed2(pair.parameters) == address(0)) {
+                if (getDecimals1(pair.parameters) == uint8(0xff)) {
+                    _feedDecimals = feedData[pair.feed].decimals;
+                    emit LogInfo("getSeriesCurrentSpot Custom, but using feed.decimals", msg.sender, uint(_feedDecimals));
+                } else {
+                    _feedDecimals = getDecimals1(pair.parameters);
+                    emit LogInfo("getSeriesCurrentSpot Custom, but using data.pairParameters.decimals1", msg.sender, uint(_feedDecimals));
+                }
+                if (getType1(pair.parameters) == uint8(0xff)) {
+                    _feedType = feedData[pair.feed].feedType;
+                } else {
+                    _feedType = getType1(pair.parameters);
+                }
+            }
+        }
+
         // TODO
         // FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feed, FeedLib.FeedType.MAKER/*feedType*/);
-        _currentSpot = _hasData ? _spot : 0;
+        (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feed, FeedLib.FeedType(_feedType));
+        if (getInverse1(pair.parameters) == 1) {
+            _currentSpot = _hasData ? _spot : 0;
+            emit LogInfo("getSeriesCurrentSpot Inverse1 _currentSpot Not Inversed", msg.sender, _currentSpot);
+            emit LogInfo("getSeriesCurrentSpot Inverse1 _spot", msg.sender, _spot);
+            emit LogInfo("getSeriesCurrentSpot Inverse1 (10 ** (uint(_feedDecimals) * 2))", msg.sender, (10 ** (uint(_feedDecimals) * 2)));
+            _currentSpot = _hasData ? (10 ** (uint(_feedDecimals) * 2)).div(_spot) : 0;
+            emit LogInfo("getSeriesCurrentSpot Inverse1 _currentSpot SHOULD BE", msg.sender, _currentSpot);
+        } else {
+            _currentSpot = _hasData ? _spot : 0;
+        }
     }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
         Series memory series = seriesData[seriesKey];
@@ -1281,36 +1316,6 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
-
-    // struct Feed {
-    //     uint timestamp;
-    //     uint index;
-    //     address feed;
-    //     string name;
-    //     uint8 feedType;
-    //     uint8 decimals;
-    //     uint8 locked;
-    // }
-    // struct Pair {
-    //     uint timestamp;
-    //     uint index;
-    //     address baseToken;
-    //     address quoteToken;
-    //     address feed;
-    //     bytes32 parameters;
-    // }
-    // struct OptinoData {
-    //     address baseToken;
-    //     address quoteToken;
-    //     address feed;
-    //     bytes32 pairParameters;
-    //     uint callPut;
-    //     uint expiry;
-    //     uint strike;
-    //     uint bound;
-    //     uint tokens;
-    // }
-
 
     function computeRequiredCollateral(OptinoData memory optinoData) internal returns (address _collateralToken, uint _collateral) {
         uint8 _feedDecimals;
@@ -1441,38 +1446,38 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     // ----------------------------------------------------------------------------
     receive() external payable {
     }
-    function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
-        if (address(optinoToken) != address(0)) {
-            optinoToken.recoverTokens(token, tokens);
-        } else {
-            if (token == address(0)) {
-                payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
-            } else {
-                ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
-            }
-        }
-    }
-    function getTokenInfo(address token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
-        if (token == address(0)) {
-            return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
-        } else {
-            try ERC20(token).symbol() returns (string memory s) {
-                _symbol = s;
-            } catch {
-                _symbol = "(not implemented)";
-            }
-            try ERC20(token).name() returns (string memory n) {
-                _name = n;
-            } catch {
-                _name = "(not implemented)";
-            }
-            try ERC20(token).decimals() returns (uint8 d) {
-                _decimals = d;
-            } catch {
-                require(tokenDecimalsData[address(token)].token == token, "Token not registered");
-                _decimals = tokenDecimalsData[token].decimals;
-            }
-            (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
-        }
-    }
+    // function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
+    //     if (address(optinoToken) != address(0)) {
+    //         optinoToken.recoverTokens(token, tokens);
+    //     } else {
+    //         if (token == address(0)) {
+    //             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
+    //         } else {
+    //             ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
+    //         }
+    //     }
+    // }
+    // function getTokenInfo(address token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
+    //     if (token == address(0)) {
+    //         return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
+    //     } else {
+    //         try ERC20(token).symbol() returns (string memory s) {
+    //             _symbol = s;
+    //         } catch {
+    //             _symbol = "(not implemented)";
+    //         }
+    //         try ERC20(token).name() returns (string memory n) {
+    //             _name = n;
+    //         } catch {
+    //             _name = "(not implemented)";
+    //         }
+    //         try ERC20(token).decimals() returns (uint8 d) {
+    //             _decimals = d;
+    //         } catch {
+    //             require(tokenDecimalsData[address(token)].token == token, "Token not registered");
+    //             _decimals = tokenDecimalsData[token].decimals;
+    //         }
+    //         (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
+    //     }
+    // }
 }

@@ -596,12 +596,12 @@ function printOptinoFactoryContractDetails() {
             console.log("RESULT:       .pairParameters: " + JSON.stringify(pairParameters));
             console.log("RESULT:       .seriesData: " + JSON.stringify(seriesData));
             // console.log("RESULT: - optinoToken:");
-            // console.log("RESULT:     .closedOrSettled=" + optinoTokenContract.balanceOf.call(NULLACCOUNT).shift(-optinoTokenDecimals));
+            console.log("RESULT:       .closedOrSettled=" + tokenContract.balanceOf.call(NULLACCOUNT).shift(-collateralDecimals));
             // // console.log("RESULT:     .factory/baseToken/quoteToken/feed=" + getShortAddressName(optinoTokenContract.factory.call()) + "/" + getShortAddressName(optinoTokenContract.baseToken.call()) + "/" + getShortAddressName(optinoTokenContract.quoteToken.call()) + "/" + getShortAddressName(optinoTokenContract.feed.call()));
             // // console.log("RESULT:     .callPut/expiry/strike/bound=" + optinoTokenContract.callPut.call() + "/" + optinoTokenContract.expiry.call() + "/" + optinoTokenContract.strike.call().shift(-rateDecimals) + "/" + optinoTokenContract.bound.call().shift(-rateDecimals));
             // // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + optinoTokenContract.description.call() + "/" + getShortAddressName(optinoTokenContract.pair.call()) + "/" + optinoTokenContract.seriesNumber.call() + "/" + optinoTokenContract.isCover.call());
-            // console.log("RESULT:     .currentSpot/currentPayoff(1)=" + optinoTokenContract.currentSpot.call().shift(-rateDecimals) + "/" + optinoTokenContract.currentPayoff.call(oneToken).shift(-collateralDecimals));
-            // console.log("RESULT:     .spot/payoff(1)=" + optinoTokenContract.spot.call().shift(-rateDecimals) + "/" + optinoTokenContract.payoff.call(oneToken).shift(-collateralDecimals));
+            console.log("RESULT:       .currentSpot/currentPayoff(1)=" + tokenContract.currentSpot.call().shift(-rateDecimals) + "/" + tokenContract.currentPayoff.call(oneToken).shift(-collateralDecimals));
+            console.log("RESULT:       .spot/payoff(1)=" + tokenContract.spot.call().shift(-rateDecimals) + "/" + tokenContract.payoff.call(oneToken).shift(-collateralDecimals));
             var optinoTransferEvents = tokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
             var j = 0;
             optinoTransferEvents.watch(function (error, result) {

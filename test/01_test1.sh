@@ -369,7 +369,7 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 
 // var pairParameters = optinoFactory.nullParameters.call();
 var feed2 = NULLACCOUNT;
-var inverse1 = 0;
+var inverse1 = 1;
 var inverse2 = 0;
 var type1 = 0xff;
 var type2 = 0xff;
