@@ -987,6 +987,12 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         uint tokens;
     }
 
+    enum FeedTypeFields {
+        Type,
+        Decimals,
+        Locked
+    }
+
     uint8 private constant OPTINODECIMALS = 18;
     uint private constant FEEDECIMALS = 18;
     uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
@@ -995,10 +1001,6 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
 
     uint private constant TOKENDECIMALS_DECIMALS = 0;
     uint private constant TOKENDECIMALS_LOCKED = 1;
-
-    uint private constant FEEDTYPE_TYPE = 0;
-    uint private constant FEEDTYPE_DECIMALS = 1;
-    uint private constant FEEDTYPE_LOCKED = 2;
 
     uint private constant FEEDPARAMETERS_TYPE0 = 0;
     uint private constant FEEDPARAMETERS_TYPE1 = 1;
@@ -1089,7 +1091,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
 
     function updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals) public onlyOwner {
         Feed storage _feed = feedData[feed];
-        require(_feed.data[FEEDTYPE_LOCKED] == 0, "Locked");
+        require(_feed.data[uint(FeedTypeFields.Locked)] == 0, "Locked");
         (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, uint _timestamp) = FeedLib.getSpot(feed, FeedLib.FeedType(feedType));
         require(_spot > 0, "Spot must >= 0");
         require(_hasData, "Feed has no data");
@@ -1107,9 +1109,9 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     }
     function lockFeed(address feed) public onlyOwner {
         Feed storage _feed = feedData[feed];
-        require(_feed.data[FEEDTYPE_LOCKED] == 0, "Locked");
-        _feed.data[FEEDTYPE_LOCKED] = 1;
-        emit FeedUpdated(feed, _feed.name, _feed.data[FEEDTYPE_TYPE], _feed.data[FEEDTYPE_DECIMALS], 1);
+        require(_feed.data[uint(FeedTypeFields.Locked)] == 0, "Locked");
+        _feed.data[uint(FeedTypeFields.Locked)] = 1;
+        emit FeedUpdated(feed, _feed.name, _feed.data[uint(FeedTypeFields.Type)], _feed.data[uint(FeedTypeFields.Decimals)], 1);
     }
     function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8[3] memory _data) {
         require(i < feedIndex.length, "Invalid index");
@@ -1205,10 +1207,10 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         uint8 _feedDecimals0 = pair.feedParameters[FEEDPARAMETERS_DECIMALS0];
         uint8 _feedType0 = pair.feedParameters[FEEDPARAMETERS_TYPE0];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            _feedDecimals0 = feed0.data[FEEDTYPE_DECIMALS];
+            _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
         }
         if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
-            _feedType0 = feed0.data[FEEDTYPE_TYPE];
+            _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
         }
         emit LogInfo("getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
         emit LogInfo("getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
@@ -1228,10 +1230,10 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
             _feedDecimals1 = pair.feedParameters[FEEDPARAMETERS_DECIMALS1];
             _feedType1 = pair.feedParameters[FEEDPARAMETERS_TYPE1];
             if (_feedDecimals1 == FEEDPARAMETERS_DEFAULT) {
-                _feedDecimals1 = feed1.data[FEEDTYPE_DECIMALS];
+                _feedDecimals1 = feed1.data[uint(FeedTypeFields.Decimals)];
             }
             if (_feedType1 == FEEDPARAMETERS_DEFAULT) {
-                _feedType1 = feed1.data[FEEDTYPE_TYPE];
+                _feedType1 = feed1.data[uint(FeedTypeFields.Type)];
             }
             emit LogInfo("getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
             emit LogInfo("getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
@@ -1299,7 +1301,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         Pair memory pair = pairData[series.pairKey];
         uint8 _feedDecimals0 = pair.feedParameters[FEEDPARAMETERS_DECIMALS0];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            _feedDecimals0 = feedData[pair.feeds[0]].data[FEEDTYPE_DECIMALS];
+            _feedDecimals0 = feedData[pair.feeds[0]].data[uint(FeedTypeFields.Decimals)];
         }
         _decimalsData = [OPTINODECIMALS, getTokenDecimals(pair.pair[0]), getTokenDecimals(pair.pair[1]), _feedDecimals0];
         return (series.callPut, series.strike, series.bound, _decimalsData);
@@ -1339,7 +1341,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     function computeRequiredCollateral(OptinoData memory optinoData) private returns (address _collateralToken, uint _collateral) {
         uint8 _feedDecimals0 = optinoData.feedParameters[FEEDPARAMETERS_DECIMALS0];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            _feedDecimals0 = feedData[optinoData.feeds[0]].data[FEEDTYPE_DECIMALS];
+            _feedDecimals0 = feedData[optinoData.feeds[0]].data[uint(FeedTypeFields.Decimals)];
         }
         emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
 
@@ -1413,6 +1415,8 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     function _mint(OptinoData memory optinoData, address uiFeeAccount) internal returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         require(optinoData.expiry > block.timestamp, "expiry must >= now");
         require(optinoData.tokens > 0, "tokens must be > 0");
+        // TODO check base and quote not ETH
+        // TODO Check pairParameters
         bytes32 _pairKey = getOrAddPair(optinoData);
         Pair memory pair = pairData[_pairKey];
         bytes32 _seriesKey = makeSeriesKey(_pairKey, optinoData);
