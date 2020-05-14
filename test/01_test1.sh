@@ -402,17 +402,31 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 //     coverPayoff.toString() + " (" + coverPayoff.shift(-collateralDecimals).toString() + ")");
 // }
 
+/// @param pair [baseToken, quoteToken] ERC20 contract addresses
+/// @param feeds [feed0, feed1] Price feed adaptor contract address
+/// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
+/// @param callPut 0 for call, 1 for put
+/// @param expiry Expiry date, unixtime
+/// @param strike Strike rate
+/// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
+/// @param tokens Number of Optino and Cover tokens to mint
+/// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
+/// @return _optinoToken Existing or newly created Optino token contract address
+/// @return _coverToken Existing or newly created Cover token contract address
+// function mint(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken);
+
+
 // var pairParameters = optinoFactory.nullParameters.call();
 var feed2 = NULLACCOUNT; // priceFeed2Address;
-var inverse1 = 0;
-var inverse2 = 0;
 var type1 = 0xff;
 var type2 = 0xff;
 var decimals1 = 0xff;
 var decimals2 = 0xff;
-var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
-console.log("RESULT: pairParameters: " + pairParameters);
-var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeed1Address, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
+var inverse1 = 1;
+var inverse2 = 1;
+// var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
+// console.log("RESULT: pairParameters: " + pairParameters);
+var data = optinoFactory.mint.getData([NULLACCOUNT, quoteTokenAddress], [priceFeed1Address, priceFeed2Address], [type1, type2, decimals1, decimals2, inverse1, inverse2], callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mintCustom.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, 1, 17, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 console.log("RESULT: data: " + data);
