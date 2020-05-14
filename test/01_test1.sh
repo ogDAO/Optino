@@ -403,13 +403,13 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 // }
 
 // var pairParameters = optinoFactory.nullParameters.call();
-var feed2 = priceFeed2Address;
-var inverse1 = 1;
-var inverse2 = 1;
+var feed2 = NULLACCOUNT; // priceFeed2Address;
+var inverse1 = 0;
+var inverse2 = 0;
 var type1 = 0xff;
 var type2 = 0xff;
-var decimals1 = 17;
-var decimals2 = 17;
+var decimals1 = 0xff;
+var decimals2 = 0xff;
 var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
 console.log("RESULT: pairParameters: " + pairParameters);
 var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeed1Address, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
