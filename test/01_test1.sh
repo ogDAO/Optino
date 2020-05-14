@@ -116,8 +116,11 @@ var baseName = "Base Token (" + baseDecimals + " dp)";
 var quoteName = "Quote Token (" + quoteDecimals + " dp)";
 var tokenOwner = deployer;
 var initialSupply = new BigNumber("0").shift(18);
-// var priceFeedInitialValue = new BigNumber("$PRICEFEEDINITIALVALUE").shift(18);
-// console.log("DATA: priceFeedInitialValue=" + JSON.stringify(priceFeedInitialValue));
+
+var priceFeed1Value = new BigNumber("190.901").shift(rateDecimals); // ETH/USD 190.901
+var priceFeed2Value = new BigNumber("1.695").shift(rateDecimals); // MKR/ETH 1.695
+console.log("DATA: priceFeed1Value ETH/USD=" + priceFeed1Value.shift(-rateDecimals).toString());
+console.log("DATA: priceFeed2Value MKR/ETH=" + priceFeed2Value.shift(-rateDecimals).toString());
 console.log("DATA: deployer=" + deployer);
 console.log("DATA: defaultGasPrice=" + defaultGasPrice);
 // -----------------------------------------------------------------------------
@@ -184,22 +187,42 @@ var optinoToken = optinoTokenContract.new({from: deployer, data: optinoTokenBin,
     }
   }
 );
-var priceFeedContract = web3.eth.contract(priceFeedAbi);
+var priceFeed1Contract = web3.eth.contract(priceFeedAbi);
 // console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
-var priceFeedTx = null;
-var priceFeedAddress = null;
-var priceFeed = priceFeedContract.new(/*priceFeedInitialValue, true,*/ {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
+var priceFeed1Tx = null;
+var priceFeed1Address = null;
+var priceFeed1 = priceFeed1Contract.new(/*priceFeedInitialValue, true,*/ {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
-        priceFeedTx = contract.transactionHash;
+        priceFeed1Tx = contract.transactionHash;
       } else {
-        priceFeedAddress = contract.address;
-        addAccount(priceFeedAddress, "PriceFeed");
-        addPriceFeedContractAddressAndAbi(priceFeedAddress, priceFeedAbi);
-        console.log("DATA: var priceFeedAddress=\"" + priceFeedAddress + "\";");
-        console.log("DATA: var priceFeedAbi=" + JSON.stringify(priceFeedAbi) + ";");
-        console.log("DATA: var priceFeed=eth.contract(priceFeedAbi).at(priceFeedAddress);");
+        priceFeed1Address = contract.address;
+        addAccount(priceFeed1Address, "PriceFeed 1");
+        addPriceFeedContractAddressAndAbi(priceFeed1Address, priceFeedAbi);
+        console.log("DATA: var priceFeed1Address=\"" + priceFeed1Address + "\";");
+        console.log("DATA: var priceFeed1Abi=" + JSON.stringify(priceFeedAbi) + ";");
+        console.log("DATA: var priceFeed1=eth.contract(priceFeed1Abi).at(priceFeed1Address);");
+      }
+    }
+  }
+);
+var priceFeed2Contract = web3.eth.contract(priceFeedAbi);
+// console.log("DATA: priceFeedContract=" + JSON.stringify(priceFeedContract));
+var priceFeed2Tx = null;
+var priceFeed2Address = null;
+var priceFeed2 = priceFeed2Contract.new(/*priceFeedInitialValue, true,*/ {from: deployer, data: priceFeedBin, gas: 4000000, gasPrice: defaultGasPrice},
+  function(e, contract) {
+    if (!e) {
+      if (!contract.address) {
+        priceFeed2Tx = contract.transactionHash;
+      } else {
+        priceFeed2Address = contract.address;
+        addAccount(priceFeed2Address, "PriceFeed 2");
+        addPriceFeedContractAddressAndAbi(priceFeed2Address, priceFeedAbi);
+        console.log("DATA: var priceFeed2Address=\"" + priceFeed2Address + "\";");
+        console.log("DATA: var priceFeed2Abi=" + JSON.stringify(priceFeedAbi) + ";");
+        console.log("DATA: var priceFeed2=eth.contract(priceFeed2Abi).at(priceFeed2Address);");
       }
     }
   }
@@ -210,15 +233,15 @@ var priceFeedAdaptorContract = web3.eth.contract(priceFeedAdaptorAbi);
 console.log("DATA: priceFeedAdaptorContract=" + JSON.stringify(priceFeedAdaptorContract));
 var priceFeedAdaptorTx = null;
 var priceFeedAdaptorAddress = null;
-console.log("DATA: priceFeedAddress=" + priceFeedAddress);
-var priceFeedAdaptor = priceFeedAdaptorContract.new(priceFeedAddress, {from: deployer, data: priceFeedAdaptorBin, gas: 4000000, gasPrice: defaultGasPrice},
+console.log("DATA: priceFeed1Address=" + priceFeed1Address);
+var priceFeedAdaptor = priceFeedAdaptorContract.new(priceFeed1Address, {from: deployer, data: priceFeedAdaptorBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
         priceFeedAdaptorTx = contract.transactionHash;
       } else {
         priceFeedAdaptorAddress = contract.address;
-        addAccount(priceFeedAdaptorAddress, "PriceFeedAdaptor");
+        addAccount(priceFeedAdaptorAddress, "PriceFeedAdaptor on PriceFeed1");
         addPriceFeedAdaptorContractAddressAndAbi(priceFeedAdaptorAddress, priceFeedAdaptorAbi);
         console.log("DATA: var priceFeedAdaptorAddress=\"" + priceFeedAdaptorAddress + "\";");
         console.log("DATA: var priceFeedAdaptorAbi=" + JSON.stringify(priceFeedAdaptorAbi) + ";");
@@ -258,8 +281,10 @@ failIfTxStatusError(quoteTokenTx, deployGroup1_Message + " - QuoteToken");
 printTxData("quoteTokenTx", quoteTokenTx);
 failIfTxStatusError(optinoTokenTx, deployGroup1_Message + " - OptinoToken");
 printTxData("optinoTokenTx", optinoTokenTx);
-failIfTxStatusError(priceFeedTx, deployGroup1_Message + " - PriceFeed");
-printTxData("priceFeedTx", priceFeedTx);
+failIfTxStatusError(priceFeed1Tx, deployGroup1_Message + " - PriceFeed 1");
+printTxData("priceFeed1Tx", priceFeed1Tx);
+failIfTxStatusError(priceFeed2Tx, deployGroup1_Message + " - PriceFeed 2");
+printTxData("priceFeed2Tx", priceFeed2Tx);
 failIfTxStatusError(priceFeedAdaptorTx, deployGroup1_Message + " - PriceFeedAdaptor");
 printTxData("priceFeedAdaptorTx", priceFeedAdaptorTx);
 failIfTxStatusError(optinoFactoryTx, deployGroup1_Message + " - OptinoFactory");
@@ -296,12 +321,17 @@ var deployGroup2_6Tx = quoteToken.mint(seller2, quoteTokens.toString(), {from: d
 var deployGroup2_7Tx = quoteToken.mint(buyer1, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_8Tx = quoteToken.mint(buyer2, quoteTokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 
-var deployGroup2_9Tx = optinoFactory.updateFeed(priceFeedAddress, "Maker ETH/USD", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+// ETH/USD 190.901
+var deployGroup2_9Tx = priceFeed1.setValue(priceFeed1Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+// MKR/ETH 1.695
+var deployGroup2_10Tx = priceFeed2.setValue(priceFeed2Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = optinoFactory.updateFeed(priceFeed1Address, "Maker ETH/USD", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = optinoFactory.updateFeed(priceFeed2Address, "Maker MKR/ETH", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 // var deployGroup2_9Tx = optinoFactory.addConfig(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
-var deployGroup2_10Tx = optinoFactory.updateTokenDecimals(quoteTokenAddress, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_13Tx = optinoFactory.updateTokenDecimals(quoteTokenAddress, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_14Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_15Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
 }
 printBalances();
@@ -321,15 +351,20 @@ failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - quoteToken.mint
 printTxData("deployGroup2_7Tx", deployGroup2_7Tx);
 failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - quoteToken.mint(buyer2, " + quoteTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_8Tx", deployGroup2_8Tx);
-failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.updateFeed(priceFeed, 'Maker ETH/USD', MAKER, 18)");
-// failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - optinoFactory.addConfig(BASE, QUOTE, priceFeed, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee, 'WETH/DAI MakerDAO PriceFeed')");
+failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - priceFeed1.setValue(" + priceFeed1Value.shift(-rateDecimals).toString() + ", true)");
 printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
-failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - optinoFactory.updateTokenDecimals(QUOTE, 18)");
+failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - priceFeed2.setValue(" + priceFeed2Value.shift(-rateDecimals).toString() + ", true)");
 printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
-failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - seller1 -> baseToken.approve(optinoFactory, " + baseTokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - optinoFactory.updateFeed(priceFeed1, 'Maker ETH/USD', MAKER, 18)");
 printTxData("deployGroup2_11Tx", deployGroup2_11Tx);
-failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - seller1 -> quoteToken.approve(optinoFactory, " + quoteTokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - optinoFactory.updateFeed(priceFeed2, 'Maker MKR/ETH', MAKER, 18)");
 printTxData("deployGroup2_12Tx", deployGroup2_12Tx);
+failIfTxStatusError(deployGroup2_13Tx, deployGroup2_Message + " - optinoFactory.updateTokenDecimals(QUOTE, 18)");
+printTxData("deployGroup2_13Tx", deployGroup2_13Tx);
+failIfTxStatusError(deployGroup2_14Tx, deployGroup2_Message + " - seller1 -> baseToken.approve(optinoFactory, " + baseTokens.shift(-baseDecimals).toString() + ")");
+printTxData("deployGroup2_14Tx", deployGroup2_14Tx);
+failIfTxStatusError(deployGroup2_15Tx, deployGroup2_Message + " - seller1 -> quoteToken.approve(optinoFactory, " + quoteTokens.shift(-baseDecimals).toString() + ")");
+printTxData("deployGroup2_15Tx", deployGroup2_15Tx);
 console.log("RESULT: ");
 printTokenContractDetails(0);
 console.log("RESULT: ");
@@ -341,8 +376,8 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "1"; // 0 Call, 1 Put
-var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
+var callPut = "0"; // 0 Call, 1 Put
+var expiry = parseInt(new Date()/1000) + 4; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
 var cap = new BigNumber("300").shift(rateDecimals);
 var floor = new BigNumber("0").shift(rateDecimals);
@@ -368,8 +403,8 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 // }
 
 // var pairParameters = optinoFactory.nullParameters.call();
-var feed2 = NULLACCOUNT;
-var inverse1 = 1;
+var feed2 = priceFeed2Address;
+var inverse1 = 0;
 var inverse2 = 0;
 var type1 = 0xff;
 var type2 = 0xff;
@@ -377,7 +412,7 @@ var decimals1 = 0xff;
 var decimals2 = 0xff;
 var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
 console.log("RESULT: pairParameters: " + pairParameters);
-var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
+var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeed1Address, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mintCustom.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, 1, 17, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 console.log("RESULT: data: " + data);
@@ -407,7 +442,7 @@ var cover = web3.eth.contract(optinoTokenAbi).at(optinos[1]);
 
 printBalances();
 // failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
-failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(BASE, QUOTE, priceFeed, " + tokens.shift(-baseDecimals) + ", ...)");
+failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(BASE, QUOTE, priceFeed1, " + tokens.shift(-baseDecimals) + ", ...)");
 // failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
@@ -467,7 +502,7 @@ if (true) {
   console.log("RESULT: ---------- " + settleGroup1_Message + " ----------");
   // waitUntil("optino.expiry()", optino.expiry.call(), 0);
   waitUntil("optino.expiry()", expiry, 0);
-  var settleGroup1_1Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+  var settleGroup1_1Tx = priceFeed1.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   var settleGroup1_2Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
@@ -475,7 +510,7 @@ if (true) {
   while (txpool.status.pending > 0) {
   }
   printBalances();
-  failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - priceFeed.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
+  failIfTxStatusError(settleGroup1_1Tx, settleGroup1_Message + " - priceFeed1.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
   printTxData("settleGroup1_1Tx", settleGroup1_1Tx);
   failIfTxStatusError(settleGroup1_2Tx, settleGroup1_Message + " - seller1 -> optino.settle()");
   printTxData("settleGroup1_2Tx", settleGroup1_2Tx);
@@ -511,7 +546,7 @@ if (false) {
 
   var transferThenSettleGroup1_1Tx = optino.transfer(buyer1, transferAmount.toString(), {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
   var transferThenSettleGroup1_2Tx = cover.transfer(buyer2, transferAmount.toString(), {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
-  var transferThenSettleGroup1_3Tx = priceFeed.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
+  var transferThenSettleGroup1_3Tx = priceFeed1.setValue(rate, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
   while (txpool.status.pending > 0) {
   }
   var transferThenSettleGroup1_4Tx = optino.settle({from: seller1, gas: 2000000, gasPrice: defaultGasPrice});
@@ -522,7 +557,7 @@ if (false) {
   printTxData("transferThenSettleGroup1_1Tx", transferThenSettleGroup1_1Tx);
   failIfTxStatusError(transferThenSettleGroup1_2Tx, transferThenSettleGroup1_Message + " - seller1 -> cover.transfer(buyer2, " + transferAmount.shift(-OPTINODECIMALS).toString() + ")");
   printTxData("transferThenSettleGroup1_2Tx", transferThenSettleGroup1_2Tx);
-  failIfTxStatusError(transferThenSettleGroup1_3Tx, transferThenSettleGroup1_Message + " - deployer -> priceFeed.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
+  failIfTxStatusError(transferThenSettleGroup1_3Tx, transferThenSettleGroup1_Message + " - deployer -> priceFeed1.setValue(" + rate.shift(-rateDecimals).toString() + ", true)");
   printTxData("transferThenSettleGroup1_3Tx", transferThenSettleGroup1_3Tx);
   failIfTxStatusError(transferThenSettleGroup1_4Tx, transferThenSettleGroup1_Message + " - seller1 -> optino.settle()");
   printTxData("transferThenSettleGroup1_4Tx", transferThenSettleGroup1_4Tx);
