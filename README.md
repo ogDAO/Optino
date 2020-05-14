@@ -3,7 +3,11 @@
 
 Status: Work in progress
 
+See [contracts/OptinoFactory.sol](contracts/OptinoFactory.sol).
+
 You can test it out using MetaMask connected to the Ropsten network at [https://bokkypoobah.github.io/Optino](https://bokkypoobah.github.io/Optino/#/vanillaOptinoExplorer/all).
+
+
 
 // This factory deploys Ethereum smart contracts for 100% collateralised
 // vanilla call and put, capped call, and floored put options on ERC20 and/or
