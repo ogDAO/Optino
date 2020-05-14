@@ -341,7 +341,7 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "0"; // 0 Call, 1 Put
+var callPut = "1"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 5; // + 2 * 60*60;
 var strike = new BigNumber("200.000000000000000000").shift(rateDecimals);
 var cap = new BigNumber("300").shift(rateDecimals);
@@ -367,7 +367,15 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 //     coverPayoff.toString() + " (" + coverPayoff.shift(-collateralDecimals).toString() + ")");
 // }
 
-var pairParameters = optinoFactory.nullParameters.call();
+// var pairParameters = optinoFactory.nullParameters.call();
+var feed2 = NULLACCOUNT;
+var inverse1 = 0;
+var inverse2 = 0;
+var type1 = 0xff;
+var type2 = 0xff;
+var decimals1 = 0xff;
+var decimals2 = 0xff;
+var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
 console.log("RESULT: pairParameters: " + pairParameters);
 var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, pairParameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
@@ -451,7 +459,7 @@ if (false) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);

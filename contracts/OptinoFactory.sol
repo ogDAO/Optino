@@ -717,9 +717,9 @@ contract OptinoToken is BasicToken, Parameters {
     OptinoFactory public factory;
     bytes32 public seriesKey;
     bytes32 public pairKey;
-    OptinoToken public pair;
     uint public seriesNumber;
     bool public isCover;
+    OptinoToken public other;
     address public collateralToken;
     uint8 public collateralDecimals;
 
@@ -728,8 +728,8 @@ contract OptinoToken is BasicToken, Parameters {
     event Payoff(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPaid);
     event LogInfo(string note, address addr, uint number);
 
-    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _pair, uint _seriesNumber, bool _isCover, uint _decimals) public {
-        (factory, seriesKey, pair, seriesNumber, isCover) = (_factory, _seriesKey, _pair, _seriesNumber, _isCover);
+    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _other, uint _seriesNumber, bool _isCover, uint _decimals) public {
+        (factory, seriesKey, other, seriesNumber, isCover) = (_factory, _seriesKey, _other, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint _callPut, /*_expiry*/, /*_strike*/, /*_bound*/, /*_optinoToken*/, /*_coverToken*/, /*_spot*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
@@ -747,7 +747,7 @@ contract OptinoToken is BasicToken, Parameters {
 
     function burn(address tokenOwner, uint tokens) external returns (bool success) {
         // emit LogInfo("burn msg.sender", msg.sender, tokens);
-        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "Not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(other) || msg.sender == address(this), "Not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
         balances[address(0)] = balances[address(0)].add(tokens);
         emit Transfer(tokenOwner, address(0), tokens);
@@ -816,19 +816,19 @@ contract OptinoToken is BasicToken, Parameters {
         closeFor(msg.sender, tokens);
     }
     function closeFor(address tokenOwner, uint tokens) public {
-        require(msg.sender == tokenOwner || msg.sender == address(pair) || msg.sender == address(this), "Not authorised");
+        require(msg.sender == tokenOwner || msg.sender == address(other) || msg.sender == address(this), "Not authorised");
         if (!isCover) {
-            pair.closeFor(tokenOwner, tokens);
+            other.closeFor(tokenOwner, tokens);
         } else {
-            require(tokens <= pair.balanceOf(tokenOwner), "Insufficient optino tokens");
+            require(tokens <= other.balanceOf(tokenOwner), "Insufficient optino tokens");
             require(tokens <= this.balanceOf(tokenOwner), "Insufficient cover tokens");
-            require(pair.burn(tokenOwner, tokens), "Burn optino tokens failure");
+            require(other.burn(tokenOwner, tokens), "Burn optino tokens failure");
             require(this.burn(tokenOwner, tokens), "Burn cover tokens failure");
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             uint collateralRefund = OptinoV1.computeCollateral(callPut, strike, bound, tokens, decimalsData);
-            bool isEmpty = pair.totalSupply() + this.totalSupply() == 0;
+            bool isEmpty = other.totalSupply() + this.totalSupply() == 0;
             collateralRefund = transferOut(tokenOwner, collateralRefund, isEmpty);
-            emit Close(pair, this, tokenOwner, tokens, collateralRefund);
+            emit Close(other, this, tokenOwner, tokens, collateralRefund);
         }
     }
     function settle() public {
@@ -836,9 +836,9 @@ contract OptinoToken is BasicToken, Parameters {
     }
     function settleFor(address tokenOwner) public {
         if (!isCover) {
-            pair.settleFor(tokenOwner);
+            other.settleFor(tokenOwner);
         } else {
-            uint optinoTokens = pair.balanceOf(tokenOwner);
+            uint optinoTokens = other.balanceOf(tokenOwner);
             uint coverTokens = this.balanceOf(tokenOwner);
             require (optinoTokens > 0 || coverTokens > 0, "No optino or cover tokens");
             uint _spot = spot();
@@ -851,19 +851,19 @@ contract OptinoToken is BasicToken, Parameters {
             uint _collateral;
             (uint callPut, uint strike, uint bound, uint decimalsData) = factory.getCalcData(seriesKey);
             if (optinoTokens > 0) {
-                require(OptinoToken(payable(pair)).burn(tokenOwner, optinoTokens), "Burn optino tokens failure");
+                require(OptinoToken(payable(other)).burn(tokenOwner, optinoTokens), "Burn optino tokens failure");
             }
-            bool isEmpty1 = pair.totalSupply() + this.totalSupply() == 0;
+            bool isEmpty1 = other.totalSupply() + this.totalSupply() == 0;
             if (coverTokens > 0) {
                 require(OptinoToken(payable(this)).burn(tokenOwner, coverTokens), "Burn cover tokens failure");
             }
-            bool isEmpty2 = pair.totalSupply() + this.totalSupply() == 0;
+            bool isEmpty2 = other.totalSupply() + this.totalSupply() == 0;
             if (optinoTokens > 0) {
                 _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, optinoTokens, decimalsData);
                 if (_payoff > 0) {
                     _payoff = transferOut(tokenOwner, _payoff, isEmpty1);
                 }
-                emit Payoff(pair, tokenOwner, optinoTokens, _payoff);
+                emit Payoff(other, tokenOwner, optinoTokens, _payoff);
             }
             if (coverTokens > 0) {
                 _payoff = OptinoV1.computePayoff(callPut, strike, bound, _spot, coverTokens, decimalsData);
@@ -1281,29 +1281,41 @@ contract OptinoFactory is Owned, CloneFactory, Parameters {
     // function mintCustom(address baseToken, address quoteToken, address priceFeed, FeedLib.FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
-    function computeRequiredCollateral(bytes32 _seriesKey, uint tokens) internal view returns (address _collateralToken, uint _collateral) {
-        Series memory series = seriesData[_seriesKey];
-        Pair memory pair = pairData[series.pairKey];
-        Feed memory feed = feedData[pair.feed];
+
+    function computeRequiredCollateral(OptinoData memory optinoData) internal returns (address _collateralToken, uint _collateral) {
+        uint8 _feedDecimals;
+        if (isNullParameters(optinoData.pairParameters)) {
+            require(feedData[optinoData.feed].feed == optinoData.feed, "Feed not registered");
+            _feedDecimals = feedData[optinoData.feed].decimals;
+            emit LogInfo("computeRequiredCollateral Using feed.decimals", msg.sender, uint(_feedDecimals));
+        } else {
+            if (getFeed2(optinoData.pairParameters) == address(0)) {
+                if (getDecimals1(optinoData.pairParameters) == uint8(0xff)) {
+                    _feedDecimals = feedData[optinoData.feed].decimals;
+                    emit LogInfo("computeRequiredCollateral Custom, but using feed.decimals", msg.sender, uint(_feedDecimals));
+                } else {
+                    _feedDecimals = getDecimals1(optinoData.pairParameters);
+                    emit LogInfo("computeRequiredCollateral Custom, but using data.pairParameters.decimals1", msg.sender, uint(_feedDecimals));
+                }
+            }
+        }
+        // TODO? Check decimals against feed decimals
         // TODO
         // FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        // emit LogInfo("computeCollateral feedType", pair.feed, uint(feedType));
         // TODO - Check
-        (/*uint _spot*/, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(pair.feed, FeedLib.FeedType.MAKER/*feedType*/);
+        // (/*uint _spot*/, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(pair.feed, FeedLib.FeedType.MAKER/*feedType*/);
         // emit LogInfo("computeCollateral _spot", pair.feed, _spot);
         // if (pair.customFeed) {
         //     _feedDecimals = pair.customFeedDecimals;
         // }
-        // emit LogInfo("computeCollateral _feedDecimals", pair.feed, uint(_feedDecimals));
-        uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(pair.baseToken), getTokenDecimals(pair.quoteToken), 18/*pair.customFeed ? pair.customFeedDecimals : _feedDecimals*/);
-        _collateralToken = series.callPut == 0 ? pair.baseToken : pair.quoteToken;
-        // emit LogInfo("computeCollateral decimalsData", pair.feed, decimalsData);
-        _collateral = OptinoV1.computeCollateral(series.callPut, series.strike, series.bound, tokens, decimalsData);
-        // emit LogInfo("computeCollateral _collateral", msg.sender, _collateral);
+        uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(optinoData.baseToken), getTokenDecimals(optinoData.quoteToken), _feedDecimals);
+        _collateralToken = optinoData.callPut == 0 ? optinoData.baseToken : optinoData.quoteToken;
+        _collateral = OptinoV1.computeCollateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, decimalsData);
+        emit LogInfo("computeRequiredCollateral results", _collateralToken, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) internal returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
-        (_collateralToken, _collateral) = computeRequiredCollateral(_seriesKey, optinoData.tokens);
+        (_collateralToken, _collateral) = computeRequiredCollateral(optinoData);
         // emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
 
         _ownerFee = _collateral.mul(fee).div(10 ** FEEDECIMALS);

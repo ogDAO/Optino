@@ -137,9 +137,9 @@ function padToken(s, decimals) {
   while (o.length < l) {
     o = " " + o;
   }
-  while (o.length < 40) {
-    o = o + " ";
-  }
+  // while (o.length < 40) {
+  //   o = o + " ";
+  // }
   return o;
 }
 
@@ -590,7 +590,7 @@ function printOptinoFactoryContractDetails() {
             console.log("RESULT:       .details='" + tokenContract.symbol.call() + "' '" + tokenContract.name.call() + "' " + tokenDecimals + " dp");
             console.log("RESULT:       .totalSupply=" + tokenContract.totalSupply.call().shift(-tokenDecimals));
             console.log("RESULT:       .seriesKey/pairKey/seriesNumber=" + tokenContract.seriesKey.call() + "/" + tokenContract.pairKey.call() + "/" + tokenContract.seriesNumber.call());
-            console.log("RESULT:       .isCover/pair=" + tokenContract.isCover.call() + "/" + getShortAddressName(tokenContract.pair.call()));
+            console.log("RESULT:       .isCover/other=" + tokenContract.isCover.call() + "/" + getShortAddressName(tokenContract.other.call()));
             console.log("RESULT:       .collateralToken/decimals: " + getShortAddressName(collateralToken) + "/" + collateralDecimals);
             console.log("RESULT:       .pairData: " + JSON.stringify(pairData));
             console.log("RESULT:       .pairParameters: " + JSON.stringify(pairParameters));
