@@ -404,38 +404,25 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 //     coverPayoff.toString() + " (" + coverPayoff.shift(-collateralDecimals).toString() + ")");
 // }
 
-/// @param pair [baseToken, quoteToken] ERC20 contract addresses
-/// @param feeds [feed0, feed1] Price feed adaptor contract address
-/// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
-/// @param callPut 0 for call, 1 for put
-/// @param expiry Expiry date, unixtime
-/// @param strike Strike rate
-/// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
-/// @param tokens Number of Optino and Cover tokens to mint
-/// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
-/// @return _optinoToken Existing or newly created Optino token contract address
-/// @return _coverToken Existing or newly created Cover token contract address
-// function mint(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken);
-
-
-// var pairParameters = optinoFactory.nullParameters.call();
-var feed2 = NULLACCOUNT; // priceFeed2Address;
+var pair = [baseTokenAddress, quoteTokenAddress];
+var feeds = [priceFeed1Address, NULLACCOUNT];
 var type1 = 0xff;
 var type2 = 0xff;
 var decimals1 = 0xff;
 var decimals2 = 0xff;
 var inverse1 = 0;
 var inverse2 = 0;
-// var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
-// console.log("RESULT: pairParameters: " + pairParameters);
-var data = optinoFactory.mint.getData([baseTokenAddress, quoteTokenAddress], [priceFeed1Address, NULLACCOUNT], [type1, type2, decimals1, decimals2, inverse1, inverse2], [callPut, expiry, strike, bound, tokens], _uiFeeAccount);
-// var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
-// var data = optinoFactory.mintCustom.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, 1, 17, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
-console.log("RESULT: data: " + data);
-var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 5000000, gasPrice: defaultGasPrice });
+var feedParameters = [type1, type2, decimals1, decimals2, inverse1, inverse2];
+var mintData = [callPut, expiry, strike, bound, tokens];
+var calcCollateralAndFeeResults = optinoFactory.calcCollateralAndFee.call(pair, feeds, feedParameters, mintData);
+console.log("RESULT: calcCollateralAndFee: " + JSON.stringify(calcCollateralAndFeeResults));
+
+// var data = optinoFactory.mint.getData(pair, feeds, feedParameters, mintData, _uiFeeAccount);
+// console.log("RESULT: data: " + data);
+// var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 5000000, gasPrice: defaultGasPrice });
 
 // console.log("RESULT: optinoFactory.mint(" + baseTokenAddress + ", " + quoteTokenAddress + ", " + priceFeedAdaptorAddress + ", " + callPut + ", " + expiry + ", " + strike + ", " + bound + ", " + tokens + ", " + _uiFeeAccount + ")");
-// var mintOptinoGroup1_1Tx = optinoFactory.mint(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, bound, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
+var mintOptinoGroup1_1Tx = optinoFactory.mint(pair, feeds, feedParameters, mintData, _uiFeeAccount, {from: seller1, gas: 5000000, gasPrice: defaultGasPrice});
 
 // var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
@@ -458,7 +445,7 @@ var cover = web3.eth.contract(optinoTokenAbi).at(optinos[1]);
 
 printBalances();
 // failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
-failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(BASE, QUOTE, priceFeed1, " + tokens.shift(-baseDecimals) + ", ...)");
+failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mint(BASE, QUOTE, priceFeed1, " + tokens.shift(-baseDecimals) + ", ...)");
 // failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
