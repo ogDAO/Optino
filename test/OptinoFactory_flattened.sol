@@ -915,12 +915,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         _feed.data[uint(FeedTypeFields.Locked)] = 1;
         emit FeedUpdated(feed, _feed.name, _feed.data[uint(FeedTypeFields.Type)], _feed.data[uint(FeedTypeFields.Decimals)], 1);
     }
-    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8[3] memory _data, uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) {
+    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8[3] memory _data, uint _spot, bool _hasData, uint8 _feedDecimals, uint _feedTimestamp) {
         require(i < feedIndex.length, "Invalid index");
         _feed = feedIndex[i];
         Feed memory feed = feedData[_feed];
         (_name, _data) = (feed.name, feed.data);
-        (_spot, _hasData, _feedDecimals, _timestamp) = getFeedRate(feed.feed, FeedType(feed.data[uint(FeedTypeFields.Type)]));
+        (_spot, _hasData, _feedDecimals, _feedTimestamp) = getFeedRate(feed.feed, FeedType(feed.data[uint(FeedTypeFields.Type)]));
     }
     function feedLength() public view returns (uint) {
         return feedIndex.length;
@@ -971,14 +971,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         emit SeriesAdded(_pairKey, _seriesKey, pair.index, _seriesIndex, [_callPut, _expiry, _strike, _bound], _optinoToken, _coverToken);
     }
 
-    function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
-        Series memory series = seriesData[seriesKey];
-        Pair memory pair = pairData[series.pairKey];
-        Feed memory feed0 = feedData[pair.feeds[0]];
-        uint8 _feedDecimals0 = pair.feedParameters[uint(FeedParametersFields.Decimals0)];
-        uint8 _feedType0 = pair.feedParameters[uint(FeedParametersFields.Type0)];
+    function _getSeriesCurrentSpot(address[2] memory feeds, uint8[6] memory feedParameters) internal /*view*/ returns (uint _currentSpot) {
+        Feed memory feed0 = feedData[feeds[0]];
+        uint8 _feedDecimals0 = feedParameters[uint(FeedParametersFields.Decimals0)];
+        uint8 _feedType0 = feedParameters[uint(FeedParametersFields.Type0)];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
-            require(feed0.feed == pair.feeds[0], "feed0 not registered");
+            require(feed0.feed == feeds[0], "feed0 not registered");
         }
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
@@ -986,25 +984,25 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
             _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
         }
-        emit LogInfo("getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        emit LogInfo("getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
+        emit LogInfo("_getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
+        emit LogInfo("_getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
 
-        (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(pair.feeds[0], FeedLib.FeedType(_feedType0));
+        (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[0], FeedLib.FeedType(_feedType0));
         emit LogInfo("getSeriesCurrentSpot A _spot0", msg.sender, _spot0);
-        if (pair.feedParameters[uint(FeedParametersFields.Inverse0)] == 1) {
+        if (feedParameters[uint(FeedParametersFields.Inverse0)] == 1) {
             _spot0 = (10 ** (uint(_feedDecimals0) * 2)).div(_spot0);
-            emit LogInfo("getSeriesCurrentSpot A _spot0 Inverted", msg.sender, _spot0);
+            emit LogInfo("_getSeriesCurrentSpot A _spot0 Inverted", msg.sender, _spot0);
         }
         uint8 _feedDecimals1;
         uint8 _feedType1;
         uint _spot1;
         bool _hasData1;
-        if (pair.feeds[1] != address(0)) {
-            Feed memory feed1 = feedData[pair.feeds[1]];
-            _feedDecimals1 = pair.feedParameters[uint(FeedParametersFields.Decimals1)];
-            _feedType1 = pair.feedParameters[uint(FeedParametersFields.Type1)];
+        if (feeds[1] != address(0)) {
+            Feed memory feed1 = feedData[feeds[1]];
+            _feedDecimals1 = feedParameters[uint(FeedParametersFields.Decimals1)];
+            _feedType1 = feedParameters[uint(FeedParametersFields.Type1)];
             if (_feedDecimals1 == FEEDPARAMETERS_DEFAULT || _feedType1 == FEEDPARAMETERS_DEFAULT) {
-                require(feed1.feed == pair.feeds[1], "feed1 not registered");
+                require(feed1.feed == feeds[1], "feed1 not registered");
             }
             if (_feedDecimals1 == FEEDPARAMETERS_DEFAULT) {
                 _feedDecimals1 = feed1.data[uint(FeedTypeFields.Decimals)];
@@ -1012,22 +1010,28 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
             if (_feedType1 == FEEDPARAMETERS_DEFAULT) {
                 _feedType1 = feed1.data[uint(FeedTypeFields.Type)];
             }
-            emit LogInfo("getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
-            emit LogInfo("getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
-            (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(pair.feeds[1], FeedLib.FeedType(_feedType1));
-            emit LogInfo("getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
-            if (pair.feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
+            emit LogInfo("_getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
+            emit LogInfo("_getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
+            (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[1], FeedLib.FeedType(_feedType1));
+            emit LogInfo("_getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
+            if (feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
                 _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
-                emit LogInfo("getSeriesCurrentSpot B _spot1 Inverted", msg.sender, _spot1);
+                emit LogInfo("_getSeriesCurrentSpot B _spot1 Inverted", msg.sender, _spot1);
             }
         }
-        if (pair.feeds[1] == address(0)) {
+        if (feeds[1] == address(0)) {
             _currentSpot = _hasData0 ? _spot0 : 0;
-            emit LogInfo("getSeriesCurrentSpot C _currentSpot 1 feed", msg.sender, _currentSpot);
+            emit LogInfo("_getSeriesCurrentSpot C _currentSpot 1 feed", msg.sender, _currentSpot);
         } else {
             _currentSpot = _hasData0 && _hasData1 ? _spot0.mul(_spot1).div(10 ** uint(_feedDecimals1)) : 0;
-            emit LogInfo("getSeriesCurrentSpot C _currentSpot 2 feeds", msg.sender, _currentSpot);
+            emit LogInfo("_getSeriesCurrentSpot C _currentSpot 2 feeds", msg.sender, _currentSpot);
         }
+    }
+
+    function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
+        Series memory series = seriesData[seriesKey];
+        Pair memory pair = pairData[series.pairKey];
+        _currentSpot = _getSeriesCurrentSpot(pair.feeds, pair.feedParameters);
     }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
         Series memory series = seriesData[seriesKey];
@@ -1129,11 +1133,21 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
     // }
 
     function computeRequiredCollateral(OptinoData memory optinoData) private returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
+        Feed memory feed0 = feedData[optinoData.feeds[0]];
         uint8 _feedDecimals0 = optinoData.feedParameters[uint(FeedParametersFields.Decimals0)];
+        uint8 _feedType0 = optinoData.feedParameters[uint(FeedParametersFields.Type0)];
+        if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
+            require(feed0.feed == optinoData.feeds[0], "feed0 not registered");
+        }
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            _feedDecimals0 = feedData[optinoData.feeds[0]].data[uint(FeedTypeFields.Decimals)];
+            _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
+        }
+        if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
+            _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
         }
         emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
+        emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
+
 
         /*
         if (isNullParameters(optinoData.pairParameters)) {
