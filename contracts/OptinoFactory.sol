@@ -1508,7 +1508,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     //             _decimals = d;
     //         } catch {
     //             require(tokenDecimalsData[address(token)].token == token, "Token not registered");
-    //             _decimals = tokenDecimalsData[token].decimals;
+    //             _decimals = tokenDecimalsData[token].data[uint(TokenDecimalsFields.Decimals)];
     //         }
     //         (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
     //     }
