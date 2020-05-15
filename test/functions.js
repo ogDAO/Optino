@@ -552,9 +552,6 @@ function printOptinoFactoryContractDetails() {
     for (var pairIndex = 0; pairIndex < pairLength; pairIndex++) {
         var pair = contract.getPairByIndex.call(pairIndex);
         console.log("RESULT: optinoToken.getPairByIndex(" + pairIndex + ")=" + JSON.stringify(pair));
-
-        // optinoToken.getPairByIndex(undefined)=["0x8213e81907209e669171ce128981302fab3464001dde7510a926f137ed9869cc",["0x0000000000000000000000000000000000000000","0x50cf5a55e6c452c194e5973b8e1dd46ac85b93a8"],["0x6be34c37d38fdfd65da57c97bb875181e3caf4de","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-
         var pairKey = pair[0];
         var baseToken = getShortAddressName(pair[1][0]);
         var quoteToken = getShortAddressName(pair[1][1]);
@@ -570,15 +567,16 @@ function printOptinoFactoryContractDetails() {
           // console.log("RESULT: optinoFactory.getSeriesByIndex(" + pairIndex + ", " + seriesIndex + ")=" + JSON.stringify(series));
           var seriesKey = series[0];
           var pairKey = series[1];
-          var callPut = series[2];
-          var expiry = series[3];
-          var strike = series[4];
-          var bound = series[5];
-          var timestamp = series[6];
-          var optinoToken = series[7];
-          var coverToken = series[8];
-          seriesData[seriesKey] = { seriesKey: seriesKey, pairKey: pairKey, callPut: callPut, expiry: expiry, strike: strike, bound: bound, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken };
-          console.log("RESULT:   optinoFactory.getSeriesByIndex(" + pairIndex + ", " + seriesIndex + "). seriesKey=" + seriesKey + ", pairKey=" + pairKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
+          var callPut = series[2][0];
+          var expiry = series[2][1];
+          var strike = series[2][2];
+          var bound = series[2][3];
+          var spot = series[2][4];
+          var timestamp = series[3];
+          var optinoToken = series[4];
+          var coverToken = series[5];
+          seriesData[seriesKey] = { seriesKey: seriesKey, pairKey: pairKey, callPut: callPut, expiry: expiry, strike: strike, bound: bound, spot: spot, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken };
+          console.log("RESULT:   optinoFactory.getSeriesByIndex(" + pairIndex + ", " + seriesIndex + "). seriesKey=" + seriesKey + ", pairKey=" + pairKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", spot=" + spot.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
 
           [optinoToken, coverToken].forEach(function (tokenAddress) {
             console.log("RESULT:     token: " + getShortAddressName(tokenAddress));
@@ -607,7 +605,6 @@ function printOptinoFactoryContractDetails() {
             console.log("RESULT:       .currentSpot/currentPayoff(1)=" + tokenContract.currentSpot.call().shift(-rateDecimals) + "/" + tokenContract.currentPayoff.call(oneToken).shift(-collateralDecimals));
             console.log("RESULT:       .spot/payoff(1)=" + tokenContract.spot.call().shift(-rateDecimals) + "/" + tokenContract.payoff.call(oneToken).shift(-collateralDecimals));
 
-            console.log("RESULT:       HERE 1");
             var optinoTransferEvents = tokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
             var j = 0;
             optinoTransferEvents.watch(function (error, result) {
@@ -617,7 +614,6 @@ function printOptinoFactoryContractDetails() {
             });
             optinoTransferEvents.stopWatching();
 
-            console.log("RESULT:       HERE 2");
             var optinoTokenCloseEvents = tokenContract.Close({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
             j = 0;
             optinoTokenCloseEvents.watch(function (error, result) {
@@ -648,11 +644,9 @@ function printOptinoFactoryContractDetails() {
                 " number=" + result.args.number);
             });
             optinoTokenLogInfoEvents.stopWatching();
-            console.log("RESULT:       HERE 3");
           });
         }
     }
-    console.log("RESULT:     HERE 4");
 
     var ownershipTransferredEvents = contract.OwnershipTransferred({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
@@ -702,7 +696,6 @@ function printOptinoFactoryContractDetails() {
       console.log("RESULT: SeriesSpotUpdated " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
     });
     seriesSpotUpdatedEvents.stopWatching();
-    console.log("RESULT:     HERE 5");
 
     var optinoMintedEvents = contract.OptinoMinted({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
@@ -739,7 +732,6 @@ function printOptinoFactoryContractDetails() {
         " number=" + result.args.number);
     });
     optinoTokenLogInfoEvents.stopWatching();
-    console.log("RESULT:     HERE 6");
 
     _optinoFactoryFromBlock = latestBlock + 1;
   }
