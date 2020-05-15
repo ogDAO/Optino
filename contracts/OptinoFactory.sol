@@ -728,7 +728,7 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
     uint public seriesNumber;
     bool public isCover;
     OptinoToken public optinoPair;
-    address public collateralToken;
+    ERC20 public collateralToken;
     uint8 public collateralDecimals;
 
     // TODO - Improve data
@@ -741,8 +741,8 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
         emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint[5] memory _seriesData, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
         pairKey = _pairKey;
-        (address[2] memory _pair, /*_feed*/, /*_feedParameters*/) = factory.getPairByKey(pairKey);
-        collateralToken = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)] == 0 ? _pair[0] : _pair[1];
+        (ERC20[2] memory _pair, /*_feed*/, /*_feedParameters*/) = factory.getPairByKey(pairKey);
+        collateralToken = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)] == 0 ? ERC20(_pair[0]) : ERC20(_pair[1]);
         collateralDecimals = factory.getTokenDecimals(collateralToken);
         (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
         super.initToken(address(factory), _symbol, _name, _decimals);
@@ -762,11 +762,11 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
         emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
-    function getPairData() public view returns (bytes32 _pairKey, address[2] memory _pair, address[2] memory _feeds, uint8[6] memory _pairParameters) {
+    function getPairData() public view returns (bytes32 _pairKey, ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _pairParameters) {
         _pairKey = pairKey;
         (_pair, _feeds, _pairParameters) = factory.getPairByKey(pairKey);
     }
-    function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint[5] memory _data, address _optinoToken, address _coverToken) {
+    function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint[5] memory _data, OptinoToken _optinoToken, OptinoToken _coverToken) {
         _seriesKey = seriesKey;
         (_pairKey, _data, _optinoToken, _coverToken) = factory.getSeriesByKey(seriesKey);
     }
@@ -797,12 +797,10 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
     }
     function payoff(uint tokens) public view returns (uint __payoff) {
         uint _spot = spot();
-        if (_spot == 0) {
-            return 0;
-        } else {
+        if (_spot > 0) {
             (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
             uint _payoff = computePayoff(_seriesData, _spot, tokens, decimalsData);
-            uint _collateral = OptinoV1.computeCollateral(_seriesData, tokens, decimalsData);
+            uint _collateral = computeCollateral(_seriesData, tokens, decimalsData);
             return isCover ? _collateral.sub(_payoff) : _payoff;
         }
     }
@@ -819,7 +817,7 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
             require(optinoPair.burn(tokenOwner, tokens), "Burn optino tokens failure");
             require(this.burn(tokenOwner, tokens), "Burn cover tokens failure");
             (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
-            uint collateralRefund = OptinoV1.computeCollateral(_seriesData, tokens, decimalsData);
+            uint collateralRefund = computeCollateral(_seriesData, tokens, decimalsData);
             bool isEmpty = optinoPair.totalSupply() + this.totalSupply() == 0;
             collateralRefund = isEmpty ? ERC20(collateralToken).balanceOf(address(this)) : collateralRefund;
             require(ERC20(collateralToken).transfer(tokenOwner, collateralRefund), "Transfer failure");
@@ -863,7 +861,7 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
             }
             if (coverTokens > 0) {
                 _payoff = computePayoff(_seriesData, _spot, coverTokens, decimalsData);
-                _collateral = OptinoV1.computeCollateral(_seriesData, coverTokens, decimalsData);
+                _collateral = computeCollateral(_seriesData, coverTokens, decimalsData);
                 uint _coverPayoff = _collateral.sub(_payoff);
                 if (_coverPayoff > 0) {
                     _coverPayoff = isEmpty2 ? ERC20(collateralToken).balanceOf(address(this)) : _coverPayoff;
@@ -873,12 +871,12 @@ contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
             }
         }
     }
-    function recoverTokens(address token, uint tokens) public onlyOwner {
+    function recoverTokens(ERC20 token, uint tokens) public onlyOwner {
         require(token != collateralToken || this.totalSupply() == 0, "Cannot recover collateral tokens until totalSupply is 0");
-        if (token == address(0)) {
+        if (address(token) == address(0)) {
             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
         } else {
-            ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
+            token.transfer(owner, tokens == 0 ? token.balanceOf(address(this)) : tokens);
         }
     }
 }
@@ -944,7 +942,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     struct TokenDecimals {
         uint timestamp;
         uint index;
-        address token;
+        ERC20 token;
         uint8[2] data; // [decimals, locked]
     }
     struct Feed {
@@ -957,7 +955,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     struct Pair {
         uint timestamp;
         uint index;
-        address[2] pair; // [baseToken, quoteToken]
+        ERC20[2] pair; // [baseToken, quoteToken]
         address[2] feeds; // [feed0, feed1]
         uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
     }
@@ -967,11 +965,11 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         bytes32 key;
         bytes32 pairKey;
         uint[5] data; // [callPut, expiry, strike, bound, spot]
-        address optinoToken;
-        address coverToken;
+        OptinoToken optinoToken;
+        OptinoToken coverToken;
     }
     struct OptinoData {
-        address[2] pair; // [baseToken, quoteToken]
+        ERC20[2] pair; // [baseToken, quoteToken]
         address[2] feeds; // [feed0, feed1]
         uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
         uint[5] data; // [callPut, expiry, strike, bound, tokens]
@@ -1020,8 +1018,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     string public message = "v0.972-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
-    mapping(address => TokenDecimals) tokenDecimalsData;
-    address[] tokenDecimalsIndex;
+    mapping(ERC20 => TokenDecimals) tokenDecimalsData;
+    ERC20[] tokenDecimalsIndex;
     mapping(address => Feed) feedData;
     address[] feedIndex;
     // [baseToken, quoteToken, feed, parameters] => Pair
@@ -1034,12 +1032,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
 
     event MessageUpdated(string _message);
     event FeeUpdated(uint fee);
-    event TokenDecimalsUpdated(address indexed token, uint8 decimals, uint8 locked);
+    event TokenDecimalsUpdated(ERC20 indexed token, uint8 decimals, uint8 locked);
     event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals, uint8 locked);
-    event PairAdded(bytes32 indexed pairKey, uint indexed pairIndex, address[2] indexed pair, address[2] feeds, uint8[6] feedParameters);
-    event SeriesAdded(bytes32 indexed pairKey, bytes32 indexed seriesKey, uint indexed pairIndex, uint seriesIndex, uint[4] data, address optinoToken, address coverToken);
+    event PairAdded(bytes32 indexed pairKey, uint indexed pairIndex, ERC20[2] indexed pair, address[2] feeds, uint8[6] feedParameters);
+    event SeriesAdded(bytes32 indexed pairKey, bytes32 indexed seriesKey, uint indexed pairIndex, uint seriesIndex, uint[4] data, OptinoToken optinoToken, OptinoToken coverToken);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
-    event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, ERC20 collateralToken, uint collateral, uint ownerFee, uint uiFee);
+    event OptinoMinted(bytes32 indexed seriesKey, OptinoToken indexed optinoToken, OptinoToken indexed coverToken, uint tokens, ERC20 collateralToken, uint collateral, uint ownerFee, uint uiFee);
     event LogInfo(string note, address addr, uint number);
 
     constructor(address _optinoTokenTemplate) public {
@@ -1055,11 +1053,11 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         emit FeeUpdated(_fee);
         fee = _fee;
     }
-    function updateTokenDecimals(address token, uint8 decimals) public onlyOwner {
+    function updateTokenDecimals(ERC20 token, uint8 decimals) public onlyOwner {
         TokenDecimals storage tokenDecimals = tokenDecimalsData[token];
         require(tokenDecimals.data[uint(TokenDecimalsFields.Locked)] == 0, "Locked");
         require(ERC20(token).totalSupply() >= 0, "Token totalSupply failure");
-        if (tokenDecimals.token == address(0)) {
+        if (address(tokenDecimals.token) == address(0)) {
             tokenDecimalsIndex.push(token);
             tokenDecimalsData[token] = TokenDecimals(block.timestamp, tokenDecimalsIndex.length - 1, token, [decimals, 0]);
         } else {
@@ -1067,13 +1065,13 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         }
         emit TokenDecimalsUpdated(token, decimals, 0);
     }
-    function lockTokenDecimals(address token) public onlyOwner {
+    function lockTokenDecimals(ERC20 token) public onlyOwner {
         TokenDecimals storage tokenDecimals = tokenDecimalsData[token];
         require(tokenDecimals.data[uint(TokenDecimalsFields.Locked)] == 0, "Locked");
         tokenDecimals.data[uint(TokenDecimalsFields.Locked)] = 1;
         emit TokenDecimalsUpdated(token, tokenDecimals.data[uint(TokenDecimalsFields.Decimals)], 1);
     }
-    function getTokenDecimalsByIndex(uint i) public view returns (address _token, uint8[2] memory _data) {
+    function getTokenDecimalsByIndex(uint i) public view returns (ERC20 _token, uint8[2] memory _data) {
         require(i < tokenDecimalsIndex.length, "Invalid index");
         _token = tokenDecimalsIndex[i];
         _data = tokenDecimalsData[_token].data;
@@ -1081,16 +1079,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     function tokenDecimalsLength() public view returns (uint) {
         return tokenDecimalsIndex.length;
     }
-    function getTokenDecimals(address token) public view returns (uint8 _decimals) {
-        if (token == address(0)) {
-            return 18;
-        } else {
-            try ERC20(token).decimals() returns (uint8 d) {
-                _decimals = d;
-            } catch {
-                require(tokenDecimalsData[token].token == token, "Token not registered");
-                _decimals = tokenDecimalsData[token].data[uint(TokenDecimalsFields.Decimals)];
-            }
+    function getTokenDecimals(ERC20 token) public view returns (uint8 _decimals) {
+        try ERC20(token).decimals() returns (uint8 d) {
+            _decimals = d;
+        } catch {
+            require(tokenDecimalsData[token].token == token, "Token not registered");
+            _decimals = tokenDecimalsData[token].data[uint(TokenDecimalsFields.Decimals)];
         }
     }
 
@@ -1166,13 +1160,13 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         }
     }
     // TODO Add timestamp?
-    function getPairByIndex(uint i) public view returns (bytes32 _pairKey, address[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters) {
+    function getPairByIndex(uint i) public view returns (bytes32 _pairKey, ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters) {
         require(i < pairIndex.length, "Invalid index");
         _pairKey = pairIndex[i];
         Pair memory pair = pairData[_pairKey];
         (_pair, _feeds, _feedParameters) = (pair.pair, pair.feeds, pair.feedParameters);
     }
-    function getPairByKey(bytes32 pairKey) public view returns (address[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters) {
+    function getPairByKey(bytes32 pairKey) public view returns (ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters) {
         Pair memory pair = pairData[pairKey];
         return (pair.pair, pair.feeds, pair.feedParameters);
     }
@@ -1183,13 +1177,13 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     function makeSeriesKey(bytes32 _pairKey, OptinoData memory optinoData) internal pure returns (bytes32 _seriesKey) {
         return keccak256(abi.encodePacked(_pairKey, optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]));
     }
-    function addSeries(bytes32 _pairKey, OptinoData memory optinoData, address _optinoToken, address _coverToken) internal returns (bytes32 _seriesKey) {
+    function addSeries(bytes32 _pairKey, OptinoData memory optinoData, OptinoToken _optinoToken, OptinoToken _coverToken) internal returns (bytes32 _seriesKey) {
         (uint _callPut, uint _expiry, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
         // require(_callPut < 2, "callPut must be 0 or 1");
         // require(_expiry > block.timestamp, "expiry must be > now");
         // require(_strike > 0, "strike must be > 0");
-        require(_optinoToken != address(0), "Invalid optinoToken");
-        require(_coverToken != address(0), "Invalid coverToken");
+        require(address(_optinoToken) != address(0), "Invalid optinoToken");
+        require(address(_coverToken) != address(0), "Invalid coverToken");
         // if (_callPut == 0) {
         //     require(_bound == 0 || _bound > _strike, "Call bound must = 0 or > strike");
         // } else {
@@ -1286,7 +1280,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         return seriesIndex[_pairIndex].length;
     }
 
-    function getSeriesByIndex(uint _pairIndex, uint i) public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint[5] memory _data, uint _timestamp, address _optinoToken, address _coverToken) {
+    function getSeriesByIndex(uint _pairIndex, uint i) public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint[5] memory _data, uint _timestamp, OptinoToken _optinoToken, OptinoToken _coverToken) {
         require(_pairIndex < pairIndex.length, "Invalid pair index");
         _pairKey = pairIndex[i];
         require(i < seriesIndex[_pairIndex].length, "Invalid series index");
@@ -1294,7 +1288,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         Series memory series = seriesData[_seriesKey];
         (_data, _timestamp, _optinoToken, _coverToken) = (series.data, series.timestamp, series.optinoToken, series.coverToken);
     }
-    function getSeriesByKey(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint[5] memory _data, address _optinoToken, address _coverToken) {
+    function getSeriesByKey(bytes32 seriesKey) public view returns (bytes32 _pairKey, uint[5] memory _data, OptinoToken _optinoToken, OptinoToken _coverToken) {
         Series memory series = seriesData[seriesKey];
         require(series.timestamp > 0, "Invalid key");
         return (series.pairKey, series.data, series.optinoToken, series.coverToken);
@@ -1309,7 +1303,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feedData[pair.feeds[0]].data[uint(FeedTypeFields.Decimals)];
         }
-        _decimalsData = [OPTINODECIMALS, getTokenDecimals(pair.pair[0]), getTokenDecimals(pair.pair[1]), _feedDecimals0];
+        _decimalsData = [OPTINODECIMALS, getTokenDecimals(ERC20(pair.pair[0])), getTokenDecimals(ERC20(pair.pair[1])), _feedDecimals0];
         return (series.data, _decimalsData);
     }
     function getNameData(bytes32 seriesKey) public view returns (bool _isCustom, string memory _feedName, uint[5] memory _seriesData, uint8 _feedDecimals) {
@@ -1329,7 +1323,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     /// @return _collateralToken
     /// @return _collateral
     /// @return _fee
-    function calcCollateralAndFee(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
+    function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
         return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
     }
     function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
@@ -1346,7 +1340,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
     /// @return _optinoToken Existing or newly created Optino token contract address
     /// @return _coverToken Existing or newly created Cover token contract address
-    function mint(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+    function mint(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         return _mint(OptinoData(pair, feeds, feedParameters, data), uiFeeAccount);
     }
     // function mintRegular(address baseToken, address quoteToken, address feed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
@@ -1391,27 +1385,11 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         //     _feedDecimals = pair.customFeedDecimals;
         // }
         // uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(optinoData.baseToken), getTokenDecimals(optinoData.quoteToken), _feedDecimals);
-        uint8[4] memory decimalsData = [OPTINODECIMALS, getTokenDecimals(optinoData.pair[0]), getTokenDecimals(optinoData.pair[1]), _feedDecimals0];
+        uint8[4] memory decimalsData = [OPTINODECIMALS, getTokenDecimals(ERC20(optinoData.pair[0])), getTokenDecimals(ERC20(optinoData.pair[1])), _feedDecimals0];
         _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
-        _collateral = OptinoV1.computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+        _collateral = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
         _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
         emit LogInfo("computeRequiredCollateral results", address(_collateralToken), _collateral);
-    }
-    function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) private returns (ERC20 _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
-        Series memory series = seriesData[_seriesKey];
-        (_collateralToken, _collateral, _ownerFee) = computeRequiredCollateral(optinoData);
-        if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
-            _uiFee = _ownerFee / 2;
-            _ownerFee = _ownerFee - _uiFee;
-        }
-        require(_collateralToken.allowance(msg.sender, address(this)) >= (_collateral + _ownerFee + _uiFee), "Insufficient collateral allowance");
-        require(_collateralToken.transferFrom(msg.sender, address(series.coverToken), _collateral), "Send ERC20 to coverToken failure");
-        if (_ownerFee > 0) {
-            require(_collateralToken.transferFrom(msg.sender, owner, _ownerFee), "Send ERC20 fee to owner failure");
-        }
-        if (_uiFee > 0) {
-            require(_collateralToken.transferFrom(msg.sender, uiFeeAccount, _uiFee), "Send ERC20 fee to uiFeeAccount failure");
-        }
     }
     // struct OptinoData {
     //     address[2] pair; // [baseToken, quoteToken]
@@ -1420,9 +1398,9 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     //     uint[5] data; // [callPut, expiry, strike, bound, tokens]
     // }
     function checkData(OptinoData memory optinoData) internal view {
-        require(optinoData.pair[0] != address(0), "baseToken must != 0");
+        require(address(optinoData.pair[0]) != address(0), "baseToken must != 0");
         require(ERC20(optinoData.pair[0]).totalSupply() >= 0, "baseToken totalSupply failure");
-        require(optinoData.pair[1] != address(0), "quoteToken must != 0");
+        require(address(optinoData.pair[1]) != address(0), "quoteToken must != 0");
         require(ERC20(optinoData.pair[1]).totalSupply() >= 0, "quoteToken totalSupply failure");
         require(optinoData.pair[0] != optinoData.pair[1], "baseToken must != quoteToken");
 
@@ -1451,20 +1429,30 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         if (series.timestamp == 0) {
             _optinoToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
             _coverToken = OptinoToken(payable(createClone(optinoTokenTemplate)));
-            series.optinoToken = address(_optinoToken);
-            series.coverToken = address(_coverToken);
-            addSeries(_pairKey, optinoData, address(_optinoToken), address(_coverToken));
+            series.optinoToken = _optinoToken;
+            series.coverToken = _coverToken;
+            addSeries(_pairKey, optinoData, _optinoToken, _coverToken);
             series = seriesData[_seriesKey];
             _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 1000000 + series.index + 5, false, OPTINODECIMALS);
             _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 1000000 + series.index + 5, true, OPTINODECIMALS);
         } else {
-            _optinoToken = OptinoToken(payable(series.optinoToken));
-            _coverToken = OptinoToken(payable(series.coverToken));
+            _optinoToken = series.optinoToken;
+            _coverToken = series.coverToken;
         }
-        (ERC20 _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee) = transferCollateral(optinoData, uiFeeAccount, _seriesKey);
-
-        // uint _fee;
-        // (_collateralToken, _collateral, _fee) = computeRequiredCollateral(optinoData);
+        (ERC20 _collateralToken, uint _collateral, uint _ownerFee) = computeRequiredCollateral(optinoData);
+        uint _uiFee;
+        if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
+            _uiFee = _ownerFee / 2;
+            _ownerFee = _ownerFee - _uiFee;
+        }
+        require(_collateralToken.allowance(msg.sender, address(this)) >= (_collateral + _ownerFee + _uiFee), "Insufficient collateral allowance");
+        require(_collateralToken.transferFrom(msg.sender, address(series.coverToken), _collateral), "Send collateral to coverToken failure");
+        if (_ownerFee > 0) {
+            require(_collateralToken.transferFrom(msg.sender, owner, _ownerFee), "Send fee to owner failure");
+        }
+        if (_uiFee > 0) {
+            require(_collateralToken.transferFrom(msg.sender, uiFeeAccount, _uiFee), "Send fee to uiFeeAccount failure");
+        }
 
         _optinoToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
         _coverToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
