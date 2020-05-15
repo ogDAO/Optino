@@ -987,10 +987,22 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         uint tokens;
     }
 
+    enum TokenDecimalsFields {
+        Decimals,
+        Locked
+    }
     enum FeedTypeFields {
         Type,
         Decimals,
         Locked
+    }
+    enum FeedParametersFields {
+        Type0,
+        Type1,
+        Decimals0,
+        Decimals1,
+        Inverse0,
+        Inverse1
     }
 
     uint8 private constant OPTINODECIMALS = 18;
@@ -998,16 +1010,6 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
     uint private constant ONEDAY = 24 * 60 * 60;
     uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
-
-    uint private constant TOKENDECIMALS_DECIMALS = 0;
-    uint private constant TOKENDECIMALS_LOCKED = 1;
-
-    uint private constant FEEDPARAMETERS_TYPE0 = 0;
-    uint private constant FEEDPARAMETERS_TYPE1 = 1;
-    uint private constant FEEDPARAMETERS_DECIMALS0 = 2;
-    uint private constant FEEDPARAMETERS_DECIMALS1 = 3;
-    uint private constant FEEDPARAMETERS_INVERSE0 = 4;
-    uint private constant FEEDPARAMETERS_INVERSE1 = 5;
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
@@ -1052,21 +1054,21 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     }
     function updateTokenDecimals(address token, uint8 decimals) public onlyOwner {
         TokenDecimals storage tokenDecimals = tokenDecimalsData[token];
-        require(tokenDecimals.data[TOKENDECIMALS_LOCKED] == 0, "Locked");
+        require(tokenDecimals.data[uint(TokenDecimalsFields.Locked)] == 0, "Locked");
         require(ERC20(token).totalSupply() >= 0, "Token totalSupply failure");
         if (tokenDecimals.token == address(0)) {
             tokenDecimalsIndex.push(token);
             tokenDecimalsData[token] = TokenDecimals(block.timestamp, tokenDecimalsIndex.length - 1, token, [decimals, 0]);
         } else {
-            tokenDecimals.data[TOKENDECIMALS_DECIMALS] = decimals;
+            tokenDecimals.data[uint(TokenDecimalsFields.Decimals)] = decimals;
         }
         emit TokenDecimalsUpdated(token, decimals, 0);
     }
     function lockTokenDecimals(address token) public onlyOwner {
         TokenDecimals storage tokenDecimals = tokenDecimalsData[token];
-        require(tokenDecimals.data[TOKENDECIMALS_LOCKED] == 0, "Locked");
-        tokenDecimals.data[TOKENDECIMALS_LOCKED] = 1;
-        emit TokenDecimalsUpdated(token, tokenDecimals.data[TOKENDECIMALS_DECIMALS], 1);
+        require(tokenDecimals.data[uint(TokenDecimalsFields.Locked)] == 0, "Locked");
+        tokenDecimals.data[uint(TokenDecimalsFields.Locked)] = 1;
+        emit TokenDecimalsUpdated(token, tokenDecimals.data[uint(TokenDecimalsFields.Decimals)], 1);
     }
     function getTokenDecimalsByIndex(uint i) public view returns (address _token, uint8[2] memory _data) {
         require(i < tokenDecimalsIndex.length, "Invalid index");
@@ -1084,7 +1086,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
                 _decimals = d;
             } catch {
                 require(tokenDecimalsData[token].token == token, "Token not registered");
-                _decimals = tokenDecimalsData[token].data[TOKENDECIMALS_DECIMALS];
+                _decimals = tokenDecimalsData[token].data[uint(TokenDecimalsFields.Decimals)];
             }
         }
     }
@@ -1204,8 +1206,8 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         Series memory series = seriesData[seriesKey];
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed0 = feedData[pair.feeds[0]];
-        uint8 _feedDecimals0 = pair.feedParameters[FEEDPARAMETERS_DECIMALS0];
-        uint8 _feedType0 = pair.feedParameters[FEEDPARAMETERS_TYPE0];
+        uint8 _feedDecimals0 = pair.feedParameters[uint(FeedParametersFields.Decimals0)];
+        uint8 _feedType0 = pair.feedParameters[uint(FeedParametersFields.Type0)];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
         }
@@ -1217,7 +1219,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
 
         (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feeds[0], FeedLib.FeedType(_feedType0));
         emit LogInfo("getSeriesCurrentSpot A _spot0", msg.sender, _spot0);
-        if (pair.feedParameters[FEEDPARAMETERS_INVERSE0] == 1) {
+        if (pair.feedParameters[uint(FeedParametersFields.Inverse0)] == 1) {
             _spot0 = (10 ** (uint(_feedDecimals0) * 2)).div(_spot0);
             emit LogInfo("getSeriesCurrentSpot A _spot0 Inverted", msg.sender, _spot0);
         }
@@ -1227,8 +1229,8 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         bool _hasData1;
         if (pair.feeds[1] != address(0)) {
             Feed memory feed1 = feedData[pair.feeds[1]];
-            _feedDecimals1 = pair.feedParameters[FEEDPARAMETERS_DECIMALS1];
-            _feedType1 = pair.feedParameters[FEEDPARAMETERS_TYPE1];
+            _feedDecimals1 = pair.feedParameters[uint(FeedParametersFields.Decimals1)];
+            _feedType1 = pair.feedParameters[uint(FeedParametersFields.Type1)];
             if (_feedDecimals1 == FEEDPARAMETERS_DEFAULT) {
                 _feedDecimals1 = feed1.data[uint(FeedTypeFields.Decimals)];
             }
@@ -1239,7 +1241,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
             emit LogInfo("getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
             (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feeds[1], FeedLib.FeedType(_feedType1));
             emit LogInfo("getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
-            if (pair.feedParameters[FEEDPARAMETERS_INVERSE1] == 1) {
+            if (pair.feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
                 _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
                 emit LogInfo("getSeriesCurrentSpot B _spot1 Inverted", msg.sender, _spot1);
             }
@@ -1299,7 +1301,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         Series memory series = seriesData[seriesKey];
         require(series.timestamp > 0, "Invalid key");
         Pair memory pair = pairData[series.pairKey];
-        uint8 _feedDecimals0 = pair.feedParameters[FEEDPARAMETERS_DECIMALS0];
+        uint8 _feedDecimals0 = pair.feedParameters[uint(FeedParametersFields.Decimals0)];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feedData[pair.feeds[0]].data[uint(FeedTypeFields.Decimals)];
         }
@@ -1339,7 +1341,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     // }
 
     function computeRequiredCollateral(OptinoData memory optinoData) private returns (address _collateralToken, uint _collateral) {
-        uint8 _feedDecimals0 = optinoData.feedParameters[FEEDPARAMETERS_DECIMALS0];
+        uint8 _feedDecimals0 = optinoData.feedParameters[uint(FeedParametersFields.Decimals0)];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feedData[optinoData.feeds[0]].data[uint(FeedTypeFields.Decimals)];
         }
