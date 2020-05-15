@@ -428,7 +428,7 @@ var inverse1 = 0;
 var inverse2 = 0;
 // var pairParameters = optinoFactory.encodeParameters.call(feed2, inverse1, inverse2, type1, type2, decimals1, decimals2);
 // console.log("RESULT: pairParameters: " + pairParameters);
-var data = optinoFactory.mint.getData([NULLACCOUNT, quoteTokenAddress], [priceFeed1Address, NULLACCOUNT], [type1, type2, decimals1, decimals2, inverse1, inverse2], callPut, expiry, strike, bound, tokens, _uiFeeAccount);
+var data = optinoFactory.mint.getData([baseTokenAddress, quoteTokenAddress], [priceFeed1Address, NULLACCOUNT], [type1, type2, decimals1, decimals2, inverse1, inverse2], [callPut, expiry, strike, bound, tokens], _uiFeeAccount);
 // var data = optinoFactory.mint.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, parameters, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 // var data = optinoFactory.mintCustom.getData(NULLACCOUNT, quoteTokenAddress, priceFeedAddress, 1, 17, callPut, expiry, strike, bound, tokens, _uiFeeAccount);
 console.log("RESULT: data: " + data);

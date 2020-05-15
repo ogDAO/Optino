@@ -1200,16 +1200,16 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     }
     function addSeries(bytes32 _pairKey, OptinoData memory optinoData, address _optinoToken, address _coverToken) internal returns (bytes32 _seriesKey) {
         (uint _callPut, uint _expiry, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
-        require(_callPut < 2, "callPut must be 0 or 1");
-        require(_expiry > block.timestamp, "expiry must be > now");
-        require(_strike > 0, "strike must be > 0");
+        // require(_callPut < 2, "callPut must be 0 or 1");
+        // require(_expiry > block.timestamp, "expiry must be > now");
+        // require(_strike > 0, "strike must be > 0");
         require(_optinoToken != address(0), "Invalid optinoToken");
         require(_coverToken != address(0), "Invalid coverToken");
-        if (_callPut == 0) {
-            require(_bound == 0 || _bound > _strike, "Call bound must = 0 or > strike");
-        } else {
-            require(_bound < _strike, "Put bound must = 0 or < strike");
-        }
+        // if (_callPut == 0) {
+        //     require(_bound == 0 || _bound > _strike, "Call bound must = 0 or > strike");
+        // } else {
+        //     require(_bound < _strike, "Put bound must = 0 or < strike");
+        // }
         _seriesKey = makeSeriesKey(_pairKey, optinoData);
         require(seriesData[_seriesKey].timestamp == 0, "Cannot add duplicate");
 
@@ -1338,20 +1338,33 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         (_isCustom, _feedName, _seriesData, _feedDecimals) = (false /*pair.customFeed*/, feed.name, series.data, 18);
     }
 
-    /// @notice Mint Optino and Cover tokens
+    /// @dev Calculate collateral and fee required to mint Optino and Cover tokens
     /// @param pair [baseToken, quoteToken] ERC20 contract addresses
     /// @param feeds [feed0, feed1] Price feed adaptor contract address
     /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
-    /// @param callPut 0 for call, 1 for put
-    /// @param expiry Expiry date, unixtime
-    /// @param strike Strike rate
-    /// @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
-    /// @param tokens Number of Optino and Cover tokens to mint
+    /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
+    /// @return _collateralToken
+    /// @return _collateral
+    /// @return _fee
+    function calcCollateralAndFee(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public payable returns (address _collateralToken, uint _collateral, uint _fee) {
+        return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
+    }
+    function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (address _collateralToken, uint _collateral, uint _fee) {
+        checkData(optinoData);
+        (_collateralToken, _collateral, _fee) = computeRequiredCollateral(optinoData);
+    }
+
+
+    /// @dev Mint Optino and Cover tokens
+    /// @param pair [baseToken, quoteToken] ERC20 contract addresses
+    /// @param feeds [feed0, feed1] Price feed adaptor contract address
+    /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
+    /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
     /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
     /// @return _optinoToken Existing or newly created Optino token contract address
     /// @return _coverToken Existing or newly created Cover token contract address
-    function mint(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-        return _mint(OptinoData(pair, feeds, feedParameters, [callPut, expiry, strike, bound, tokens]), uiFeeAccount);
+    function mint(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
+        return _mint(OptinoData(pair, feeds, feedParameters, data), uiFeeAccount);
     }
     // function mintRegular(address baseToken, address quoteToken, address feed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
     //     return _mint(OptinoData(baseToken, quoteToken, feed, nullParameters(), callPut, expiry, strike, bound, tokens), uiFeeAccount);
@@ -1361,7 +1374,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
 
-    function computeRequiredCollateral(OptinoData memory optinoData) private returns (address _collateralToken, uint _collateral) {
+    function computeRequiredCollateral(OptinoData memory optinoData) private returns (address _collateralToken, uint _collateral, uint _fee) {
         uint8 _feedDecimals0 = optinoData.feedParameters[uint(FeedParametersFields.Decimals0)];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feedData[optinoData.feeds[0]].data[uint(FeedTypeFields.Decimals)];
@@ -1398,47 +1411,79 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         uint8[4] memory decimalsData = [OPTINODECIMALS, getTokenDecimals(optinoData.pair[0]), getTokenDecimals(optinoData.pair[1]), _feedDecimals0];
         _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? optinoData.pair[0] : optinoData.pair[1];
         _collateral = OptinoV1.computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+        _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
         emit LogInfo("computeRequiredCollateral results", _collateralToken, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) private returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
         Series memory series = seriesData[_seriesKey];
-        (_collateralToken, _collateral) = computeRequiredCollateral(optinoData);
+        (_collateralToken, _collateral, _ownerFee) = computeRequiredCollateral(optinoData);
         // emit LogInfo("transferCollateral _collateralToken, _collateral", address(_collateralToken), _collateral);
 
-        _ownerFee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
+        // _ownerFee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
             _uiFee = _ownerFee / 2;
             _ownerFee = _ownerFee - _uiFee;
         }
-        uint ethRefund;
-        if (_collateralToken == address(0)) {
-            require(msg.value >= (_collateral + _ownerFee + _uiFee), "Insufficient ETH sent");
-            require(payable(series.coverToken).send(_collateral), "Send ETH to coverToken failure");
-            if (_ownerFee > 0) {
-                require(payable(owner).send(_ownerFee), "Send ETH fee to owner failure");
-            }
-            if (_uiFee > 0) {
-                require(payable(uiFeeAccount).send(_uiFee), "Send ETH fee to uiFeeAccount failure");
-            }
-            ethRefund = msg.value - _collateral - _ownerFee - _uiFee;
+        // uint ethRefund;
+        // if (_collateralToken == address(0)) {
+        //     require(msg.value >= (_collateral + _ownerFee + _uiFee), "Insufficient ETH sent");
+        //     require(payable(series.coverToken).send(_collateral), "Send ETH to coverToken failure");
+        //     if (_ownerFee > 0) {
+        //         require(payable(owner).send(_ownerFee), "Send ETH fee to owner failure");
+        //     }
+        //     if (_uiFee > 0) {
+        //         require(payable(uiFeeAccount).send(_uiFee), "Send ETH fee to uiFeeAccount failure");
+        //     }
+        //     ethRefund = msg.value - _collateral - _ownerFee - _uiFee;
+        // } else {
+        require(ERC20(_collateralToken).transferFrom(msg.sender, address(series.coverToken), _collateral), "Send ERC20 to coverToken failure");
+        if (_ownerFee > 0) {
+            require(ERC20(_collateralToken).transferFrom(msg.sender, owner, _ownerFee), "Send ERC20 fee to owner failure");
+        }
+        if (_uiFee > 0) {
+            require(ERC20(_collateralToken).transferFrom(msg.sender, uiFeeAccount, _uiFee), "Send ERC20 fee to uiFeeAccount failure");
+        }
+            // ethRefund = msg.value;
+        // }
+        // if (ethRefund > 0) {
+        //     require(msg.sender.send(ethRefund), "Send ETH refund failure");
+        // }
+    }
+    // struct OptinoData {
+    //     address[2] pair; // [baseToken, quoteToken]
+    //     address[2] feeds; // [feed0, feed1]
+    //     uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
+    //     uint[5] data; // [callPut, expiry, strike, bound, tokens]
+    // }
+    function checkData(OptinoData memory optinoData) internal view {
+        require(optinoData.pair[0] != address(0), "baseToken must != 0");
+        require(ERC20(optinoData.pair[0]).totalSupply() >= 0, "baseToken totalSupply failure");
+        require(optinoData.pair[1] != address(0), "quoteToken must != 0");
+        require(ERC20(optinoData.pair[1]).totalSupply() >= 0, "quoteToken totalSupply failure");
+        require(optinoData.pair[0] != optinoData.pair[1], "baseToken must != quoteToken");
+
+        require(optinoData.feeds[0] != address(0), "feed must != 0");
+        // TODO Check spot rate from feed
+        // TODO Default to check for registered feed & check parameters
+
+        (uint _callPut, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
+        require(_callPut < 2, "callPut must be 0 or 1");
+        require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must >= now");
+        require(_strike > 0, "strike must be > 0");
+        if (_callPut == 0) {
+            require(_bound == 0 || _bound > _strike, "Call bound must = 0 or > strike");
         } else {
-            require(ERC20(_collateralToken).transferFrom(msg.sender, address(series.coverToken), _collateral), "Send ERC20 to coverToken failure");
-            if (_ownerFee > 0) {
-                require(ERC20(_collateralToken).transferFrom(msg.sender, owner, _ownerFee), "Send ERC20 fee to owner failure");
-            }
-            if (_uiFee > 0) {
-                require(ERC20(_collateralToken).transferFrom(msg.sender, uiFeeAccount, _uiFee), "Send ERC20 fee to uiFeeAccount failure");
-            }
-            ethRefund = msg.value;
+            require(_bound < _strike, "Put bound must = 0 or < strike");
         }
-        if (ethRefund > 0) {
-            require(msg.sender.send(ethRefund), "Send ETH refund failure");
-        }
+        require(optinoData.data[uint(OptinoDataFields.Tokens)] > 0, "tokens must be > 0");
     }
     function _mint(OptinoData memory optinoData, address uiFeeAccount) internal returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         // (uint _callPut, uint _expiry, uint _strike, uint _bound, uint _tokens) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)], optinoData.data[uint(OptinoDataFields.Tokens)]);
-        require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must >= now");
-        require(optinoData.data[uint(OptinoDataFields.Tokens)] > 0, "tokens must be > 0");
+
+        // require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must >= now");
+        // require(optinoData.data[uint(OptinoDataFields.Tokens)] > 0, "tokens must be > 0");
+        checkData(optinoData);
+
         // TODO check base and quote not ETH
         // TODO Check pairParameters
         bytes32 _pairKey = getOrAddPair(optinoData);
@@ -1459,6 +1504,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
             _coverToken = OptinoToken(payable(series.coverToken));
         }
         (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee) = transferCollateral(optinoData, uiFeeAccount, _seriesKey);
+
+        // uint _fee;
+        // (_collateralToken, _collateral, _fee) = computeRequiredCollateral(optinoData);
+
         _optinoToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
         _coverToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
         emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.data[uint(OptinoDataFields.Tokens)], _collateralToken, _collateral, _ownerFee, _uiFee);
@@ -1501,17 +1550,17 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     // ----------------------------------------------------------------------------
     receive() external payable {
     }
-    function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
-        if (address(optinoToken) != address(0)) {
-            optinoToken.recoverTokens(token, tokens);
-        } else {
-            if (token == address(0)) {
-                payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
-            } else {
-                ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
-            }
-        }
-    }
+    // function recoverTokens(OptinoToken optinoToken, address token, uint tokens) public onlyOwner {
+    //     if (address(optinoToken) != address(0)) {
+    //         optinoToken.recoverTokens(token, tokens);
+    //     } else {
+    //         if (token == address(0)) {
+    //             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
+    //         } else {
+    //             ERC20(token).transfer(owner, tokens == 0 ? ERC20(token).balanceOf(address(this)) : tokens);
+    //         }
+    //     }
+    // }
     // function getTokenInfo(address token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
     //     if (token == address(0)) {
     //         return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
