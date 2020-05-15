@@ -608,7 +608,6 @@ contract OptinoV1 {
 contract OptinoToken is BasicToken, OptinoV1 {
     OptinoFactory public factory;
     bytes32 public seriesKey;
-    bytes32 public pairKey;
     uint public seriesNumber;
     bool public isCover;
     OptinoToken public optinoPair;
@@ -622,9 +621,8 @@ contract OptinoToken is BasicToken, OptinoV1 {
         (factory, seriesKey, optinoPair, seriesNumber, isCover) = (_factory, _seriesKey, _optinoPair, _seriesNumber, _isCover);
         emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint[5] memory _seriesData, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
-        pairKey = _pairKey;
-        (ERC20[2] memory _pair, /*_feed*/, /*_feedParameters*/) = factory.getPairByKey(pairKey);
-        collateralToken = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)] == 0 ? ERC20(_pair[0]) : ERC20(_pair[1]);
+        (ERC20[2] memory _pair, /*_feed*/, /*_feedParameters*/) = factory.getPairByKey(_pairKey);
+        collateralToken = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)] == 0 ? _pair[0] : _pair[1];
         (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
@@ -644,8 +642,8 @@ contract OptinoToken is BasicToken, OptinoV1 {
         return true;
     }
     function getPairData() public view returns (bytes32 _pairKey, ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _pairParameters) {
-        _pairKey = pairKey;
-        (_pair, _feeds, _pairParameters) = factory.getPairByKey(pairKey);
+        (_pairKey, /*_seriesData*/, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
+        (_pair, _feeds, _pairParameters) = factory.getPairByKey(_pairKey);
     }
     function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint[5] memory _data, OptinoToken _optinoToken, OptinoToken _coverToken) {
         _seriesKey = seriesKey;
@@ -661,10 +659,6 @@ contract OptinoToken is BasicToken, OptinoV1 {
     function setSpot() public {
         factory.setSeriesSpot(seriesKey);
     }
-    // function collateralInBaseOrQuote() public view returns (uint _baseOrQuote) {
-    //     (uint callPut, /*strike*/, /*bound*/, /*decimalsData*/) = factory.getCalcData(seriesKey);
-    //     _baseOrQuote = callPut;
-    // }
     function payoffForSpot(uint _spot, uint tokens) public view returns (uint _payoff) {
         (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
         return computePayoff(_seriesData, _spot, tokens, decimalsData);
@@ -754,7 +748,7 @@ contract OptinoToken is BasicToken, OptinoV1 {
     }
     function recoverTokens(ERC20 token, uint tokens) public onlyOwner {
         require(token != collateralToken || this.totalSupply() == 0, "Cannot recover collateral tokens until totalSupply is 0");
-        if (address(token) == address(0)) {
+        if (token == ERC20(0)) {
             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
         } else {
             token.transfer(owner, tokens == 0 ? token.balanceOf(address(this)) : tokens);
@@ -919,7 +913,6 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         emit FeeUpdated(_fee);
         fee = _fee;
     }
-
     function updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals) public onlyOwner {
         Feed storage _feed = feedData[feed];
         require(_feed.data[uint(FeedTypeFields.Locked)] == 0, "Locked");
