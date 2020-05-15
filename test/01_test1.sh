@@ -94,8 +94,10 @@ var optinoTokenBin = "0x" + optinoFactoryOutput.contracts["$OPTINOFACTORYFLATTEN
 // console.log("DATA: priceFeedAdaptorBin=" + JSON.stringify(priceFeedAdaptorBin));
 // console.log("DATA: optinoFactoryAbi=" + JSON.stringify(optinoFactoryAbi));
 // console.log("DATA: optinoFactoryBin=" + JSON.stringify(optinoFactoryBin));
+// console.log("DATA: optinoFactoryBin.length=" + optinoFactoryBin.length + ", /2=" + optinoFactoryBin.length / 2);
 // console.log("DATA: optinoTokenAbi=" + JSON.stringify(optinoTokenAbi));
 // console.log("DATA: optinoTokenBin=" + JSON.stringify(optinoTokenBin));
+// console.log("DATA: optinoTokenBin.length=" + optinoTokenBin.length + ", /2=" + optinoTokenBin.length / 2);
 
 
 unlockAccounts("$PASSWORD");
@@ -119,14 +121,14 @@ var initialSupply = new BigNumber("0").shift(18);
 
 var priceFeed1Value = new BigNumber("190.901").shift(rateDecimals); // ETH/USD 190.901
 var priceFeed2Value = new BigNumber("1.695").shift(rateDecimals); // MKR/ETH 1.695
-console.log("DATA: priceFeed1Value ETH/USD=" + priceFeed1Value.shift(-rateDecimals).toString());
-console.log("DATA: priceFeed2Value MKR/ETH=" + priceFeed2Value.shift(-rateDecimals).toString());
+console.log("RESULT: priceFeed1Value ETH/USD=" + priceFeed1Value.shift(-rateDecimals).toString());
+console.log("RESULT: priceFeed2Value MKR/ETH=" + priceFeed2Value.shift(-rateDecimals).toString());
 console.log("DATA: deployer=" + deployer);
 console.log("DATA: defaultGasPrice=" + defaultGasPrice);
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup1_Message + " ----------");
 var baseTokenContract = web3.eth.contract(tokenAbi);
-console.log("DATA: baseTokenContract=" + JSON.stringify(baseTokenContract));
+// console.log("DATA: baseTokenContract=" + JSON.stringify(baseTokenContract));
 var baseTokenTx = null;
 var baseTokenAddress = null;
 var baseToken = baseTokenContract.new(baseSymbol, baseName, baseDecimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
@@ -147,7 +149,7 @@ var baseToken = baseTokenContract.new(baseSymbol, baseName, baseDecimals, tokenO
   }
 );
 var quoteTokenContract = web3.eth.contract(tokenAbi);
-console.log("DATA: quoteTokenContract=" + JSON.stringify(quoteTokenContract));
+// console.log("DATA: quoteTokenContract=" + JSON.stringify(quoteTokenContract));
 var quoteTokenTx = null;
 var quoteTokenAddress = null;
 var quoteToken = quoteTokenContract.new(quoteSymbol, quoteName, quoteDecimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
@@ -623,6 +625,8 @@ console.log("RESULT: --- Main contracts gas usage ---");
 printTxData("optinoTokenTx", optinoTokenTx);
 printTxData("optinoFactoryTx", optinoFactoryTx);
 printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
+console.log("RESULT: optinoFactoryBin.length=" + optinoFactoryBin.length + ", /2=" + optinoFactoryBin.length / 2);
+console.log("RESULT: optinoTokenBin.length=" + optinoTokenBin.length + ", /2=" + optinoTokenBin.length / 2);
 
 
 EOF

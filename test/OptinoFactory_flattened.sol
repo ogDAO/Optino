@@ -660,7 +660,7 @@ contract BasicToken is ERC20, Owned {
 // flooredPutPayoff  = max(strike - max(spot, floor), 0)
 //                   = max(strike - spot, 0) - max(floor - spot, 0)
 // ----------------------------------------------------------------------------
-library OptinoV1 {
+contract OptinoV1 {
     using SafeMath for uint;
     // using Decimals for uint;
 
@@ -721,7 +721,7 @@ library OptinoV1 {
 
 
 /// @notice OptinoToken = basic token + burn + payoff + close + settle
-contract OptinoToken is BasicToken /*, Parameters */ {
+contract OptinoToken is BasicToken, OptinoV1 /*, Parameters */ {
     // using Decimals for uint;
 
     OptinoFactory public factory;
@@ -951,7 +951,7 @@ library FeedLib {
 /// @title Optino Factory - Deploy optino and cover token contracts
 /// @author BokkyPooBah, Bok Consulting Pty Ltd - <https://github.com/bokkypoobah>
 /// @notice Check `message` for deprecation status
-contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
+contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     using SafeMath for uint;
     using FeedLib for FeedLib.FeedType;
 
