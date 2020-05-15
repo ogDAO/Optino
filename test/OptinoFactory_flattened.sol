@@ -1104,12 +1104,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
     /// @return _collateralToken
     /// @return _collateral
     /// @return _fee
-    function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
+    function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot) {
         return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
     }
-    function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
+    function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot) {
         checkData(optinoData);
-        (_collateralToken, _collateral, _fee) = computeRequiredCollateral(optinoData);
+        (_collateralToken, _collateral, _fee, _currentSpot) = computeRequiredCollateral(optinoData);
     }
 
 
@@ -1132,51 +1132,14 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
     //     return _mint(OptinoData(baseToken, quoteToken, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
 
-    function computeRequiredCollateral(OptinoData memory optinoData) private returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
-        Feed memory feed0 = feedData[optinoData.feeds[0]];
-        // uint8 _feedDecimals0 = optinoData.feedParameters[uint(FeedParametersFields.Decimals0)];
-        // uint8 _feedType0 = optinoData.feedParameters[uint(FeedParametersFields.Type0)];
-        // if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
-        //     require(feed0.feed == optinoData.feeds[0], "feed0 not registered");
-        // }
-        // if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-        //     _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
-        // }
-        // if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
-        //     _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
-        // }
-        (uint8 _feedDecimals0, uint8 _feedType0, uint _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
+    function computeRequiredCollateral(OptinoData memory optinoData) private returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot) {
+        uint8 _feedDecimals0;
+        uint8 _feedType0;
+        (_feedDecimals0, _feedType0, _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
         emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
         emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
         emit LogInfo("computeRequiredCollateral A _currentSpot", msg.sender, uint(_currentSpot));
 
-        /*
-        if (isNullParameters(optinoData.pairParameters)) {
-            require(feedData[optinoData.feed].feed == optinoData.feed, "Feed not registered");
-            _feedDecimals = feedData[optinoData.feed].decimals;
-            emit LogInfo("computeRequiredCollateral Using feed.decimals", msg.sender, uint(_feedDecimals));
-        } else {
-            if (getFeed2(optinoData.pairParameters) == address(0)) {
-                if (getDecimals1(optinoData.pairParameters) == uint8(0xff)) {
-                    _feedDecimals = feedData[optinoData.feed].decimals;
-                    emit LogInfo("computeRequiredCollateral Custom, but using feed.decimals", msg.sender, uint(_feedDecimals));
-                } else {
-                    _feedDecimals = getDecimals1(optinoData.pairParameters);
-                    emit LogInfo("computeRequiredCollateral Custom, but using data.pairParameters.decimals1", msg.sender, uint(_feedDecimals));
-                }
-            }
-        }
-        */
-        // TODO? Check decimals against feed decimals
-        // TODO
-        // FeedLib.FeedType feedType = pair.customFeed ? pair.customFeedType : feed.feedType;
-        // TODO - Check
-        // (/*uint _spot*/, /*_hasData*/, uint8 _feedDecimals, /*_timestamp*/) = FeedLib.getSpot(pair.feed, FeedLib.FeedType.MAKER/*feedType*/);
-        // emit LogInfo("computeCollateral _spot", pair.feed, _spot);
-        // if (pair.customFeed) {
-        //     _feedDecimals = pair.customFeedDecimals;
-        // }
-        // uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(optinoData.baseToken), getTokenDecimals(optinoData.quoteToken), _feedDecimals);
         uint8[4] memory decimalsData = [OPTINODECIMALS, optinoData.pair[0].decimals(), optinoData.pair[1].decimals(), _feedDecimals0];
         _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
         _collateral = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
@@ -1193,7 +1156,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         require(optinoData.feeds[0] != address(0), "feed must != 0");
         // TODO Check spot rate from feed
         // TODO Default to check for registered feed & check parameters
-        // TODO Check feedParameters
+        // TODO Check feedParameters - decimals < 18
         // (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = (210 * 10 ** 18, true, 18, block.timestamp);
         // require(_spot > 0, "Spot must >= 0");
         // require(_hasData, "Feed has no data");
@@ -1229,7 +1192,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
             _optinoToken = series.optinoToken;
             _coverToken = series.coverToken;
         }
-        (ERC20 _collateralToken, uint _collateral, uint _ownerFee) = computeRequiredCollateral(optinoData);
+        (ERC20 _collateralToken, uint _collateral, uint _ownerFee, /*_currentSpot*/) = computeRequiredCollateral(optinoData);
         uint _uiFee;
         if (uiFeeAccount != address(0) && uiFeeAccount != owner) {
             _uiFee = _ownerFee / 2;
