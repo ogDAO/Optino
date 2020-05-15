@@ -980,11 +980,12 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         address[2] pair; // [baseToken, quoteToken]
         address[2] feeds; // [feed0, feed1]
         uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
-        uint callPut;
-        uint expiry;
-        uint strike;
-        uint bound;
-        uint tokens;
+        uint[5] data; // [callPut, expiry, strike, bound, tokens]
+        // uint callPut;
+        // uint expiry;
+        // uint strike;
+        // uint bound;
+        // uint tokens;
     }
 
     enum TokenDecimalsFields {
@@ -1003,6 +1004,13 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         Decimals1,
         Inverse0,
         Inverse1
+    }
+    enum OptinoDataFields {
+        CallPut,
+        Expiry,
+        Strike,
+        Bound,
+        Tokens
     }
 
     uint8 private constant OPTINODECIMALS = 18;
@@ -1033,7 +1041,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     event TokenDecimalsUpdated(address indexed token, uint8 decimals, uint8 locked);
     event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals, uint8 locked);
     event PairAdded(bytes32 indexed pairKey, uint indexed pairIndex, address[2] indexed pair, address[2] feeds, uint8[6] feedParameters);
-    event SeriesAdded(bytes32 indexed pairKey, bytes32 indexed seriesKey, uint indexed pairIndex, uint seriesIndex, uint callPut, uint expiry, uint strike, uint bound, address optinoToken, address coverToken);
+    event SeriesAdded(bytes32 indexed pairKey, bytes32 indexed seriesKey, uint indexed pairIndex, uint seriesIndex, uint[4] data, address optinoToken, address coverToken);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
     event OptinoMinted(bytes32 indexed seriesKey, address indexed optinoToken, address indexed coverToken, uint tokens, address collateralToken, uint collateral, uint ownerFee, uint uiFee);
     event LogInfo(string note, address addr, uint number);
@@ -1178,18 +1186,19 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     }
 
     function makeSeriesKey(bytes32 _pairKey, OptinoData memory optinoData) internal pure returns (bytes32 _seriesKey) {
-        return keccak256(abi.encodePacked(_pairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound));
+        return keccak256(abi.encodePacked(_pairKey, optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]));
     }
     function addSeries(bytes32 _pairKey, OptinoData memory optinoData, address _optinoToken, address _coverToken) internal returns (bytes32 _seriesKey) {
-        require(optinoData.callPut < 2, "callPut must be 0 or 1");
-        require(optinoData.expiry > block.timestamp, "expiry must be > now");
-        require(optinoData.strike > 0, "strike must be > 0");
+        (uint _callPut, uint _expiry, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
+        require(_callPut < 2, "callPut must be 0 or 1");
+        require(_expiry > block.timestamp, "expiry must be > now");
+        require(_strike > 0, "strike must be > 0");
         require(_optinoToken != address(0), "Invalid optinoToken");
         require(_coverToken != address(0), "Invalid coverToken");
-        if (optinoData.callPut == 0) {
-            require(optinoData.bound == 0 || optinoData.bound > optinoData.strike, "Call bound must = 0 or > strike");
+        if (_callPut == 0) {
+            require(_bound == 0 || _bound > _strike, "Call bound must = 0 or > strike");
         } else {
-            require(optinoData.bound < optinoData.strike, "Put bound must = 0 or < strike");
+            require(_bound < _strike, "Put bound must = 0 or < strike");
         }
         _seriesKey = makeSeriesKey(_pairKey, optinoData);
         require(seriesData[_seriesKey].timestamp == 0, "Cannot add duplicate");
@@ -1198,8 +1207,8 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         // emit LogInfo("addSeries.pair.index", msg.sender, pair.index);
         seriesIndex[pair.index].push(_seriesKey);
         uint _seriesIndex = seriesIndex[pair.index].length - 1;
-        seriesData[_seriesKey] = Series(block.timestamp, _seriesIndex, _seriesKey, _pairKey, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken, 0);
-        emit SeriesAdded(_pairKey, _seriesKey, pair.index, _seriesIndex, optinoData.callPut, optinoData.expiry, optinoData.strike, optinoData.bound, _optinoToken, _coverToken);
+        seriesData[_seriesKey] = Series(block.timestamp, _seriesIndex, _seriesKey, _pairKey, _callPut, _expiry, _strike, _bound, _optinoToken, _coverToken, 0);
+        emit SeriesAdded(_pairKey, _seriesKey, pair.index, _seriesIndex, [_callPut, _expiry, _strike, _bound], _optinoToken, _coverToken);
     }
 
     function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
@@ -1330,7 +1339,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     /// @return _optinoToken Existing or newly created Optino token contract address
     /// @return _coverToken Existing or newly created Cover token contract address
     function mint(address[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-        return _mint(OptinoData(pair, feeds, feedParameters, callPut, expiry, strike, bound, tokens), uiFeeAccount);
+        return _mint(OptinoData(pair, feeds, feedParameters, [callPut, expiry, strike, bound, tokens]), uiFeeAccount);
     }
     // function mintRegular(address baseToken, address quoteToken, address feed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public payable returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
     //     return _mint(OptinoData(baseToken, quoteToken, feed, nullParameters(), callPut, expiry, strike, bound, tokens), uiFeeAccount);
@@ -1375,8 +1384,8 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         // }
         // uint decimalsData = Decimals.set(OPTINODECIMALS, getTokenDecimals(optinoData.baseToken), getTokenDecimals(optinoData.quoteToken), _feedDecimals);
         uint8[4] memory decimalsData = [OPTINODECIMALS, getTokenDecimals(optinoData.pair[0]), getTokenDecimals(optinoData.pair[1]), _feedDecimals0];
-        _collateralToken = optinoData.callPut == 0 ? optinoData.pair[0] : optinoData.pair[1];
-        _collateral = OptinoV1.computeCollateral(optinoData.callPut, optinoData.strike, optinoData.bound, optinoData.tokens, decimalsData);
+        _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? optinoData.pair[0] : optinoData.pair[1];
+        _collateral = OptinoV1.computeCollateral(optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)], optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
         emit LogInfo("computeRequiredCollateral results", _collateralToken, _collateral);
     }
     function transferCollateral(OptinoData memory optinoData, address uiFeeAccount, bytes32 _seriesKey) private returns (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee){
@@ -1415,8 +1424,9 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
         }
     }
     function _mint(OptinoData memory optinoData, address uiFeeAccount) internal returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-        require(optinoData.expiry > block.timestamp, "expiry must >= now");
-        require(optinoData.tokens > 0, "tokens must be > 0");
+        // (uint _callPut, uint _expiry, uint _strike, uint _bound, uint _tokens) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Expiry)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)], optinoData.data[uint(OptinoDataFields.Tokens)]);
+        require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must >= now");
+        require(optinoData.data[uint(OptinoDataFields.Tokens)] > 0, "tokens must be > 0");
         // TODO check base and quote not ETH
         // TODO Check pairParameters
         bytes32 _pairKey = getOrAddPair(optinoData);
@@ -1437,9 +1447,9 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
             _coverToken = OptinoToken(payable(series.coverToken));
         }
         (address _collateralToken, uint _collateral, uint _ownerFee, uint _uiFee) = transferCollateral(optinoData, uiFeeAccount, _seriesKey);
-        _optinoToken.mint(msg.sender, optinoData.tokens);
-        _coverToken.mint(msg.sender, optinoData.tokens);
-        emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.tokens, _collateralToken, _collateral, _ownerFee, _uiFee);
+        _optinoToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
+        _coverToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
+        emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.data[uint(OptinoDataFields.Tokens)], _collateralToken, _collateral, _ownerFee, _uiFee);
     }
 
     // @dev Is the collateral in the base token (call) or quote token (put) ?
@@ -1508,7 +1518,7 @@ contract OptinoFactory is Owned, CloneFactory /*, Parameters */ {
     //             _decimals = d;
     //         } catch {
     //             require(tokenDecimalsData[address(token)].token == token, "Token not registered");
-    //             _decimals = tokenDecimalsData[token].decimals;
+    //             _decimals = tokenDecimalsData[token].data[uint(TokenDecimalsFields.Decimals)];
     //         }
     //         (_totalSupply, _balance, _allowance) = (ERC20(token).totalSupply(), ERC20(token).balanceOf(tokenOwner), ERC20(token).allowance(tokenOwner, spender));
     //     }
