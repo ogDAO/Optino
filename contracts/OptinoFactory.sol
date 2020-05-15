@@ -971,10 +971,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         emit SeriesAdded(_pairKey, _seriesKey, pair.index, _seriesIndex, [_callPut, _expiry, _strike, _bound], _optinoToken, _coverToken);
     }
 
-    function _getSeriesCurrentSpot(address[2] memory feeds, uint8[6] memory feedParameters) internal /*view*/ returns (uint _currentSpot) {
+    function _getSeriesCurrentSpot(address[2] memory feeds, uint8[6] memory feedParameters) internal /*view*/ returns (uint8 _feedDecimals0, uint8 _feedType0, uint _currentSpot) {
         Feed memory feed0 = feedData[feeds[0]];
-        uint8 _feedDecimals0 = feedParameters[uint(FeedParametersFields.Decimals0)];
-        uint8 _feedType0 = feedParameters[uint(FeedParametersFields.Type0)];
+        _feedDecimals0 = feedParameters[uint(FeedParametersFields.Decimals0)];
+        _feedType0 = feedParameters[uint(FeedParametersFields.Type0)];
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
             require(feed0.feed == feeds[0], "feed0 not registered");
         }
@@ -1031,7 +1031,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
     function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
         Series memory series = seriesData[seriesKey];
         Pair memory pair = pairData[series.pairKey];
-        _currentSpot = _getSeriesCurrentSpot(pair.feeds, pair.feedParameters);
+        (/*_feedDecimals0*/, /*_feedType0*/, _currentSpot) = _getSeriesCurrentSpot(pair.feeds, pair.feedParameters);
     }
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint _spot) {
         Series memory series = seriesData[seriesKey];
@@ -1134,20 +1134,21 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
 
     function computeRequiredCollateral(OptinoData memory optinoData) private returns (ERC20 _collateralToken, uint _collateral, uint _fee) {
         Feed memory feed0 = feedData[optinoData.feeds[0]];
-        uint8 _feedDecimals0 = optinoData.feedParameters[uint(FeedParametersFields.Decimals0)];
-        uint8 _feedType0 = optinoData.feedParameters[uint(FeedParametersFields.Type0)];
-        if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
-            require(feed0.feed == optinoData.feeds[0], "feed0 not registered");
-        }
-        if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
-        }
-        if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
-            _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
-        }
+        // uint8 _feedDecimals0 = optinoData.feedParameters[uint(FeedParametersFields.Decimals0)];
+        // uint8 _feedType0 = optinoData.feedParameters[uint(FeedParametersFields.Type0)];
+        // if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
+        //     require(feed0.feed == optinoData.feeds[0], "feed0 not registered");
+        // }
+        // if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
+        //     _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
+        // }
+        // if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
+        //     _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
+        // }
+        (uint8 _feedDecimals0, uint8 _feedType0, uint _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
         emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
         emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
-
+        emit LogInfo("computeRequiredCollateral A _currentSpot", msg.sender, uint(_currentSpot));
 
         /*
         if (isNullParameters(optinoData.pairParameters)) {
