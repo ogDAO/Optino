@@ -531,13 +531,6 @@ function printOptinoFactoryContractDetails() {
     var latestBlock = eth.blockNumber;
     var i;
 
-    var tokenDecimalsLength = contract.tokenDecimalsLength.call();
-    console.log("RESULT: optinoFactory.tokenDecimalsLength=" + tokenDecimalsLength);
-    for (var tokenDecimalsIndex = 0; tokenDecimalsIndex < tokenDecimalsLength; tokenDecimalsIndex++) {
-      var tokenDecimals = contract.getTokenDecimalsByIndex.call(tokenDecimalsIndex);
-      console.log("RESULT: optinoFactory.getTokenDecimalsByIndex(" + tokenDecimalsIndex + "). " + JSON.stringify(tokenDecimals));
-    }
-
     var feedLength = contract.feedLength.call();
     console.log("RESULT: optinoFactory.feedLength=" + feedLength);
     for (var feedIndex = 0; feedIndex < feedLength; feedIndex++) {
@@ -583,7 +576,8 @@ function printOptinoFactoryContractDetails() {
             var tokenContract = web3.eth.contract(_optinoTokenContractAbi).at(tokenAddress);
             var tokenDecimals = tokenContract.decimals.call();
             var collateralToken = tokenContract.collateralToken.call();
-            var collateralDecimals = tokenContract.collateralDecimals.call();
+            var collateralTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(collateralToken);
+            var collateralDecimals = collateralTokenContract.decimals.call();
             var oneToken = new BigNumber("1").shift(tokenDecimals);
             var pairData = tokenContract.getPairData.call();
             // var pairParameters = tokenContract.getPairParameters.call();
