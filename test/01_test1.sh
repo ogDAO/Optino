@@ -331,7 +331,7 @@ var deployGroup2_11Tx = optinoFactory.updateFeed(priceFeed1Address, "Maker ETH/U
 var deployGroup2_12Tx = optinoFactory.updateFeed(priceFeed2Address, "Maker MKR/ETH", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 // var deployGroup2_9Tx = optinoFactory.addConfig(baseTokenAddress, quoteTokenAddress, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
-var deployGroup2_13Tx = optinoFactory.updateTokenDecimals(quoteTokenAddress, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+// var deployGroup2_13Tx = optinoFactory.updateTokenDecimals(quoteTokenAddress, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_14Tx = baseToken.approve(optinoFactoryAddress, baseTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_15Tx = quoteToken.approve(optinoFactoryAddress, quoteTokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -361,8 +361,8 @@ failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - optinoFactory.
 printTxData("deployGroup2_11Tx", deployGroup2_11Tx);
 failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - optinoFactory.updateFeed(priceFeed2, 'Maker MKR/ETH', MAKER, 18)");
 printTxData("deployGroup2_12Tx", deployGroup2_12Tx);
-failIfTxStatusError(deployGroup2_13Tx, deployGroup2_Message + " - optinoFactory.updateTokenDecimals(QUOTE, 18)");
-printTxData("deployGroup2_13Tx", deployGroup2_13Tx);
+// failIfTxStatusError(deployGroup2_13Tx, deployGroup2_Message + " - optinoFactory.updateTokenDecimals(QUOTE, 18)");
+// printTxData("deployGroup2_13Tx", deployGroup2_13Tx);
 failIfTxStatusError(deployGroup2_14Tx, deployGroup2_Message + " - seller1 -> baseToken.approve(optinoFactory, " + baseTokens.shift(-baseDecimals).toString() + ")");
 printTxData("deployGroup2_14Tx", deployGroup2_14Tx);
 failIfTxStatusError(deployGroup2_15Tx, deployGroup2_Message + " - seller1 -> quoteToken.approve(optinoFactory, " + quoteTokens.shift(-baseDecimals).toString() + ")");

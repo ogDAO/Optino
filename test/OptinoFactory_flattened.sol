@@ -758,7 +758,7 @@ contract OptinoToken is BasicToken, OptinoV1 {
 
 
 /// @notice Feed library
-library FeedLib {
+contract FeedLib {
     enum FeedType {
         // NOTUSED,
         CHAINLINK,
@@ -766,11 +766,12 @@ library FeedLib {
         COMPOUND,
         ADAPTOR
     }
+    uint8 immutable NODATA = uint8(0xff);
 
     /**
      * @dev Will return 18 decimal places for MakerFeed and AdaptorFeed, allowing custom override for these
      **/
-    function getSpot(address feed, FeedType feedType) internal view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
+    function getFeedRate(address feed, FeedType feedType) public view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
         if (feedType == FeedType.CHAINLINK) {
             int _iRate = AggregatorInterface(feed).latestAnswer();
             _hasData = _iRate > 0;
@@ -784,21 +785,21 @@ library FeedLib {
             if (!_hasData) {
                 _rate = 0;
             }
-            _decimals = 18;
+            _decimals = NODATA;
             _timestamp = block.timestamp;
         } else if (feedType == FeedType.COMPOUND) {
             // TODO - Remove COMPOUND, or add a parameter to save asset
             uint _uRate = V1PriceOracleInterface(feed).assetPrices(address(0));
             _rate = uint(_uRate);
             _hasData = _rate > 0;
-            _decimals = 18;
+            _decimals = NODATA;
             _timestamp = block.timestamp;
         } else if (feedType == FeedType.ADAPTOR) {
             (_rate, _hasData) = AdaptorFeed(feed).spot();
             if (!_hasData) {
                 _rate = 0;
             }
-            _decimals = 18;
+            _decimals = NODATA;
             _timestamp = block.timestamp;
         } else {
             revert("not used");
@@ -810,10 +811,11 @@ library FeedLib {
 /// @title Optino Factory - Deploy optino and cover token contracts
 /// @author BokkyPooBah, Bok Consulting Pty Ltd - <https://github.com/bokkypoobah>
 /// @notice Check `message` for deprecation status
-contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
+contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters */ {
     using SafeMath for uint;
-    using FeedLib for FeedLib.FeedType;
+    // using FeedLib for FeedLib.FeedType;
 
+    enum FeedTypeFields { Type, Decimals, Locked }
     struct Feed {
         uint timestamp;
         uint index;
@@ -821,6 +823,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         string name;
         uint8[3] data; // [type, decimals, locked]
     }
+    enum FeedParametersFields { Type0, Type1, Decimals0, Decimals1, Inverse0, Inverse1 }
     struct Pair {
         uint timestamp;
         uint index;
@@ -828,6 +831,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         address[2] feeds; // [feed0, feed1]
         uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
     }
+    enum SeriesDataFields { CallPut, Expiry, Strike, Bound, Spot }
     struct Series {
         uint timestamp;
         uint index;
@@ -837,39 +841,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         OptinoToken optinoToken;
         OptinoToken coverToken;
     }
+    enum OptinoDataFields { CallPut, Expiry, Strike, Bound, Tokens }
     struct OptinoData {
         ERC20[2] pair; // [baseToken, quoteToken]
         address[2] feeds; // [feed0, feed1]
         uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
         uint[5] data; // [callPut, expiry, strike, bound, tokens]
-    }
-
-    enum FeedTypeFields {
-        Type,
-        Decimals,
-        Locked
-    }
-    enum FeedParametersFields {
-        Type0,
-        Type1,
-        Decimals0,
-        Decimals1,
-        Inverse0,
-        Inverse1
-    }
-    enum SeriesDataFields {
-        CallPut,
-        Expiry,
-        Strike,
-        Bound,
-        Spot
-    }
-    enum OptinoDataFields {
-        CallPut,
-        Expiry,
-        Strike,
-        Bound,
-        Tokens
     }
 
     uint8 private constant OPTINODECIMALS = 18;
@@ -916,11 +893,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     function updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals) public onlyOwner {
         Feed storage _feed = feedData[feed];
         require(_feed.data[uint(FeedTypeFields.Locked)] == 0, "Locked");
-        (uint _spot, bool _hasData, /*uint8 _feedDecimals*/, uint _timestamp) = FeedLib.getSpot(feed, FeedLib.FeedType(feedType));
+        (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = getFeedRate(feed, FeedLib.FeedType(feedType));
+        if (_feedDecimals != NODATA) {
+            require(decimals == _feedDecimals, "decimals does not match feed decimals");
+        }
         require(_spot > 0, "Spot must >= 0");
         require(_hasData, "Feed has no data");
-        // TODO
-        // require(_feedDecimals == decimals, "updateFeed: Feed decimals mismatch");
         require(_timestamp + ONEDAY > block.timestamp, "Feed stale");
         if (_feed.feed == address(0)) {
             feedIndex.push(feed);
@@ -946,8 +924,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
     function feedLength() public view returns (uint) {
         return feedIndex.length;
     }
-    function getSpot(address feed, FeedLib.FeedType _feedType) public view returns (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) {
-        (_spot, _hasData, _feedDecimals, _timestamp) = FeedLib.getSpot(feed, _feedType);
+    function getSpot(address feed, FeedType _feedType) public view returns (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) {
+        (_spot, _hasData, _feedDecimals, _timestamp) = getFeedRate(feed, _feedType);
     }
 
     function makePairKey(OptinoData memory optinoData) internal pure returns (bytes32 _pairKey) {
@@ -957,8 +935,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         _pairKey = makePairKey(optinoData);
         Pair memory pair = pairData[_pairKey];
         if (pair.timestamp == 0) {
-            require(optinoData.pair[0] != optinoData.pair[1], "baseToken must != quoteToken");
-            require(optinoData.feeds[0] != address(0), "feed must != 0");
+            // require(optinoData.pair[0] != optinoData.pair[1], "baseToken must != quoteToken");
+            // require(optinoData.feeds[0] != address(0), "feed must != 0");
             // TODO Check parameters
             // require(optinoData.customFeedDecimals <= 18, "customFeedDecimals must be <= 18");
             // If not custom feed, must have existing feeds registered
@@ -1029,7 +1007,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
         emit LogInfo("getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
         emit LogInfo("getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
 
-        (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feeds[0], FeedLib.FeedType(_feedType0));
+        (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(pair.feeds[0], FeedLib.FeedType(_feedType0));
         emit LogInfo("getSeriesCurrentSpot A _spot0", msg.sender, _spot0);
         if (pair.feedParameters[uint(FeedParametersFields.Inverse0)] == 1) {
             _spot0 = (10 ** (uint(_feedDecimals0) * 2)).div(_spot0);
@@ -1051,7 +1029,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1 /*, Parameters */ {
             }
             emit LogInfo("getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
             emit LogInfo("getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
-            (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = FeedLib.getSpot(pair.feeds[1], FeedLib.FeedType(_feedType1));
+            (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(pair.feeds[1], FeedLib.FeedType(_feedType1));
             emit LogInfo("getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
             if (pair.feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
                 _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
