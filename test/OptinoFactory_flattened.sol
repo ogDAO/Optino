@@ -915,11 +915,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         _feed.data[uint(FeedTypeFields.Locked)] = 1;
         emit FeedUpdated(feed, _feed.name, _feed.data[uint(FeedTypeFields.Type)], _feed.data[uint(FeedTypeFields.Decimals)], 1);
     }
-    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8[3] memory _data) {
+    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8[3] memory _data, uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) {
         require(i < feedIndex.length, "Invalid index");
         _feed = feedIndex[i];
         Feed memory feed = feedData[_feed];
         (_name, _data) = (feed.name, feed.data);
+        (_spot, _hasData, _feedDecimals, _timestamp) = getFeedRate(feed.feed, FeedType(feed.data[uint(FeedTypeFields.Type)]));
     }
     function feedLength() public view returns (uint) {
         return feedIndex.length;
@@ -935,28 +936,6 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         _pairKey = makePairKey(optinoData);
         Pair memory pair = pairData[_pairKey];
         if (pair.timestamp == 0) {
-            // require(optinoData.pair[0] != optinoData.pair[1], "baseToken must != quoteToken");
-            // require(optinoData.feeds[0] != address(0), "feed must != 0");
-            // TODO Check parameters
-            // require(optinoData.customFeedDecimals <= 18, "customFeedDecimals must be <= 18");
-            // If not custom feed, must have existing feeds registered
-            // TODO
-            // if (!optinoData.customFeed) {
-            //     require(feedData[optinoData.feed].feed == optinoData.feed, "Feed not registered");
-            // }
-            // TODO
-            // Check feed data
-            // (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = FeedLib.getSpot(optinoData.feed, optinoData.customFeedType);
-            (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = (210 * 10 ** 18, true, 18, block.timestamp);
-            require(_spot > 0, "Spot must >= 0");
-            require(_hasData, "Feed has no data");
-            require(_timestamp + ONEDAY > block.timestamp, "Feed stale");
-            // TODO
-            // if (optinoData.customFeed) {
-            //     if (optinoData.customFeedType == FeedLib.FeedType.CHAINLINK) {
-            //         require(optinoData.customFeedDecimals == _feedDecimals, "customFeedDecimals must = Chainlink decimals");
-            //     }
-            // }
             pairIndex.push(_pairKey);
             pairData[_pairKey] = Pair(block.timestamp, pairIndex.length - 1, optinoData.pair, optinoData.feeds, optinoData.feedParameters);
             emit PairAdded(_pairKey, pairIndex.length - 1, optinoData.pair, optinoData.feeds, optinoData.feedParameters);
@@ -998,6 +977,9 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         Feed memory feed0 = feedData[pair.feeds[0]];
         uint8 _feedDecimals0 = pair.feedParameters[uint(FeedParametersFields.Decimals0)];
         uint8 _feedType0 = pair.feedParameters[uint(FeedParametersFields.Type0)];
+        if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT || _feedType0 == FEEDPARAMETERS_DEFAULT) {
+            require(feed0.feed == pair.feeds[0], "feed0 not registered");
+        }
         if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             _feedDecimals0 = feed0.data[uint(FeedTypeFields.Decimals)];
         }
@@ -1021,6 +1003,9 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
             Feed memory feed1 = feedData[pair.feeds[1]];
             _feedDecimals1 = pair.feedParameters[uint(FeedParametersFields.Decimals1)];
             _feedType1 = pair.feedParameters[uint(FeedParametersFields.Type1)];
+            if (_feedDecimals1 == FEEDPARAMETERS_DEFAULT || _feedType1 == FEEDPARAMETERS_DEFAULT) {
+                require(feed1.feed == pair.feeds[1], "feed1 not registered");
+            }
             if (_feedDecimals1 == FEEDPARAMETERS_DEFAULT) {
                 _feedDecimals1 = feed1.data[uint(FeedTypeFields.Decimals)];
             }
@@ -1194,6 +1179,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         // TODO Check spot rate from feed
         // TODO Default to check for registered feed & check parameters
         // TODO Check feedParameters
+        // (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = (210 * 10 ** 18, true, 18, block.timestamp);
+        // require(_spot > 0, "Spot must >= 0");
+        // require(_hasData, "Feed has no data");
+        // require(_timestamp + ONEDAY > block.timestamp, "Feed stale");
 
         (uint _callPut, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
         require(_callPut < 2, "callPut must be 0 or 1");
