@@ -620,7 +620,7 @@ contract OptinoToken is BasicToken, OptinoV1 {
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         (factory, seriesKey, optinoPair, seriesNumber, isCover) = (_factory, _seriesKey, _optinoPair, _seriesNumber, _isCover);
-        emit LogInfo("initOptinoToken", msg.sender, 0);
+        // emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint[5] memory _seriesData, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
         (ERC20[2] memory _pair, /*_feed*/, /*_feedParameters*/) = factory.getPairByKey(_pairKey);
         collateralToken = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)] == 0 ? _pair[0] : _pair[1];
@@ -652,7 +652,7 @@ contract OptinoToken is BasicToken, OptinoV1 {
     function spot() public view returns (uint _spot) {
         _spot = factory.getSeriesSpot(seriesKey);
     }
-    function currentSpot() public /* view */ returns (uint _currentSpot) {
+    function currentSpot() public view returns (uint _currentSpot) {
         return factory.getSeriesCurrentSpot(seriesKey);
     }
     function setSpot() public {
@@ -662,7 +662,7 @@ contract OptinoToken is BasicToken, OptinoV1 {
         (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
         return computePayoff(_seriesData, _spot, tokens, decimalsData);
     }
-    function currentPayoff(uint tokens) public /* view*/ returns (uint _currentPayoff) {
+    function currentPayoff(uint tokens) public view returns (uint _currentPayoff) {
         (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
         uint _spot = currentSpot();
         uint _payoff = computePayoff(_seriesData, _spot, tokens, decimalsData);
@@ -969,7 +969,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         emit SeriesAdded(_pairKey, _seriesKey, pair.index, _seriesIndex, [_callPut, _expiry, _strike, _bound], _optinoToken, _coverToken);
     }
 
-    function _getSeriesCurrentSpot(address[2] memory feeds, uint8[6] memory feedParameters) internal /*view*/ returns (uint8 _feedDecimals0, uint8 _feedType0, uint _currentSpot) {
+    function _getSeriesCurrentSpot(address[2] memory feeds, uint8[6] memory feedParameters) internal view returns (uint8 _feedDecimals0, uint8 _feedType0, uint _currentSpot) {
         Feed memory feed0 = feedData[feeds[0]];
         _feedDecimals0 = feedParameters[uint(FeedParametersFields.Decimals0)];
         _feedType0 = feedParameters[uint(FeedParametersFields.Type0)];
@@ -982,14 +982,14 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
             _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
         }
-        emit LogInfo("_getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        emit LogInfo("_getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
+        // emit LogInfo("_getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
+        // emit LogInfo("_getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
 
         (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[0], FeedType(_feedType0));
-        emit LogInfo("getSeriesCurrentSpot A _spot0", msg.sender, _spot0);
+        // emit LogInfo("getSeriesCurrentSpot A _spot0", msg.sender, _spot0);
         if (feedParameters[uint(FeedParametersFields.Inverse0)] == 1) {
             _spot0 = (10 ** (uint(_feedDecimals0) * 2)).div(_spot0);
-            emit LogInfo("_getSeriesCurrentSpot A _spot0 Inverted", msg.sender, _spot0);
+            // emit LogInfo("_getSeriesCurrentSpot A _spot0 Inverted", msg.sender, _spot0);
         }
         uint8 _feedDecimals1;
         uint8 _feedType1;
@@ -1008,25 +1008,25 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
             if (_feedType1 == FEEDPARAMETERS_DEFAULT) {
                 _feedType1 = feed1.data[uint(FeedTypeFields.Type)];
             }
-            emit LogInfo("_getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
-            emit LogInfo("_getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
+            // emit LogInfo("_getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
+            // emit LogInfo("_getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
             (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[1], FeedType(_feedType1));
-            emit LogInfo("_getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
+            // emit LogInfo("_getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
             if (feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
                 _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
-                emit LogInfo("_getSeriesCurrentSpot B _spot1 Inverted", msg.sender, _spot1);
+                // emit LogInfo("_getSeriesCurrentSpot B _spot1 Inverted", msg.sender, _spot1);
             }
         }
         if (feeds[1] == address(0)) {
             _currentSpot = _hasData0 ? _spot0 : 0;
-            emit LogInfo("_getSeriesCurrentSpot C _currentSpot 1 feed", msg.sender, _currentSpot);
+            // emit LogInfo("_getSeriesCurrentSpot C _currentSpot 1 feed", msg.sender, _currentSpot);
         } else {
             _currentSpot = _hasData0 && _hasData1 ? _spot0.mul(_spot1).div(10 ** uint(_feedDecimals1)) : 0;
-            emit LogInfo("_getSeriesCurrentSpot C _currentSpot 2 feeds", msg.sender, _currentSpot);
+            // emit LogInfo("_getSeriesCurrentSpot C _currentSpot 2 feeds", msg.sender, _currentSpot);
         }
     }
 
-    function getSeriesCurrentSpot(bytes32 seriesKey) public /*view*/ returns (uint _currentSpot) {
+    function getSeriesCurrentSpot(bytes32 seriesKey) public view returns (uint _currentSpot) {
         Series memory series = seriesData[seriesKey];
         Pair memory pair = pairData[series.pairKey];
         (/*_feedDecimals0*/, /*_feedType0*/, _currentSpot) = _getSeriesCurrentSpot(pair.feeds, pair.feedParameters);
@@ -1102,7 +1102,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     /// @return _collateralToken
     /// @return _collateral
     /// @return _fee
-    function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+    function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public view returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
         // return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
         OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
         checkData(optinoData);
@@ -1110,24 +1110,22 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     }
 
     // TODO Not working yet - contract too large
-    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
-        // return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
+    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0) {
         OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
         checkData(optinoData);
-        (_collateralToken, _collateral, _fee, _currentSpot, _feedDecimals0) = computePayoff(optinoData);
+        (_collateralToken, _payoff, _currentSpot, _feedDecimals0) = computePayoff(optinoData);
     }
-    function computePayoff(OptinoData memory optinoData) private returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+    function computePayoff(OptinoData memory optinoData) private view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0) {
         uint8 _feedType0;
         (_feedDecimals0, _feedType0, _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
-        emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
-        emit LogInfo("computeRequiredCollateral A _currentSpot", msg.sender, uint(_currentSpot));
+        // emit LogInfo("computePayoff A _feedDecimals0", msg.sender, uint(_feedDecimals0));
+        // emit LogInfo("computePayoff A _feedType0", msg.sender, uint(_feedType0));
+        // emit LogInfo("computePayoff A _currentSpot", msg.sender, uint(_currentSpot));
 
         uint8[4] memory decimalsData = [OPTINODECIMALS, optinoData.pair[0].decimals(), optinoData.pair[1].decimals(), _feedDecimals0];
         _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
-        _collateral = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
-        _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
-        emit LogInfo("computeRequiredCollateral results", address(_collateralToken), _collateral);
+        _payoff = computePayoff(optinoData.data, _currentSpot, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+        // emit LogInfo("computePayoff results", address(_collateralToken), _payoff);
     }
 
     // function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
@@ -1155,18 +1153,18 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     //     return _mint(OptinoData(token0, token1, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
     // }
 
-    function computeRequiredCollateral(OptinoData memory optinoData) private returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+    function computeRequiredCollateral(OptinoData memory optinoData) private view returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
         uint8 _feedType0;
         (_feedDecimals0, _feedType0, _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
-        emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
-        emit LogInfo("computeRequiredCollateral A _currentSpot", msg.sender, uint(_currentSpot));
+        // emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
+        // emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
+        // emit LogInfo("computeRequiredCollateral A _currentSpot", msg.sender, uint(_currentSpot));
 
         uint8[4] memory decimalsData = [OPTINODECIMALS, optinoData.pair[0].decimals(), optinoData.pair[1].decimals(), _feedDecimals0];
         _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
         _collateral = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
         _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
-        emit LogInfo("computeRequiredCollateral results", address(_collateralToken), _collateral);
+        // emit LogInfo("computeRequiredCollateral results", address(_collateralToken), _collateral);
     }
 
     function checkFeedParameters(uint8[6] memory feedParameters) internal view {
