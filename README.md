@@ -3,43 +3,17 @@
 
 Status: Work in progress
 
-See [contracts/OptinoFactory.sol](contracts/OptinoFactory.sol).
+See the the smart contracts in [contracts/OptinoFactory.sol](contracts/OptinoFactory.sol).
 
-You can test it out using MetaMask connected to the Ropsten network at [https://bokkypoobah.github.io/Optino](https://bokkypoobah.github.io/Optino/#/vanillaOptinoExplorer/all).
+See the [/wiki](/wiki) for documentation (TODO).
 
+The testing is in the [test](test) folder, with some sample results in [test/test1results.txt](test/test1results.txt).
 
+You can test out a version of the smart contracts using MetaMask connected to the Ropsten network at [https://bokkypoobah.github.io/Optino](https://bokkypoobah.github.io/Optino/#/vanillaOptinoExplorer/all).
 
-// This factory deploys Ethereum smart contracts for 100% collateralised
-// vanilla call and put, capped call, and floored put options on ERC20 and/or
-// ETH pairs. Optino sellers escrow collateral
-//
-// Using ETH/DAI as a pair, an option seller
-// is able to deploy option contracts that are 100% collateralised by ETH (for
-// vanilla and capped calls) or DAI (for vanilla and floored puts).
-//
-// TODO: Price feed
-//
-// The option seller's collateral is escrowed in a newly deployed *Cover* ERC20
-// token contract. A separate *Optino* ERC20 token contract is also deployed.
-//
-// At or after expiry, the holder of Optino tokens executes the `settle()`
-// function on the Optino token contract. The spot price from the price feed
-// is locked into the contract, and the option payoff is calculated. The
-// payoff will be calculated based the number of tokens held by the token
-// holder and the tokens are transferred from the originally escrowed collateral
-// held by the Cover token contract to the token holder.
-//
-// At or after expiry, the holder of Cover tokens executes the `settle()`
-// function on the Cover token contract.
-//
-// The option seller can then sell the Cover and/or Optino tokens on a
-// decentralised (or centralised) exchange.
-//
-// allows sellers of ERC20 or ETH vanilla put and call
-// This factory deploys Optino ERC20 tokens and the corresponding Optino Cover
-// ERC20 tokens
+---
 
-
+## Ignore everything below
 
 # Risks
 
