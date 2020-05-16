@@ -45,9 +45,9 @@ TEST3RESULTS=test3results.txt
 TEST4OUTPUT=test4output.txt
 TEST4RESULTS=test4results.txt
 
-CURRENTTIME = '1589611812' 'Sat May 16 16:50:12 2020'
-START_DATE  = '1589611857' 'Sat May 16 16:50:57 2020'
-END_DATE    = '1589611932' 'Sat May 16 16:52:12 2020'
+CURRENTTIME = '1589612861' 'Sat May 16 17:07:41 2020'
+START_DATE  = '1589612906' 'Sat May 16 17:08:26 2020'
+END_DATE    = '1589612981' 'Sat May 16 17:09:41 2020'
 contractsdir: ../contracts/
 remapdir    : (no remapping)
 mainsol     : MintableToken.sol
@@ -90,7 +90,7 @@ Welcome to the Geth JavaScript console!
 
 instance: Geth/v1.9.13-stable/darwin-amd64/go1.14.2
 coinbase: 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e
-at block: 14837 (Sat May 16 2020 16:50:14 GMT+1000 (AEST))
+at block: 15491 (Sat May 16 2020 17:07:43 GMT+1000 (AEST))
  datadir: /Users/bok/Projects/Optino/test/testchain
  modules: admin:1.0 clique:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 shh:1.0 txpool:1.0 web3:1.0
 
@@ -358,31 +358,31 @@ undefined
 ... 
 undefined
 > 
-DATA: var token0Address="0xbe2e055d925bb9c6739a5147aa3416ed06178d64";
+DATA: var token0Address="0x6b67203f3aef24182d09e2f5d66126428b06aba1";
 DATA: var tokenAbi=[{"inputs":[{"internalType":"string","name":"symbol","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"},{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 DATA: var token0=eth.contract(tokenAbi).at(token0Address);
-DATA: var token1Address="0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2";
+DATA: var token1Address="0xff5ef8bf5b4decb63717f48357291616f1eee21d";
 DATA: var tokenAbi=[{"inputs":[{"internalType":"string","name":"symbol","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"},{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"tokenOwner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"burn","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenOwner","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnershipImmediately","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 DATA: var token1=eth.contract(tokenAbi).at(token1Address);
-DATA: var optinoTokenAddress="0xb8b3513800240021a2f5a20eca92f10c08a75e1c";
+DATA: var optinoTokenAddress="0x8b535eeb7c4704afe708ea8cc9b830978310f97f";
 DATA: var optinoTokenAbi=[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 DATA: var optinoToken=eth.contract(optinoTokenAbi).at(optinoTokenAddress);
-DATA: var priceFeed1Address="0x6e0a8538e41fb59e7c27943531af86e44ed160eb";
+DATA: var priceFeed1Address="0x11f72ce9616536054e80f6e72946f67f73ffc7a4";
 DATA: var priceFeed1Abi=[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 DATA: var priceFeed1=eth.contract(priceFeed1Abi).at(priceFeed1Address);
-DATA: var priceFeed2Address="0x8ceb5a055735ec5c4b627fd9a58830096a096ef5";
+DATA: var priceFeed2Address="0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e";
 DATA: var priceFeed2Abi=[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"},{"indexed":false,"internalType":"bool","name":"hasValue","type":"bool"}],"name":"SetValue","type":"event"},{"inputs":[],"name":"hasValue","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"peek","outputs":[{"internalType":"bytes32","name":"_value","type":"bytes32"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"bool","name":"_hasValue","type":"bool"}],"name":"setValue","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"value","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 DATA: var priceFeed2=eth.contract(priceFeed2Abi).at(priceFeed2Address);
 undefined
 > 
-DATA: priceFeedAdaptorContract={"eth":{"_requestManager":{"provider":{},"polls":{},"timeout":null},"compile":{},"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","mining":true,"hashrate":0,"syncing":false,"gasPrice":"8100000000","accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":14844,"protocolVersion":"0x41","pendingTransactions":[]},"abi":[{"inputs":[{"internalType":"address","name":"_sourceAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"sourceAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]}
+DATA: priceFeedAdaptorContract={"eth":{"_requestManager":{"provider":{},"polls":{},"timeout":null},"compile":{},"coinbase":"0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","mining":true,"hashrate":0,"syncing":false,"gasPrice":"8100000000","accounts":["0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e","0xa11aae29840fbb5c86e6fd4cf809eba183aef433","0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976","0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0","0xa44a08d3f6933c69212114bb66e2df1813651844","0xa55a151eb00fded1634d27d1127b4be4627079ea","0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9","0xa77a2b9d4b1c010a22a7c565dc418cef683dbcec","0xa88a05d2b88283ce84c8325760b72a64591279a2","0xa99a0ae3354c06b1459fd441a32a3f71005d7da0","0xaaaa9de1e6c564446ebca0fd102d8bd92093c756","0xabba43e7594e3b76afb157989e93c6621497fd4b","0xacca534c9f62ab495bd986e002ddf0f054caae4f","0xadda9b762a00ff12711113bfdc36958b73d7f915","0xaeea63b5479b50f79583ec49dacdcf86ddeff392","0xaffa4d3a80add8ce4018540e056dacb649589394","0xb00bfde102270687324f9205b693859df64f8923","0xb11be1d4ef8e94d01cb2695092a79d139a8dad98","0xb22be2d9eef0d7e260cf96a64feea0b95ed3e74f","0xb33b7ecf5e47be3981c74d989d3af8b665b4b649","0xb44b43d59b738b088b690ae276c1e979aba8268d","0xb55b57d113b45481e31aaf03d6f4e5ad4ef325f8","0xb66bcb4e473de80e2c8a47ced10c22c705a5e602","0xb77bbbaa7c1649547ae61de4b80b91568c28351a","0xb88b728490b417e29b0784db30535db343830dba","0xb99b3d1f72edb05a0321db58eddcf83fd73c4ade","0xbaab56da883edbe5314b8005be410022c510ccae","0xbbbb9809de0456ce0e0cd660e6e4ceabef3f521c","0xbccb68dd0ac87ef290aef49870d155f076c87868","0xbddb726ee06906e104db210e6d0506f2b062e477","0xbeeb24ff18203658d0a1d4682ee3f36ad663ec87","0xbffbd8f029ef0bd81cf754b53e8b3a5684f8b3ff"],"blockNumber":15500,"protocolVersion":"0x41","pendingTransactions":[]},"abi":[{"inputs":[{"internalType":"address","name":"_sourceAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"sourceAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]}
 null
 > 
 undefined
 > 
 undefined
 > 
-DATA: priceFeed1Address=0x6e0a8538e41fb59e7c27943531af86e44ed160eb
+DATA: priceFeed1Address=0x11f72ce9616536054e80f6e72946f67f73ffc7a4
 null
 > 
 ... 
@@ -432,18 +432,18 @@ undefined
 ... 
 undefined
 > 
-DATA: var priceFeedAdaptorAddress="0x051f5d7afe7007c4bb6e62add989c2be255a8a22";
+DATA: var priceFeedAdaptorAddress="0xa516d969a5c58f137c4b6482bb84c46056efff2b";
 DATA: var priceFeedAdaptorAbi=[{"inputs":[{"internalType":"address","name":"_sourceAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"sourceAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"spot","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}];
 DATA: var priceFeedAdaptor=eth.contract(priceFeedAdaptorAbi).at(priceFeedAdaptorAddress);
-DATA: var optinoFactoryAddress="0x1392b3306e6f307b829d2fe8ce130af106a8e143";
+DATA: var optinoFactoryAddress="0xf82dfe0df4504a618c0791c2c0617c6fe9de5328";
 DATA: var optinoFactoryAbi=[{"inputs":[{"internalType":"address","name":"_optinoTokenTemplate","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"}],"name":"FeeUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"feed","type":"address"},{"indexed":false,"internalType":"string","name":"name","type":"string"},{"indexed":false,"internalType":"uint8","name":"feedType","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"decimals","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"locked","type":"uint8"}],"name":"FeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"note","type":"string"},{"indexed":false,"internalType":"address","name":"addr","type":"address"},{"indexed":false,"internalType":"uint256","name":"number","type":"uint256"}],"name":"LogInfo","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"_message","type":"string"}],"name":"MessageUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":true,"internalType":"contract OptinoToken","name":"optinoToken","type":"address"},{"indexed":true,"internalType":"contract OptinoToken","name":"coverToken","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokens","type":"uint256"},{"indexed":false,"internalType":"contract ERC20","name":"collateralToken","type":"address"},{"indexed":false,"internalType":"uint256","name":"collateral","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ownerFee","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"uiFee","type":"uint256"}],"name":"OptinoMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_from","type":"address"},{"indexed":true,"internalType":"address","name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"pairKey","type":"bytes32"},{"indexed":true,"internalType":"uint256","name":"pairIndex","type":"uint256"},{"indexed":true,"internalType":"contract ERC20[2]","name":"pair","type":"address[2]"},{"indexed":false,"internalType":"address[2]","name":"feeds","type":"address[2]"},{"indexed":false,"internalType":"uint8[6]","name":"feedParameters","type":"uint8[6]"}],"name":"PairAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"pairKey","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":true,"internalType":"uint256","name":"pairIndex","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"seriesIndex","type":"uint256"},{"indexed":false,"internalType":"uint256[4]","name":"data","type":"uint256[4]"},{"indexed":false,"internalType":"contract OptinoToken","name":"optinoToken","type":"address"},{"indexed":false,"internalType":"contract OptinoToken","name":"coverToken","type":"address"}],"name":"SeriesAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"spot","type":"uint256"}],"name":"SeriesSpotUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"contract ERC20","name":"token","type":"address"},{"indexed":false,"internalType":"uint8","name":"decimals","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"locked","type":"uint8"}],"name":"TokenDecimalsUpdated","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"contract ERC20[2]","name":"pair","type":"address[2]"},{"internalType":"address[2]","name":"feeds","type":"address[2]"},{"internalType":"uint8[6]","name":"feedParameters","type":"uint8[6]"},{"internalType":"uint256[5]","name":"data","type":"uint256[5]"}],"name":"calcCollateralAndFee","outputs":[{"internalType":"contract ERC20","name":"_collateralToken","type":"address"},{"internalType":"uint256","name":"_collateral","type":"uint256"},{"internalType":"uint256","name":"_fee","type":"uint256"},{"internalType":"uint256","name":"_currentSpot","type":"uint256"},{"internalType":"uint8","name":"_feedDecimals0","type":"uint8"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"fee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feedLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getCalcData","outputs":[{"internalType":"uint256[5]","name":"_seriesData","type":"uint256[5]"},{"internalType":"uint8[4]","name":"_decimalsData","type":"uint8[4]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getFeedByIndex","outputs":[{"internalType":"address","name":"_feed","type":"address"},{"internalType":"string","name":"_name","type":"string"},{"internalType":"uint8[3]","name":"_data","type":"uint8[3]"},{"internalType":"uint256","name":"_spot","type":"uint256"},{"internalType":"bool","name":"_hasData","type":"bool"},{"internalType":"uint8","name":"_feedDecimals","type":"uint8"},{"internalType":"uint256","name":"_feedTimestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"feed","type":"address"},{"internalType":"enum FeedLib.FeedType","name":"feedType","type":"uint8"}],"name":"getFeedRate","outputs":[{"internalType":"uint256","name":"_rate","type":"uint256"},{"internalType":"bool","name":"_hasData","type":"bool"},{"internalType":"uint8","name":"_decimals","type":"uint8"},{"internalType":"uint256","name":"_timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getNameData","outputs":[{"internalType":"bool","name":"_isCustom","type":"bool"},{"internalType":"string","name":"_feedName","type":"string"},{"internalType":"uint256[5]","name":"_seriesData","type":"uint256[5]"},{"internalType":"uint8","name":"_feedDecimals","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getPairByIndex","outputs":[{"internalType":"bytes32","name":"_pairKey","type":"bytes32"},{"internalType":"contract ERC20[2]","name":"_pair","type":"address[2]"},{"internalType":"address[2]","name":"_feeds","type":"address[2]"},{"internalType":"uint8[6]","name":"_feedParameters","type":"uint8[6]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"pairKey","type":"bytes32"}],"name":"getPairByKey","outputs":[{"internalType":"contract ERC20[2]","name":"_pair","type":"address[2]"},{"internalType":"address[2]","name":"_feeds","type":"address[2]"},{"internalType":"uint8[6]","name":"_feedParameters","type":"uint8[6]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pairIndex","type":"uint256"},{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getSeriesByIndex","outputs":[{"internalType":"bytes32","name":"_seriesKey","type":"bytes32"},{"internalType":"bytes32","name":"_pairKey","type":"bytes32"},{"internalType":"uint256[5]","name":"_data","type":"uint256[5]"},{"internalType":"uint256","name":"_timestamp","type":"uint256"},{"internalType":"contract OptinoToken","name":"_optinoToken","type":"address"},{"internalType":"contract OptinoToken","name":"_coverToken","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getSeriesByKey","outputs":[{"internalType":"bytes32","name":"_pairKey","type":"bytes32"},{"internalType":"uint256[5]","name":"_data","type":"uint256[5]"},{"internalType":"contract OptinoToken","name":"_optinoToken","type":"address"},{"internalType":"contract OptinoToken","name":"_coverToken","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getSeriesCurrentSpot","outputs":[{"internalType":"uint256","name":"_currentSpot","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"getSeriesSpot","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"feed","type":"address"},{"internalType":"enum FeedLib.FeedType","name":"_feedType","type":"uint8"}],"name":"getSpot","outputs":[{"internalType":"uint256","name":"_spot","type":"uint256"},{"internalType":"bool","name":"_hasData","type":"bool"},{"internalType":"uint8","name":"_feedDecimals","type":"uint8"},{"internalType":"uint256","name":"_timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"feed","type":"address"}],"name":"lockFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"message","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract ERC20[2]","name":"pair","type":"address[2]"},{"internalType":"address[2]","name":"feeds","type":"address[2]"},{"internalType":"uint8[6]","name":"feedParameters","type":"uint8[6]"},{"internalType":"uint256[5]","name":"data","type":"uint256[5]"},{"internalType":"address","name":"uiFeeAccount","type":"address"}],"name":"mint","outputs":[{"internalType":"contract OptinoToken","name":"_optinoToken","type":"address"},{"internalType":"contract OptinoToken","name":"_coverToken","type":"address"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"newOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"optinoTokenTemplate","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pairLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pairIndex","type":"uint256"}],"name":"seriesLength","outputs":[{"internalType":"uint256","name":"_seriesLength","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"}],"name":"setSeriesSpot","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"seriesKey","type":"bytes32"},{"internalType":"uint256","name":"spot","type":"uint256"}],"name":"setSeriesSpotIfPriceFeedFails","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_fee","type":"uint256"}],"name":"updateFee","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"feed","type":"address"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint8","name":"feedType","type":"uint8"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"name":"updateFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_message","type":"string"}],"name":"updateMessage","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 DATA: var optinoFactory=eth.contract(optinoFactoryAbi).at(optinoFactoryAddress);
 RESULT:  # Account                                             EtherBalanceChange                           WETH                           USDx Name
 RESULT:                                                                                                        2                              3
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.091670818500000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.091671012900000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.091670818500000000           0.000000000000000000           0.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.091671012900000000           0.000000000000000000           0.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976        0.000000000000000000           0.000000000000000000           0.000000000000000000 seller1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -457,19 +457,19 @@ RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbe2e055d925bb9c6739a5147aa3416ed06178d64        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
+RESULT:  8 0x6b67203f3aef24182d09e2f5d66126428b06aba1        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
+RESULT:  9 0xff5ef8bf5b4decb63717f48357291616f1eee21d        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb8b3513800240021a2f5a20eca92f10c08a75e1c        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT: 10 0x8b535eeb7c4704afe708ea8cc9b830978310f97f        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x6e0a8538e41fb59e7c27943531af86e44ed160eb        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+RESULT: 11 0x11f72ce9616536054e80f6e72946f67f73ffc7a4        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x8ceb5a055735ec5c4b627fd9a58830096a096ef5        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
+RESULT: 12 0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x051f5d7afe7007c4bb6e62add989c2be255a8a22        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+RESULT: 13 0xa516d969a5c58f137c4b6482bb84c46056efff2b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x1392b3306e6f307b829d2fe8ce130af106a8e143        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+RESULT: 14 0xf82dfe0df4504a618c0791c2c0617c6fe9de5328        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000 Total Token Balances
@@ -481,89 +481,89 @@ undefined
 RESULT: PASS Deploy Group #1 - Contracts - Token0
 1
 > 
-RESULT: token0Tx status=0x1 Success gas=4000000 gasUsed=890540 costETH=0.007213374 costUSD=1.41750012474 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14844 txIx=0 txId=0xf333d2af9a0c608355853ad3067f599c90693262bb574b87bbf1075a8ede06ba @ 1589611821 Sat, 16 May 2020 06:50:21 GMT
+RESULT: token0Tx status=0x1 Success gas=4000000 gasUsed=890540 costETH=0.007213374 costUSD=1.41750012474 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15500 txIx=0 txId=0xdefe92578d6d66f4fe536e09f1e03d79c9d0b38d70dabbd32ab58458a4a46dfa @ 1589612872 Sat, 16 May 2020 07:07:52 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - Token1
 1
 > 
-RESULT: token1Tx status=0x1 Success gas=4000000 gasUsed=890444 costETH=0.0072125964 costUSD=1.417347318564 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14844 txIx=1 txId=0x562a6f7ffb5c4bc72ff86c65a6b1a91d41cb71410a53145744c4f41a71adfbfd @ 1589611821 Sat, 16 May 2020 06:50:21 GMT
+RESULT: token1Tx status=0x1 Success gas=4000000 gasUsed=890444 costETH=0.0072125964 costUSD=1.417347318564 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15500 txIx=1 txId=0x2c3de88b259863b2ebbd8938445d3139e0e659a2c56322290b8c2af51137e2e9 @ 1589612872 Sat, 16 May 2020 07:07:52 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - OptinoToken
 1
 > 
-RESULT: optinoTokenTx status=0x1 Success gas=5000000 gasUsed=3777016 costETH=0.0305938296 costUSD=6.011993454696 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14844 txIx=2 txId=0x20651dee348f299abea91d61a19052fcfad1622d368eb35183f45b08fe1f15d8 @ 1589611821 Sat, 16 May 2020 06:50:21 GMT
+RESULT: optinoTokenTx status=0x1 Success gas=5000000 gasUsed=3777016 costETH=0.0305938296 costUSD=6.011993454696 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15500 txIx=2 txId=0xe59f2d2f7183912577915a5fff9c9beb9c8387cf165dc7c30b646dfade31b7bc @ 1589612872 Sat, 16 May 2020 07:07:52 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - PriceFeed 1
 1
 > 
-RESULT: priceFeed1Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14844 txIx=3 txId=0x8c763a839acb8961c491a915da608ccb815057bc774fd4a63e66096de0566826 @ 1589611821 Sat, 16 May 2020 06:50:21 GMT
+RESULT: priceFeed1Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15500 txIx=3 txId=0xc5c65c98dc3f2ddcf9d794a56e873272d69fde0782fb2976daa218aa4f50151a @ 1589612872 Sat, 16 May 2020 07:07:52 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - PriceFeed 2
 1
 > 
-RESULT: priceFeed2Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14844 txIx=4 txId=0x5c6728f7871b54b85a09ebc6f941c9567d4dd3a4b56c97f8e1c5dd9f40962875 @ 1589611821 Sat, 16 May 2020 06:50:21 GMT
+RESULT: priceFeed2Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15500 txIx=4 txId=0x3a2dd44e664d7f7f38ca0db77cf5c18f8e4c5fc38151df6d02e6ae8bc7bfdb27 @ 1589612872 Sat, 16 May 2020 07:07:52 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - PriceFeedAdaptor
 1
 > 
-RESULT: priceFeedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.001209492 costUSD=0.23767727292 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14846 txIx=0 txId=0xe0fe930d3e4a6d40ca22e2d6ddff1a7374d4610b406e2ec287889355dc180261 @ 1589611823 Sat, 16 May 2020 06:50:23 GMT
+RESULT: priceFeedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.001209492 costUSD=0.23767727292 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15502 txIx=0 txId=0x2ccb4cb71982f2a2e893bc5aff53987d4c05368a280bca2fb85d06a939c1cecc @ 1589612874 Sat, 16 May 2020 07:07:54 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #1 - Contracts - OptinoFactory
 1
 > 
-RESULT: optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5252113 costETH=0.0425421153 costUSD=8.359951077603 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14846 txIx=1 txId=0x974c15ca32fd21e751795166c2c18aa584b7058e7020b937aab3f1642c0bef31 @ 1589611823 Sat, 16 May 2020 06:50:23 GMT
+RESULT: optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5252137 costETH=0.0425423097 costUSD=8.359989279147 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15502 txIx=1 txId=0xdcdb218b2d304f2952b7e68bd951a3aeecb1269d94309b2035d28e185733621f @ 1589612874 Sat, 16 May 2020 07:07:54 GMT
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: priceFeedContractAddress=PriceFeed 2:0x8ceb
+RESULT: priceFeedContractAddress=PriceFeed 2:0x84ab
 RESULT: priceFeed.peek=0x00000000000000000000000000000000000000000000000a3ee6e2a294d40000,true
 RESULT: priceFeed.value=189 ETH/USD
 RESULT: priceFeed.hasValue=true
-RESULT: SetValue 0 #14844 value=189 hasValue=true
+RESULT: SetValue 0 #15500 value=189 hasValue=true
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x051f
-RESULT: priceFeedAdaptor.sourceAddress=0x6e0a8538e41fb59e7c27943531af86e44ed160eb
+RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0xa516
+RESULT: priceFeedAdaptor.sourceAddress=0x11f72ce9616536054e80f6e72946f67f73ffc7a4
 RESULT: priceFeedAdaptor.spot=["189000000000000000000",true]
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0xbe2e
+RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0x6b67
 RESULT: token0.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token0.details='WETH' 'Wrapped Ether (18 dp)' 18 dp
 RESULT: token0.totalSupply=0
-RESULT: token0.Transfer 0 #14844 from=null:0x0000 to=deployer:0xa11a tokens=0
+RESULT: token0.Transfer 0 #15500 from=null:0x0000 to=deployer:0xa11a tokens=0
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xc940
+RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xff5e
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='USDx' 'USD x (18 dp)' 18 dp
 RESULT: token1.totalSupply=0
-RESULT: token1.Transfer 0 #14844 from=null:0x0000 to=deployer:0xa11a tokens=0
+RESULT: token1.Transfer 0 #15500 from=null:0x0000 to=deployer:0xa11a tokens=0
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: optinoFactoryContractAddress=OptinoFactory:0x1392
+RESULT: optinoFactoryContractAddress=OptinoFactory:0xf82d
 RESULT: optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0xb8b3
+RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0x8b53
 RESULT: optinoFactory.message/fee='v0.972-testnet-pre-release'/0.1%
 RESULT: optinoFactory.feedLength=0
 RESULT: optinoFactory.pairLength=0
@@ -639,9 +639,9 @@ undefined
 RESULT:  # Account                                             EtherBalanceChange                           WETH                           USDx Name
 RESULT:                                                                                                        2                              3
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.099964521900000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.099964716300000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252240300000000           0.000000000000000000           0.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252434700000000           0.000000000000000000           0.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.000712281600000000     1000000.000000000000000000     1000000.000000000000000000 seller1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -655,19 +655,19 @@ RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbe2e055d925bb9c6739a5147aa3416ed06178d64        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
+RESULT:  8 0x6b67203f3aef24182d09e2f5d66126428b06aba1        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
+RESULT:  9 0xff5ef8bf5b4decb63717f48357291616f1eee21d        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb8b3513800240021a2f5a20eca92f10c08a75e1c        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT: 10 0x8b535eeb7c4704afe708ea8cc9b830978310f97f        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x6e0a8538e41fb59e7c27943531af86e44ed160eb        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+RESULT: 11 0x11f72ce9616536054e80f6e72946f67f73ffc7a4        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x8ceb5a055735ec5c4b627fd9a58830096a096ef5        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
+RESULT: 12 0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x051f5d7afe7007c4bb6e62add989c2be255a8a22        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+RESULT: 13 0xa516d969a5c58f137c4b6482bb84c46056efff2b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x1392b3306e6f307b829d2fe8ce130af106a8e143        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+RESULT: 14 0xf82dfe0df4504a618c0791c2c0617c6fe9de5328        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -679,73 +679,73 @@ undefined
 RESULT: PASS Deploy Group #2 - Setup - token0.mint(seller1, 1000000)
 1
 > 
-RESULT: deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=0 txId=0xf158b4192d86965d8017f1f5796ab6e175f9243a23cd9484ced9320c6f7cf7da @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15504 txIx=0 txId=0xf06f4151cafd3b53a4ff9aad62b11ad5040de74b5046685a2b603c6a263e6f00 @ 1589612876 Sat, 16 May 2020 07:07:56 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token0.mint(seller2, 1000000)
 1
 > 
-RESULT: deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=1 txId=0xe8b1bdcdb28b6eab77e51f08d978506520032b3c32e80456176c4dbf35a06d05 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15504 txIx=1 txId=0xa09d9cde4999a53f84c90caca01623acce3c1f9e37c1372386fd17b9e48f0f2f @ 1589612876 Sat, 16 May 2020 07:07:56 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token0.mint(buyer1, 1000000)
 1
 > 
-RESULT: deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=2 txId=0xdbb32b6e63268eccb4d89dac407182826bb239080d687782578fa1e961104d4c @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15504 txIx=2 txId=0x3915248084971fc6a8c120e0e85c7e1e91b56145c4300e2c968a51bbeb1fa9b6 @ 1589612876 Sat, 16 May 2020 07:07:56 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token0.mint(buyer2, 1000000)
 1
 > 
-RESULT: deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=3 txId=0xcaad3cd630f16c2bb3e4c54ea19d2cc75418ee2a49cf915f4ce227f5ffb1aec9 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15504 txIx=3 txId=0xd961a516667667739c83e9dbeb6cf061a13933802f8d50dfb19ae2281ed03895 @ 1589612876 Sat, 16 May 2020 07:07:56 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token1.mint(seller1, 1000000)
 1
 > 
-RESULT: deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=4 txId=0xf6e43b4a1932a5f481b277c3db8a9da4f9b2e528abc1097231622c5a661266d3 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15504 txIx=4 txId=0x2d9da0d16fe342d95f58c19ebbade899ec5b0910da8bd25c0f206a2ac7703e0c @ 1589612876 Sat, 16 May 2020 07:07:56 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token1.mint(seller2, 1000000)
 1
 > 
-RESULT: deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=5 txId=0x6ad1e0909bb9dfdab0d93fecb85a76eeb62ebc8294978608925972afda644907 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15504 txIx=5 txId=0x2e4c2aedfe9e5455ba80007d9f2c6fe725a287524796ba2bdead355a59836a1e @ 1589612876 Sat, 16 May 2020 07:07:56 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token1.mint(buyer1, 1000000)
 1
 > 
-RESULT: deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=6 txId=0x7e6667f972620b22485a69055c1fecb294af58d946e5806924089384b1ecd97f @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=0 txId=0x710e1b0e406af23e0d6a82d8727812b709703ac315da0da7f6bab436c61c874f @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - token1.mint(buyer2, 1000000)
 1
 > 
-RESULT: deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=7 txId=0x63a48e36641e5b4c4f51444e4eff471f290c244bf2e34e7a88e64af3fc5266f5 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=1 txId=0x0d148f286bb23438c74675f4a6214d96f9e192971bd5c404decc2a4cf2c56e81 @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - priceFeed1.setValue(190.901, true)
 1
 > 
-RESULT: deployGroup2_9Tx status=0x1 Success gas=6000000 gasUsed=29680 costETH=0.000240408 costUSD=0.04724257608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=8 txId=0xaeca12340a4df4344100b7253e1a02d5c75d762062047ffc38cebe1c55e5274d @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_9Tx status=0x1 Success gas=6000000 gasUsed=29680 costETH=0.000240408 costUSD=0.04724257608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=2 txId=0x44f8d2204c2ae1cf49f44b59dbb7c0b6cf70cd2ee1d9f810bb4f032493ca2232 @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - priceFeed2.setValue(1.695, true)
 1
 > 
-RESULT: deployGroup2_10Tx status=0x1 Success gas=6000000 gasUsed=29668 costETH=0.0002403108 costUSD=0.047223475308 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=9 txId=0x08bea9c075d7a86e9a2b083955ae4eb71814b2954400b86aa4aaf517c3605fad @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_10Tx status=0x1 Success gas=6000000 gasUsed=29668 costETH=0.0002403108 costUSD=0.047223475308 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=3 txId=0x9db935d0f924eaf94da271a9227322f2116883209cc40e1d9f35057dd5aad76a @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - optinoFactory.updateFeed(priceFeed1, 'Maker ETH/USD', MAKER, 18)
 1
 > 
-RESULT: deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=214675 costETH=0.0017388675 costUSD=0.341704852425 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=10 txId=0xb16f10bfd629ced907fdac1cda15a8c985d9e7433e2d8cd0a965be297ee92ccd @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=214675 costETH=0.0017388675 costUSD=0.341704852425 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=4 txId=0x3a1c8bb63ab25f60ad7b8a6d95bfa2d5b9e2da2173e65f68d6d2007a0e2f7030 @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - optinoFactory.updateFeed(priceFeed2, 'Maker MKR/ETH', MAKER, 18)
 1
 > 
-RESULT: deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=218875 costETH=0.0017728875 costUSD=0.348390122625 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=11 txId=0xa41af18047b576e0183067dd57597a7d31bbf00d265052c5538214f6c53ee2a3 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=218875 costETH=0.0017728875 costUSD=0.348390122625 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=5 txId=0x53df407c3cd26f5dc22e7252d15750204042e804ff7fea1a42c2dd4c9c66e3c4 @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 undefined
@@ -755,53 +755,53 @@ undefined
 RESULT: PASS Deploy Group #2 - Setup - seller1 -> token0.approve(optinoFactory, 1000000)
 1
 > 
-RESULT: deployGroup2_14Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=12 txId=0x788ba60398271341ed7862b61c217f261a9eed6fe38d9db3d6847f786ed4b846 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_14Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=6 txId=0xf1a03909d0a4e6f8cde3d3dc25815478f038c4fd720dd47dc0165082a79c35ce @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: PASS Deploy Group #2 - Setup - seller1 -> token1.approve(optinoFactory, 1000000)
 1
 > 
-RESULT: deployGroup2_15Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14848 txIx=13 txId=0x7823a016cfa1fd24e1814f77f6ed6876de8293f26c3e742b8671352de057bf66 @ 1589611825 Sat, 16 May 2020 06:50:25 GMT
+RESULT: deployGroup2_15Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15505 txIx=7 txId=0xcfe745b2a1a077cd743ac26935cad6bb661703af7276792e94c46c53a1a208ab @ 1589612877 Sat, 16 May 2020 07:07:57 GMT
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0xbe2e
+RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0x6b67
 RESULT: token0.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token0.details='WETH' 'Wrapped Ether (18 dp)' 18 dp
 RESULT: token0.totalSupply=4000000
-RESULT: token0.Approval 0 #14848 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x1392 tokens=1000000
-RESULT: token0.Transfer 0 #14848 from=null:0x0000 to=seller1:0xa22a tokens=1000000
-RESULT: token0.Transfer 1 #14848 from=null:0x0000 to=seller2:0xa33a tokens=1000000
-RESULT: token0.Transfer 2 #14848 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
-RESULT: token0.Transfer 3 #14848 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
+RESULT: token0.Approval 0 #15505 tokenOwner=seller1:0xa22a spender=OptinoFactory:0xf82d tokens=1000000
+RESULT: token0.Transfer 0 #15504 from=null:0x0000 to=seller1:0xa22a tokens=1000000
+RESULT: token0.Transfer 1 #15504 from=null:0x0000 to=seller2:0xa33a tokens=1000000
+RESULT: token0.Transfer 2 #15504 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
+RESULT: token0.Transfer 3 #15504 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xc940
+RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xff5e
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='USDx' 'USD x (18 dp)' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Approval 0 #14848 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x1392 tokens=1000000
-RESULT: token1.Transfer 0 #14848 from=null:0x0000 to=seller1:0xa22a tokens=1000000
-RESULT: token1.Transfer 1 #14848 from=null:0x0000 to=seller2:0xa33a tokens=1000000
-RESULT: token1.Transfer 2 #14848 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
-RESULT: token1.Transfer 3 #14848 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
+RESULT: token1.Approval 0 #15505 tokenOwner=seller1:0xa22a spender=OptinoFactory:0xf82d tokens=1000000
+RESULT: token1.Transfer 0 #15504 from=null:0x0000 to=seller1:0xa22a tokens=1000000
+RESULT: token1.Transfer 1 #15504 from=null:0x0000 to=seller2:0xa33a tokens=1000000
+RESULT: token1.Transfer 2 #15505 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
+RESULT: token1.Transfer 3 #15505 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: optinoFactoryContractAddress=OptinoFactory:0x1392
+RESULT: optinoFactoryContractAddress=OptinoFactory:0xf82d
 RESULT: optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0xb8b3
+RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0x8b53
 RESULT: optinoFactory.message/fee='v0.972-testnet-pre-release'/0.1%
 RESULT: optinoFactory.feedLength=2
-RESULT: optinoFactory.getFeedByIndex(0). ["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589611825"]
-RESULT: optinoFactory.getFeedByIndex(1). ["0x8ceb5a055735ec5c4b627fd9a58830096a096ef5","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589611825"]
+RESULT: optinoFactory.getFeedByIndex(0). ["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589612877"]
+RESULT: optinoFactory.getFeedByIndex(1). ["0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589612877"]
 RESULT: optinoFactory.pairLength=0
 undefined
 > 
@@ -884,7 +884,7 @@ undefined
 > 
 undefined
 > 
-RESULT: calcCollateralAndFee: ["0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2","2e+21","2000000000000000000","190901000000000000000","18"]
+RESULT: calcCollateralAndFee: ["0xff5ef8bf5b4decb63717f48357291616f1eee21d","2e+21","2000000000000000000","190901000000000000000","18"]
 null
 > 
 > 
@@ -912,7 +912,7 @@ undefined
 undefined
 > 
 RESULT: getOptinoTokens start
-RESULT: got SeriesAdded 0 #14850 {"pairKey":"0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff","seriesKey":"0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","pairIndex":"0","seriesIndex":"0","data":["1","1589611829","200000000000000000000","0"],"optinoToken":"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","coverToken":"0xb936cea8a40419fb89950d470769b5c0c2eb8f60"}
+RESULT: got SeriesAdded 0 #15507 {"pairKey":"0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38","seriesKey":"0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","pairIndex":"0","seriesIndex":"0","data":["1","1589612881","200000000000000000000","0"],"optinoToken":"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","coverToken":"0x948e356f09e30bebc5c51c97128806b7bc2d2425"}
 undefined
 > 
 undefined
@@ -936,9 +936,9 @@ undefined
 RESULT:  # Account                                             EtherBalanceChange                           WETH                           USDx Name
 RESULT:                                                                                           zOPT0003000005                 zCOV0003000005
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.111808455300000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.111808649700000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252240300000000           0.000000000000000000           2.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252434700000000           0.000000000000000000           2.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.012556215000000000     1000000.000000000000000000      997998.000000000000000000 seller1
 RESULT:                                                                                    10.000000000000000000          10.000000000000000000
@@ -952,23 +952,23 @@ RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  8 0xbe2e055d925bb9c6739a5147aa3416ed06178d64        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
+RESULT:  8 0x6b67203f3aef24182d09e2f5d66126428b06aba1        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
+RESULT:  9 0xff5ef8bf5b4decb63717f48357291616f1eee21d        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb8b3513800240021a2f5a20eca92f10c08a75e1c        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT: 10 0x8b535eeb7c4704afe708ea8cc9b830978310f97f        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x6e0a8538e41fb59e7c27943531af86e44ed160eb        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+RESULT: 11 0x11f72ce9616536054e80f6e72946f67f73ffc7a4        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x8ceb5a055735ec5c4b627fd9a58830096a096ef5        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
+RESULT: 12 0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x051f5d7afe7007c4bb6e62add989c2be255a8a22        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+RESULT: 13 0xa516d969a5c58f137c4b6482bb84c46056efff2b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x1392b3306e6f307b829d2fe8ce130af106a8e143        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+RESULT: 14 0xf82dfe0df4504a618c0791c2c0617c6fe9de5328        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 15 0x34306c0f29fb853908d1ea995502d1a1889d3ea5        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+RESULT: 15 0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 16 0xb936cea8a40419fb89950d470769b5c0c2eb8f60        0.000000000000000000           0.000000000000000000        2000.000000000000000000 CoverToken
+RESULT: 16 0x948e356f09e30bebc5c51c97128806b7bc2d2425        0.000000000000000000           0.000000000000000000        2000.000000000000000000 CoverToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -986,7 +986,7 @@ undefined
 > 
 undefined
 > 
-RESULT: mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1462214 costETH=0.0118439334 costUSD=2.327451352434 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14850 txIx=0 txId=0x01f2030188170ca229f08c83c58fdedfb7857cb2be9e31accf4b616a2af15612 @ 1589611827 Sat, 16 May 2020 06:50:27 GMT
+RESULT: mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1462214 costETH=0.0118439334 costUSD=2.327451352434 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15507 txIx=0 txId=0x61fdf3508ba5cf761b90098cc9b4e91224c0374997b8bf12902027e8fb74772c @ 1589612879 Sat, 16 May 2020 07:07:59 GMT
 undefined
 > 
 undefined
@@ -996,61 +996,61 @@ undefined
 RESULT: 
 null
 > 
-RESULT: optinoFactoryContractAddress=OptinoFactory:0x1392
+RESULT: optinoFactoryContractAddress=OptinoFactory:0xf82d
 RESULT: optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0xb8b3
+RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0x8b53
 RESULT: optinoFactory.message/fee='v0.972-testnet-pre-release'/0.1%
 RESULT: optinoFactory.feedLength=2
-RESULT: optinoFactory.getFeedByIndex(0). ["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589611827"]
-RESULT: optinoFactory.getFeedByIndex(1). ["0x8ceb5a055735ec5c4b627fd9a58830096a096ef5","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589611827"]
+RESULT: optinoFactory.getFeedByIndex(0). ["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589612879"]
+RESULT: optinoFactory.getFeedByIndex(1). ["0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589612879"]
 RESULT: optinoFactory.pairLength=1
-RESULT: optinoToken.getPairByIndex(0)=["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT: optinoFactory.getPairByIndex(0). pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, token0='WETH' 'Wrapped Ether (18 dp)':0xbe2e, token1='USDx' 'USD x (18 dp)':0xc940, feed0=PriceFeed 1:0x6e0a, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
+RESULT: optinoToken.getPairByIndex(0)=["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT: optinoFactory.getPairByIndex(0). pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, token0='WETH' 'Wrapped Ether (18 dp)':0x6b67, token1='USDx' 'USD x (18 dp)':0xff5e, feed0=PriceFeed 1:0x11f7, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
 RESULT: optinoFactory.seriesLength(0)=1
-RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1, pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, callPut=1, expiry=1589611829, strike=200, bound=0, spot=0, timestamp=1589611827, optinoToken=0x34306c0f29fb853908d1ea995502d1a1889d3ea5, coverToken=0xb936cea8a40419fb89950d470769b5c0c2eb8f60
-RESULT:     token: OptinoToken:0x3430 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0, pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, callPut=1, expiry=1589612881, strike=200, bound=0, spot=0, timestamp=1589612879, optinoToken=0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375, coverToken=0x948e356f09e30bebc5c51c97128806b7bc2d2425
+RESULT:     token: OptinoToken:0xa127 on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=10
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=false/CoverToken:0xb936
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","0"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=false/CoverToken:0x948e
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","0"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=0
 RESULT:       .currentSpot/currentPayoff(1)=190.901/9.099
 RESULT:       .spot/payoff(1)=0/0
-RESULT:       .LogInfo 0 #14850 note=initOptinoToken addr=OptinoFactory:0x1392 number=0
-RESULT:     token: CoverToken:0xb936 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:       .LogInfo 0 #15507 note=initOptinoToken addr=OptinoFactory:0xf82d number=0
+RESULT:     token: CoverToken:0x948e on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=10
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=true/OptinoToken:0x3430
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","0"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=true/OptinoToken:0xa127
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","0"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=0
 RESULT:       .currentSpot/currentPayoff(1)=190.901/190.901
 RESULT:       .spot/payoff(1)=0/0
-RESULT:       .LogInfo 0 #14850 note=initOptinoToken addr=OptinoFactory:0x1392 number=0
-RESULT: PairAdded 0 #14850 {"pairKey":"0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff","pairIndex":"0","pair":["0xe09247e24cd566623ea652cbcdca1c11f4859b54","0x"],"feeds":["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],"feedParameters":["255","255","255","255","0","0"]}
-RESULT: SeriesAdded 0 #14850 {"pairKey":"0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff","seriesKey":"0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","pairIndex":"0","seriesIndex":"0","data":["1","1589611829","200000000000000000000","0"],"optinoToken":"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","coverToken":"0xb936cea8a40419fb89950d470769b5c0c2eb8f60"}
-RESULT: OptinoMinted 0 #14850 seriesKey=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1 optinoToken=OptinoToken:0x3430 coverToken=CoverToken:0xb936 tokens=10 collateralToken='USDx' 'USD x (18 dp)':0xc940 collateral=2000 ownerFee=2 uiFee=0
-RESULT: LogInfo 0 #14850 note=_getSeriesCurrentSpot A _feedDecimals0 addr=seller1:0xa22a number=18
-RESULT: LogInfo 1 #14850 note=_getSeriesCurrentSpot A _feedType0 addr=seller1:0xa22a number=1
-RESULT: LogInfo 2 #14850 note=getSeriesCurrentSpot A _spot0 addr=seller1:0xa22a number=190901000000000000000
-RESULT: LogInfo 3 #14850 note=_getSeriesCurrentSpot C _currentSpot 1 feed addr=seller1:0xa22a number=190901000000000000000
-RESULT: LogInfo 4 #14850 note=computeRequiredCollateral A _feedDecimals0 addr=seller1:0xa22a number=18
-RESULT: LogInfo 5 #14850 note=computeRequiredCollateral A _feedType0 addr=seller1:0xa22a number=1
-RESULT: LogInfo 6 #14850 note=computeRequiredCollateral A _currentSpot addr=seller1:0xa22a number=190901000000000000000
-RESULT: LogInfo 7 #14850 note=computeRequiredCollateral results addr='USDx' 'USD x (18 dp)':0xc940 number=2e+21
+RESULT:       .LogInfo 0 #15507 note=initOptinoToken addr=OptinoFactory:0xf82d number=0
+RESULT: PairAdded 0 #15507 {"pairKey":"0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38","pairIndex":"0","pair":["0x39d1053c7ddc525f9fa628602b5032de8447ae15","0x"],"feeds":["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],"feedParameters":["255","255","255","255","0","0"]}
+RESULT: SeriesAdded 0 #15507 {"pairKey":"0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38","seriesKey":"0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","pairIndex":"0","seriesIndex":"0","data":["1","1589612881","200000000000000000000","0"],"optinoToken":"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","coverToken":"0x948e356f09e30bebc5c51c97128806b7bc2d2425"}
+RESULT: OptinoMinted 0 #15507 seriesKey=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0 optinoToken=OptinoToken:0xa127 coverToken=CoverToken:0x948e tokens=10 collateralToken='USDx' 'USD x (18 dp)':0xff5e collateral=2000 ownerFee=2 uiFee=0
+RESULT: LogInfo 0 #15507 note=_getSeriesCurrentSpot A _feedDecimals0 addr=seller1:0xa22a number=18
+RESULT: LogInfo 1 #15507 note=_getSeriesCurrentSpot A _feedType0 addr=seller1:0xa22a number=1
+RESULT: LogInfo 2 #15507 note=getSeriesCurrentSpot A _spot0 addr=seller1:0xa22a number=190901000000000000000
+RESULT: LogInfo 3 #15507 note=_getSeriesCurrentSpot C _currentSpot 1 feed addr=seller1:0xa22a number=190901000000000000000
+RESULT: LogInfo 4 #15507 note=computeRequiredCollateral A _feedDecimals0 addr=seller1:0xa22a number=18
+RESULT: LogInfo 5 #15507 note=computeRequiredCollateral A _feedType0 addr=seller1:0xa22a number=1
+RESULT: LogInfo 6 #15507 note=computeRequiredCollateral A _currentSpot addr=seller1:0xa22a number=190901000000000000000
+RESULT: LogInfo 7 #15507 note=computeRequiredCollateral results addr='USDx' 'USD x (18 dp)':0xff5e number=2e+21
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0xbe2e
+RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0x6b67
 RESULT: token0.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token0.details='WETH' 'Wrapped Ether (18 dp)' 18 dp
 RESULT: token0.totalSupply=4000000
@@ -1059,32 +1059,32 @@ undefined
 RESULT: 
 null
 > 
-RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xc940
+RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xff5e
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='USDx' 'USD x (18 dp)' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #14850 from=seller1:0xa22a to=CoverToken:0xb936 tokens=2000
-RESULT: token1.Transfer 1 #14850 from=seller1:0xa22a to=deployer:0xa11a tokens=2
+RESULT: token1.Transfer 0 #15507 from=seller1:0xa22a to=CoverToken:0x948e tokens=2000
+RESULT: token1.Transfer 1 #15507 from=seller1:0xa22a to=deployer:0xa11a tokens=2
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token2ContractAddress=OptinoToken:0x3430
-RESULT: token2.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token2ContractAddress=OptinoToken:0xa127
+RESULT: token2.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token2.totalSupply=10
-RESULT: token2.Transfer 0 #14850 from=null:0x0000 to=seller1:0xa22a tokens=10
+RESULT: token2.Transfer 0 #15507 from=null:0x0000 to=seller1:0xa22a tokens=10
 undefined
 > 
 RESULT: 
 null
 > 
-RESULT: token3ContractAddress=CoverToken:0xb936
-RESULT: token3.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token3ContractAddress=CoverToken:0x948e
+RESULT: token3.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token3.totalSupply=10
-RESULT: token3.Transfer 0 #14850 from=null:0x0000 to=seller1:0xa22a tokens=10
+RESULT: token3.Transfer 0 #15507 from=null:0x0000 to=seller1:0xa22a tokens=10
 undefined
 > 
 RESULT: 
@@ -1126,9 +1126,9 @@ RESULT: ---------- Close Optino & Cover ----------
 RESULT:  # Account                                             EtherBalanceChange                           WETH                           USDx Name
 RESULT:                                                                                           zOPT0003000005                 zCOV0003000005
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.113152860900000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.113153055300000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252240300000000           0.000000000000000000           2.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252434700000000           0.000000000000000000           2.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.013900620600000000     1000000.000000000000000000      999498.000000000000000000 seller1
 RESULT:                                                                                     2.500000000000000000           2.500000000000000000
@@ -1142,23 +1142,23 @@ RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
 RESULT:                                                                                     7.500000000000000000           7.500000000000000000
-RESULT:  8 0xbe2e055d925bb9c6739a5147aa3416ed06178d64        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
+RESULT:  8 0x6b67203f3aef24182d09e2f5d66126428b06aba1        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
+RESULT:  9 0xff5ef8bf5b4decb63717f48357291616f1eee21d        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb8b3513800240021a2f5a20eca92f10c08a75e1c        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT: 10 0x8b535eeb7c4704afe708ea8cc9b830978310f97f        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x6e0a8538e41fb59e7c27943531af86e44ed160eb        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+RESULT: 11 0x11f72ce9616536054e80f6e72946f67f73ffc7a4        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x8ceb5a055735ec5c4b627fd9a58830096a096ef5        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
+RESULT: 12 0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x051f5d7afe7007c4bb6e62add989c2be255a8a22        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+RESULT: 13 0xa516d969a5c58f137c4b6482bb84c46056efff2b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x1392b3306e6f307b829d2fe8ce130af106a8e143        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+RESULT: 14 0xf82dfe0df4504a618c0791c2c0617c6fe9de5328        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 15 0x34306c0f29fb853908d1ea995502d1a1889d3ea5        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+RESULT: 15 0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 16 0xb936cea8a40419fb89950d470769b5c0c2eb8f60        0.000000000000000000           0.000000000000000000         500.000000000000000000 CoverToken
+RESULT: 16 0x948e356f09e30bebc5c51c97128806b7bc2d2425        0.000000000000000000           0.000000000000000000         500.000000000000000000 CoverToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -1166,78 +1166,78 @@ RESULT:                                                                         
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT: 
 RESULT: PASS Close Optino & Cover - optino.close(7.5)
-RESULT: closeGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=165976 costETH=0.0013444056 costUSD=0.264189144456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14853 txIx=0 txId=0x5b826ecf5fbf6c6de23d1a06b2b856c3472173e27b3c1d8af69dc1e071b4510d @ 1589611830 Sat, 16 May 2020 06:50:30 GMT
+RESULT: closeGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=165976 costETH=0.0013444056 costUSD=0.264189144456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15510 txIx=0 txId=0x33eb3f1ef0b4fb15ee16c98e73f20c6b22e6ac133cc891925a117d3383921a5f @ 1589612882 Sat, 16 May 2020 07:08:02 GMT
 RESULT: 
-RESULT: priceFeedContractAddress=PriceFeed 2:0x8ceb
+RESULT: priceFeedContractAddress=PriceFeed 2:0x84ab
 RESULT: priceFeed.peek=0x0000000000000000000000000000000000000000000000001785d984fe498000,true
 RESULT: priceFeed.value=1.695 ETH/USD
 RESULT: priceFeed.hasValue=true
-RESULT: SetValue 0 #14848 value=1.695 hasValue=true
+RESULT: SetValue 0 #15505 value=1.695 hasValue=true
 RESULT: 
-RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x051f
-RESULT: priceFeedAdaptor.sourceAddress=0x6e0a8538e41fb59e7c27943531af86e44ed160eb
+RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0xa516
+RESULT: priceFeedAdaptor.sourceAddress=0x11f72ce9616536054e80f6e72946f67f73ffc7a4
 RESULT: priceFeedAdaptor.spot=["190901000000000000000",true]
 RESULT: 
-RESULT: optinoFactoryContractAddress=OptinoFactory:0x1392
+RESULT: optinoFactoryContractAddress=OptinoFactory:0xf82d
 RESULT: optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0xb8b3
+RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0x8b53
 RESULT: optinoFactory.message/fee='v0.972-testnet-pre-release'/0.1%
 RESULT: optinoFactory.feedLength=2
-RESULT: optinoFactory.getFeedByIndex(0). ["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589611830"]
-RESULT: optinoFactory.getFeedByIndex(1). ["0x8ceb5a055735ec5c4b627fd9a58830096a096ef5","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589611830"]
+RESULT: optinoFactory.getFeedByIndex(0). ["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589612882"]
+RESULT: optinoFactory.getFeedByIndex(1). ["0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589612882"]
 RESULT: optinoFactory.pairLength=1
-RESULT: optinoToken.getPairByIndex(0)=["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT: optinoFactory.getPairByIndex(0). pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, token0='WETH' 'Wrapped Ether (18 dp)':0xbe2e, token1='USDx' 'USD x (18 dp)':0xc940, feed0=PriceFeed 1:0x6e0a, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
+RESULT: optinoToken.getPairByIndex(0)=["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT: optinoFactory.getPairByIndex(0). pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, token0='WETH' 'Wrapped Ether (18 dp)':0x6b67, token1='USDx' 'USD x (18 dp)':0xff5e, feed0=PriceFeed 1:0x11f7, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
 RESULT: optinoFactory.seriesLength(0)=1
-RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1, pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, callPut=1, expiry=1589611829, strike=200, bound=0, spot=0, timestamp=1589611827, optinoToken=0x34306c0f29fb853908d1ea995502d1a1889d3ea5, coverToken=0xb936cea8a40419fb89950d470769b5c0c2eb8f60
-RESULT:     token: OptinoToken:0x3430 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0, pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, callPut=1, expiry=1589612881, strike=200, bound=0, spot=0, timestamp=1589612879, optinoToken=0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375, coverToken=0x948e356f09e30bebc5c51c97128806b7bc2d2425
+RESULT:     token: OptinoToken:0xa127 on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=2.5
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=false/CoverToken:0xb936
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","0"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=false/CoverToken:0x948e
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","0"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=7.5
 RESULT:       .currentSpot/currentPayoff(1)=190.901/9.099
 RESULT:       .spot/payoff(1)=0/0
-RESULT:     token: CoverToken:0xb936 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:     token: CoverToken:0x948e on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=2.5
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=true/OptinoToken:0x3430
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","0"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=true/OptinoToken:0xa127
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","0"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=7.5
 RESULT:       .currentSpot/currentPayoff(1)=190.901/190.901
 RESULT:       .spot/payoff(1)=0/0
-RESULT:       .Close 0 #14853 optinoToken=OptinoToken:0x3430 coverToken=CoverToken:0xb936 tokenOwner=seller1:0xa22a tokens=7.5 collateralRefunded=1500
+RESULT:       .Close 0 #15510 optinoToken=OptinoToken:0xa127 coverToken=CoverToken:0x948e tokenOwner=seller1:0xa22a tokens=7.5 collateralRefunded=1500
 RESULT: 
-RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0xbe2e
+RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0x6b67
 RESULT: token0.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token0.details='WETH' 'Wrapped Ether (18 dp)' 18 dp
 RESULT: token0.totalSupply=4000000
 RESULT: 
-RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xc940
+RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xff5e
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='USDx' 'USD x (18 dp)' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #14853 from=CoverToken:0xb936 to=seller1:0xa22a tokens=1500
+RESULT: token1.Transfer 0 #15510 from=CoverToken:0x948e to=seller1:0xa22a tokens=1500
 RESULT: 
-RESULT: token2ContractAddress=OptinoToken:0x3430
-RESULT: token2.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token2ContractAddress=OptinoToken:0xa127
+RESULT: token2.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token2.totalSupply=2.5
-RESULT: token2.Transfer 0 #14853 from=seller1:0xa22a to=null:0x0000 tokens=7.5
+RESULT: token2.Transfer 0 #15510 from=seller1:0xa22a to=null:0x0000 tokens=7.5
 RESULT: 
-RESULT: token3ContractAddress=CoverToken:0xb936
-RESULT: token3.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token3ContractAddress=CoverToken:0x948e
+RESULT: token3.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token3.totalSupply=2.5
-RESULT: token3.Transfer 0 #14853 from=seller1:0xa22a to=null:0x0000 tokens=7.5
+RESULT: token3.Transfer 0 #15510 from=seller1:0xa22a to=null:0x0000 tokens=7.5
 RESULT: 
 null
 > 
@@ -1355,15 +1355,15 @@ undefined
 ... 
 RESULT: transferAmount=1.25
 RESULT: ---------- Transfer, then settle Optino & Cover ----------
-RESULT: Waiting until 'optino.expiry()' at 1589611829+0s=Sat May 16 2020 16:50:30 GMT+1000 (AEST) now=Sat May 16 2020 16:50:31 GMT+1000 (AEST)
-RESULT: Waited until 'optino.expiry()' at 1589611829+0s=Sat May 16 2020 16:50:30 GMT+1000 (AEST) now=Sat May 16 2020 16:50:31 GMT+1000 (AEST)
+RESULT: Waiting until 'optino.expiry()' at 1589612881+0s=Sat May 16 2020 17:08:02 GMT+1000 (AEST) now=Sat May 16 2020 17:08:03 GMT+1000 (AEST)
+RESULT: Waited until 'optino.expiry()' at 1589612881+0s=Sat May 16 2020 17:08:02 GMT+1000 (AEST) now=Sat May 16 2020 17:08:03 GMT+1000 (AEST)
 RESULT: 
 RESULT:  # Account                                             EtherBalanceChange                           WETH                           USDx Name
 RESULT:                                                                                           zOPT0003000005                 zCOV0003000005
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.115846200000000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.115846394400000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252240300000000           0.000000000000000000           2.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252434700000000           0.000000000000000000           2.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.016593959700000000     1000000.000000000000000000      999748.000000000000000000 seller1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -1377,23 +1377,23 @@ RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
 RESULT:                                                                                     8.750000000000000000           8.750000000000000000
-RESULT:  8 0xbe2e055d925bb9c6739a5147aa3416ed06178d64        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
+RESULT:  8 0x6b67203f3aef24182d09e2f5d66126428b06aba1        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
+RESULT:  9 0xff5ef8bf5b4decb63717f48357291616f1eee21d        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb8b3513800240021a2f5a20eca92f10c08a75e1c        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT: 10 0x8b535eeb7c4704afe708ea8cc9b830978310f97f        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x6e0a8538e41fb59e7c27943531af86e44ed160eb        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+RESULT: 11 0x11f72ce9616536054e80f6e72946f67f73ffc7a4        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x8ceb5a055735ec5c4b627fd9a58830096a096ef5        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
+RESULT: 12 0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x051f5d7afe7007c4bb6e62add989c2be255a8a22        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+RESULT: 13 0xa516d969a5c58f137c4b6482bb84c46056efff2b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x1392b3306e6f307b829d2fe8ce130af106a8e143        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+RESULT: 14 0xf82dfe0df4504a618c0791c2c0617c6fe9de5328        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 15 0x34306c0f29fb853908d1ea995502d1a1889d3ea5        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+RESULT: 15 0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 16 0xb936cea8a40419fb89950d470769b5c0c2eb8f60        0.000000000000000000           0.000000000000000000         250.000000000000000000 CoverToken
+RESULT: 16 0x948e356f09e30bebc5c51c97128806b7bc2d2425        0.000000000000000000           0.000000000000000000         250.000000000000000000 CoverToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -1401,97 +1401,97 @@ RESULT:                                                                         
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT: 
 RESULT: PASS Transfer, then settle Optino & Cover - seller1 -> optino.transfer(buyer1, 1.25)
-RESULT: transferThenSettleGroup1_1Tx status=0x1 Success gas=1000000 gasUsed=51726 costETH=0.0004189806 costUSD=0.082333877706 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14856 txIx=0 txId=0xef8e0ebf9b176bc8ff2bf593d7855fa4eb3d1ae296462ae23d880e2d5b54251e @ 1589611833 Sat, 16 May 2020 06:50:33 GMT
+RESULT: transferThenSettleGroup1_1Tx status=0x1 Success gas=1000000 gasUsed=51726 costETH=0.0004189806 costUSD=0.082333877706 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15513 txIx=0 txId=0xf89fd2f88f44f8816b1ec264f07e254005beeee3f489d6f1b15bfd9e3fa46113 @ 1589612885 Sat, 16 May 2020 07:08:05 GMT
 RESULT: PASS Transfer, then settle Optino & Cover - seller1 -> cover.transfer(buyer2, 1.25)
-RESULT: transferThenSettleGroup1_2Tx status=0x1 Success gas=1000000 gasUsed=51726 costETH=0.0004189806 costUSD=0.082333877706 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14856 txIx=1 txId=0x3d194d45ba7c56b9ed7bd626cbc7f41a630644b96286786be4489193f1a60fe2 @ 1589611833 Sat, 16 May 2020 06:50:33 GMT
+RESULT: transferThenSettleGroup1_2Tx status=0x1 Success gas=1000000 gasUsed=51726 costETH=0.0004189806 costUSD=0.082333877706 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15513 txIx=1 txId=0x8018e5328def922921bbd525f97121f5b047b589f93173865dba6b2691981c48 @ 1589612885 Sat, 16 May 2020 07:08:05 GMT
 RESULT: PASS Transfer, then settle Optino & Cover - seller1 -> optino.settle()
-RESULT: transferThenSettleGroup1_4Tx status=0x1 Success gas=2000000 gasUsed=229059 costETH=0.0018553779 costUSD=0.364600311129 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14858 txIx=0 txId=0x1b768d2435eaf02d360b8d69a984bb57e505cf63b1198d37a798fe61888dc98d @ 1589611835 Sat, 16 May 2020 06:50:35 GMT
+RESULT: transferThenSettleGroup1_4Tx status=0x1 Success gas=2000000 gasUsed=229059 costETH=0.0018553779 costUSD=0.364600311129 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15515 txIx=0 txId=0xc2e9779656ca6443c7306a4e67a1f4c6a0668489475e8a9d230897be62aaf4db @ 1589612887 Sat, 16 May 2020 07:08:07 GMT
 RESULT: 
-RESULT: priceFeedContractAddress=PriceFeed 2:0x8ceb
+RESULT: priceFeedContractAddress=PriceFeed 2:0x84ab
 RESULT: priceFeed.peek=0x0000000000000000000000000000000000000000000000001785d984fe498000,true
 RESULT: priceFeed.value=1.695 ETH/USD
 RESULT: priceFeed.hasValue=true
 RESULT: 
-RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x051f
-RESULT: priceFeedAdaptor.sourceAddress=0x6e0a8538e41fb59e7c27943531af86e44ed160eb
+RESULT: priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0xa516
+RESULT: priceFeedAdaptor.sourceAddress=0x11f72ce9616536054e80f6e72946f67f73ffc7a4
 RESULT: priceFeedAdaptor.spot=["190901000000000000000",true]
 RESULT: 
-RESULT: optinoFactoryContractAddress=OptinoFactory:0x1392
+RESULT: optinoFactoryContractAddress=OptinoFactory:0xf82d
 RESULT: optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0xb8b3
+RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0x8b53
 RESULT: optinoFactory.message/fee='v0.972-testnet-pre-release'/0.1%
 RESULT: optinoFactory.feedLength=2
-RESULT: optinoFactory.getFeedByIndex(0). ["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589611835"]
-RESULT: optinoFactory.getFeedByIndex(1). ["0x8ceb5a055735ec5c4b627fd9a58830096a096ef5","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589611835"]
+RESULT: optinoFactory.getFeedByIndex(0). ["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589612887"]
+RESULT: optinoFactory.getFeedByIndex(1). ["0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589612887"]
 RESULT: optinoFactory.pairLength=1
-RESULT: optinoToken.getPairByIndex(0)=["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT: optinoFactory.getPairByIndex(0). pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, token0='WETH' 'Wrapped Ether (18 dp)':0xbe2e, token1='USDx' 'USD x (18 dp)':0xc940, feed0=PriceFeed 1:0x6e0a, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
+RESULT: optinoToken.getPairByIndex(0)=["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT: optinoFactory.getPairByIndex(0). pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, token0='WETH' 'Wrapped Ether (18 dp)':0x6b67, token1='USDx' 'USD x (18 dp)':0xff5e, feed0=PriceFeed 1:0x11f7, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
 RESULT: optinoFactory.seriesLength(0)=1
-RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1, pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, callPut=1, expiry=1589611829, strike=200, bound=0, spot=190.901, timestamp=1589611835, optinoToken=0x34306c0f29fb853908d1ea995502d1a1889d3ea5, coverToken=0xb936cea8a40419fb89950d470769b5c0c2eb8f60
-RESULT:     token: OptinoToken:0x3430 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0, pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, callPut=1, expiry=1589612881, strike=200, bound=0, spot=190.901, timestamp=1589612887, optinoToken=0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375, coverToken=0x948e356f09e30bebc5c51c97128806b7bc2d2425
+RESULT:     token: OptinoToken:0xa127 on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=1.25
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=false/CoverToken:0xb936
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","190901000000000000000"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=false/CoverToken:0x948e
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","190901000000000000000"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=8.75
 RESULT:       .currentSpot/currentPayoff(1)=190.901/9.099
 RESULT:       .spot/payoff(1)=190.901/9.099
-RESULT:     token: CoverToken:0xb936 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:     token: CoverToken:0x948e on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=1.25
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=true/OptinoToken:0x3430
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","190901000000000000000"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=true/OptinoToken:0xa127
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","190901000000000000000"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=8.75
 RESULT:       .currentSpot/currentPayoff(1)=190.901/190.901
 RESULT:       .spot/payoff(1)=190.901/190.901
-RESULT:       .Payoff 0 #14858 optinoOrCoverToken=OptinoToken:0x3430 tokenOwner=seller1:0xa22a tokens=1.25 collateralPaid=11.37375
-RESULT:       .Payoff 1 #14858 optinoOrCoverToken=CoverToken:0xb936 tokenOwner=seller1:0xa22a tokens=1.25 collateralPaid=238.62625
-RESULT: SeriesSpotUpdated 0 #14858 {"seriesKey":"0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","spot":"190901000000000000000"}
-RESULT: LogInfo 0 #14858 note=_getSeriesCurrentSpot A _feedDecimals0 addr=CoverToken:0xb936 number=18
-RESULT: LogInfo 1 #14858 note=_getSeriesCurrentSpot A _feedType0 addr=CoverToken:0xb936 number=1
-RESULT: LogInfo 2 #14858 note=getSeriesCurrentSpot A _spot0 addr=CoverToken:0xb936 number=190901000000000000000
-RESULT: LogInfo 3 #14858 note=_getSeriesCurrentSpot C _currentSpot 1 feed addr=CoverToken:0xb936 number=190901000000000000000
+RESULT:       .Payoff 0 #15515 optinoOrCoverToken=OptinoToken:0xa127 tokenOwner=seller1:0xa22a tokens=1.25 collateralPaid=11.37375
+RESULT:       .Payoff 1 #15515 optinoOrCoverToken=CoverToken:0x948e tokenOwner=seller1:0xa22a tokens=1.25 collateralPaid=238.62625
+RESULT: SeriesSpotUpdated 0 #15515 {"seriesKey":"0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","spot":"190901000000000000000"}
+RESULT: LogInfo 0 #15515 note=_getSeriesCurrentSpot A _feedDecimals0 addr=CoverToken:0x948e number=18
+RESULT: LogInfo 1 #15515 note=_getSeriesCurrentSpot A _feedType0 addr=CoverToken:0x948e number=1
+RESULT: LogInfo 2 #15515 note=getSeriesCurrentSpot A _spot0 addr=CoverToken:0x948e number=190901000000000000000
+RESULT: LogInfo 3 #15515 note=_getSeriesCurrentSpot C _currentSpot 1 feed addr=CoverToken:0x948e number=190901000000000000000
 RESULT: 
-RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0xbe2e
+RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0x6b67
 RESULT: token0.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token0.details='WETH' 'Wrapped Ether (18 dp)' 18 dp
 RESULT: token0.totalSupply=4000000
 RESULT: 
-RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xc940
+RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xff5e
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='USDx' 'USD x (18 dp)' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #14858 from=CoverToken:0xb936 to=seller1:0xa22a tokens=11.37375
-RESULT: token1.Transfer 1 #14858 from=CoverToken:0xb936 to=seller1:0xa22a tokens=238.62625
+RESULT: token1.Transfer 0 #15515 from=CoverToken:0x948e to=seller1:0xa22a tokens=11.37375
+RESULT: token1.Transfer 1 #15515 from=CoverToken:0x948e to=seller1:0xa22a tokens=238.62625
 RESULT: 
-RESULT: token2ContractAddress=OptinoToken:0x3430
-RESULT: token2.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token2ContractAddress=OptinoToken:0xa127
+RESULT: token2.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token2.totalSupply=1.25
-RESULT: token2.Transfer 0 #14856 from=seller1:0xa22a to=buyer1:0xa44a tokens=1.25
-RESULT: token2.Transfer 1 #14858 from=seller1:0xa22a to=null:0x0000 tokens=1.25
+RESULT: token2.Transfer 0 #15513 from=seller1:0xa22a to=buyer1:0xa44a tokens=1.25
+RESULT: token2.Transfer 1 #15515 from=seller1:0xa22a to=null:0x0000 tokens=1.25
 RESULT: 
-RESULT: token3ContractAddress=CoverToken:0xb936
-RESULT: token3.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token3ContractAddress=CoverToken:0x948e
+RESULT: token3.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token3.totalSupply=1.25
-RESULT: token3.Transfer 0 #14856 from=seller1:0xa22a to=buyer2:0xa55a tokens=1.25
-RESULT: token3.Transfer 1 #14858 from=seller1:0xa22a to=null:0x0000 tokens=1.25
+RESULT: token3.Transfer 0 #15513 from=seller1:0xa22a to=buyer2:0xa55a tokens=1.25
+RESULT: token3.Transfer 1 #15515 from=seller1:0xa22a to=null:0x0000 tokens=1.25
 RESULT: 
 RESULT:  # Account                                             EtherBalanceChange                           WETH                           USDx Name
 RESULT:                                                                                           zOPT0003000005                 zCOV0003000005
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
-RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.117770290200000000           0.000000000000000000           0.000000000000000000 miner
+RESULT:  0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.117770484600000000           0.000000000000000000           0.000000000000000000 miner
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252240300000000           0.000000000000000000           2.000000000000000000 deployer
+RESULT:  1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.099252434700000000           0.000000000000000000           2.000000000000000000 deployer
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.016593959700000000     1000000.000000000000000000      999748.000000000000000000 seller1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
@@ -1505,23 +1505,23 @@ RESULT:  6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.00000000000000000
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT:  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
 RESULT:                                                                                    10.000000000000000000          10.000000000000000000
-RESULT:  8 0xbe2e055d925bb9c6739a5147aa3416ed06178d64        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
+RESULT:  8 0x6b67203f3aef24182d09e2f5d66126428b06aba1        0.000000000000000000           0.000000000000000000           0.000000000000000000 'WETH' 'Wrapped Ether (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT:  9 0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
+RESULT:  9 0xff5ef8bf5b4decb63717f48357291616f1eee21d        0.000000000000000000           0.000000000000000000           0.000000000000000000 'USDx' 'USD x (18 dp)'
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 10 0xb8b3513800240021a2f5a20eca92f10c08a75e1c        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+RESULT: 10 0x8b535eeb7c4704afe708ea8cc9b830978310f97f        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 11 0x6e0a8538e41fb59e7c27943531af86e44ed160eb        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+RESULT: 11 0x11f72ce9616536054e80f6e72946f67f73ffc7a4        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 12 0x8ceb5a055735ec5c4b627fd9a58830096a096ef5        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
+RESULT: 12 0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 2
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 13 0x051f5d7afe7007c4bb6e62add989c2be255a8a22        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+RESULT: 13 0xa516d969a5c58f137c4b6482bb84c46056efff2b        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 14 0x1392b3306e6f307b829d2fe8ce130af106a8e143        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+RESULT: 14 0xf82dfe0df4504a618c0791c2c0617c6fe9de5328        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 15 0x34306c0f29fb853908d1ea995502d1a1889d3ea5        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+RESULT: 15 0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
-RESULT: 16 0xb936cea8a40419fb89950d470769b5c0c2eb8f60        0.000000000000000000           0.000000000000000000           0.000000000000000000 CoverToken
+RESULT: 16 0x948e356f09e30bebc5c51c97128806b7bc2d2425        0.000000000000000000           0.000000000000000000           0.000000000000000000 CoverToken
 RESULT:                                                                                     0.000000000000000000           0.000000000000000000
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT:                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -1529,72 +1529,72 @@ RESULT:                                                                         
 RESULT: -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 RESULT: 
 RESULT: PASS Transfer, then settle Optino & Cover - buyer1 -> optino.settle()
-RESULT: transferThenSettleGroup1_5Tx status=0x1 Success gas=2000000 gasUsed=124866 costETH=0.0010114146 costUSD=0.198753083046 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14861 txIx=0 txId=0xe7fa81d2d2eaf8db75685bff343d1a25c5fa1b832204bb699ac31eca844d0a9f @ 1589611838 Sat, 16 May 2020 06:50:38 GMT
+RESULT: transferThenSettleGroup1_5Tx status=0x1 Success gas=2000000 gasUsed=124866 costETH=0.0010114146 costUSD=0.198753083046 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15518 txIx=0 txId=0xa8eb437d8041aa9c82e4f987c99c2f6578d15abc8bf4fea5510d1cbf8055fa0e @ 1589612890 Sat, 16 May 2020 07:08:10 GMT
 RESULT: PASS Transfer, then settle Optino & Cover - buyer2 -> optino.settle()
-RESULT: transferThenSettleGroup1_6Tx status=0x1 Success gas=2000000 gasUsed=112676 costETH=0.0009126756 costUSD=0.179349882156 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14863 txIx=0 txId=0x9d6efea46fe674bee29ff43518ab3285f3c33f93597b58236b453ecd8edd3658 @ 1589611840 Sat, 16 May 2020 06:50:40 GMT
+RESULT: transferThenSettleGroup1_6Tx status=0x1 Success gas=2000000 gasUsed=112676 costETH=0.0009126756 costUSD=0.179349882156 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15520 txIx=0 txId=0xc8659c467672f4f5be6d570ffc886c796150249f90a3c606eccc3f9868e3c036 @ 1589612892 Sat, 16 May 2020 07:08:12 GMT
 RESULT: 
-RESULT: optinoFactoryContractAddress=OptinoFactory:0x1392
+RESULT: optinoFactoryContractAddress=OptinoFactory:0xf82d
 RESULT: optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0xb8b3
+RESULT: optinoFactory.optinoTokenTemplate=OptinoToken Template:0x8b53
 RESULT: optinoFactory.message/fee='v0.972-testnet-pre-release'/0.1%
 RESULT: optinoFactory.feedLength=2
-RESULT: optinoFactory.getFeedByIndex(0). ["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589611840"]
-RESULT: optinoFactory.getFeedByIndex(1). ["0x8ceb5a055735ec5c4b627fd9a58830096a096ef5","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589611840"]
+RESULT: optinoFactory.getFeedByIndex(0). ["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","Maker ETH/USD",["1","18","0"],"190901000000000000000",true,"255","1589612892"]
+RESULT: optinoFactory.getFeedByIndex(1). ["0x84ab2291cdc41f74ad21a1022a9070e1f4156b1e","Maker MKR/ETH",["1","18","0"],"1695000000000000000",true,"255","1589612892"]
 RESULT: optinoFactory.pairLength=1
-RESULT: optinoToken.getPairByIndex(0)=["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT: optinoFactory.getPairByIndex(0). pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, token0='WETH' 'Wrapped Ether (18 dp)':0xbe2e, token1='USDx' 'USD x (18 dp)':0xc940, feed0=PriceFeed 1:0x6e0a, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
+RESULT: optinoToken.getPairByIndex(0)=["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT: optinoFactory.getPairByIndex(0). pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, token0='WETH' 'Wrapped Ether (18 dp)':0x6b67, token1='USDx' 'USD x (18 dp)':0xff5e, feed0=PriceFeed 1:0x11f7, feed1=null:0x0000, feedParameters=255,255,255,255,0,0
 RESULT: optinoFactory.seriesLength(0)=1
-RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1, pairKey=0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff, callPut=1, expiry=1589611829, strike=200, bound=0, spot=190.901, timestamp=1589611835, optinoToken=0x34306c0f29fb853908d1ea995502d1a1889d3ea5, coverToken=0xb936cea8a40419fb89950d470769b5c0c2eb8f60
-RESULT:     token: OptinoToken:0x3430 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:   optinoFactory.getSeriesByIndex(0, 0). seriesKey=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0, pairKey=0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38, callPut=1, expiry=1589612881, strike=200, bound=0, spot=190.901, timestamp=1589612887, optinoToken=0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375, coverToken=0x948e356f09e30bebc5c51c97128806b7bc2d2425
+RESULT:     token: OptinoToken:0xa127 on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=0
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=false/CoverToken:0xb936
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","190901000000000000000"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=false/CoverToken:0x948e
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","190901000000000000000"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=10
 RESULT:       .currentSpot/currentPayoff(1)=190.901/9.099
 RESULT:       .spot/payoff(1)=190.901/9.099
-RESULT:     token: CoverToken:0xb936 on 'WETH' 'Wrapped Ether (18 dp)':0xbe2e/'USDx' 'USD x (18 dp)':0xc940
-RESULT:       .owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT:     token: CoverToken:0x948e on 'WETH' 'Wrapped Ether (18 dp)':0x6b67/'USDx' 'USD x (18 dp)':0xff5e
+RESULT:       .owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT:       .details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT:       .totalSupply=0
-RESULT:       .seriesKey/seriesNumber=0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1/3000005
-RESULT:       .isCover/optinoPair=true/OptinoToken:0x3430
-RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xc940/18
-RESULT:       .pairData: ["0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["0xbe2e055d925bb9c6739a5147aa3416ed06178d64","0xc940a4b5ab1ff96e1bd9ac23cb3619d05eaf1ef2"],["0x6e0a8538e41fb59e7c27943531af86e44ed160eb","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
-RESULT:       .seriesData: ["0x098590f13a4e324d1b0244285d5f769a649a8a4e207c393d444b11a090e5dec1","0x0447c74a1d462ed567061310440af4d99a182bfbaf9fd157fc9e6c0abbe4d3ff",["1","1589611829","200000000000000000000","0","190901000000000000000"],"0x34306c0f29fb853908d1ea995502d1a1889d3ea5","0xb936cea8a40419fb89950d470769b5c0c2eb8f60"]
+RESULT:       .seriesKey/seriesNumber=0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0/3000005
+RESULT:       .isCover/optinoPair=true/OptinoToken:0xa127
+RESULT:       .collateralToken/decimals: 'USDx' 'USD x (18 dp)':0xff5e/18
+RESULT:       .pairData: ["0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["0x6b67203f3aef24182d09e2f5d66126428b06aba1","0xff5ef8bf5b4decb63717f48357291616f1eee21d"],["0x11f72ce9616536054e80f6e72946f67f73ffc7a4","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"]]
+RESULT:       .seriesData: ["0xc892a8dabc2fd3f5c4676206c21a628eb5757522d1d111aeb626b1e59622a1c0","0xd10c84825e49af099ce00c85a96198b4d90463f22aa48969020de4258adadf38",["1","1589612881","200000000000000000000","0","190901000000000000000"],"0xa127b723e5d7ed06bc5778d3b4d1b74af47a6375","0x948e356f09e30bebc5c51c97128806b7bc2d2425"]
 RESULT:       .closedOrSettled=10
 RESULT:       .currentSpot/currentPayoff(1)=190.901/190.901
 RESULT:       .spot/payoff(1)=190.901/190.901
-RESULT:       .Payoff 0 #14861 optinoOrCoverToken=OptinoToken:0x3430 tokenOwner=buyer1:0xa44a tokens=1.25 collateralPaid=11.37375
-RESULT:       .Payoff 1 #14863 optinoOrCoverToken=CoverToken:0xb936 tokenOwner=buyer2:0xa55a tokens=1.25 collateralPaid=238.62625
+RESULT:       .Payoff 0 #15518 optinoOrCoverToken=OptinoToken:0xa127 tokenOwner=buyer1:0xa44a tokens=1.25 collateralPaid=11.37375
+RESULT:       .Payoff 1 #15520 optinoOrCoverToken=CoverToken:0x948e tokenOwner=buyer2:0xa55a tokens=1.25 collateralPaid=238.62625
 RESULT: 
-RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0xbe2e
+RESULT: token0ContractAddress='WETH' 'Wrapped Ether (18 dp)':0x6b67
 RESULT: token0.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token0.details='WETH' 'Wrapped Ether (18 dp)' 18 dp
 RESULT: token0.totalSupply=4000000
 RESULT: 
-RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xc940
+RESULT: token1ContractAddress='USDx' 'USD x (18 dp)':0xff5e
 RESULT: token1.owner/new=deployer:0xa11a/null:0x0000
 RESULT: token1.details='USDx' 'USD x (18 dp)' 18 dp
 RESULT: token1.totalSupply=4000000
-RESULT: token1.Transfer 0 #14861 from=CoverToken:0xb936 to=buyer1:0xa44a tokens=11.37375
-RESULT: token1.Transfer 1 #14863 from=CoverToken:0xb936 to=buyer2:0xa55a tokens=238.62625
+RESULT: token1.Transfer 0 #15518 from=CoverToken:0x948e to=buyer1:0xa44a tokens=11.37375
+RESULT: token1.Transfer 1 #15520 from=CoverToken:0x948e to=buyer2:0xa55a tokens=238.62625
 RESULT: 
-RESULT: token2ContractAddress=OptinoToken:0x3430
-RESULT: token2.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token2ContractAddress=OptinoToken:0xa127
+RESULT: token2.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token2.details='zOPT0003000005' 'Vanilla Put Optino 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token2.totalSupply=0
-RESULT: token2.Transfer 0 #14861 from=buyer1:0xa44a to=null:0x0000 tokens=1.25
+RESULT: token2.Transfer 0 #15518 from=buyer1:0xa44a to=null:0x0000 tokens=1.25
 RESULT: 
-RESULT: token3ContractAddress=CoverToken:0xb936
-RESULT: token3.owner/new=OptinoFactory:0x1392/null:0x0000
-RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T06:50:29Z 200 Maker ETH/USD' 18 dp
+RESULT: token3ContractAddress=CoverToken:0x948e
+RESULT: token3.owner/new=OptinoFactory:0xf82d/null:0x0000
+RESULT: token3.details='zCOV0003000005' 'Vanilla Put Cover 2020-05-16T07:08:01Z 200 Maker ETH/USD' 18 dp
 RESULT: token3.totalSupply=0
-RESULT: token3.Transfer 0 #14863 from=buyer2:0xa55a to=null:0x0000 tokens=1.25
+RESULT: token3.Transfer 0 #15520 from=buyer2:0xa55a to=null:0x0000 tokens=1.25
 RESULT: 
 null
 > 
@@ -1602,13 +1602,13 @@ null
 RESULT: --- Main contracts gas usage ---
 null
 > 
-RESULT: optinoTokenTx status=0x1 Success gas=5000000 gasUsed=3777016 costETH=0.0305938296 costUSD=6.011993454696 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14844 txIx=2 txId=0x20651dee348f299abea91d61a19052fcfad1622d368eb35183f45b08fe1f15d8 @ 1589611821 Sat, 16 May 2020 06:50:21 GMT
+RESULT: optinoTokenTx status=0x1 Success gas=5000000 gasUsed=3777016 costETH=0.0305938296 costUSD=6.011993454696 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15500 txIx=2 txId=0xe59f2d2f7183912577915a5fff9c9beb9c8387cf165dc7c30b646dfade31b7bc @ 1589612872 Sat, 16 May 2020 07:07:52 GMT
 undefined
 > 
-RESULT: optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5252113 costETH=0.0425421153 costUSD=8.359951077603 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14846 txIx=1 txId=0x974c15ca32fd21e751795166c2c18aa584b7058e7020b937aab3f1642c0bef31 @ 1589611823 Sat, 16 May 2020 06:50:23 GMT
+RESULT: optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5252137 costETH=0.0425423097 costUSD=8.359989279147 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15502 txIx=1 txId=0xdcdb218b2d304f2952b7e68bd951a3aeecb1269d94309b2035d28e185733621f @ 1589612874 Sat, 16 May 2020 07:07:54 GMT
 undefined
 > 
-RESULT: mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1462214 costETH=0.0118439334 costUSD=2.327451352434 @ ETH/USD=196.51 gasPrice=8.1 gwei block=14850 txIx=0 txId=0x01f2030188170ca229f08c83c58fdedfb7857cb2be9e31accf4b616a2af15612 @ 1589611827 Sat, 16 May 2020 06:50:27 GMT
+RESULT: mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1462214 costETH=0.0118439334 costUSD=2.327451352434 @ ETH/USD=196.51 gasPrice=8.1 gwei block=15507 txIx=0 txId=0x61fdf3508ba5cf761b90098cc9b4e91224c0374997b8bf12902027e8fb74772c @ 1589612879 Sat, 16 May 2020 07:07:59 GMT
 undefined
 > 
 RESULT: optinoFactoryBin.length=48490, /2=24245

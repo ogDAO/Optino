@@ -561,18 +561,18 @@ contract OptinoV1 {
     }
     function computeCollateral(uint[5] memory _seriesData, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _collateral) {
         (uint callPut, uint strike, uint bound) = (_seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)], _seriesData[uint(OptinoFactory.SeriesDataFields.Strike)], _seriesData[uint(OptinoFactory.SeriesDataFields.Bound)]);
-        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
+        (uint8 decimals, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
         require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
             if (bound <= strike) {
-                return shiftRightThenLeft(tokens, baseDecimals, decimals);
+                return shiftRightThenLeft(tokens, decimals0, decimals);
             } else {
-                return shiftRightThenLeft(bound.sub(strike).mul(tokens).div(bound), baseDecimals, decimals);
+                return shiftRightThenLeft(bound.sub(strike).mul(tokens).div(bound), decimals0, decimals);
             }
         } else {
             require(bound < strike, "Put bound must = 0 or < strike");
-            return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals).div(10 ** uint(rateDecimals));
+            return shiftRightThenLeft(strike.sub(bound).mul(tokens), decimals1, decimals).div(10 ** uint(rateDecimals));
         }
     }
     function computePayoff(uint[5] memory _seriesData, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _payoff) {
@@ -580,24 +580,24 @@ contract OptinoV1 {
         return _computePayoff(callPut, strike, bound, spot, tokens, decimalsData);
     }
     function _computePayoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _payoff) {
-        (uint8 decimals, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
+        (uint8 decimals, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
         require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
             require(bound == 0 || bound > strike, "Call bound must = 0 or > strike");
             if (spot > 0 && spot > strike) {
                 if (bound > strike && spot > bound) {
-                    return shiftRightThenLeft(bound.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
+                    return shiftRightThenLeft(bound.sub(strike).mul(tokens), decimals0, decimals).div(spot);
                 } else {
-                    return shiftRightThenLeft(spot.sub(strike).mul(tokens), baseDecimals, decimals).div(spot);
+                    return shiftRightThenLeft(spot.sub(strike).mul(tokens), decimals0, decimals).div(spot);
                 }
             }
         } else {
             require(bound < strike, "Put bound must = 0 or < strike");
             if (spot < strike) {
                  if (bound == 0 || (bound > 0 && spot >= bound)) {
-                     return shiftRightThenLeft(strike.sub(spot).mul(tokens), quoteDecimals, decimals + rateDecimals);
+                     return shiftRightThenLeft(strike.sub(spot).mul(tokens), decimals1, decimals + rateDecimals);
                  } else {
-                     return shiftRightThenLeft(strike.sub(bound).mul(tokens), quoteDecimals, decimals + rateDecimals);
+                     return shiftRightThenLeft(strike.sub(bound).mul(tokens), decimals1, decimals + rateDecimals);
                  }
             }
         }
@@ -1107,12 +1107,16 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
     /// @return _collateral
     /// @return _fee
     function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
-        return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
-    }
-    function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+        // return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
+        OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
         checkData(optinoData);
         (_collateralToken, _collateral, _fee, _currentSpot, _feedDecimals0) = computeRequiredCollateral(optinoData);
+
     }
+    // function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+    //     checkData(optinoData);
+    //     (_collateralToken, _collateral, _fee, _currentSpot, _feedDecimals0) = computeRequiredCollateral(optinoData);
+    // }
 
 
     /// @dev Mint Optino and Cover tokens
@@ -1227,15 +1231,15 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
     // @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
     // @param spot Spot rate
     // @param tokens Number of Optino and Cover tokens to compute the payoff for
-    // @param baseDecimals Base token contract decimals
-    // @param quoteDecimals Quote token contract decimals
+    // @param decimals0 Base token contract decimals
+    // @param decimals1 Quote token contract decimals
     // @param rateDecimals `strike`, `bound`, `spot` decimals
     // @return _payoff The computed payoff
-    // function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _payoff) {
-    //     return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.set(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
+    // function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) public pure returns (uint _payoff) {
+    //     return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.set(OPTINODECIMALS, decimals0, decimals1, rateDecimals));
     // }
-    // function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 baseDecimals, uint8 quoteDecimals, uint8 rateDecimals) public pure returns (uint _collateral) {
-    //     return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.set(OPTINODECIMALS, baseDecimals, quoteDecimals, rateDecimals));
+    // function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) public pure returns (uint _collateral) {
+    //     return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.set(OPTINODECIMALS, decimals0, decimals1, rateDecimals));
     // }
 
     // TODO V1
