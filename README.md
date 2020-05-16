@@ -5,7 +5,7 @@ Status: Work in progress
 
 See the the smart contracts in [contracts/OptinoFactory.sol](contracts/OptinoFactory.sol).
 
-See the [/wiki](/wiki) for documentation (TODO).
+See the Optino [wiki](https://github.com/bokkypoobah/Optino/wiki) for documentation (TODO).
 
 The testing is in the [test](test) folder, with some sample results in [test/test1results.txt](test/test1results.txt).
 
