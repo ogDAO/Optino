@@ -137,9 +137,9 @@ function padToken(s, decimals) {
   while (o.length < l) {
     o = " " + o;
   }
-  // while (o.length < 40) {
-  //   o = o + " ";
-  // }
+  while (o.length < 30) {
+    o = o + " ";
+  }
   return o;
 }
 

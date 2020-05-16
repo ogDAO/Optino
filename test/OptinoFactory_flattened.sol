@@ -1110,9 +1110,13 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     }
 
     // TODO Not working yet - contract too large
-    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0) {
+    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory spots) public view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0, uint[] memory payoffs) {
+        payoffs = new uint[](spots.length);
         OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
         checkData(optinoData);
+        for (uint i = 0; i < spots.length; i++) {
+            payoffs[i] = spots[i] * 100;
+        }
         (_collateralToken, _payoff, _currentSpot, _feedDecimals0) = computePayoff(optinoData);
     }
     function computePayoff(OptinoData memory optinoData) private view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0) {

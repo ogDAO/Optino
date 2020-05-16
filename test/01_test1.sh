@@ -109,13 +109,13 @@ console.log("RESULT: ");
 var deployGroup1_Message = "Deploy Group #1 - Contracts";
 
 var OPTINODECIMALS = 18;
-var baseDecimals = 18;
-var quoteDecimals = 18;
+var token0Decimals = 18;
+var token1Decimals = 6;
 var rateDecimals = 18;
-var baseSymbol = 'WETH';
-var quoteSymbol = 'USDx';
-var baseName = "Wrapped Ether (" + baseDecimals + " dp)";
-var quoteName = "USD x (" + quoteDecimals + " dp)";
+var token0Symbol = 'WETH';
+var token1Symbol = 'USDx';
+var token0Name = "Wrapped Ether (" + token0Decimals + " dp)";
+var token1Name = "USD x (" + token1Decimals + " dp)";
 var tokenOwner = deployer;
 var initialSupply = new BigNumber("0").shift(18);
 
@@ -131,7 +131,7 @@ var token0Contract = web3.eth.contract(tokenAbi);
 // console.log("DATA: token0Contract=" + JSON.stringify(token0Contract));
 var token0Tx = null;
 var token0Address = null;
-var token0 = token0Contract.new(baseSymbol, baseName, baseDecimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
+var token0 = token0Contract.new(token0Symbol, token0Name, token0Decimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -152,7 +152,7 @@ var token1Contract = web3.eth.contract(tokenAbi);
 // console.log("DATA: token1Contract=" + JSON.stringify(token1Contract));
 var token1Tx = null;
 var token1Address = null;
-var token1 = token1Contract.new(quoteSymbol, quoteName, quoteDecimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
+var token1 = token1Contract.new(token1Symbol, token1Name, token1Decimals, tokenOwner, initialSupply, {from: deployer, data: tokenBin, gas: 4000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -306,8 +306,8 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var deployGroup2_Message = "Deploy Group #2 - Setup";
-var token0Tokens = new BigNumber("1000000").shift(baseDecimals)
-var token1Tokens = new BigNumber("1000000").shift(quoteDecimals)
+var token0Tokens = new BigNumber("1000000").shift(token0Decimals)
+var token1Tokens = new BigNumber("1000000").shift(token1Decimals)
 var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
 var fee = new BigNumber("1").shift(15); // 0.1%, so 1 ETH = 0.001 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
@@ -329,7 +329,7 @@ var deployGroup2_9Tx = priceFeed1.setValue(priceFeed1Value, true, {from: deploye
 var deployGroup2_10Tx = priceFeed2.setValue(priceFeed2Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
 var deployGroup2_11Tx = optinoFactory.updateFeed(priceFeed1Address, "Maker ETH/USD", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_12Tx = optinoFactory.updateFeed(priceFeed2Address, "Maker MKR/ETH", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-// var deployGroup2_9Tx = optinoFactory.addConfig(token0Address, token1Address, priceFeedAdaptorAddress, baseDecimals, quoteDecimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+// var deployGroup2_9Tx = optinoFactory.addConfig(token0Address, token1Address, priceFeedAdaptorAddress, token0Decimals, token1Decimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
 // var deployGroup2_13Tx = optinoFactory.updateTokenDecimals(token1Address, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_14Tx = token0.approve(optinoFactoryAddress, token0Tokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
@@ -337,21 +337,21 @@ var deployGroup2_15Tx = token1.approve(optinoFactoryAddress, token1Tokens, {from
 while (txpool.status.pending > 0) {
 }
 printBalances();
-failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - token0.mint(seller1, " + token0Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_1Tx, deployGroup2_Message + " - token0.mint(seller1, " + token0Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_1Tx", deployGroup2_1Tx);
-failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - token0.mint(seller2, " + token0Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_2Tx, deployGroup2_Message + " - token0.mint(seller2, " + token0Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_2Tx", deployGroup2_2Tx);
-failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - token0.mint(buyer1, " + token0Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_3Tx, deployGroup2_Message + " - token0.mint(buyer1, " + token0Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_3Tx", deployGroup2_3Tx);
-failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - token0.mint(buyer2, " + token0Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_4Tx, deployGroup2_Message + " - token0.mint(buyer2, " + token0Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_4Tx", deployGroup2_4Tx);
-failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - token1.mint(seller1, " + token1Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_5Tx, deployGroup2_Message + " - token1.mint(seller1, " + token1Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_5Tx", deployGroup2_5Tx);
-failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - token1.mint(seller2, " + token1Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_6Tx, deployGroup2_Message + " - token1.mint(seller2, " + token1Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_6Tx", deployGroup2_6Tx);
-failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - token1.mint(buyer1, " + token1Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_7Tx, deployGroup2_Message + " - token1.mint(buyer1, " + token1Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_7Tx", deployGroup2_7Tx);
-failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - token1.mint(buyer2, " + token1Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_8Tx, deployGroup2_Message + " - token1.mint(buyer2, " + token1Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_8Tx", deployGroup2_8Tx);
 failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - priceFeed1.setValue(" + priceFeed1Value.shift(-rateDecimals).toString() + ", true)");
 printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
@@ -363,9 +363,9 @@ failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - optinoFactory.
 printTxData("deployGroup2_12Tx", deployGroup2_12Tx);
 // failIfTxStatusError(deployGroup2_13Tx, deployGroup2_Message + " - optinoFactory.updateTokenDecimals(QUOTE, 18)");
 // printTxData("deployGroup2_13Tx", deployGroup2_13Tx);
-failIfTxStatusError(deployGroup2_14Tx, deployGroup2_Message + " - seller1 -> token0.approve(optinoFactory, " + token0Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_14Tx, deployGroup2_Message + " - seller1 -> token0.approve(optinoFactory, " + token0Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_14Tx", deployGroup2_14Tx);
-failIfTxStatusError(deployGroup2_15Tx, deployGroup2_Message + " - seller1 -> token1.approve(optinoFactory, " + token1Tokens.shift(-baseDecimals).toString() + ")");
+failIfTxStatusError(deployGroup2_15Tx, deployGroup2_Message + " - seller1 -> token1.approve(optinoFactory, " + token1Tokens.shift(-token0Decimals).toString() + ")");
 printTxData("deployGroup2_15Tx", deployGroup2_15Tx);
 console.log("RESULT: ");
 printTokenContractDetails(0);
@@ -390,18 +390,18 @@ var tokens = new BigNumber("10").shift(OPTINODECIMALS);
 var value = web3.toWei("0", "ether").toString();
 var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
 // var _uiFeeAccount = uiFeeAccount;
-var collateralDecimals = callPut == 0 ? baseDecimals : quoteDecimals;
+var collateralDecimals = callPut == 0 ? token0Decimals : token1Decimals;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 
 
-// var collateral = optinoFactory.collateral.call(parseInt(callPut), strike.toString(), bound.toString(), tokens.toString(), parseInt(baseDecimals), parseInt(quoteDecimals), parseInt(rateDecimals));
-// console.log("RESULT: collateral(" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + tokens + ", " + baseDecimals + ", " + quoteDecimals + ", " + rateDecimals + ")=" + collateral + " (" + collateral.shift(-collateralDecimals).toString() + ")");
+// var collateral = optinoFactory.collateral.call(parseInt(callPut), strike.toString(), bound.toString(), tokens.toString(), parseInt(token0Decimals), parseInt(token1Decimals), parseInt(rateDecimals));
+// console.log("RESULT: collateral(" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + tokens + ", " + token0Decimals + ", " + token1Decimals + ", " + rateDecimals + ")=" + collateral + " (" + collateral.shift(-collateralDecimals).toString() + ")");
 // var spot = strike;
 // for (spot = 0; spot < 400; spot += 50) {
-//   var payoff = optinoFactory.payoff.call(parseInt(callPut), strike.toString(), bound.toString(), new BigNumber(spot).shift(rateDecimals).toString(), tokens.toString(), parseInt(baseDecimals), parseInt(quoteDecimals), parseInt(rateDecimals));
+//   var payoff = optinoFactory.payoff.call(parseInt(callPut), strike.toString(), bound.toString(), new BigNumber(spot).shift(rateDecimals).toString(), tokens.toString(), parseInt(token0Decimals), parseInt(token1Decimals), parseInt(rateDecimals));
 //   var coverPayoff = collateral.minus(payoff);
-//   console.log("RESULT: payoff(" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + spot.toString() + ", " + tokens + ", " + baseDecimals + ", " + quoteDecimals + ", " + rateDecimals + "): " +
+//   console.log("RESULT: payoff(" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + spot.toString() + ", " + tokens + ", " + token0Decimals + ", " + token1Decimals + ", " + rateDecimals + "): " +
 //     payoff.toString() + " (" + payoff.shift(-collateralDecimals).toString() + "), coverPayoff=" +
 //     coverPayoff.toString() + " (" + coverPayoff.shift(-collateralDecimals).toString() + ")");
 // }
@@ -447,7 +447,7 @@ var cover = web3.eth.contract(optinoTokenAbi).at(optinos[1]);
 
 printBalances();
 // failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(ETH, DAI, priceFeed, ...)");
-failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mint(BASE, QUOTE, priceFeed1, " + tokens.shift(-baseDecimals) + ", ...)");
+failIfTxStatusError(mintOptinoGroup1_1Tx, mintOptinoGroup1_Message + " - optinoFactory.mint(BASE, QUOTE, priceFeed1, " + tokens.shift(-token0Decimals) + ", ...)");
 // failIfTxStatusError(mintOptinoGroup1_2Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 // failIfTxStatusError(mintOptinoGroup1_3Tx, mintOptinoGroup1_Message + " - optinoFactory.mintOptinoTokens(WETH, DAI, priceFeed, ...)");
 printTxData("mintOptinoGroup1_1Tx", mintOptinoGroup1_1Tx);
