@@ -767,6 +767,7 @@ contract FeedLib {
         ADAPTOR
     }
     uint8 immutable NODATA = uint8(0xff);
+    uint immutable feedTypeCount = 4;
 
     /**
      * @dev Will return 18 decimal places for MakerFeed and AdaptorFeed, allowing custom override for these
@@ -1145,22 +1146,24 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, FeedLib /*, Parameters 
         _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
         emit LogInfo("computeRequiredCollateral results", address(_collateralToken), _collateral);
     }
+
+    function checkFeedParameters(uint8[6] memory feedParameters) internal view {
+        (uint8 type0, uint8 type1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1) = (feedParameters[uint(FeedParametersFields.Type0)], feedParameters[uint(FeedParametersFields.Type1)], feedParameters[uint(FeedParametersFields.Decimals0)], feedParameters[uint(FeedParametersFields.Decimals1)], feedParameters[uint(FeedParametersFields.Inverse0)], feedParameters[uint(FeedParametersFields.Inverse1)]);
+        require(type0 == FEEDPARAMETERS_DEFAULT || type0 < feedTypeCount, "Invalid type0");
+        require(type1 == FEEDPARAMETERS_DEFAULT || type1 < feedTypeCount, "Invalid type1");
+        require(decimals0 == FEEDPARAMETERS_DEFAULT || decimals0 <= 18, "Invalid decimals0");
+        require(decimals1 == FEEDPARAMETERS_DEFAULT || decimals1 <= 18, "Invalid decimals1");
+        require(inverse0 < 2, "Invalid inverse0");
+        require(inverse1 < 2, "Invalid inverse1");
+    }
     function checkData(OptinoData memory optinoData) internal view {
         require(address(optinoData.pair[0]) != address(0), "baseToken must != 0");
         require(ERC20(optinoData.pair[0]).totalSupply() >= 0, "baseToken totalSupply failure");
         require(address(optinoData.pair[1]) != address(0), "quoteToken must != 0");
         require(ERC20(optinoData.pair[1]).totalSupply() >= 0, "quoteToken totalSupply failure");
         require(optinoData.pair[0] != optinoData.pair[1], "baseToken must != quoteToken");
-
         require(optinoData.feeds[0] != address(0), "feed must != 0");
-        // TODO Check spot rate from feed
-        // TODO Default to check for registered feed & check parameters
-        // TODO Check feedParameters - decimals < 18
-        // (uint _spot, bool _hasData, uint8 _feedDecimals, uint _timestamp) = (210 * 10 ** 18, true, 18, block.timestamp);
-        // require(_spot > 0, "Spot must >= 0");
-        // require(_hasData, "Feed has no data");
-        // require(_timestamp + ONEDAY > block.timestamp, "Feed stale");
-
+        checkFeedParameters(optinoData.feedParameters);
         (uint _callPut, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
         require(_callPut < 2, "callPut must be 0 or 1");
         require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must >= now");
