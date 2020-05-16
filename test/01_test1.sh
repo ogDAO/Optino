@@ -270,6 +270,8 @@ var optinoFactory = optinoFactoryContract.new(optinoTokenAddress, {from: deploye
         console.log("DATA: var optinoFactoryAbi=" + JSON.stringify(optinoFactoryAbi) + ";");
         // console.log("DATA: var optinoTokenAbi=" + JSON.stringify(optinoTokenAbi) + ";");
         console.log("DATA: var optinoFactory=eth.contract(optinoFactoryAbi).at(optinoFactoryAddress);");
+        console.log("RESULT: optinoFactoryBin.length=" + optinoFactoryBin.length + ", /2=" + optinoFactoryBin.length / 2);
+        console.log("RESULT: optinoTokenBin.length=" + optinoTokenBin.length + ", /2=" + optinoTokenBin.length / 2);
       }
     }
   }
@@ -416,8 +418,14 @@ var inverse1 = 0;
 var inverse2 = 0;
 var feedParameters = [type1, type2, decimals1, decimals2, inverse1, inverse2];
 var mintData = [callPut, expiry, strike, bound, tokens];
-var calcCollateralAndFeeResults = optinoFactory.calcCollateralAndFee.call(pair, feeds, feedParameters, mintData);
-console.log("RESULT: calcCollateralAndFee: " + JSON.stringify(calcCollateralAndFeeResults));
+
+// var calcCollateralAndFeeResults = optinoFactory.calcCollateralAndFee.call(pair, feeds, feedParameters, mintData);
+// console.log("RESULT: calcCollateralAndFee: " + JSON.stringify(calcCollateralAndFeeResults));
+
+// var spots = [new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals)];
+var spots = [];
+var calcPayoffs = optinoFactory.calcPayoff.call(pair, feeds, feedParameters, mintData, spots);
+console.log("RESULT: calcPayoffs: " + JSON.stringify(calcPayoffs));
 
 // var data = optinoFactory.mint.getData(pair, feeds, feedParameters, mintData, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
@@ -466,7 +474,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   // var closeAmount = optino.balanceOf.call(seller1);
@@ -499,7 +507,7 @@ if (true) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var settleGroup1_Message = "Settle Optino & Cover";
   // var rate = callPut == "0" ? new BigNumber("250").shift(rateDecimals) : new BigNumber("166.666666666666666667").shift(rateDecimals);
@@ -541,7 +549,7 @@ if (false) {
 }
 
 
-if (true) {
+if (false) {
   // -----------------------------------------------------------------------------
   var transferThenSettleGroup1_Message = "Transfer, then settle Optino & Cover";
   var rate = new BigNumber("250").shift(rateDecimals);

@@ -1102,41 +1102,43 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     /// @return _collateralToken
     /// @return _collateral
     /// @return _fee
-    function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public view returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
-        // return _calcCollateralAndFee(OptinoData(pair, feeds, feedParameters, data));
-        OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
-        checkData(optinoData);
-        (_collateralToken, _collateral, _fee, _currentSpot, _feedDecimals0) = computeRequiredCollateral(optinoData);
-    }
-
-    // TODO Not working yet - contract too large
-    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory spots) public view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0, uint[] memory payoffs) {
-        payoffs = new uint[](spots.length);
-        OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
-        checkData(optinoData);
-        for (uint i = 0; i < spots.length; i++) {
-            payoffs[i] = spots[i] * 100;
-        }
-        (_collateralToken, _payoff, _currentSpot, _feedDecimals0) = computePayoff(optinoData);
-    }
-    function computePayoff(OptinoData memory optinoData) private view returns (ERC20 _collateralToken, uint _payoff, uint _currentSpot, uint8 _feedDecimals0) {
-        uint8 _feedType0;
-        (_feedDecimals0, _feedType0, _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
-        // emit LogInfo("computePayoff A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        // emit LogInfo("computePayoff A _feedType0", msg.sender, uint(_feedType0));
-        // emit LogInfo("computePayoff A _currentSpot", msg.sender, uint(_currentSpot));
-
-        uint8[4] memory decimalsData = [OPTINODECIMALS, optinoData.pair[0].decimals(), optinoData.pair[1].decimals(), _feedDecimals0];
-        _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
-        _payoff = computePayoff(optinoData.data, _currentSpot, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
-        // emit LogInfo("computePayoff results", address(_collateralToken), _payoff);
-    }
-
-    // function _calcCollateralAndFee(OptinoData memory optinoData) internal returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+    // function calcCollateralAndFee(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data) public view returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
+    //     OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
     //     checkData(optinoData);
     //     (_collateralToken, _collateral, _fee, _currentSpot, _feedDecimals0) = computeRequiredCollateral(optinoData);
     // }
 
+    /// @dev Calculate collateral and fee required to mint Optino and Cover tokens
+    /// @param pair [token0, token1] ERC20 contract addresses
+    /// @param feeds [feed0, feed1] Price feed adaptor contract address
+    /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
+    /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
+    /// @param whatIfSpots List of spots to compute the payoffs for
+    /// @return _collateralToken
+    /// @return _collateralTokens
+    /// @return _collateralFeeTokens
+    /// @return _collateralDecimals
+    /// @return _feedDecimals0
+    /// @return _currentSpot
+    /// @return _currentPayoff
+    /// @return whatIfPayoffs
+    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory whatIfSpots) public view returns (ERC20 _collateralToken, uint _collateralTokens, uint _collateralFeeTokens, uint8 _collateralDecimals, uint8 _feedDecimals0, uint _currentSpot, uint _currentPayoff, uint[] memory whatIfPayoffs) {
+        whatIfPayoffs = new uint[](whatIfSpots.length);
+        OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
+        checkData(optinoData);
+        uint8 _feedType0;
+        (_feedDecimals0, _feedType0, _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
+        uint8[4] memory decimalsData = [OPTINODECIMALS, optinoData.pair[0].decimals(), optinoData.pair[1].decimals(), _feedDecimals0];
+        _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
+        _collateralDecimals = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? optinoData.pair[0].decimals() : optinoData.pair[1].decimals();
+        _collateralTokens = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+        _collateralFeeTokens = _collateralTokens.mul(fee).div(10 ** FEEDECIMALS);
+        for (uint i = 0; i < whatIfSpots.length; i++) {
+            _currentPayoff = computePayoff(optinoData.data, whatIfSpots[i], optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+            whatIfPayoffs[i] = _currentPayoff;
+        }
+        _currentPayoff = computePayoff(optinoData.data, _currentSpot, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+    }
 
     /// @dev Mint Optino and Cover tokens
     /// @param pair [token0, token1] ERC20 contract addresses
@@ -1273,17 +1275,17 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     // ----------------------------------------------------------------------------
     // Misc
     // ----------------------------------------------------------------------------
-    // function recoverTokens(OptinoToken optinoToken, ERC20 token, uint tokens) public onlyOwner {
-    //     if (address(optinoToken) != address(0)) {
-    //         optinoToken.recoverTokens(token, tokens);
-    //     } else {
-    //         if (address(token) == address(0)) {
-    //             payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
-    //         } else {
-    //             token.transfer(owner, tokens == 0 ? token.balanceOf(address(this)) : tokens);
-    //         }
-    //     }
-    // }
+    function recoverTokens(OptinoToken optinoToken, ERC20 token, uint tokens) public onlyOwner {
+        if (address(optinoToken) != address(0)) {
+            optinoToken.recoverTokens(token, tokens);
+        } else {
+            if (address(token) == address(0)) {
+                payable(owner).transfer((tokens == 0 ? address(this).balance : tokens));
+            } else {
+                token.transfer(owner, tokens == 0 ? token.balanceOf(address(this)) : tokens);
+            }
+        }
+    }
     // function getTokenInfo(ERC20 token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
     //     if (token == ERC20(0)) {
     //         return (18, 0, tokenOwner.balance, 0, "ETH", "Ether");
