@@ -767,9 +767,7 @@ contract GetFeed {
     uint8 immutable NODATA = uint8(0xff);
     uint immutable feedTypeCount = 4;
 
-    /**
-     * @dev Will return 18 decimal places for MakerFeed and AdaptorFeed, allowing custom override for these
-     **/
+    /// @dev Will return 18 decimal places for MakerFeed and AdaptorFeed, allowing custom override for these
     function getFeedRate(address feed, FeedType feedType) public view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
         if (feedType == FeedType.CHAINLINK) {
             int _iRate = AggregatorInterface(feed).latestAnswer();
@@ -1005,7 +1003,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
             if (_feedType1 == FEEDPARAMETERS_DEFAULT) {
                 _feedType1 = feed1.data[uint(FeedTypeFields.Type)];
             }
-            (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[1], FeedType(_feedType1));
+            (_spot1, _hasData1, /*_feedDecimals*/, /*_timestamp*/) = getFeedRate(feeds[1], FeedType(_feedType1));
             if (feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
                 _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
             }
@@ -1076,13 +1074,22 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         _decimalsData = [OPTINODECIMALS, pair.pair[0].decimals(), pair.pair[1].decimals(), _feedDecimals0];
         return (series.data, _decimalsData);
     }
+
+    function isDefaultFeed(address[2] memory feeds, uint8[6] memory feedParameters) internal pure returns (bool) {
+        (uint8 type0, uint8 type1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1) = (feedParameters[uint(FeedParametersFields.Type0)], feedParameters[uint(FeedParametersFields.Type1)], feedParameters[uint(FeedParametersFields.Decimals0)], feedParameters[uint(FeedParametersFields.Decimals1)], feedParameters[uint(FeedParametersFields.Inverse0)], feedParameters[uint(FeedParametersFields.Inverse1)]);
+        return feeds[1] != address(0) || type0 != FEEDPARAMETERS_DEFAULT || type1 != FEEDPARAMETERS_DEFAULT || decimals0 != FEEDPARAMETERS_DEFAULT || decimals1 != FEEDPARAMETERS_DEFAULT || inverse0 != 0 || inverse1 != 0;
+    }
     function getNameData(bytes32 seriesKey) public view returns (bool _isCustom, string memory _feedName, uint[5] memory _seriesData, uint8 _feedDecimals) {
         Series memory series = seriesData[seriesKey];
         require(series.timestamp > 0, "Invalid key");
         Pair memory pair = pairData[series.pairKey];
         Feed memory feed = feedData[pair.feeds[0]];
-        // TODO _feedDecimals
-        (_isCustom, _feedName, _seriesData, _feedDecimals) = (false /*pair.customFeed*/, feed.name, series.data, 18);
+        uint8 _feedDecimals0 = pair.feedParameters[uint(FeedParametersFields.Decimals0)];
+        if (_feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
+            _feedDecimals0 = feedData[pair.feeds[0]].data[uint(FeedTypeFields.Decimals)];
+        }
+        _isCustom = isDefaultFeed(pair.feeds, pair.feedParameters);
+        (_feedName, _seriesData, _feedDecimals) = (feed.name, series.data, _feedDecimals0);
     }
 
     /// @dev Calculate collateral and fee required to mint Optino and Cover tokens
@@ -1171,7 +1178,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         checkFeedParameters(optinoData.feedParameters);
         (uint _callPut, uint _strike, uint _bound) = (optinoData.data[uint(OptinoDataFields.CallPut)], optinoData.data[uint(OptinoDataFields.Strike)], optinoData.data[uint(OptinoDataFields.Bound)]);
         require(_callPut < 2, "callPut must be 0 or 1");
-        require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must >= now");
+        require(optinoData.data[uint(OptinoDataFields.Expiry)] > block.timestamp, "expiry must > now");
         require(_strike > 0, "strike must be > 0");
         if (_callPut == 0) {
             require(_bound == 0 || _bound > _strike, "Call bound must = 0 or > strike");

@@ -380,7 +380,7 @@ console.log("RESULT: ");
 
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
-var callPut = "1"; // 0 Call, 1 Put
+var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 4; // + 2 * 60*60;
 var callStrike = new BigNumber("150.000000000000000000").shift(rateDecimals);
 var callCap = new BigNumber("300").shift(rateDecimals);
@@ -410,13 +410,13 @@ console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 
 var pair = [token0Address, token1Address];
 var feeds = [priceFeed1Address, NULLACCOUNT];
+var type0 = 0xff;
 var type1 = 0xff;
-var type2 = 0xff;
+var decimals0 = 0xff;
 var decimals1 = 0xff;
-var decimals2 = 0xff;
+var inverse0 = 1;
 var inverse1 = 0;
-var inverse2 = 0;
-var feedParameters = [type1, type2, decimals1, decimals2, inverse1, inverse2];
+var feedParameters = [type0, type1, decimals0, decimals1, inverse0, inverse1];
 var mintData = [callPut, expiry, strike, bound, tokens];
 
 // var calcCollateralAndFeeResults = optinoFactory.calcCollateralAndFee.call(pair, feeds, feedParameters, mintData);
