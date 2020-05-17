@@ -12,7 +12,7 @@ const OptinoFactory = {
           <b-row>
             <b-col cols="4" class="small">Factory</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + address + '#code'" class="card-link" target="_blank">{{ address }}</b-link></b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="optinoTokenTemplate">
             <b-col cols="4" class="small">OptinoToken</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + optinoTokenTemplate + '#code'" class="card-link" target="_blank">{{ optinoTokenTemplate }}</b-link></b-col>
           </b-row>
           <b-row v-if="owner">
@@ -29,17 +29,20 @@ const OptinoFactory = {
           <b-table small striped selectable responsive hover :items="feedData" head-variant="light">
           </b-table>
           -->
-          <b-row>
+          <b-row v-if="feedData.length > 0">
             <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
           </b-row>
-          <b-row v-for="(feed, index) in feedData" v-bind:key="index">
+          <b-row v-for="(feed, index) in feedDataSorted" v-bind:key="index">
             <b-col>
               <b-row>
-                <b-col colspan="2" class="small truncate">
+                <b-col cols="5" class="small truncate" style="font-size: 70%">
                   <b-link :href="explorer + 'address/' + feed.feed + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
                 </b-col>
-                <b-col class="small truncate" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+                <b-col cols="4" class="small truncate text-right"  style="font-size: 70%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
                   {{ feed.spot.shift(-feed.feedDataDecimals) }}
+                </b-col>
+                <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+                  {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
                 </b-col>
               </b-row>
 
@@ -196,6 +199,9 @@ const OptinoFactory = {
     feedData() {
       return store.getters['optinoFactory/feedData'];
     },
+    feedDataSorted() {
+      return store.getters['optinoFactory/feedDataSorted'];
+    },
     configData() {
       return store.getters['optinoFactory/configData'];
     },
@@ -215,6 +221,7 @@ const optinoFactoryModule = {
     message: null,
     fee: null,
     feedData: [],
+    feedDataSorted: [],
     configData: [],
     seriesData: [],
     tokenData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
@@ -228,6 +235,7 @@ const optinoFactoryModule = {
     message: state => state.message,
     fee: state => state.fee,
     feedData: state => state.feedData,
+    feedDataSorted: state => state.feedDataSorted,
     configData: state => state.configData,
     seriesData: state => state.seriesData,
     tokenData: state => state.tokenData,
@@ -236,6 +244,10 @@ const optinoFactoryModule = {
   mutations: {
     updateFeed(state, {index, feed}) {
       Vue.set(state.feedData, index, feed);
+      var results = state.feedData.sort(function(a, b) {
+        return ('' + a.sortKey).localeCompare(b.sortKey);
+      });
+      state.feedDataSorted = results;
       logInfo("optinoFactoryModule", "updateFeed(" + index + ", " + JSON.stringify(feed) + ")")
     },
     updateConfig(state, {index, config}) {
@@ -321,10 +333,11 @@ const optinoFactoryModule = {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
             logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
-            // address _feed, string memory _feedName, uint8[3] memory _feedData, uint _spot, bool _hasData, uint8 _feedDecimals, uint _feedTimestamp
-            // optinoFactoryModule:execWeb3() feed: ["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","Chainlink ETH/USD",["0","8","0"],"20754326295",true,"255","1589735010"]
+            var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
+            console.log(feed[1] + " " + JSON.stringify(matcher));
+            var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
             if (i >= state.feedData.length || state.feedData[i].feedTimestamp < feed[6]) {
-              commit('updateFeed', { index: i, feed: { index: i, feed: feed[0], name: feed[1], feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2], spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } });
+              commit('updateFeed', { index: i, feed: { index: i, sortKey: sortKey, feed: feed[0], name: feed[1], feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2], spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } });
             }
           }
 
