@@ -15,9 +15,61 @@ const OptinoFactory = {
           <b-row>
             <b-col cols="4" class="small">OptinoToken</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + optinoTokenTemplate + '#code'" class="card-link" target="_blank">{{ optinoTokenTemplate }}</b-link></b-col>
           </b-row>
-          <b-row>
+          <b-row v-if="owner">
             <b-col cols="4" class="small">Owner</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'address/' + owner" class="card-link" target="_blank">{{ owner }}</b-link></b-col>
           </b-row>
+          <b-row v-if="message">
+            <b-col cols="4" class="small">Message</b-col><b-col class="small truncate" cols="8">{{ message }}</b-col>
+          </b-row>
+          <b-row v-if="fee">
+            <b-col cols="4" class="small">Fee</b-col><b-col class="small truncate" cols="8">{{ fee }} %</b-col>
+          </b-row>
+
+          <!--
+          <b-table small striped selectable responsive hover :items="feedData" head-variant="light">
+          </b-table>
+          -->
+          <b-row>
+            <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
+          </b-row>
+          <b-row v-for="(feed, index) in feedData" v-bind:key="index">
+            <b-col>
+              <b-row>
+                <b-col colspan="2" class="small truncate">
+                  <b-link :href="explorer + 'address/' + feed.feed + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
+                </b-col>
+                <b-col class="small truncate" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+                  {{ feed.spot.shift(-feed.feedDataDecimals) }}
+                </b-col>
+              </b-row>
+
+
+              <!--
+              <b-row>
+                <b-col colspan="2" class="small truncate">
+                  Feed {{ feed.index }} - <em>{{ feed.name }}</em>
+                </b-col>
+              </b-row>
+              -->
+              <!-- feed: { index: i, feed: feed[0], name: feed[1], feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2], spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } -->
+
+              <!--
+              <b-row>
+                <b-col cols="4" class="small truncate">• address</b-col>
+                <b-col class="small truncate"><b-link :href="explorer + 'address/' + feed.feed + '#readContract'" class="card-link" target="_blank">{{ feed.feed }}</b-link></b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• spot</b-col>
+                <b-col class="small truncate">{{ feed.spot.shift(-feed.feedDataDecimals) }}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="4" class="small truncate">• timestamp</b-col>
+                <b-col class="small truncate">{{ new Date(feed.feedTimestamp*1000).toLocaleString() }}</b-col>
+              </b-row>
+              -->
+            </b-col>
+          </b-row>
+
           <b-row v-for="(config, index) in configData" v-bind:key="index">
             <b-col>
               <b-row>
@@ -135,6 +187,15 @@ const OptinoFactory = {
     owner() {
       return store.getters['optinoFactory/owner'];
     },
+    message() {
+      return store.getters['optinoFactory/message'];
+    },
+    fee() {
+      return store.getters['optinoFactory/fee'];
+    },
+    feedData() {
+      return store.getters['optinoFactory/feedData'];
+    },
     configData() {
       return store.getters['optinoFactory/configData'];
     },
@@ -150,7 +211,10 @@ const optinoFactoryModule = {
   state: {
     address: OPTINOFACTORYADDRESS,
     optinoTokenTemplate: "",
-    owner: "(loading)",
+    owner: null,
+    message: null,
+    fee: null,
+    feedData: [],
     configData: [],
     seriesData: [],
     tokenData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
@@ -161,12 +225,19 @@ const optinoFactoryModule = {
     address: state => state.address,
     optinoTokenTemplate: state => state.optinoTokenTemplate,
     owner: state => state.owner,
+    message: state => state.message,
+    fee: state => state.fee,
+    feedData: state => state.feedData,
     configData: state => state.configData,
     seriesData: state => state.seriesData,
     tokenData: state => state.tokenData,
     params: state => state.params,
   },
   mutations: {
+    updateFeed(state, {index, feed}) {
+      Vue.set(state.feedData, index, feed);
+      logInfo("optinoFactoryModule", "updateFeed(" + index + ", " + JSON.stringify(feed) + ")")
+    },
     updateConfig(state, {index, config}) {
       Vue.set(state.configData, index, config);
       logDebug("optinoFactoryModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
@@ -186,6 +257,14 @@ const optinoFactoryModule = {
     updateOwner(state, owner) {
       state.owner = owner;
       logDebug("optinoFactoryModule", "updateOwner('" + owner + "')")
+    },
+    updateMessage(state, message) {
+      state.message = message;
+      logDebug("optinoFactoryModule", "updateMessage('" + message + "')")
+    },
+    updateFee(state, fee) {
+      state.fee = fee;
+      logDebug("optinoFactoryModule", "updateFee('" + fee + "')")
     },
     updateParams(state, params) {
       state.params = params;
@@ -212,6 +291,7 @@ const optinoFactoryModule = {
         }
 
         var contract = web3.eth.contract(OPTINOFACTORYABI).at(state.address);
+        // logInfo("OPTINOFACTORYABI=" + JSON.stringify(OPTINOFACTORYABI));
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
           var _optinoTokenTemplate = promisify(cb => contract.optinoTokenTemplate(cb));
           var optinoTokenTemplate = await _optinoTokenTemplate;
@@ -223,6 +303,32 @@ const optinoFactoryModule = {
           if (owner !== state.owner) {
             commit('updateOwner', owner);
           }
+          var _message = promisify(cb => contract.message(cb));
+          var message = await _message;
+          if (message !== state.message) {
+            commit('updateMessage', message);
+          }
+          var _fee = promisify(cb => contract.fee(cb));
+          var fee = await _fee;
+          if (fee !== state.fee) {
+            commit('updateFee', fee.shift(-16));
+          }
+
+          var _feedLength = promisify(cb => contract.feedLength(cb));
+          var feedLength = await _feedLength;
+          logDebug("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
+          for (var i = 0; i < feedLength; i++) {
+            var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
+            var feed = await _feed;
+            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            // address _feed, string memory _feedName, uint8[3] memory _feedData, uint _spot, bool _hasData, uint8 _feedDecimals, uint _feedTimestamp
+            // optinoFactoryModule:execWeb3() feed: ["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","Chainlink ETH/USD",["0","8","0"],"20754326295",true,"255","1589735010"]
+            if (i >= state.feedData.length || state.feedData[i].feedTimestamp < feed[6]) {
+              commit('updateFeed', { index: i, feed: { index: i, feed: feed[0], name: feed[1], feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2], spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } });
+            }
+          }
+
+          /*
           var _configDataLength = promisify(cb => contract.configDataLength(cb));
           var configDataLength = await _configDataLength;
           logDebug("optinoFactoryModule", "execWeb3() configDataLength: " + configDataLength);
@@ -273,6 +379,8 @@ const optinoFactoryModule = {
               }
             });
           }
+          */
+          /*
           var _seriesDataLength = promisify(cb => contract.seriesDataLength(cb));
           var seriesDataLength = await _seriesDataLength;
           logDebug("optinoFactoryModule", "execWeb3() seriesDataLength: " + seriesDataLength);
@@ -314,6 +422,7 @@ const optinoFactoryModule = {
               commit('updateSeries', { index: i, series: { index: i, seriesKey: seriesKey, configKey: configKey, callPut: callPut, expiry: expiry, strike: strike.shift(-18).toString(), bound: bound.shift(-18).toString(), timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken } });
             }
           }
+          */
         }
         commit('updateExecuting', false);
         logDebug("optinoFactoryModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");

@@ -110,3 +110,29 @@ Factory https://ropsten.etherscan.io/address/0x3aEEf7CF6405C859861CF869963d100fe
 OptinoToken https://ropsten.etherscan.io/address/0xD7210E89cC3d69F0CaA3D1dFb3D90E5f9b957972#code
 
 Factory https://ropsten.etherscan.io/address/0xBbe28E05A8845bed72424DdEDa0E401494FAe7c5#code
+
+## v0.973-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x2d72047E87fd6f0a8A70f900993Ab2E53F911942#code
+Factory https://ropsten.etherscan.io/address/0x346Dd22A2968A06D8eAfFBFB85DAf6C916373F02#code
+
+# Ropsten Feed data
+
+updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
+
+0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507, "Chainlink ETH/USD", 0, 8
+0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", 0, 8
+0x882906a758207FeA9F21e0bb7d2f24E561bd0981, "Chainlink BTC/USD", 0, 8
+# STALE 0x0237f6c4ba705d0352a1a404e7608adddf479570, "Chainlink BAT/USD", 0, 8
+0xD49c81796BccAbb5cd804f9d186B5E00E9Ac21fF, "Chainlink CHF/USD", 0, 8
+0xe95feDE497d0c02a2DBc8e20C5E8bFFE9339F03a, "Chainlink EUR/USD", 0, 8
+0xa2Dbd50FD09B9572a8A37ED4C2aEE4093A4b3Ef7, "Chainlink GBP/USD", 0, 8
+0x8eAeBAF0eA3BC2a160b461703AF409d074CDEC6e, "Chainlink JPY/USD", 0, 8
+0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A, "Chainlink XAG/USD", 0, 8
+
+0x5b8B87A0abA4be247e660B0e0143bB30Cdf566AF, "Chainlink BTC/ETH", 0, 18
+0x811B1f727F8F4aE899774B568d2e72916D91F392, "Chainlink MKR/ETH", 0, 18
+0xAfd8186C962daf599f171B8600f3e19Af7B52c92, "Chainlink BAT/ETH", 0, 18
+0x64b8e49baDeD7BFb2FD5A9235B2440C0eE02971B, "Chainlink DAI/ETH", 0, 18
+0xDab909dedB72573c626481fC98CEE1152b81DEC2, "Chainlink MANA/ETH", 0, 18
+0xa949eE9bA80c0F381481f2eaB538bC5547a5aC67, "Chainlink REP/ETH", 0, 18
+0xA95674a8Ed9aa9D2E445eb0024a9aa05ab44f6bf, "Chainlink SNX/ETH", 0, 18

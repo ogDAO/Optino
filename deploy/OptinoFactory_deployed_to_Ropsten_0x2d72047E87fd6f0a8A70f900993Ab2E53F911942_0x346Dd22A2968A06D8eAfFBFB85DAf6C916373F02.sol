@@ -884,7 +884,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.973-testnet-pre-release";
+    string public message = "v0.972-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
