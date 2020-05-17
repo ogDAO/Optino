@@ -17,8 +17,8 @@ pragma solidity ^0.6.6;
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0xD7210E89cC3d69F0CaA3D1dFb3D90E5f9b957972
-// OptinoFactory deployment on Ropsten: 0xBbe28E05A8845bed72424DdEDa0E401494FAe7c5
+// OptinoToken deployment on Ropsten: 0x1E5fcA82B126bc13750bcD5C1657ae0528Ca20b2
+// OptinoFactory deployment on Ropsten: 0x50b7EA31Fc31D3DAaD8dcd83143A13c5dA481917
 //
 // Web UI at https://optino.xyz, https://bokkypoobah.github.io/Optino,
 // https://github.com/bokkypoobah/Optino, https://optino.eth and
@@ -426,38 +426,6 @@ contract Owned {
 }
 
 
-/// @notice Chainlink AggregatorInterface @chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol
-interface AggregatorInterface {
-  function latestAnswer() external view returns (int256);
-  function latestTimestamp() external view returns (uint256);
-  function latestRound() external view returns (uint256);
-  function getAnswer(uint256 roundId) external view returns (int256);
-  function getTimestamp(uint256 roundId) external view returns (uint256);
-  function decimals() external view returns (uint8);
-
-  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
-  event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
-}
-
-
-/// @notice MakerDAO Oracles v2
-interface MakerFeed {
-    function peek() external view returns (bytes32 _value, bool _hasValue);
-}
-
-
-/// @notice Compound V1PriceOracle @ 0xddc46a3b076aec7ab3fc37420a8edd2959764ec4
-interface V1PriceOracleInterface {
-    function assetPrices(address asset) external view returns (uint);
-}
-
-
-/// @notice AdaptorFeed
-interface AdaptorFeed {
-    function spot() external view returns (uint value, bool hasValue);
-}
-
-
 /// @notice ERC20 https://eips.ethereum.org/EIPS/eip-20 with optional symbol, name and decimals
 interface ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
@@ -767,29 +735,87 @@ contract OptinoToken is BasicToken, OptinoV1 {
 }
 
 
+/// @notice @chainlink/contracts/src/v0.4/interfaces/AggregatorInterface.sol
+interface AggregatorInterface4 {
+  function latestAnswer() external view returns (int256);
+  function latestTimestamp() external view returns (uint256);
+  function latestRound() external view returns (uint256);
+  function getAnswer(uint256 roundId) external view returns (int256);
+  function getTimestamp(uint256 roundId) external view returns (uint256);
+
+  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
+  event NewRound(uint256 indexed roundId, address indexed startedBy);
+}
+
+/// @notice Chainlink AggregatorInterface @chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol
+interface AggregatorInterface6 {
+  function latestAnswer() external view returns (int256);
+  function latestTimestamp() external view returns (uint256);
+  function latestRound() external view returns (uint256);
+  function getAnswer(uint256 roundId) external view returns (int256);
+  function getTimestamp(uint256 roundId) external view returns (uint256);
+  function decimals() external view returns (uint8);
+
+  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
+  event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
+}
+
+
+/// @notice MakerDAO Oracles v2
+interface MakerFeed {
+    function peek() external view returns (bytes32 _value, bool _hasValue);
+}
+
+
+/// @notice Compound V1PriceOracle @ 0xddc46a3b076aec7ab3fc37420a8edd2959764ec4
+// interface V1PriceOracleInterface {
+//     function assetPrices(address asset) external view returns (uint);
+// }
+
+
+/// @notice AdaptorFeed
+interface AdaptorFeed {
+    function spot() external view returns (uint value, bool hasValue);
+}
+
+
 /// @notice Get feed
 contract GetFeed {
     enum FeedType {
-        CHAINLINK,
+        CHAINLINK4,
+        CHAINLINK6,
         MAKER,
-        // COMPOUND,
         ADAPTOR
+        // COMPOUND,
     }
     uint8 immutable NODATA = uint8(0xff);
     uint immutable feedTypeCount = 3;
 
     /// @dev Will return 18 decimal places for MakerFeed and AdaptorFeed, allowing custom override for these
     function getFeedRate(address feed, FeedType feedType) public view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
-        if (feedType == FeedType.CHAINLINK) {
-            int _iRate = AggregatorInterface(feed).latestAnswer();
+        if (feedType == FeedType.CHAINLINK4) {
+            int _iRate = AggregatorInterface4(feed).latestAnswer();
             _hasData = _iRate > 0;
             _rate = _hasData ? uint(_iRate) : 0;
-            _decimals = AggregatorInterface(feed).decimals();
-            _timestamp = AggregatorInterface(feed).latestTimestamp();
+            _decimals = NODATA;
+            _timestamp = AggregatorInterface4(feed).latestTimestamp();
+        } else if (feedType == FeedType.CHAINLINK6) {
+            int _iRate = AggregatorInterface6(feed).latestAnswer();
+            _hasData = _iRate > 0;
+            _rate = _hasData ? uint(_iRate) : 0;
+            _decimals = AggregatorInterface6(feed).decimals();
+            _timestamp = AggregatorInterface6(feed).latestTimestamp();
         } else if (feedType == FeedType.MAKER) {
             bytes32 _bRate;
             (_bRate, _hasData) = MakerFeed(feed).peek();
             _rate = uint(_bRate);
+            if (!_hasData) {
+                _rate = 0;
+            }
+            _decimals = NODATA;
+            _timestamp = block.timestamp;
+        } else if (feedType == FeedType.ADAPTOR) {
+            (_rate, _hasData) = AdaptorFeed(feed).spot();
             if (!_hasData) {
                 _rate = 0;
             }
@@ -802,13 +828,6 @@ contract GetFeed {
         //     _hasData = _rate > 0;
         //     _decimals = NODATA;
         //     _timestamp = block.timestamp;
-        } else if (feedType == FeedType.ADAPTOR) {
-            (_rate, _hasData) = AdaptorFeed(feed).spot();
-            if (!_hasData) {
-                _rate = 0;
-            }
-            _decimals = NODATA;
-            _timestamp = block.timestamp;
         } else {
             revert("not used");
         }
