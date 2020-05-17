@@ -814,37 +814,38 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     using SafeMath for uint;
 
     enum FeedTypeFields { Type, Decimals, Locked }
+    enum FeedParametersFields { Type0, Type1, Decimals0, Decimals1, Inverse0, Inverse1 }
+    enum SeriesDataFields { CallPut, Expiry, Strike, Bound, Spot }
+    enum OptinoDataFields { CallPut, Expiry, Strike, Bound, Tokens }
+
     struct Feed {
         uint timestamp;
         uint index;
         address feed;
         string name;
-        uint8[3] data; // [type, decimals, locked]
+        uint8[3] data; // FeedTypeFields: [type, decimals, locked]
     }
-    enum FeedParametersFields { Type0, Type1, Decimals0, Decimals1, Inverse0, Inverse1 }
     struct Pair {
         uint timestamp;
         uint index;
         ERC20[2] pair; // [token0, token1]
         address[2] feeds; // [feed0, feed1]
-        uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
+        uint8[6] feedParameters; // FeedParametersFields: [type0, type1, decimals0, decimals1, inverse0, inverse1]
     }
-    enum SeriesDataFields { CallPut, Expiry, Strike, Bound, Spot }
     struct Series {
         uint timestamp;
         uint index;
         bytes32 key;
         bytes32 pairKey;
-        uint[5] data; // [callPut, expiry, strike, bound, spot]
+        uint[5] data; // SeriesDataFields: [callPut, expiry, strike, bound, spot]
         OptinoToken optinoToken;
         OptinoToken coverToken;
     }
-    enum OptinoDataFields { CallPut, Expiry, Strike, Bound, Tokens }
     struct OptinoData {
         ERC20[2] pair; // [token0, token1]
         address[2] feeds; // [feed0, feed1]
-        uint8[6] feedParameters; // [type0, type1, decimals0, decimals1, inverse0, inverse1]
-        uint[5] data; // [callPut, expiry, strike, bound, tokens]
+        uint8[6] feedParameters; // FeedParametersFields: [type0, type1, decimals0, decimals1, inverse0, inverse1]
+        uint[5] data; // OptinoDataFields: [callPut, expiry, strike, bound, tokens]
     }
 
     uint8 private constant OPTINODECIMALS = 18;
@@ -982,14 +983,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         if (_feedType0 == FEEDPARAMETERS_DEFAULT) {
             _feedType0 = feed0.data[uint(FeedTypeFields.Type)];
         }
-        // emit LogInfo("_getSeriesCurrentSpot A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        // emit LogInfo("_getSeriesCurrentSpot A _feedType0", msg.sender, uint(_feedType0));
 
         (uint _spot0, bool _hasData0, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[0], FeedType(_feedType0));
-        // emit LogInfo("getSeriesCurrentSpot A _spot0", msg.sender, _spot0);
         if (feedParameters[uint(FeedParametersFields.Inverse0)] == 1) {
             _spot0 = (10 ** (uint(_feedDecimals0) * 2)).div(_spot0);
-            // emit LogInfo("_getSeriesCurrentSpot A _spot0 Inverted", msg.sender, _spot0);
         }
         uint8 _feedDecimals1;
         uint8 _feedType1;
@@ -1008,21 +1005,15 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
             if (_feedType1 == FEEDPARAMETERS_DEFAULT) {
                 _feedType1 = feed1.data[uint(FeedTypeFields.Type)];
             }
-            // emit LogInfo("_getSeriesCurrentSpot B _feedDecimals1", msg.sender, uint(_feedDecimals1));
-            // emit LogInfo("_getSeriesCurrentSpot B _feedType1", msg.sender, uint(_feedType1));
             (_spot1, _hasData1, /*uint8 _feedDecimals*/, /*uint _timestamp*/) = getFeedRate(feeds[1], FeedType(_feedType1));
-            // emit LogInfo("_getSeriesCurrentSpot B _spot1", msg.sender, _spot1);
             if (feedParameters[uint(FeedParametersFields.Inverse1)] == 1) {
                 _spot1 = (10 ** (uint(_feedDecimals1) * 2)).div(_spot1);
-                // emit LogInfo("_getSeriesCurrentSpot B _spot1 Inverted", msg.sender, _spot1);
             }
         }
         if (feeds[1] == address(0)) {
             _currentSpot = _hasData0 ? _spot0 : 0;
-            // emit LogInfo("_getSeriesCurrentSpot C _currentSpot 1 feed", msg.sender, _currentSpot);
         } else {
             _currentSpot = _hasData0 && _hasData1 ? _spot0.mul(_spot1).div(10 ** uint(_feedDecimals1)) : 0;
-            // emit LogInfo("_getSeriesCurrentSpot C _currentSpot 2 feeds", msg.sender, _currentSpot);
         }
     }
 
@@ -1108,7 +1099,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     //     (_collateralToken, _collateral, _fee, _currentSpot, _feedDecimals0) = computeRequiredCollateral(optinoData);
     // }
 
-    /// @dev Calculate collateral and fee required to mint Optino and Cover tokens
+    /// @dev Calculate collateral, fee, current spot and payoff, and payoffs based on the input array of spots
     /// @param pair [token0, token1] ERC20 contract addresses
     /// @param feeds [feed0, feed1] Price feed adaptor contract address
     /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
@@ -1151,26 +1142,14 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     function mint(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
         return _mint(OptinoData(pair, feeds, feedParameters, data), uiFeeAccount);
     }
-    // function mintRegular(address token0, address token1, address feed, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-    //     return _mint(OptinoData(token0, token1, feed, nullParameters(), callPut, expiry, strike, bound, tokens), uiFeeAccount);
-    // }
-    /// @notice Mint with custom feed
-    // function mintCustom(address token0, address token1, address priceFeed, FeedType customFeedType, uint8 customFeedDecimals, uint callPut, uint expiry, uint strike, uint bound, uint tokens, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken) {
-    //     return _mint(OptinoData(token0, token1, priceFeed, true, customFeedType, customFeedDecimals, callPut, expiry, strike, bound, tokens), uiFeeAccount);
-    // }
 
     function computeRequiredCollateral(OptinoData memory optinoData) private view returns (ERC20 _collateralToken, uint _collateral, uint _fee, uint _currentSpot, uint8 _feedDecimals0) {
         uint8 _feedType0;
         (_feedDecimals0, _feedType0, _currentSpot) = _getSeriesCurrentSpot(optinoData.feeds, optinoData.feedParameters);
-        // emit LogInfo("computeRequiredCollateral A _feedDecimals0", msg.sender, uint(_feedDecimals0));
-        // emit LogInfo("computeRequiredCollateral A _feedType0", msg.sender, uint(_feedType0));
-        // emit LogInfo("computeRequiredCollateral A _currentSpot", msg.sender, uint(_currentSpot));
-
         uint8[4] memory decimalsData = [OPTINODECIMALS, optinoData.pair[0].decimals(), optinoData.pair[1].decimals(), _feedDecimals0];
         _collateralToken = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? ERC20(optinoData.pair[0]) : ERC20(optinoData.pair[1]);
         _collateral = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
         _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
-        // emit LogInfo("computeRequiredCollateral results", address(_collateralToken), _collateral);
     }
 
     function checkFeedParameters(uint8[6] memory feedParameters) internal view {
@@ -1214,8 +1193,9 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
             series.coverToken = _coverToken;
             addSeries(_pairKey, optinoData, _optinoToken, _coverToken);
             series = seriesData[_seriesKey];
-            _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 3) * 1000000 + series.index + 5, false, OPTINODECIMALS);
-            _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 3) * 1000000 + series.index + 5, true, OPTINODECIMALS);
+            // TODO Reset to 0, 0
+            _optinoToken.initOptinoToken(this, _seriesKey, _coverToken, (pair.index + 1) * 1000000 + series.index + 1, false, OPTINODECIMALS);
+            _coverToken.initOptinoToken(this, _seriesKey, _optinoToken, (pair.index + 1) * 1000000 + series.index + 1, true, OPTINODECIMALS);
         } else {
             _optinoToken = series.optinoToken;
             _coverToken = series.coverToken;
@@ -1239,38 +1219,6 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         _coverToken.mint(msg.sender, optinoData.data[uint(OptinoDataFields.Tokens)]);
         emit OptinoMinted(series.key, series.optinoToken, series.coverToken, optinoData.data[uint(OptinoDataFields.Tokens)], _collateralToken, _collateral, _ownerFee, _uiFee);
     }
-
-    // @dev Is the collateral in the base token (call) or quote token (put) ?
-    // @param callPut 0 for call, 1 for put
-    // @return _baseOrQuote 0 for base token, 1 for quote token
-    // function collateralInBaseOrQuote(uint callPut) public pure returns (uint _baseOrQuote) {
-    //     _baseOrQuote = callPut;
-    // }
-    // @dev Compute the payoff in collateral tokens
-    // @param callPut 0 for call, 1 for put
-    // @param strike Strike rate
-    // @param bound 0 for vanilla call & put, > strike for capped call, < strike for floored put
-    // @param spot Spot rate
-    // @param tokens Number of Optino and Cover tokens to compute the payoff for
-    // @param decimals0 Base token contract decimals
-    // @param decimals1 Quote token contract decimals
-    // @param rateDecimals `strike`, `bound`, `spot` decimals
-    // @return _payoff The computed payoff
-    // function payoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) public pure returns (uint _payoff) {
-    //     return OptinoV1.payoff(callPut, strike, bound, spot, tokens, Decimals.set(OPTINODECIMALS, decimals0, decimals1, rateDecimals));
-    // }
-    // function collateral(uint callPut, uint strike, uint bound, uint tokens, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) public pure returns (uint _collateral) {
-    //     return OptinoV1.collateral(callPut, strike, bound, tokens, Decimals.set(OPTINODECIMALS, decimals0, decimals1, rateDecimals));
-    // }
-
-    // TODO V1
-    // function collateralAndFee(address token0, address token1, address priceFeed, uint callPut, uint strike, uint bound, uint tokens) public view returns (uint _collateral, uint _fee) {
-    //     bytes32 key = ConfigLib.generateKey(token0, token1, priceFeed);
-    //     ConfigLib.Config memory config = configData.entries[key];
-    //     require(config.timestamp > 0, "collateralAndFee: Invalid token0/token1/priceFeed");
-    //     _collateral = OptinoV1.collateral(callPut, strike, bound, tokens, config.decimalsData);
-    //     _fee = _collateral.mul(fee).div(10 ** FEEDECIMALS);
-    // }
 
     // ----------------------------------------------------------------------------
     // Misc
