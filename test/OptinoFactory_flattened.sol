@@ -10,15 +10,15 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.972-testnet-pre-release
+// Optino Factory v0.974-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x813f2e19e4Bdf3f4cA15075E5821a1f3620EA356
-// OptinoFactory deployment on Ropsten: 0x3aEEf7CF6405C859861CF869963d100fe11eC23B
+// OptinoToken deployment on Ropsten:
+// OptinoFactory deployment on Ropsten:
 //
 // Web UI at https://optino.xyz, https://bokkypoobah.github.io/Optino,
 // https://github.com/bokkypoobah/Optino, https://optino.eth and
@@ -29,6 +29,8 @@ pragma solidity ^0.6.6;
 // NOTE: If you deploy this contract, or derivatives of this contract, please
 // forward 50% of the fees you earn from this code or derivative to
 // bokkypoobah.eth
+//
+// SPDX-License-Identifier: MIT
 //
 // Enjoy. (c) BokkyPooBah / Bok Consulting Pty Ltd 2020. The MIT Licence.
 // ----------------------------------------------------------------------------
@@ -424,38 +426,6 @@ contract Owned {
 }
 
 
-/// @notice Chainlink AggregatorInterface @chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol
-interface AggregatorInterface {
-  function latestAnswer() external view returns (int256);
-  function latestTimestamp() external view returns (uint256);
-  function latestRound() external view returns (uint256);
-  function getAnswer(uint256 roundId) external view returns (int256);
-  function getTimestamp(uint256 roundId) external view returns (uint256);
-  function decimals() external view returns (uint8);
-
-  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
-  event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
-}
-
-
-/// @notice MakerDAO Oracles v2
-interface MakerFeed {
-    function peek() external view returns (bytes32 _value, bool _hasValue);
-}
-
-
-/// @notice Compound V1PriceOracle @ 0xddc46a3b076aec7ab3fc37420a8edd2959764ec4
-interface V1PriceOracleInterface {
-    function assetPrices(address asset) external view returns (uint);
-}
-
-
-/// @notice AdaptorFeed
-interface AdaptorFeed {
-    function spot() external view returns (uint value, bool hasValue);
-}
-
-
 /// @notice ERC20 https://eips.ethereum.org/EIPS/eip-20 with optional symbol, name and decimals
 interface ERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
@@ -680,8 +650,10 @@ contract OptinoToken is BasicToken, OptinoV1 {
     function payoffForSpots(uint tokens, uint[] memory spots) public view returns (uint[] memory payoffs) {
         payoffs = new uint[](spots.length);
         (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
+        uint _collateral = computeCollateral(_seriesData, tokens, decimalsData);
         for (uint i = 0; i < spots.length; i++) {
-            payoffs[i] = computePayoff(_seriesData, spots[i], tokens, decimalsData);
+            uint _payoff = computePayoff(_seriesData, spots[i], tokens, decimalsData);
+            payoffs[i] = isCover ? _collateral.sub(_payoff) : _payoff;
         }
     }
 
@@ -765,25 +737,76 @@ contract OptinoToken is BasicToken, OptinoV1 {
 }
 
 
+/// @notice @chainlink/contracts/src/v0.4/interfaces/AggregatorInterface.sol
+interface AggregatorInterface4 {
+  function latestAnswer() external view returns (int256);
+  function latestTimestamp() external view returns (uint256);
+  function latestRound() external view returns (uint256);
+  function getAnswer(uint256 roundId) external view returns (int256);
+  function getTimestamp(uint256 roundId) external view returns (uint256);
+
+  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
+  event NewRound(uint256 indexed roundId, address indexed startedBy);
+}
+
+/// @notice Chainlink AggregatorInterface @chainlink/contracts/src/v0.6/dev/AggregatorInterface.sol
+interface AggregatorInterface6 {
+  function latestAnswer() external view returns (int256);
+  function latestTimestamp() external view returns (uint256);
+  function latestRound() external view returns (uint256);
+  function getAnswer(uint256 roundId) external view returns (int256);
+  function getTimestamp(uint256 roundId) external view returns (uint256);
+  function decimals() external view returns (uint8);
+
+  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
+  event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
+}
+
+
+/// @notice MakerDAO Oracles v2
+interface MakerFeed {
+    function peek() external view returns (bytes32 _value, bool _hasValue);
+}
+
+
+/// @notice Compound V1PriceOracle @ 0xddc46a3b076aec7ab3fc37420a8edd2959764ec4
+// interface V1PriceOracleInterface {
+//     function assetPrices(address asset) external view returns (uint);
+// }
+
+
+/// @notice AdaptorFeed
+interface AdaptorFeed {
+    function spot() external view returns (uint value, bool hasValue);
+}
+
+
 /// @notice Get feed
 contract GetFeed {
     enum FeedType {
-        CHAINLINK,
+        CHAINLINK4,
+        CHAINLINK6,
         MAKER,
-        // COMPOUND,
         ADAPTOR
+        // COMPOUND,
     }
     uint8 immutable NODATA = uint8(0xff);
     uint immutable feedTypeCount = 3;
 
     /// @dev Will return 18 decimal places for MakerFeed and AdaptorFeed, allowing custom override for these
     function getFeedRate(address feed, FeedType feedType) public view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
-        if (feedType == FeedType.CHAINLINK) {
-            int _iRate = AggregatorInterface(feed).latestAnswer();
+        if (feedType == FeedType.CHAINLINK4) {
+            int _iRate = AggregatorInterface4(feed).latestAnswer();
             _hasData = _iRate > 0;
             _rate = _hasData ? uint(_iRate) : 0;
-            _decimals = AggregatorInterface(feed).decimals();
-            _timestamp = AggregatorInterface(feed).latestTimestamp();
+            _decimals = NODATA;
+            _timestamp = AggregatorInterface4(feed).latestTimestamp();
+        } else if (feedType == FeedType.CHAINLINK6) {
+            int _iRate = AggregatorInterface6(feed).latestAnswer();
+            _hasData = _iRate > 0;
+            _rate = _hasData ? uint(_iRate) : 0;
+            _decimals = AggregatorInterface6(feed).decimals();
+            _timestamp = AggregatorInterface6(feed).latestTimestamp();
         } else if (feedType == FeedType.MAKER) {
             bytes32 _bRate;
             (_bRate, _hasData) = MakerFeed(feed).peek();
@@ -792,7 +815,14 @@ contract GetFeed {
                 _rate = 0;
             }
             _decimals = NODATA;
-            _timestamp = block.timestamp;
+            _timestamp = NODATA;
+        } else if (feedType == FeedType.ADAPTOR) {
+            (_rate, _hasData) = AdaptorFeed(feed).spot();
+            if (!_hasData) {
+                _rate = 0;
+            }
+            _decimals = NODATA;
+            _timestamp = NODATA;
         // } else if (feedType == FeedType.COMPOUND) {
         //     // TODO - Remove COMPOUND, or add a parameter to save asset
         //     uint _uRate = V1PriceOracleInterface(feed).assetPrices(address(0));
@@ -800,13 +830,6 @@ contract GetFeed {
         //     _hasData = _rate > 0;
         //     _decimals = NODATA;
         //     _timestamp = block.timestamp;
-        } else if (feedType == FeedType.ADAPTOR) {
-            (_rate, _hasData) = AdaptorFeed(feed).spot();
-            if (!_hasData) {
-                _rate = 0;
-            }
-            _decimals = NODATA;
-            _timestamp = block.timestamp;
         } else {
             revert("not used");
         }
@@ -863,7 +886,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.972-testnet-pre-release";
+    string public message = "v0.973-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -906,7 +929,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         }
         require(_spot > 0, "Spot must >= 0");
         require(_hasData, "Feed has no data");
-        require(_timestamp + ONEDAY > block.timestamp, "Feed stale");
+        require(_timestamp == uint(NODATA) || _timestamp + ONEDAY > block.timestamp, "Feed stale");
         if (_feed.feed == address(0)) {
             feedIndex.push(feed);
             feedData[feed] = Feed(block.timestamp, feedIndex.length - 1, feed, name, [feedType, decimals, 0]);
@@ -922,11 +945,11 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         _feed.data[uint(FeedTypeFields.Locked)] = 1;
         emit FeedUpdated(feed, _feed.name, _feed.data[uint(FeedTypeFields.Type)], _feed.data[uint(FeedTypeFields.Decimals)], 1);
     }
-    function getFeedByIndex(uint i) public view returns (address _feed, string memory _name, uint8[3] memory _data, uint _spot, bool _hasData, uint8 _feedDecimals, uint _feedTimestamp) {
+    function getFeedByIndex(uint i) public view returns (address _feed, string memory _feedName, uint8[3] memory _feedData, uint _spot, bool _hasData, uint8 _feedDecimals, uint _feedTimestamp) {
         require(i < feedIndex.length, "Invalid index");
         _feed = feedIndex[i];
         Feed memory feed = feedData[_feed];
-        (_name, _data) = (feed.name, feed.data);
+        (_feedName, _feedData) = (feed.name, feed.data);
         (_spot, _hasData, _feedDecimals, _feedTimestamp) = getFeedRate(feed.feed, FeedType(feed.data[uint(FeedTypeFields.Type)]));
     }
     function feedLength() public view returns (uint) {
@@ -1036,7 +1059,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         Series storage series = seriesData[seriesKey];
         require(series.timestamp > 0, "Invalid key");
         uint _spot = getSeriesCurrentSpot(seriesKey);
-        require(block.timestamp >= series.data[uint(SeriesDataFields.Expiry)], "Not expired yet");
+        require(block.timestamp >= series.data[uint(SeriesDataFields.Expiry)], "Not expired");
         require(series.data[uint(SeriesDataFields.Spot)] == 0, "spot already set");
         require(_spot > 0, "spot must > 0");
         series.timestamp = block.timestamp;
@@ -1106,7 +1129,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     /// @param feeds [feed0, feed1] Price feed adaptor contract address
     /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
     /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
-    /// @param whatIfSpots List of spots to compute the payoffs for
+    /// @param spots List of spots to compute the payoffs for
     /// @return _collateralToken
     /// @return _collateralTokens
     /// @return _collateralFeeTokens
@@ -1114,9 +1137,9 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     /// @return _feedDecimals0
     /// @return _currentSpot
     /// @return _currentPayoff
-    /// @return whatIfPayoffs
-    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory whatIfSpots) public view returns (ERC20 _collateralToken, uint _collateralTokens, uint _collateralFeeTokens, uint8 _collateralDecimals, uint8 _feedDecimals0, uint _currentSpot, uint _currentPayoff, uint[] memory whatIfPayoffs) {
-        whatIfPayoffs = new uint[](whatIfSpots.length);
+    /// @return _payoffs
+    function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory spots) public view returns (ERC20 _collateralToken, uint _collateralTokens, uint _collateralFeeTokens, uint8 _collateralDecimals, uint8 _feedDecimals0, uint _currentSpot, uint _currentPayoff, uint[] memory _payoffs) {
+        _payoffs = new uint[](spots.length);
         OptinoData memory optinoData = OptinoData(pair, feeds, feedParameters, data);
         checkData(optinoData);
         uint8 _feedType0;
@@ -1126,9 +1149,9 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
         _collateralDecimals = optinoData.data[uint(OptinoDataFields.CallPut)] == 0 ? optinoData.pair[0].decimals() : optinoData.pair[1].decimals();
         _collateralTokens = computeCollateral(optinoData.data, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
         _collateralFeeTokens = _collateralTokens.mul(fee).div(10 ** FEEDECIMALS);
-        for (uint i = 0; i < whatIfSpots.length; i++) {
-            _currentPayoff = computePayoff(optinoData.data, whatIfSpots[i], optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
-            whatIfPayoffs[i] = _currentPayoff;
+        for (uint i = 0; i < spots.length; i++) {
+            _currentPayoff = computePayoff(optinoData.data, spots[i], optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
+            _payoffs[i] = _currentPayoff;
         }
         _currentPayoff = computePayoff(optinoData.data, _currentSpot, optinoData.data[uint(OptinoDataFields.Tokens)], decimalsData);
     }
@@ -1231,8 +1254,4 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
             }
         }
     }
-    // TODO Exceeds code size
-    // function getTokenInfo(ERC20 token, address tokenOwner, address spender) public view returns (uint _decimals, uint _totalSupply, uint _balance, uint _allowance, string memory _symbol, string memory _name) {
-    //     return (token.decimals(), token.totalSupply(), token.balanceOf(tokenOwner), token.allowance(tokenOwner, spender), token.symbol(), token.name());
-    // }
 }

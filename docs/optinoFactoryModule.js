@@ -29,10 +29,10 @@ const OptinoFactory = {
           <b-table small striped selectable responsive hover :items="feedData" head-variant="light">
           </b-table>
           -->
-          <b-row v-if="feedData.length > 0">
+          <b-row v-if="true || feedData.length > 0">
             <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
           </b-row>
-          <b-row v-for="(feed, index) in feedDataSorted" v-bind:key="index">
+          <b-row v-for="(feed) in feedDataSorted" v-bind:key="feed.feedAddress">
             <b-col>
               <b-row>
                 <b-col cols="5" class="small truncate" style="font-size: 70%">
@@ -200,7 +200,16 @@ const OptinoFactory = {
       return store.getters['optinoFactory/feedData'];
     },
     feedDataSorted() {
-      return store.getters['optinoFactory/feedDataSorted'];
+      var results = [];
+      var feedData = store.getters['optinoFactory/feedData'];
+      for (feed in feedData) {
+        console.log("feed: " + JSON.stringify(feedData[feed]));
+        results.push(feedData[feed]);
+      }
+      results.sort(function(a, b) {
+        return ('' + a.sortKey).localeCompare(b.sortKey);
+      });
+      return results;
     },
     configData() {
       return store.getters['optinoFactory/configData'];
@@ -220,7 +229,7 @@ const optinoFactoryModule = {
     owner: null,
     message: null,
     fee: null,
-    feedData: [],
+    feedData: {},
     feedDataSorted: [],
     configData: [],
     seriesData: [],
@@ -242,13 +251,9 @@ const optinoFactoryModule = {
     params: state => state.params,
   },
   mutations: {
-    updateFeed(state, {index, feed}) {
-      Vue.set(state.feedData, index, feed);
-      var results = state.feedData.sort(function(a, b) {
-        return ('' + a.sortKey).localeCompare(b.sortKey);
-      });
-      state.feedDataSorted = results;
-      logInfo("optinoFactoryModule", "updateFeed(" + index + ", " + JSON.stringify(feed) + ")")
+    updateFeed(state, {feedAddress, feed}) {
+      Vue.set(state.feedData, feedAddress, feed);
+      logInfo("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
     },
     updateConfig(state, {index, config}) {
       Vue.set(state.configData, index, config);
@@ -332,12 +337,22 @@ const optinoFactoryModule = {
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
-            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            var feedAddress = feed[0];
+            var feedName = feed[1];
+            var feedDataType = parseInt(feed[2][0]);
+            var feedDataDecimals = parseInt(feed[2][1]);
+            var feedDataLocked = parseInt(feed[2][2]);
+            var spot = feed[3];
+            var hasData = parseInt(feed[4]);
+            var feedDecimals = parseInt(feed[5]);
+            var feedTimestamp = parseInt(feed[6]);
             var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
-            console.log(feed[1] + " " + JSON.stringify(matcher));
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
-            if (i >= state.feedData.length || state.feedData[i].feedTimestamp < feed[6]) {
-              commit('updateFeed', { index: i, feed: { index: i, sortKey: sortKey, feed: feed[0], name: feed[1], feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2], spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } });
+            if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp) {
+              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feed[1],
+                feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2],
+                spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } });
             }
           }
 

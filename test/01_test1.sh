@@ -329,8 +329,8 @@ var deployGroup2_8Tx = token1.mint(buyer2, token1Tokens.toString(), {from: deplo
 var deployGroup2_9Tx = priceFeed1.setValue(priceFeed1Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
 // MKR/ETH 1.695
 var deployGroup2_10Tx = priceFeed2.setValue(priceFeed2Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = optinoFactory.updateFeed(priceFeed1Address, "Maker ETH/USD", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = optinoFactory.updateFeed(priceFeed2Address, "Maker MKR/ETH", 1, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = optinoFactory.updateFeed(priceFeed1Address, "Maker ETH/USD", 2, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = optinoFactory.updateFeed(priceFeed2Address, "Maker MKR/ETH", 2, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 // var deployGroup2_9Tx = optinoFactory.addConfig(token0Address, token1Address, priceFeedAdaptorAddress, token0Decimals, token1Decimals, rateDecimals, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
 // var deployGroup2_13Tx = optinoFactory.updateTokenDecimals(token1Address, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
@@ -383,7 +383,7 @@ var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 4; // + 2 * 60*60;
 var callStrike = new BigNumber("150.000000000000000000").shift(rateDecimals);
-var callCap = new BigNumber("300").shift(rateDecimals);
+var callCap = new BigNumber("0").shift(rateDecimals);
 var putStrike = new BigNumber("200.000000000000000000").shift(rateDecimals);
 var putFloor = new BigNumber("0").shift(rateDecimals);
 var strike = callPut == "0" ? callStrike : putStrike;
@@ -395,37 +395,36 @@ var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAcc
 var collateralDecimals = callPut == 0 ? token0Decimals : token1Decimals;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
-
-
-// var collateral = optinoFactory.collateral.call(parseInt(callPut), strike.toString(), bound.toString(), tokens.toString(), parseInt(token0Decimals), parseInt(token1Decimals), parseInt(rateDecimals));
-// console.log("RESULT: collateral(" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + tokens + ", " + token0Decimals + ", " + token1Decimals + ", " + rateDecimals + ")=" + collateral + " (" + collateral.shift(-collateralDecimals).toString() + ")");
-// var spot = strike;
-// for (spot = 0; spot < 400; spot += 50) {
-//   var payoff = optinoFactory.payoff.call(parseInt(callPut), strike.toString(), bound.toString(), new BigNumber(spot).shift(rateDecimals).toString(), tokens.toString(), parseInt(token0Decimals), parseInt(token1Decimals), parseInt(rateDecimals));
-//   var coverPayoff = collateral.minus(payoff);
-//   console.log("RESULT: payoff(" + parseInt(callPut) + ", " + strike.toString() + ", " + bound.toString() + ", " + spot.toString() + ", " + tokens + ", " + token0Decimals + ", " + token1Decimals + ", " + rateDecimals + "): " +
-//     payoff.toString() + " (" + payoff.shift(-collateralDecimals).toString() + "), coverPayoff=" +
-//     coverPayoff.toString() + " (" + coverPayoff.shift(-collateralDecimals).toString() + ")");
-// }
-
 var pair = [token0Address, token1Address];
 var feeds = [priceFeed1Address, NULLACCOUNT];
 var type0 = 0xff;
 var type1 = 0xff;
 var decimals0 = 0xff;
 var decimals1 = 0xff;
-var inverse0 = 1;
+var inverse0 = 0;
 var inverse1 = 0;
 var feedParameters = [type0, type1, decimals0, decimals1, inverse0, inverse1];
 var mintData = [callPut, expiry, strike, bound, tokens];
+var spots = [new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals), new BigNumber(300).shift(rateDecimals), new BigNumber(350).shift(rateDecimals), new BigNumber(400).shift(rateDecimals), new BigNumber(450).shift(rateDecimals), new BigNumber(500).shift(rateDecimals), new BigNumber(1000).shift(rateDecimals), new BigNumber(10000).shift(rateDecimals), new BigNumber(100000).shift(rateDecimals)];
 
-// var calcCollateralAndFeeResults = optinoFactory.calcCollateralAndFee.call(pair, feeds, feedParameters, mintData);
-// console.log("RESULT: calcCollateralAndFee: " + JSON.stringify(calcCollateralAndFeeResults));
-
-// var spots = [new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals)];
-var spots = [];
 var calcPayoffs = optinoFactory.calcPayoff.call(pair, feeds, feedParameters, mintData, spots);
-console.log("RESULT: calcPayoffs: " + JSON.stringify(calcPayoffs));
+var _collateralToken = calcPayoffs[0];
+var _collateralTokens = calcPayoffs[1];
+var _collateralFeeTokens = calcPayoffs[2];
+var _collateralDecimals = calcPayoffs[3];
+var _feedDecimals0 = calcPayoffs[4];
+var _currentSpot = calcPayoffs[5];
+var _currentPayoff = calcPayoffs[6];
+var _payoffs = calcPayoffs[7];
+console.log("RESULT: _collateralToken " + getShortAddressName(_collateralToken));
+console.log("RESULT: _collateralTokens " + _collateralTokens.shift(-collateralDecimals));
+console.log("RESULT: _collateralFeeTokens " + _collateralFeeTokens.shift(-collateralDecimals));
+console.log("RESULT: _collateralDecimals " + _collateralDecimals);
+console.log("RESULT: _feedDecimals0 " + _feedDecimals0);
+console.log("RESULT: _currentSpot " + _currentSpot.shift(-rateDecimals));
+console.log("RESULT: _currentPayoff " + _currentPayoff.shift(-collateralDecimals));
+console.log("RESULT: spots " + JSON.stringify(shiftBigNumberArray(spots, -rateDecimals)));
+console.log("RESULT: calcPayoffs: " + JSON.stringify(shiftBigNumberArray(_payoffs, -collateralDecimals)));
 
 // var data = optinoFactory.mint.getData(pair, feeds, feedParameters, mintData, _uiFeeAccount);
 // console.log("RESULT: data: " + data);
@@ -474,11 +473,11 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   // var closeAmount = optino.balanceOf.call(seller1);
-  var closeAmount = optino.balanceOf.call(seller1).mul(3).div(4);
+  var closeAmount = optino.balanceOf.call(seller1).mul(5).div(10);
   // var optino = web3.eth.contract(optinoTokenAbi).at(optinos[0]);
   // -----------------------------------------------------------------------------
   console.log("RESULT: ---------- " + closeGroup1_Message + " ----------");

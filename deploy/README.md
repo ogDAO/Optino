@@ -128,6 +128,7 @@ updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 0xa2Dbd50FD09B9572a8A37ED4C2aEE4093A4b3Ef7, "Chainlink GBP/USD", 0, 8
 0x8eAeBAF0eA3BC2a160b461703AF409d074CDEC6e, "Chainlink JPY/USD", 0, 8
 0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A, "Chainlink XAG/USD", 0, 8
+0x2419A5aA4A82a6A18cA9b20Ea2934d7467E6a2cf, "Chainlink XAU/USD", 0, 8
 
 0x5b8B87A0abA4be247e660B0e0143bB30Cdf566AF, "Chainlink BTC/ETH", 0, 18
 0x811B1f727F8F4aE899774B568d2e72916D91F392, "Chainlink MKR/ETH", 0, 18
@@ -136,3 +137,4 @@ updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 0xDab909dedB72573c626481fC98CEE1152b81DEC2, "Chainlink MANA/ETH", 0, 18
 0xa949eE9bA80c0F381481f2eaB538bC5547a5aC67, "Chainlink REP/ETH", 0, 18
 0xA95674a8Ed9aa9D2E445eb0024a9aa05ab44f6bf, "Chainlink SNX/ETH", 0, 18
+0x1d0052E4ae5b4AE4563cBAc50Edc3627Ca0460d7, "Chainlink ZRX/ETH", 0, 18
