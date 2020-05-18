@@ -249,19 +249,11 @@ const OptinoExplorer = {
         <b-col cols="12" md="3">
           <connection></connection>
           <br />
+          <optinoFactory></optinoFactory>
+          <br />
           <tokens></tokens>
           <br />
           <priceFeed></priceFeed>
-          <br />
-          <optinoFactory></optinoFactory>
-          <!--
-          <br />
-          <tokenContract></tokenContract>
-          <br />
-          <dataService></dataService>
-          <br />
-          <ipfsService></ipfsService>
-          -->
         </b-col>
       </b-row>
     </div>

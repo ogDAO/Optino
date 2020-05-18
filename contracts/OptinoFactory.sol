@@ -10,15 +10,15 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.974-testnet-pre-release
+// Optino Factory v0.975-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x147fD182424bEB4191DEA280fb2b4A6F129c57d5
-// OptinoFactory deployment on Ropsten: 0x2EfFf00C913f872B191Dc881d110e311B8d9612f
+// OptinoToken deployment on Ropsten:
+// OptinoFactory deployment on Ropsten:
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -885,7 +885,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.973-testnet-pre-release";
+    string public message = "v0.975-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed

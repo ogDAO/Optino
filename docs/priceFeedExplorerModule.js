@@ -7,6 +7,20 @@ const PriceFeedExplorer = {
           <b-card no-body header="Price Feed Explorer" class="border-0">
             <br />
             <b-card no-body class="mb-1">
+
+              <b-card-header header-tag="header" class="p-1">
+                <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Feeds</b-button>
+              </b-card-header>
+              <b-collapse id="configuredfeeds" visible class="border-0">
+                <b-card-body>
+                  <b-table small striped selectable responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
+                    <template slot="feedAddress" slot-scope="data">
+                      <b-link class="truncate" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
+                    </template>
+                  </b-table>
+                </b-card-body>
+              </b-collapse>
+
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.updatevalue variant="outline-info">Update Value</b-button>
               </b-card-header>
@@ -33,19 +47,11 @@ const PriceFeedExplorer = {
         <b-col cols="12" md="3">
           <connection></connection>
           <br />
+          <optinoFactory></optinoFactory>
+          <br />
           <tokens></tokens>
           <br />
           <priceFeed></priceFeed>
-          <br />
-          <vanillaOptinoFactory></vanillaOptinoFactory>
-          <!--
-          <br />
-          <tokenContract></tokenContract>
-          <br />
-          <dataService></dataService>
-          <br />
-          <ipfsService></ipfsService>
-          -->
         </b-col>
       </b-row>
     </div>
@@ -53,6 +59,16 @@ const PriceFeedExplorer = {
   `,
   data: function () {
     return {
+      feedDataFields: [
+        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, variant: 'info' },
+        { key: 'feedDataType', label: 'Type', variant: 'info' },
+        { key: 'feedDataDecimals', label: 'Decimals', variant: 'info' },
+        { key: 'feedDataLocked', label: 'Locked', variant: 'info' },
+        { key: 'spot', label: 'Spot', variant: 'info', formatter: (s, key, item) => { return s.shift(-item.feedDataDecimals).toString() } },
+        { key: 'hasData', label: 'Data?', variant: 'info' },
+        { key: 'feedTimestamp', label: 'Timestamp', variant: 'info', formatter: d => { return new Date(d*1000).toLocaleString(); } },
+        { key: 'feedAddress', label: 'Address', variant: 'primary' },
+      ],
       show: true,
       value: "0",
       hasValue: false,
@@ -67,6 +83,21 @@ const PriceFeedExplorer = {
     },
     owner() {
       return store.getters['priceFeed/owner'];
+    },
+    feedData() {
+      return store.getters['optinoFactory/feedData'];
+    },
+    feedDataSorted() {
+      var results = [];
+      var feedData = store.getters['optinoFactory/feedData'];
+      for (feed in feedData) {
+        console.log("feed: " + JSON.stringify(feedData[feed]));
+        results.push(feedData[feed]);
+      }
+      results.sort(function(a, b) {
+        return ('' + a.sortKey).localeCompare(b.sortKey);
+      });
+      return results;
     },
   },
   methods: {
