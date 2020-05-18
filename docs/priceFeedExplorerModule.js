@@ -14,11 +14,26 @@ const PriceFeedExplorer = {
               <b-collapse id="configuredfeeds" visible class="border-0">
                 <b-card-body>
                   <b-table small striped selectable responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
-                    <template slot="feedAddress" slot-scope="data">
-                      <b-link class="truncate" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
+                    <template slot="HEAD[spot]" slot-scope="data">
+                      <div class="text-right">Spot</div>
+                    </template>
+                    <template slot="feedDataType" slot-scope="data">
+                      <div class="text-right">{{ data.item.feedDataTypeString }} </div>
+                    </template>
+                    <template slot="feedDataDecimals" slot-scope="data">
+                      <div class="text-right">{{ data.item.feedDataDecimals }} </div>
+                    </template>
+                    <template slot="feedDataLocked" slot-scope="data">
+                      <div class="text-right">{{ data.item.feedDataLocked }} </div>
+                    </template>
+                    <template slot="hasData" slot-scope="data">
+                      <div class="text-right">{{ data.item.hasData }} </div>
                     </template>
                     <template slot="spot" slot-scope="data">
                       <div class="text-right">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
+                    </template>
+                    <template slot="feedAddress" slot-scope="data">
+                      <b-link class="truncate" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
                     </template>
                   </b-table>
                 </b-card-body>
@@ -63,14 +78,14 @@ const PriceFeedExplorer = {
   data: function () {
     return {
       feedDataFields: [
-        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, variant: 'info' },
-        { key: 'feedDataType', label: 'Type', variant: 'info' },
-        { key: 'feedDataDecimals', label: 'Decimals', variant: 'info' },
-        { key: 'feedDataLocked', label: 'Locked', variant: 'info' },
-        { key: 'spot', label: 'Spot', variant: 'info' },
-        { key: 'hasData', label: 'Data?', variant: 'info' },
-        { key: 'feedTimestamp', label: 'Timestamp', variant: 'info', formatter: d => { return new Date(d*1000).toLocaleString(); } },
-        { key: 'feedAddress', label: 'Address', variant: 'primary' },
+        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, variant: 'info', sortable: true },
+        { key: 'feedDataType', label: 'Type', variant: 'info', sortable: true },
+        { key: 'feedDataDecimals', label: 'Decimals', variant: 'info', sortable: true },
+        { key: 'feedDataLocked', label: 'Locked', variant: 'info', sortable: true },
+        { key: 'spot', label: 'Spot', variant: 'info', sortable: true },
+        { key: 'hasData', label: 'Data?', variant: 'info', sortable: true },
+        { key: 'feedTimestamp', label: 'Timestamp', variant: 'info', formatter: d => { return new Date(d*1000).toLocaleString(); }, sortable: true },
+        { key: 'feedAddress', label: 'Address', variant: 'primary', sortable: true },
       ],
       show: true,
       value: "0",

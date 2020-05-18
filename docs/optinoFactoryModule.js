@@ -341,18 +341,30 @@ const optinoFactoryModule = {
             var feedAddress = feed[0];
             var feedName = feed[1];
             var feedDataType = parseInt(feed[2][0]);
+            var feedDataTypeString;
+            if (feedDataType == 0) {
+              feedDataTypeString = "Chainlink v4";
+            } else if (feedDataType == 1) {
+              feedDataTypeString = "Chainlink v6";
+            } else if (feedDataType == 2) {
+              feedDataTypeString = "MakerDAO";
+            } else if (feedDataType == 3) {
+              feedDataTypeString = "Adaptor";
+            } else {
+              feedDataTypeString = "Unknown: " + feedDataType;
+            }
             var feedDataDecimals = parseInt(feed[2][1]);
-            var feedDataLocked = parseInt(feed[2][2]);
+            var feedDataLocked = parseInt(feed[2][2]) > 0 ? "y" : "n";
             var spot = feed[3];
-            var hasData = parseInt(feed[4]);
+            var hasData = feed[4];
             var feedDecimals = parseInt(feed[5]);
             var feedTimestamp = parseInt(feed[6]);
             var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
             if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp) {
-              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feed[1],
-                feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2],
-                spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } });
+              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName,
+                feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
+                spot: spot, hasData: hasData ? "y" : "n", feedDecimals: feedDecimals, feedTimestamp: feedTimestamp } });
             }
           }
 
