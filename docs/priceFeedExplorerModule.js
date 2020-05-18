@@ -17,6 +17,9 @@ const PriceFeedExplorer = {
                     <template slot="feedAddress" slot-scope="data">
                       <b-link class="truncate" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
                     </template>
+                    <template slot="spot" slot-scope="data">
+                      <div class="text-right">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
+                    </template>
                   </b-table>
                 </b-card-body>
               </b-collapse>
@@ -64,7 +67,7 @@ const PriceFeedExplorer = {
         { key: 'feedDataType', label: 'Type', variant: 'info' },
         { key: 'feedDataDecimals', label: 'Decimals', variant: 'info' },
         { key: 'feedDataLocked', label: 'Locked', variant: 'info' },
-        { key: 'spot', label: 'Spot', variant: 'info', formatter: (s, key, item) => { return s.shift(-item.feedDataDecimals).toString() } },
+        { key: 'spot', label: 'Spot', variant: 'info' },
         { key: 'hasData', label: 'Data?', variant: 'info' },
         { key: 'feedTimestamp', label: 'Timestamp', variant: 'info', formatter: d => { return new Date(d*1000).toLocaleString(); } },
         { key: 'feedAddress', label: 'Address', variant: 'primary' },
