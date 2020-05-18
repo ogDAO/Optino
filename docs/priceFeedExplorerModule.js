@@ -39,6 +39,7 @@ const PriceFeedExplorer = {
                 </b-card-body>
               </b-collapse>
 
+              <!--
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.updatevalue variant="outline-info">Update Value</b-button>
               </b-card-header>
@@ -59,6 +60,7 @@ const PriceFeedExplorer = {
                   </b-form>
                 </b-card-body>
               </b-collapse>
+              -->
             </b-card>
           </b-card>
         </b-col>
@@ -68,8 +70,6 @@ const PriceFeedExplorer = {
           <optinoFactory></optinoFactory>
           <br />
           <tokens></tokens>
-          <br />
-          <priceFeed></priceFeed>
         </b-col>
       </b-row>
     </div>

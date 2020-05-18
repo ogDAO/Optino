@@ -25,13 +25,9 @@ const Home = {
           <b-col cols="12" md="3">
             <connection></connection>
             <br />
-            <priceFeed></priceFeed>
+            <optinoFactory></optinoFactory>
             <br />
-            <tokenContract></tokenContract>
-            <br />
-            <dataService></dataService>
-            <br />
-            <ipfsService></ipfsService>
+            <tokens></tokens>
           </b-col>
         </b-row>
       </div>

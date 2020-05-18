@@ -252,8 +252,6 @@ const OptinoExplorer = {
           <optinoFactory></optinoFactory>
           <br />
           <tokens></tokens>
-          <br />
-          <priceFeed></priceFeed>
         </b-col>
       </b-row>
     </div>
