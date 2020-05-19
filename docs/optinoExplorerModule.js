@@ -193,9 +193,9 @@ const OptinoExplorer = {
                         <b-form-input type="text" v-model.trim="collateralDecimalsNew" readonly></b-form-input>
                       </b-input-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="collateralFeeTokens">
+                    <b-form-group label-cols="3" label="collateralFee">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="collateralFeeTokens" readonly></b-form-input>
+                        <b-form-input type="text" v-model.trim="collateralFee" readonly></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="feedDecimals0">
@@ -405,7 +405,7 @@ const OptinoExplorer = {
       collateralTokenNew: null,
       collateralTokens: null,
       collateralDecimalsNew: null,
-      collateralFeeTokens: null,
+      collateralFee: null,
 
       feedDecimals0: null,
       currentSpot: null,
@@ -815,23 +815,39 @@ const OptinoExplorer = {
         // console.log("results: " + JSON.stringify(results));
         return results;
       }
+
+      /// @dev Calculate collateral, fee, current spot and payoff, and payoffs based on the input array of spots
+      /// @param pair [token0, token1] ERC20 contract addresses
+      /// @param feeds [feed0, feed1] Price feed adaptor contract address
+      /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
+      /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
+      /// @param spots List of spots to compute the payoffs for
+      /// @return _collateralToken
+      /// @return _results [collateralTokens, collateralFee, collateralDecimals, feedDecimals0, currentSpot, currentPayoff]
+      /// @return _payoffs
+      // function calcPayoffs(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory spots) public view returns
+      // (ERC20 _collateralToken, uint[6] memory _results, uint[] memory _payoffs, string memory error)
+
+      // 10:35:34 INFO optinoExplorer:calcPayoff: ["0xb603cea165119701b58d56d10d2060fbfb3efad8",
+      // ["3333333333333333333","3333333333333333","18","8","21433032547","668609327148426692"],["0","0","0","0","2000000000000000000","3333333333333333333","2857142857142857142","2500000000000000000","2222222222222222222","2000000000000000000","1000000000000000000","100000000000000000","10000000000000000"],"ok"]
+
       var OPTINODECIMALS = 18;
-      var _calcPayoff = promisify(cb => factory.calcPayoff([this.token0, this.token1], [this.feed0, this.feed1],
+      var _calcPayoff = promisify(cb => factory.calcPayoffs([this.token0, this.token1], [this.feed0, this.feed1],
         [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
         [this.callPut, this.expiry, new BigNumber(this.strike).shift(rateDecimals), new BigNumber(this.bound).shift(rateDecimals), new BigNumber(this.tokens).shift(OPTINODECIMALS)], spots, cb));
       var calcPayoff = await _calcPayoff;
       logInfo("optinoExplorer", "calcPayoff: " + JSON.stringify(calcPayoff));
       this.collateralTokenNew = calcPayoff[0];
-      this.collateralDecimalsNew = calcPayoff[3].toString();
-      this.collateralTokens = new BigNumber(calcPayoff[1]).shift(-this.collateralDecimalsNew).toString();
-      this.collateralFeeTokens = new BigNumber(calcPayoff[2]).shift(-this.collateralDecimalsNew).toString();
-      this.feedDecimals0 = parseInt(calcPayoff[4]);
-      this.currentSpot = new BigNumber(calcPayoff[5]).shift(-this.feedDecimals0).toString();
-      this.currentPayoff = new BigNumber(calcPayoff[6]).shift(-this.collateralDecimalsNew).toString();
+      this.collateralDecimalsNew = calcPayoff[1][2].toString();
+      this.collateralTokens = new BigNumber(calcPayoff[1][0]).shift(-this.collateralDecimalsNew).toString();
+      this.collateralFee = new BigNumber(calcPayoff[1][1]).shift(-this.collateralDecimalsNew).toString();
+      this.feedDecimals0 = parseInt(calcPayoff[1][2]);
+      this.currentSpot = new BigNumber(calcPayoff[1][4]).shift(-this.feedDecimals0).toString();
+      this.currentPayoff = new BigNumber(calcPayoff[1][5]).shift(-this.collateralDecimalsNew).toString();
       // this.payoffs = calcPayoff[7];
       logInfo("optinoExplorer", "collateralTokenNew " + this.collateralTokenNew);
       logInfo("optinoExplorer", "collateralTokens " + this.collateralTokens);
-      logInfo("optinoExplorer", "collateralFeeTokens " + this.collateralFeeTokens);
+      logInfo("optinoExplorer", "collateralFee " + this.collateralFee);
       logInfo("optinoExplorer", "collateralDecimalsNew " + this.collateralDecimalsNew);
       logInfo("optinoExplorer", "feedDecimals0 " + this.feedDecimals0);
       logInfo("optinoExplorer", "_currentSpot " + this.currentSpot);
