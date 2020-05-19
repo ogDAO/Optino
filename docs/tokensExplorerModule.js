@@ -1,15 +1,15 @@
-const PriceFeedExplorer = {
+const TokensExplorer = {
   template: `
   <div>
     <div>
       <b-row>
         <b-col cols="12" md="9">
-          <b-card no-body header="Price Feed Explorer" class="border-0">
+          <b-card no-body header="Tokens Explorer" class="border-0">
             <br />
             <b-card no-body class="mb-1">
 
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Feeds</b-button>
+                <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Tokens</b-button>
               </b-card-header>
               <b-collapse id="configuredfeeds" visible class="border-0">
                 <b-card-body>
@@ -133,8 +133,8 @@ const PriceFeedExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("PriceFeedExplorer", "updateValue(" + this.value + ", " + this.hasValue + ")");
-            this.$store.commit('priceFeedExplorer/setValue', { value: this.value, hasValue: this.hasValue });
+            logInfo("TokensExplorer", "updateValue(" + this.value + ", " + this.hasValue + ")");
+            this.$store.commit('tokensExplorer/setValue', { value: this.value, hasValue: this.hasValue });
             event.preventDefault();
           }
         })
@@ -145,7 +145,7 @@ const PriceFeedExplorer = {
   },
 };
 
-const priceFeedExplorerModule = {
+const tokensExplorerModule = {
   namespaced: true,
   state: {
     params: null,
@@ -158,31 +158,31 @@ const priceFeedExplorerModule = {
   },
   mutations: {
     setValue(state, { value, hasValue }) {
-      logInfo("priceFeedExplorerModule", "updateValue(" + value + ", " + hasValue + ")");
+      logInfo("tokensExplorerModule", "updateValue(" + value + ", " + hasValue + ")");
       state.executionQueue.push({ value: value, hasValue: hasValue });
     },
     deQueue (state) {
-      logDebug("priceFeedExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
+      logDebug("tokensExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
       state.executionQueue.shift();
     },
     updateParams (state, params) {
       state.params = params;
-      logDebug("priceFeedExplorerModule", "updateParams('" + params + "')")
+      logDebug("tokensExplorerModule", "updateParams('" + params + "')")
     },
     updateExecuting (state, executing) {
       state.executing = executing;
-      logDebug("priceFeedExplorerModule", "updateExecuting(" + executing + ")")
+      logDebug("tokensExplorerModule", "updateExecuting(" + executing + ")")
     },
   },
   actions: {
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
       if (!state.executing) {
         commit('updateExecuting', true);
-        logDebug("priceFeedExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("tokensExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
 
         var paramsChanged = false;
         if (state.params != rootState.route.params.param) {
-          logDebug("priceFeedExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
+          logDebug("tokensExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
           paramsChanged = true;
           commit('updateParams', rootState.route.params.param);
         }
@@ -194,13 +194,13 @@ const priceFeedExplorerModule = {
             var request = state.executionQueue[0];
             var value = new BigNumber(request.value).shift(18).toString();
             var hasValue = request.hasValue;
-            logDebug("priceFeedExplorerModule", "execWeb3() priceFeed.setValue(" + value + ", " + hasValue + ")");
+            logDebug("tokensExplorerModule", "execWeb3() priceFeed.setValue(" + value + ", " + hasValue + ")");
             priceFeedContract.setValue(value, hasValue, { from: store.getters['connection/coinbase'] }, function(error, tx) {
               if (!error) {
-                logDebug("priceFeedExplorerModule", "execWeb3() priceFeed.setValue() tx: " + tx);
+                logDebug("tokensExplorerModule", "execWeb3() priceFeed.setValue() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logDebug("priceFeedExplorerModule", "execWeb3() priceFeed.setValue() error: ");
+                logDebug("tokensExplorerModule", "execWeb3() priceFeed.setValue() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
@@ -209,9 +209,9 @@ const priceFeedExplorerModule = {
           }
         }
         commit('updateExecuting', false);
-        logDebug("priceFeedExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("tokensExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       } else {
-        logDebug("priceFeedExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("tokensExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       }
     }
   },

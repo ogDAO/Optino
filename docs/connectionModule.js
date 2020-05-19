@@ -333,8 +333,8 @@ const Connection = {
       }
 
       if (store.getters['connection/isOk']) {
-        // await store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        await store.dispatch('priceFeed/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        await store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        await store.dispatch('feeds/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         await store.dispatch('optinoFactory/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // await store.dispatch('tokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // if (this.$route.name == "DeployTokenContract") {
@@ -349,7 +349,7 @@ const Connection = {
     },
     timeoutCallback() {
       var t = this;
-      if (this.count++ % 10 == 0 || store.getters['tokenContractExplorer/executionQueue'].length > 0  || store.getters['priceFeedExplorer/executionQueue'].length > 0) {
+      if (this.count++ % 10 == 0 || store.getters['tokenContractExplorer/executionQueue'].length > 0  || store.getters['feedsExplorer/executionQueue'].length > 0) {
         t.execWeb3();
       }
       if (store.getters['connection/block'] != null) {

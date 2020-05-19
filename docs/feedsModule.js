@@ -1,4 +1,4 @@
-const PriceFeed = {
+const Feeds = {
   template: `
     <div>
       <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337 && network != 3">
@@ -6,8 +6,8 @@ const PriceFeed = {
           Please switch to the Geth Devnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
-      <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Price Feed: {{ address.substring(0, 6) + ' ' + value }}</b-button>
-      <b-collapse id="priceFeed" visible class="mt-2">
+      <b-button v-b-toggle.feeds size="sm" block variant="outline-info">Price Feed: {{ address.substring(0, 6) + ' ' + value }}</b-button>
+      <b-collapse id="feeds" visible class="mt-2">
         <b-card no-body class="border-0" v-if="network == 1337 || network == 3">
           <b-row>
             <b-col cols="4" class="small">Contract</b-col><b-col class="small truncate" cols="8"><b-link :href="explorer + 'token/' + address" class="card-link" target="_blank">{{ address }}</b-link></b-col>
@@ -35,19 +35,19 @@ const PriceFeed = {
       return store.getters['connection/explorer'];
     },
     address() {
-      return store.getters['priceFeed/address'];
+      return store.getters['feeds/address'];
     },
     value() {
-      return store.getters['priceFeed/value'];
+      return store.getters['feeds/value'];
     },
     hasValue() {
-      return store.getters['priceFeed/hasValue'];
+      return store.getters['feeds/hasValue'];
     },
   },
 };
 
 
-const priceFeedModule = {
+const feedsModule = {
   namespaced: true,
   state: {
     address: PRICEFEEDADDRESS,
@@ -66,28 +66,28 @@ const priceFeedModule = {
     updateValue(state, { value, hasValue } ) {
       state.value = value;
       state.hasValue = hasValue;
-      logDebug("priceFeedModule", "updateValue('" + value + "', " + hasValue + ")")
+      logDebug("feedsModule", "updateValue('" + value + "', " + hasValue + ")")
     },
     updateParams(state, params) {
       state.params = params;
-      logDebug("priceFeedModule", "updateParams('" + params + "')")
+      logDebug("feedsModule", "updateParams('" + params + "')")
     },
     updateExecuting(state, executing) {
       state.executing = executing;
-      logDebug("priceFeedModule", "updateExecuting(" + executing + ")")
+      logDebug("feedsModule", "updateExecuting(" + executing + ")")
     },
   },
   actions: {
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-      logDebug("priceFeedModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
+      logDebug("feedsModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
       if (!state.executing) {
         commit('updateExecuting', true);
-        logDebug("priceFeedModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("feedsModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
 
         var paramsChanged = false;
         if (state.params != rootState.route.params.param) {
-          logDebug("priceFeedModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
+          logDebug("feedsModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
           paramsChanged = true;
           commit('updateParams', rootState.route.params.param);
         }
@@ -110,9 +110,9 @@ const priceFeedModule = {
           }
         }
         commit('updateExecuting', false);
-        logDebug("priceFeedModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("feedsModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       } else {
-        logDebug("priceFeedModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logDebug("feedsModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       }
     },
   },

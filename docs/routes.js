@@ -14,9 +14,13 @@ const routes = [{
     component: OptinoExplorer,
     name: 'OptinoExplorer',
   }, {
-    path: '/priceFeedExplorer/:param',
-    component: PriceFeedExplorer,
-    name: 'PriceFeedExplorer',
+    path: '/feedsExplorer/:param',
+    component: FeedsExplorer,
+    name: 'FeedsExplorer',
+  }, {
+    path: '/tokensExplorer/:param',
+    component: TokensExplorer,
+    name: 'TokensExplorer',
   }, {
     path: '/dataServiceExplorer/:param',
     component: DataServiceExplorer,

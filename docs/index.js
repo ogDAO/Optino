@@ -6,7 +6,7 @@ Vue.component('connection', Connection);
 Vue.component('tokenContract', TokenContract);
 Vue.component('tokens', Tokens);
 Vue.component('payoff', Payoff);
-Vue.component('priceFeed', PriceFeed);
+Vue.component('feeds', Feeds);
 Vue.component('optinoFactory', OptinoFactory);
 Vue.component('dataService', DataService);
 Vue.component('ipfsService', IpfsService);
@@ -55,13 +55,14 @@ const store = new Vuex.Store({
     tokenContract: tokenContractModule,
     tokens: tokensModule,
     payoff: payoffModule,
-    priceFeed: priceFeedModule,
+    feeds: feedsModule,
     optinoFactory: optinoFactoryModule,
     dataService: dataServiceModule,
     ipfsService: ipfsServiceModule,
     tokenContractExplorer: tokenContractExplorerModule,
     optinoExplorer: optinoExplorerModule,
-    priceFeedExplorer: priceFeedExplorerModule,
+    feedsExplorer: feedsExplorerModule,
+    tokensExplorer: tokensExplorerModule,
     goblokIpfsExplorer: goblokIpfsExplorerModule,
     goblokApi: apiReferenceModule,
     goblokDataServiceExplorer: goblokDataServiceExplorerModule,

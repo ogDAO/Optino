@@ -7,7 +7,8 @@ const Home = {
             <b-card header="Home" class="border-0">
               <b-list-group flush>
                 <b-list-group-item to="/optinoExplorer/all">Optino Explorer</b-list-group-item>
-                <b-list-group-item to="/priceFeedExplorer/all">Price Feed Explorer</b-list-group-item>
+                <b-list-group-item to="/tokensExplorer/all">Tokens Explorer</b-list-group-item>
+                <b-list-group-item to="/feedsExplorer/all">Feeds Explorer</b-list-group-item>
                 <!--
                 <b-list-group-item to="/tokenContractExplorer/all">Token Contract Explorer</b-list-group-item>
                 <b-list-group-item to="/dataServiceExplorer/all">Data Service Explorer</b-list-group-item>
