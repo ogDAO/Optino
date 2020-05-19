@@ -1,4 +1,4 @@
-var priceFeedAdaptorOutput={
+var feedAdaptorOutput={
   "contracts":
   {
     "MakerDAOPricefeedAdaptor_flattened.sol:MakerDAOPriceFeed":

@@ -203,7 +203,7 @@ const OptinoFactory = {
       var results = [];
       var feedData = store.getters['optinoFactory/feedData'];
       for (feed in feedData) {
-        console.log("feed: " + JSON.stringify(feedData[feed]));
+        // console.log("feed: " + JSON.stringify(feedData[feed]));
         results.push(feedData[feed]);
       }
       results.sort(function(a, b) {

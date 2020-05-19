@@ -33,7 +33,7 @@ const PriceFeedExplorer = {
                       <div class="text-right">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
                     </template>
                     <template slot="feedAddress" slot-scope="data">
-                      <b-link class="truncate" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
+                      <b-link :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
                     </template>
                   </b-table>
                 </b-card-body>

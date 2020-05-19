@@ -1,4 +1,4 @@
-var priceFeedOutput={
+var makerdaoFeedOutput={
   "contracts":
   {
     "MakerDAOPricefeedSimulator_flattened.sol:MakerDAOPriceFeed":
