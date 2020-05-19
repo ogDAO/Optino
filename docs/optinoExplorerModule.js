@@ -175,6 +175,8 @@ const OptinoExplorer = {
                     <div class="text-center">
                       <b-button-group>
                         <b-button @click="calcPayoff()" variant="primary" v-b-popover.hover="'Calc Payoff'">Calc Payoff</b-button>
+                      </b-button-group>
+                      <b-button-group>
                         <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
                       </b-button-group>
                     </div>

@@ -25,11 +25,7 @@ const OptinoFactory = {
             <b-col cols="4" class="small">Fee</b-col><b-col class="small truncate" cols="8">{{ fee }} %</b-col>
           </b-row>
 
-          <!--
-          <b-table small striped selectable responsive hover :items="feedData" head-variant="light">
-          </b-table>
-          -->
-          <b-row v-if="true || feedData.length > 0">
+          <b-row v-if="Object.keys(feedData).length > 0">
             <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
           </b-row>
           <b-row v-for="(feed) in feedDataSorted" v-bind:key="feed.feedAddress">
@@ -45,71 +41,48 @@ const OptinoFactory = {
                   {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
                 </b-col>
               </b-row>
-
-
-              <!--
-              <b-row>
-                <b-col colspan="2" class="small truncate">
-                  Feed {{ feed.index }} - <em>{{ feed.name }}</em>
-                </b-col>
-              </b-row>
-              -->
-              <!-- feed: { index: i, feed: feed[0], name: feed[1], feedDataType: feed[2][0], feedDataDecimals: feed[2][1], feedDataLocked: feed[2][2], spot: feed[3], hasData: feed[4], feedDecimals: feed[5], feedTimestamp: feed[6] } -->
-
-              <!--
-              <b-row>
-                <b-col cols="4" class="small truncate">• address</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + feed.feed + '#readContract'" class="card-link" target="_blank">{{ feed.feed }}</b-link></b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• spot</b-col>
-                <b-col class="small truncate">{{ feed.spot.shift(-feed.feedDataDecimals) }}</b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• timestamp</b-col>
-                <b-col class="small truncate">{{ new Date(feed.feedTimestamp*1000).toLocaleString() }}</b-col>
-              </b-row>
-              -->
             </b-col>
           </b-row>
 
-          <b-row v-for="(config, index) in configData" v-bind:key="index">
+          <b-row v-if="Object.keys(pairData).length > 0">
+            <b-col colspan="2" class="small truncate"><b>Pairs</b></b-col>
+          </b-row>
+          <b-row v-for="(pair) in pairData" v-bind:key="pair.pairKey">
             <b-col>
               <b-row>
-                <b-col colspan="2" class="small truncate">
-                  Config {{ config.index }} - <em>{{ config.description }}</em>
+                <b-col cols="4" class="small truncate text-right"  style="font-size: 70%">
+                  {{ pair.pairKey }}
                 </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• key</b-col>
-                <b-col class="small truncate">{{ config.configKey }}</b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• baseToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.baseToken" class="card-link" target="_blank">{{ config.baseToken }}</b-link></b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• quoteToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.quoteToken" class="card-link" target="_blank">{{ config.quoteToken }}</b-link></b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• priceFeed</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + config.priceFeed" class="card-link" target="_blank">{{ config.priceFeed }}</b-link></b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• maxTerm</b-col>
-                <b-col class="small truncate">{{ config.maxTermString }} ({{ config.maxTerm }}s)</b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• fee</b-col>
-                <b-col class="small truncate">{{ config.fee.shift(-16) }}%</b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• timestamp</b-col>
-                <b-col class="small truncate">{{ new Date(config.timestamp*1000).toLocaleString() }}</b-col>
+                <b-col cols="4" class="small truncate" style="font-size: 70%">
+                  <b-link :href="explorer + 'token/' + pair.token0" class="card-link" target="_blank">{{ pair.token0 }}</b-link>
+                </b-col>
+                <b-col cols="4" class="small truncate" style="font-size: 70%">
+                  <b-link :href="explorer + 'token/' + pair.token1" class="card-link" target="_blank">{{ pair.token1 }}</b-link>
+                </b-col>
               </b-row>
             </b-col>
           </b-row>
+
+          <b-row v-if="Object.keys(seriesData).length > 0">
+            <b-col colspan="2" class="small truncate"><b>Series</b></b-col>
+          </b-row>
+          <b-row v-for="(series) in seriesData" v-bind:key="series.seriesKey">
+            <b-col>
+              <b-row>
+                <b-col cols="4" class="small truncate text-right"  style="font-size: 70%">
+                  {{ series.seriesKey }}
+                </b-col>
+                <b-col cols="4" class="small truncate" style="font-size: 70%">
+                  <b-link :href="explorer + 'token/' + series.optinoToken" class="card-link" target="_blank">{{ series.optinoToken }}</b-link>
+                </b-col>
+                <b-col cols="4" class="small truncate" style="font-size: 70%">
+                  <b-link :href="explorer + 'token/' + series.coverToken" class="card-link" target="_blank">{{ series.coverToken }}</b-link>
+                </b-col>
+              </b-row>
+            </b-col>
+          </b-row>
+
+          <!--
           <b-row v-for="(series, index) in seriesData" v-bind:key="'a' + index">
             <b-col>
               <b-row>
@@ -125,20 +98,6 @@ const OptinoFactory = {
                 <b-col cols="4" class="small truncate">• configKey</b-col>
                 <b-col class="small truncate">{{ series.configKey }}</b-col>
               </b-row>
-              <!--
-              <b-row>
-                <b-col cols="4" class="small truncate">• baseToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.baseToken" class="card-link" target="_blank">{{ series.baseToken }}</b-link></b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• quoteToken</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.quoteToken" class="card-link" target="_blank">{{ series.quoteToken }}</b-link></b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="4" class="small truncate">• priceFeed</b-col>
-                <b-col class="small truncate"><b-link :href="explorer + 'address/' + series.priceFeed" class="card-link" target="_blank">{{ series.priceFeed }}</b-link></b-col>
-              </b-row>
-              -->
               <b-row>
                 <b-col cols="4" class="small truncate">• callPut</b-col>
                 <b-col class="small truncate">{{ series.callPut }}</b-col>
@@ -165,6 +124,7 @@ const OptinoFactory = {
               </b-row>
             </b-col>
           </b-row>
+          -->
         </b-card>
       </b-collapse>
     </div>
@@ -211,8 +171,8 @@ const OptinoFactory = {
       });
       return results;
     },
-    configData() {
-      return store.getters['optinoFactory/configData'];
+    pairData() {
+      return store.getters['optinoFactory/pairData'];
     },
     seriesData() {
       return store.getters['optinoFactory/seriesData'];
@@ -230,9 +190,9 @@ const optinoFactoryModule = {
     message: null,
     fee: null,
     feedData: {},
+    pairData: {},
     feedDataSorted: [],
-    configData: [],
-    seriesData: [],
+    seriesData: {},
     tokenData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
     params: null,
     executing: false,
@@ -244,8 +204,8 @@ const optinoFactoryModule = {
     message: state => state.message,
     fee: state => state.fee,
     feedData: state => state.feedData,
+    pairData: state => state.pairData,
     feedDataSorted: state => state.feedDataSorted,
-    configData: state => state.configData,
     seriesData: state => state.seriesData,
     tokenData: state => state.tokenData,
     params: state => state.params,
@@ -253,15 +213,15 @@ const optinoFactoryModule = {
   mutations: {
     updateFeed(state, {feedAddress, feed}) {
       Vue.set(state.feedData, feedAddress, feed);
-      logInfo("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
+      logDebug("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
     },
-    updateConfig(state, {index, config}) {
-      Vue.set(state.configData, index, config);
-      logDebug("optinoFactoryModule", "updateConfig(" + index + ", " + JSON.stringify(config) + ")")
+    updatePair(state, {pairKey, pair}) {
+      Vue.set(state.pairData, pairKey, pair);
+      logInfo("optinoFactoryModule", "updatePair(" + pairKey + ", " + JSON.stringify(pair) + ")")
     },
-    updateSeries(state, {index, series}) {
-      Vue.set(state.seriesData, index, series);
-      logDebug("optinoFactoryModule", "updateSeries(" + index + ", " + JSON.stringify(series) + ")")
+    updateSeries(state, {seriesKey, series}) {
+      Vue.set(state.seriesData, seriesKey, series);
+      logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
     },
     updateToken(state, {key, token}) {
       Vue.set(state.tokenData, key, token);
@@ -369,34 +329,6 @@ const optinoFactoryModule = {
           }
 
           /*
-          var _configDataLength = promisify(cb => contract.configDataLength(cb));
-          var configDataLength = await _configDataLength;
-          logDebug("optinoFactoryModule", "execWeb3() configDataLength: " + configDataLength);
-          for (var i = 0; i < configDataLength; i++) {
-            var _config = promisify(cb => contract.getConfigByIndex(new BigNumber(i).toString(), cb));
-            var config = await _config;
-            logDebug("optinoFactoryModule", "execWeb3() config: " + JSON.stringify(config));
-            var configKey = config[0];
-            var baseToken = config[1];
-            var quoteToken = config[2];
-            var priceFeed = config[3];
-            var decimalsData = config[4];
-            var decimals = parseInt(decimalsData / 1000000 % 100);
-            var baseDecimals = parseInt(decimalsData / 10000 % 100);
-            var quoteDecimals = parseInt(decimalsData / 100 % 100);
-            var rateDecimals = parseInt(decimalsData % 100);
-            var maxTerm = config[5];
-            var fee = config[6];
-            var description = config[7];
-            var timestamp = config[8];
-            var maxTermString = getTermFromSeconds(maxTerm);
-
-            // bytes32 _configKey, address _baseToken, address _quoteToken, address _priceFeed, uint _decimalsData, uint _maxTerm, uint _fee, string memory _description, uint _timestamp
-
-            // TODO: Check timestamp for updated info
-            if (i >= state.configData.length) {
-              commit('updateConfig', { index: i, config: { index: i, configKey: configKey, baseToken: baseToken, quoteToken: quoteToken, priceFeed: priceFeed, decimals: decimals, baseDecimals: baseDecimals, quoteDecimals: quoteDecimals, rateDecimals: rateDecimals, maxTerm: maxTerm, fee: fee, description: description, timestamp: timestamp, maxTermString: maxTermString } });
-            }
 
             // TODO: Fix updating of token info. Refresh for now
             [baseToken, quoteToken].forEach(async function(t) {
@@ -420,10 +352,54 @@ const optinoFactoryModule = {
             });
           }
           */
+          var _pairLength = promisify(cb => contract.pairLength(cb));
+          var pairLength = await _pairLength;
+          logDebug("optinoFactoryModule", "execWeb3() pairLength: " + pairLength);
+          for (var pairIndex = 0; pairIndex < pairLength; pairIndex++) {
+            var _pair = promisify(cb => contract.getPairByIndex(new BigNumber(pairIndex).toString(), cb));
+            var pair = await _pair;
+            var pairKey = pair[0];
+            var token0 = pair[1][0];
+            var token1 = pair[1][1];
+            var feed0 = pair[2][0];
+            var feed1 = pair[2][1];
+            var feedType0 = pair[3][0];
+            var feedType1 = pair[3][1];
+            var decimals0 = pair[3][2];
+            var decimals1 = pair[3][3];
+            var inverse0 = pair[3][4];
+            var inverse1 = pair[3][5];
+            logDebug("optinoFactoryModule", "execWeb3() pair: " + JSON.stringify(pair));
+            if (!(pairKey in state.pairData)) {
+              commit('updatePair', { pairKey: pairKey, pair: { index: pairIndex, sortKey: pairIndex, pairKey: pairKey,
+                token0: token0, token1: token1, feed0: feed0, feed1: feed1,
+                feedType0: feedType0, feedType1: feedType1, decimals0: decimals0, decimals1: decimals1, inverse0: inverse0, inverse1: inverse1 } });
+            }
+
+            var _seriesLength = promisify(cb => contract.seriesLength(pairIndex, cb));
+            var seriesLength = await _seriesLength;
+            logDebug("optinoFactoryModule", "execWeb3() seriesLength(" + pairIndex + "): " + seriesLength);
+            for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
+              var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(pairIndex).toString(), new BigNumber(seriesIndex).toString(), cb));
+              var series = await _series;
+              logDebug("optinoFactoryModule", "series: " + JSON.stringify(series));
+              var seriesKey = series[0];
+              var pairKey = series[1];
+              var data = series[2];
+              var timestamp = parseInt(series[3]);
+              var optinoToken = series[4];
+              var coverToken = series[5];
+              if (!(seriesKey in state.seriesData) || state.seriesData[seriesKey].timestamp < timestamp) {
+                commit('updateSeries', { seriesKey: seriesKey, series: { index: i, seriesKey: seriesKey, pairKey: pairKey,
+                  data: data, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken } });
+              }
+            }
+          }
+// bytes32 _pairKey, ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters)
           /*
-          var _seriesDataLength = promisify(cb => contract.seriesDataLength(cb));
-          var seriesDataLength = await _seriesDataLength;
-          logDebug("optinoFactoryModule", "execWeb3() seriesDataLength: " + seriesDataLength);
+          var _seriesLength = promisify(cb => contract.seriesLength(cb));
+          var seriesLength = await _seriesLength;
+          logInfo("optinoFactoryModule", "execWeb3() seriesLength: " + seriesLength);
           for (var i = 0; i < seriesDataLength; i++) {
             var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(i).toString(), cb));
             var series = await _series;

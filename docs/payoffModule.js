@@ -112,7 +112,7 @@ const Payoff = {
         // console.log("spot: " + spot.toString());
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
         var x = result.map(convert);
-        console.log("payoffInDeliveryToken: " + spot.shift(-rateDecimals).toString() + " => " + JSON.stringify(x));
+        // console.log("payoffInDeliveryToken: " + spot.shift(-rateDecimals).toString() + " => " + JSON.stringify(x));
         payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
         coverPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
         collateralInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));

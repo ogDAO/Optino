@@ -11,7 +11,7 @@ const TokensExplorer = {
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Tokens</b-button>
               </b-card-header>
-              <b-collapse id="configuredfeeds" visible class="border-0">
+              <b-collapse id="configuredfeeds" class="border-0">
                 <b-card-body>
                   <b-table small striped selectable responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
                     <template slot="HEAD[spot]" slot-scope="data">
@@ -39,28 +39,70 @@ const TokensExplorer = {
                 </b-card-body>
               </b-collapse>
 
-              <!--
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.updatevalue variant="outline-info">Update Value</b-button>
+                <b-button href="#" v-b-toggle.personallist variant="outline-info">Personal List</b-button>
               </b-card-header>
-              <b-collapse id="updatevalue" visible class="border-0">
+              <b-collapse id="personallist" visible class="border-0">
                 <b-card-body>
                   <b-form>
-                    <b-form-group label="Has Value: " label-cols="4">
-                      <b-form-checkbox v-model="hasValue"></b-form-checkbox>
+                    <b-form-group label-cols="3" label="tokenContractAddress">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenContractAddress"></b-form-input>
+                      </b-input-group>
                     </b-form-group>
-                    <b-form-group label="Value: " label-cols="4">
-                      <b-form-input type="text" v-model.trim="value" :disabled="!hasValue" placeholder="e.g. 104.25"></b-form-input>
+                    <b-form-group label-cols="3" label="symbol">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.symbol" readonly></b-form-input>
+                      </b-input-group>
                     </b-form-group>
-                    <div class="text-center">
+                    <b-form-group label-cols="3" label="name">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.name" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="decimals">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.decimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="totalSupply">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.totalSupply" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="balance">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.balance" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="allowance to factory">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.allowance" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+
+                    <b-form-group label-cols="3" label="">
                       <b-button-group>
-                        <b-button size="sm" @click="updateValue()" variant="primary" v-b-popover.hover="'Update value'">Update Value</b-button>
+                        <b-button size="sm" @click="checkTokenAddress()" variant="primary" v-b-popover.hover="'Check token address'">Check Token Address</b-button>
                       </b-button-group>
-                    </div>
+                    </b-form-group>
+
+                    <b-form-group label-cols="3" label="set allowance to factory">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="newAllowance"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+
+                    <b-form-group label-cols="3" label="">
+                      <b-button-group>
+                        <b-button size="sm" @click="setAllowance()" variant="primary" v-b-popover.hover="'Set allowance to factory'">Set Allowance</b-button>
+                      </b-button-group>
+                    </b-form-group>
+
                   </b-form>
                 </b-card-body>
               </b-collapse>
-              -->
+
             </b-card>
           </b-card>
         </b-col>
@@ -77,6 +119,9 @@ const TokensExplorer = {
   `,
   data: function () {
     return {
+      tokenContractAddress: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
+      tokenInfo: {},
+      newAllowance: null,
       feedDataFields: [
         { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, variant: 'info', sortable: true },
         { key: 'feedDataType', label: 'Type', variant: 'info', sortable: true },
@@ -88,8 +133,6 @@ const TokensExplorer = {
         { key: 'feedAddress', label: 'Address', variant: 'primary', sortable: true },
       ],
       show: true,
-      value: "0",
-      hasValue: false,
     }
   },
   computed: {
@@ -109,7 +152,7 @@ const TokensExplorer = {
       var results = [];
       var feedData = store.getters['optinoFactory/feedData'];
       for (feed in feedData) {
-        console.log("feed: " + JSON.stringify(feedData[feed]));
+        // console.log("feed: " + JSON.stringify(feedData[feed]));
         results.push(feedData[feed]);
       }
       results.sort(function(a, b) {
@@ -119,8 +162,23 @@ const TokensExplorer = {
     },
   },
   methods: {
-    updateValue(event) {
-      this.$bvModal.msgBoxConfirm('Set value ' + this.value + '; hasValue ' + this.hasValue + '?', {
+    async checkTokenAddress(event) {
+      logInfo("TokensExplorer", "checkTokenAddress(" + this.tokenContractAddress + ")");
+      var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+
+      var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenContractAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+      var tokenInfo = await _tokenInfo;
+      logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(tokenInfo));
+      var decimals = parseInt(tokenInfo[0]);
+      var totalSupply = tokenInfo[1].shift(-decimals).toString();
+      var balance = tokenInfo[2].shift(-decimals).toString();
+      var allowance = tokenInfo[3].shift(-decimals).toString();
+      this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
+      logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
+    },
+    setAllowance(event) {
+      logDebug("TokensExplorer", "setAllowance()");
+      this.$bvModal.msgBoxConfirm('Set allowance for factory to transfer ' + this.newAllowance + ' tokens?', {
           title: 'Please Confirm',
           size: 'sm',
           buttonSize: 'sm',
@@ -133,8 +191,28 @@ const TokensExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("TokensExplorer", "updateValue(" + this.value + ", " + this.hasValue + ")");
-            this.$store.commit('tokensExplorer/setValue', { value: this.value, hasValue: this.hasValue });
+            logInfo("TokensExplorer", "setAllowance(" + this.newAllowance + ")");
+            var factoryAddress = store.getters['optinoFactory/address']
+            var token = web3.eth.contract(ERC20ABI).at(this.tokenInfo.address);
+            var allowance = new BigNumber(this.newAllowance).shift(this.tokenInfo.decimals);
+            logInfo("TokensExplorer", "setAllowance() factoryAddress=" + factoryAddress);
+            logInfo("TokensExplorer", "setAllowance() allowance=" + allowance);
+
+            var data = token.approve.getData(factoryAddress, allowance.toString());
+            logInfo("TokensExplorer", "data=" + data);
+
+            token.approve(factoryAddress, allowance.toString(), { from: store.getters['connection/coinbase'] }, function(error, tx) {
+                logInfo("TokensExplorer", "setAllowance() DEBUG2");
+              if (!error) {
+                logInfo("TokensExplorer", "setAllowance() token.approve() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("TokensExplorer", "setAllowance() token.approve() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+
             event.preventDefault();
           }
         })
