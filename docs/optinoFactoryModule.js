@@ -36,7 +36,7 @@ const OptinoFactory = {
             <b-col>
               <b-row>
                 <b-col cols="5" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'address/' + feed.feed + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
+                  <b-link :href="explorer + 'address/' + feed.feedAddress + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
                 </b-col>
                 <b-col cols="4" class="small truncate text-right"  style="font-size: 70%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
                   {{ feed.spot.shift(-feed.feedDataDecimals) }}
