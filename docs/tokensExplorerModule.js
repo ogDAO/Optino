@@ -9,31 +9,46 @@ const TokensExplorer = {
             <b-card no-body class="mb-1">
 
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Tokens</b-button>
+                <b-button href="#" v-b-toggle.configuredtokens variant="outline-info">Configured Tokens</b-button>
               </b-card-header>
-              <b-collapse id="configuredfeeds" class="border-0">
+              <b-collapse id="configuredtokens" visible class="border-0">
                 <b-card-body>
-                  <b-table small striped selectable responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
-                    <template slot="HEAD[spot]" slot-scope="data">
-                      <div class="text-right">Spot</div>
+                  <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light">
+                    <template slot="HEAD[decimals]" slot-scope="data">
+                      <div class="text-right">Decimals</div>
                     </template>
-                    <template slot="feedDataType" slot-scope="data">
-                      <div class="text-right">{{ data.item.feedDataTypeString }} </div>
+                    <template slot="HEAD[totalSupply]" slot-scope="data">
+                      <div class="text-right">Total Supply</div>
                     </template>
-                    <template slot="feedDataDecimals" slot-scope="data">
-                      <div class="text-right">{{ data.item.feedDataDecimals }} </div>
+                    <template slot="HEAD[balance]" slot-scope="data">
+                      <div class="text-right">Your Balance</div>
                     </template>
-                    <template slot="feedDataLocked" slot-scope="data">
-                      <div class="text-right">{{ data.item.feedDataLocked }} </div>
+                    <template slot="HEAD[allowance]" slot-scope="data">
+                      <div class="text-right">Factory Allowance</div>
                     </template>
-                    <template slot="hasData" slot-scope="data">
-                      <div class="text-right">{{ data.item.hasData }} </div>
+                    <template slot="symbol" slot-scope="data">
+                      <div>{{ data.item.symbol }} </div>
                     </template>
-                    <template slot="spot" slot-scope="data">
-                      <div class="text-right">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
+                    <template slot="name" slot-scope="data">
+                      <div>{{ data.item.name }} </div>
                     </template>
-                    <template slot="feedAddress" slot-scope="data">
-                      <b-link :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
+                    <template slot="decimals" slot-scope="data">
+                      <div class="text-right">{{ data.item.decimals }}</div>
+                    </template>
+                    <template slot="totalSupply" slot-scope="data">
+                      <div class="text-right">{{ data.item.totalSupply }}</div>
+                    </template>
+                    <template slot="balance" slot-scope="data">
+                      <div class="text-right">{{ data.item.balance }}</div>
+                    </template>
+                    <template slot="allowance" slot-scope="data">
+                      <div class="text-right">{{ data.item.allowance }}</div>
+                    </template>
+                    <template slot="tokenAddress" slot-scope="data">
+                      <b-link :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
+                    </template>
+                    <template slot="action" slot-scope="data">
+                      <b-button size="sm" @click="getSome(data.item.tokenAddress)" variant="primary" v-b-popover.hover="'Get some tokens'">Get Some</b-button>
                     </template>
                   </b-table>
                 </b-card-body>
@@ -42,7 +57,7 @@ const TokensExplorer = {
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.personallist variant="outline-info">Personal List</b-button>
               </b-card-header>
-              <b-collapse id="personallist" visible class="border-0">
+              <b-collapse id="personallist" class="border-0">
                 <b-card-body>
                   <b-form>
                     <b-form-group label-cols="3" label="tokenContractAddress">
@@ -122,15 +137,15 @@ const TokensExplorer = {
       tokenContractAddress: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
       tokenInfo: {},
       newAllowance: null,
-      feedDataFields: [
-        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, variant: 'info', sortable: true },
-        { key: 'feedDataType', label: 'Type', variant: 'info', sortable: true },
-        { key: 'feedDataDecimals', label: 'Decimals', variant: 'info', sortable: true },
-        { key: 'feedDataLocked', label: 'Locked', variant: 'info', sortable: true },
-        { key: 'spot', label: 'Spot', variant: 'info', sortable: true },
-        { key: 'hasData', label: 'Data?', variant: 'info', sortable: true },
-        { key: 'feedTimestamp', label: 'Timestamp', variant: 'info', formatter: d => { return new Date(d*1000).toLocaleString(); }, sortable: true },
-        { key: 'feedAddress', label: 'Address', variant: 'primary', sortable: true },
+      tokenDataFields: [
+        { key: 'symbol', label: 'Symbol', variant: 'info', sortable: true },
+        { key: 'name', label: 'Name', variant: 'info', sortable: true },
+        { key: 'decimals', label: 'Decimals', variant: 'info', sortable: true },
+        { key: 'totalSupply', label: 'TotalSupply', variant: 'info', sortable: true },
+        { key: 'balance', label: 'Balance', variant: 'info', sortable: true },
+        { key: 'allowance', label: 'Spot', variant: 'info', sortable: true },
+        { key: 'tokenAddress', label: 'Address', variant: 'primary', sortable: true },
+        { key: 'action', label: 'Action', variant: 'primary', sortable: true },
       ],
       show: true,
     }
@@ -145,18 +160,19 @@ const TokensExplorer = {
     owner() {
       return store.getters['priceFeed/owner'];
     },
-    feedData() {
-      return store.getters['optinoFactory/feedData'];
+    tokenData() {
+      return store.getters['tokens/tokenData'];
     },
-    feedDataSorted() {
+    tokenDataSorted() {
       var results = [];
-      var feedData = store.getters['optinoFactory/feedData'];
-      for (feed in feedData) {
-        // console.log("feed: " + JSON.stringify(feedData[feed]));
-        results.push(feedData[feed]);
+      var tokenData = store.getters['tokens/tokenData'];
+      for (token in tokenData) {
+        if (tokenData[token].symbol.startsWith("f")) {
+          results.push(tokenData[token]);
+        }
       }
       results.sort(function(a, b) {
-        return ('' + a.sortKey).localeCompare(b.sortKey);
+        return ('' + a.symbol).localeCompare(b.symbol);
       });
       return results;
     },
@@ -175,6 +191,64 @@ const TokensExplorer = {
       var allowance = tokenInfo[3].shift(-decimals).toString();
       this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
       logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
+    },
+    getSome(event) {
+      logInfo("TokensExplorer", "getSome(" + JSON.stringify(event) + ")");
+      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[event].symbol + '?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            logInfo("TokensExplorer", "getSome(" + this.tokenData[event].symbol + ")");
+            var factoryAddress = store.getters['optinoFactory/address']
+            var fakeTokenAddress = event;
+            logInfo("TokensExplorer", "getSome(" + fakeTokenAddress + ")");
+            web3.eth.sendTransaction({ to: fakeTokenAddress, from: store.getters['connection/coinbase'] }, function(error, tx) {
+                logInfo("TokensExplorer", "getSome() DEBUG2");
+              if (!error) {
+                logInfo("TokensExplorer", "getSome() token.approve() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("TokensExplorer", "getSome() token.approve() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+
+
+            // var allowance = new BigNumber(this.newAllowance).shift(this.tokenInfo.decimals);
+            // logInfo("TokensExplorer", "setAllowance() factoryAddress=" + factoryAddress);
+            // logInfo("TokensExplorer", "setAllowance() allowance=" + allowance);
+            //
+            // var data = token.approve.getData(factoryAddress, allowance.toString());
+            // logInfo("TokensExplorer", "data=" + data);
+            //
+            // token.approve(factoryAddress, allowance.toString(), { from: store.getters['connection/coinbase'] }, function(error, tx) {
+            //     logInfo("TokensExplorer", "setAllowance() DEBUG2");
+            //   if (!error) {
+            //     logInfo("TokensExplorer", "setAllowance() token.approve() tx: " + tx);
+            //     store.dispatch('connection/addTx', tx);
+            //   } else {
+            //     logInfo("TokensExplorer", "setAllowance() token.approve() error: ");
+            //     console.table(error);
+            //     store.dispatch('connection/setTxError', error.message);
+            //   }
+            // });
+
+            event.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
     },
     setAllowance(event) {
       logDebug("TokensExplorer", "setAllowance()");

@@ -6,7 +6,7 @@ const Tokens = {
     <div>
       <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337 && network != 3">
         <b-card-text>
-          Please switch to the Geth Devnet in MetaMask and refresh this page
+          Please switch to the Ropsten testnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
       <b-button v-b-toggle.tokens size="sm" block variant="outline-info">Tokens: {{ balances[0] + ' ' + symbols[0] + ' / ' + balances[1] + ' ' + symbols[1] }}</b-button>
@@ -72,6 +72,8 @@ const Tokens = {
 const tokensModule = {
   namespaced: true,
   state: {
+    tokenData: {},
+
     addresses: TOKENADDRESSES,
     symbols: ["WETH", "WEENUS"],
     decimals: [18, 18],
@@ -80,6 +82,8 @@ const tokensModule = {
     executing: false,
   },
   getters: {
+    tokenData: state => state.tokenData,
+
     addresses: state => state.addresses,
     symbols: state => state.symbols,
     decimals: state => state.decimals,
@@ -87,6 +91,19 @@ const tokensModule = {
     params: state => state.params,
   },
   mutations: {
+    updateToken(state, {tokenAddress, token}) {
+      Vue.set(state.tokenData, tokenAddress, token);
+      // logInfo("tokensModule", "updateToken(" + tokenAddress + ", " + JSON.stringify(token) + ")")
+    },
+    updateTokenStats(state, {tokenAddress, totalSupply, balance, allowance}) {
+      var token = state.tokenData[tokenAddress];
+      token.totalSupply = totalSupply.shift(-token.decimals);
+      token.balance = balance.shift(-token.decimals);
+      token.allowance = allowance.shift(-token.decimals);
+      Vue.set(state.tokenData, tokenAddress, token);
+      // logInfo("tokensModule", "updateTokenStats(" + tokenAddress + ", " + JSON.stringify(token) + ")")
+    },
+
     updateBalance(state, {index, balance}) {
       Vue.set(state.balances, index, balance);
       logDebug("tokensModule", "updateBalances(" + index + ", " + balance + ")")
@@ -116,6 +133,48 @@ const tokensModule = {
         }
 
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
+
+          var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
+          var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
+          var fakeTokensLength = await _fakeTokensLength;
+          // logInfo("tokensModule", "execWeb3() fakeTokensLength: " + fakeTokensLength);
+          var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+
+          // logInfo("tokensModule", "execWeb3() tokenData keys: " + JSON.stringify(Object.keys(state.tokenData)));
+          var startFakeTokensIndex = Object.keys(state.tokenData).length;
+          // logInfo("tokensModule", "execWeb3() startFakeTokensIndex: " + startFakeTokensIndex);
+          startFakeTokensIndex = 0;
+          for (var fakeTokensIndex = startFakeTokensIndex; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
+            var _fakeToken = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
+            var fakeToken = await _fakeToken;
+            // logInfo("tokensModule", "execWeb3() fakeToken: " + fakeToken);
+            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeToken, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+            var tokenInfo = await _tokenInfo;
+            var symbol = tokenInfo[4];
+            var name = tokenInfo[5];
+            var decimals = parseInt(tokenInfo[0]);
+            var totalSupply = tokenInfo[1].shift(-decimals).toString();
+            var balance = tokenInfo[2].shift(-decimals).toString();
+            var allowance = tokenInfo[3].shift(-decimals).toString();
+            if (!(fakeToken in state.tokenData)) {
+              commit('updateToken', { tokenAddress: fakeToken, token: { index: fakeTokensIndex, tokenAddress: fakeToken, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance} });
+            }
+          }
+
+
+          // TODO block by batches of addresses
+          var tokens = Object.keys(state.tokenData);
+          // logInfo("tokensModule", "execWeb3() tokensInfo: " + JSON.stringify(tokens));
+          var _tokensInfo = promisify(cb => tokenToolz.getTokensInfo(tokens, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+          var tokensInfo = await _tokensInfo;
+          // logInfo("tokensModule", "execWeb3() tokensInfo: " + JSON.stringify(tokensInfo));
+          for (var tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
+            var tokenAddress = tokens[tokenIndex];
+            // logInfo("tokensModule", "execWeb3() updateTokenStats: " + JSON.stringify({ tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]}));
+            commit('updateTokenStats', { tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]} );
+          }
+
+
           for (var i = 0; i < 2; i++) {
             var contract = web3.eth.contract(TOKENABI).at(state.addresses[i]);
             var _balanceOf = promisify(cb => contract.balanceOf.call(store.getters['connection/coinbase'], cb));

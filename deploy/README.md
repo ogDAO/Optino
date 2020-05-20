@@ -159,6 +159,7 @@ updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 "fMKR", "Fake MKR", 18
 "fOMG", "Fake OMG", 18
 "fREP", "Fake REP", 18
+"fSNGLS", "Fake SNGLS", 0
 "fSNT", "Fake SNT", 18
 "fSNX", "Fake SNX", 18
 "fZRX", "Fake ZRX", 18

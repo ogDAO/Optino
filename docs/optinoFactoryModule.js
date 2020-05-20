@@ -3,7 +3,7 @@ const OptinoFactory = {
     <div>
       <b-card header-class="warningheader" header="Incorrect Network Detected" v-if="network != 1337 && network != 3">
         <b-card-text>
-          Please switch to the Geth Devnet in MetaMask and refresh this page
+          Please switch to the Ropsten testnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
       <b-button v-b-toggle.optinoFactory size="sm" block variant="outline-info">Optino Factory {{ address.substring(0, 6) }}</b-button>
@@ -213,15 +213,15 @@ const optinoFactoryModule = {
   mutations: {
     updateFeed(state, {feedAddress, feed}) {
       Vue.set(state.feedData, feedAddress, feed);
-      logDebug("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
+      // logDebug("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
     },
     updatePair(state, {pairKey, pair}) {
       Vue.set(state.pairData, pairKey, pair);
-      logInfo("optinoFactoryModule", "updatePair(" + pairKey + ", " + JSON.stringify(pair) + ")")
+      // logInfo("optinoFactoryModule", "updatePair(" + pairKey + ", " + JSON.stringify(pair) + ")")
     },
     updateSeries(state, {seriesKey, series}) {
       Vue.set(state.seriesData, seriesKey, series);
-      logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
+      // logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
     },
     updateToken(state, {key, token}) {
       Vue.set(state.tokenData, key, token);
@@ -351,6 +351,7 @@ const optinoFactoryModule = {
             });
           }
           */
+
           var _pairLength = promisify(cb => contract.pairLength(cb));
           var pairLength = await _pairLength;
           logDebug("optinoFactoryModule", "execWeb3() pairLength: " + pairLength);
@@ -377,11 +378,11 @@ const optinoFactoryModule = {
 
             var _seriesLength = promisify(cb => contract.seriesLength(pairIndex, cb));
             var seriesLength = await _seriesLength;
-            logDebug("optinoFactoryModule", "execWeb3() seriesLength(" + pairIndex + "): " + seriesLength);
+            logInfo("optinoFactoryModule", "execWeb3() seriesLength(" + pairIndex + "): " + seriesLength);
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
               var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(pairIndex).toString(), new BigNumber(seriesIndex).toString(), cb));
               var series = await _series;
-              logDebug("optinoFactoryModule", "series: " + JSON.stringify(series));
+              logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               var seriesKey = series[0];
               var pairKey = series[1];
               var data = series[2];

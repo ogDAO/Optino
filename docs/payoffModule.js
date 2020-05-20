@@ -24,11 +24,11 @@ const Payoff = {
     },
     spotStep: {
       type: [String, Number, Object],
-      default: "500",
+      default: "25",
     },
     spotTo: {
       type: [String, Number, Object],
-      default: "15000",
+      default: "400",
     },
     baseSymbol: {
       type: [String, Number, Object],
