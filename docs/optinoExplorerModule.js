@@ -808,8 +808,8 @@ const OptinoExplorer = {
       // var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
       // logInfo("optinoExplorer", "  value=" + value);
       // TODO
-      var rateDecimals = 8;
-      var spots = [new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals), new BigNumber(300).shift(rateDecimals), new BigNumber(350).shift(rateDecimals), new BigNumber(400).shift(rateDecimals), new BigNumber(450).shift(rateDecimals), new BigNumber(500).shift(rateDecimals), new BigNumber(1000).shift(rateDecimals), new BigNumber(10000).shift(rateDecimals), new BigNumber(100000).shift(rateDecimals)];
+      var rateDecimals = 18;
+      var spots = [new BigNumber("9769.26390498279639").shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals), new BigNumber(300).shift(rateDecimals), new BigNumber(350).shift(rateDecimals), new BigNumber(400).shift(rateDecimals), new BigNumber(450).shift(rateDecimals), new BigNumber(500).shift(rateDecimals), new BigNumber(1000).shift(rateDecimals), new BigNumber(10000).shift(rateDecimals), new BigNumber(100000).shift(rateDecimals)];
 
       function shiftBigNumberArray(data, decimals) {
         var results = [];
@@ -835,6 +835,10 @@ const OptinoExplorer = {
       // ["3333333333333333333","3333333333333333","18","8","21433032547","668609327148426692"],["0","0","0","0","2000000000000000000","3333333333333333333","2857142857142857142","2500000000000000000","2222222222222222222","2000000000000000000","1000000000000000000","100000000000000000","10000000000000000"],"ok"]
 
       var OPTINODECIMALS = 18;
+      logInfo("optinoExplorer", "factory.calcPayoffs([" + this.token0 + ", " + this.token1 + "], [" + this.feed0 + ", " + this.feed1 + "], " +
+        "[" + this.type0 + ", " + this.type1 + ", " + this.decimals0 + ", " + this.decimals1 + ", " + this.inverse0 + ", " + this.inverse1 + "], " +
+        "[" + this.callPut + ", " + this.expiry + ", " + new BigNumber(this.strike).shift(rateDecimals) + ", " + new BigNumber(this.bound).shift(rateDecimals) + ", " + new BigNumber(this.tokens).shift(OPTINODECIMALS) + "], [" + JSON.stringify(spots) + "])");
+
       var _calcPayoff = promisify(cb => factory.calcPayoffs([this.token0, this.token1], [this.feed0, this.feed1],
         [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
         [this.callPut, this.expiry, new BigNumber(this.strike).shift(rateDecimals), new BigNumber(this.bound).shift(rateDecimals), new BigNumber(this.tokens).shift(OPTINODECIMALS)], spots, cb));
@@ -882,7 +886,7 @@ const OptinoExplorer = {
             // logInfo("optinoExplorer", "  value=" + value);
             logInfo("optinoExplorer", "mintOptinos DEBUG1");
             var OPTINODECIMALS = 18;
-            var rateDecimals = 8;
+            var rateDecimals = 18;
             var data = factory.mint.getData([this.token0, this.token1], [this.feed0, this.feed1],
               [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
               [this.callPut, this.expiry, new BigNumber(this.strike).shift(rateDecimals), new BigNumber(this.bound).shift(rateDecimals), new BigNumber(this.tokens).shift(OPTINODECIMALS)], ADDRESS0);

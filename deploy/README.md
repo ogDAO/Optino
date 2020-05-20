@@ -147,3 +147,34 @@ updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 0x8eAeBAF0eA3BC2a160b461703AF409d074CDEC6e, "Chainlink JPY/USD", 0, 8
 0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A, "Chainlink XAG/USD", 0, 8
 0x2419A5aA4A82a6A18cA9b20Ea2934d7467E6a2cf, "Chainlink XAU/USD", 0, 8
+
+
+"fWETH", "Fake Wrapped Ether", 18
+
+"fBAT", "Fake BAT", 18
+"fBNB", "Fake BNB", 18
+"fBTC", "Fake BTC", 8
+"fDAI", "Fake DAI", 18
+"fKNC", "Fake KNC", 18
+"fMKR", "Fake MKR", 18
+"fOMG", "Fake OMG", 18
+"fREP", "Fake REP", 18
+"fSNT", "Fake SNT", 18
+"fSNX", "Fake SNX", 18
+"fZRX", "Fake ZRX", 18
+
+"fAUD", "Fake AUD", 18
+"fCHF", "Fake CHF", 18
+"fEUR", "Fake EUR", 18
+"fGBP", "Fake GBP", 18
+"fJPY", "Fake JPY", 18
+"fUSD", "Fake USD", 18
+"fXAG", "Fake XAG", 18
+"fXAU", "Fake XAU", 18
+
+"fUSDT", "Fake USDT", 6
+"fUSDC", "Fake USDC", 6
+"fPAX", "Fake PAX", 18
+"fBUSD", "Fake BUSD", 18
+"fTUSD", "Fake TUSD", 18
+"fHUSD", "Fake HUSD", 18
