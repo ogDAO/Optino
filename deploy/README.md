@@ -119,6 +119,10 @@ Factory https://ropsten.etherscan.io/address/0x346Dd22A2968A06D8eAfFBFB85DAf6C91
 OptinoToken https://ropsten.etherscan.io/address/0xA498fA83d7f0BD4d9b3b1b3a7A36Ab44Cc4b6b94#code
 Factory https://ropsten.etherscan.io/address/0x936ec65fC339F0C6aD49C4Cf9a3A0a551286Ac15#code
 
+## v0.976-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x3B0812252553B6eFaD135d73564499De283c50d1#code
+Factory https://ropsten.etherscan.io/address/0x3b6811A1CFb43fAdCD452841b1d79562FF7d3ABE#code
+
 
 # Ropsten Feed data
 

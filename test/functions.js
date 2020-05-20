@@ -610,6 +610,9 @@ function printOptinoFactoryContractDetails() {
             console.log("RESULT:       .currentSpot/currentSpotAndPayoff(1)=" + tokenContract.currentSpot.call().shift(-rateDecimals) + "/" + JSON.stringify(tokenContract.currentSpotAndPayoff.call(oneToken)));
             console.log("RESULT:       .spot/spotAndPayoff(1)=" + tokenContract.spot.call().shift(-rateDecimals) + "/" + tokenContract.spotAndPayoff.call(oneToken));
             console.log("RESULT:       .payoffForSpots(1, " + JSON.stringify(shiftBigNumberArray(spots, -rateDecimals)) + ")=" + JSON.stringify(shiftBigNumberArray(tokenContract.payoffForSpots.call(oneToken, spots), -rateDecimals)));
+            console.log("RESULT:       .getInfo=" + JSON.stringify(tokenContract.getInfo.call()));
+            console.log("RESULT:       .getFeedInfo=" + JSON.stringify(tokenContract.getFeedInfo.call()));
+            console.log("RESULT:       .getPricingInfo=" + JSON.stringify(tokenContract.getPricingInfo.call()));
 
             var optinoTransferEvents = tokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
             var j = 0;

@@ -10,7 +10,7 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.975-testnet-pre-release
+// Optino Factory v0.976-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
@@ -582,6 +582,7 @@ contract OptinoToken is BasicToken, OptinoV1 {
     bytes32 public seriesKey;
     uint public seriesNumber;
     bool public isCover;
+    bool public isCustom;
     OptinoToken public optinoPair;
     ERC20 public collateralToken;
 
@@ -591,15 +592,19 @@ contract OptinoToken is BasicToken, OptinoV1 {
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, uint _seriesNumber, bool _isCover, uint _decimals) public {
         (factory, seriesKey, optinoPair, seriesNumber, isCover) = (_factory, _seriesKey, _optinoPair, _seriesNumber, _isCover);
-        // emit LogInfo("initOptinoToken", msg.sender, 0);
         (bytes32 _pairKey, uint[5] memory _seriesData, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
         (ERC20[2] memory _pair, /*_feed*/, /*_feedParameters*/) = factory.getPairByKey(_pairKey);
         collateralToken = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)] == 0 ? _pair[0] : _pair[1];
-        (string memory _symbol, string memory _name) = makeName(_seriesNumber, _isCover);
+        string memory _symbol;
+        string memory _name;
+        (isCustom, _symbol, _name) = makeName(_seriesNumber, _isCover);
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
-    function makeName(uint _seriesNumber, bool _isCover) internal view returns (string memory _symbol, string memory _name) {
-        (bool _isCustom, string memory _feedName, uint[5] memory _seriesData, uint8 _feedDecimals) = factory.getNameData(seriesKey);
+    function makeName(uint _seriesNumber, bool _isCover) internal view returns (bool _isCustom, string memory _symbol, string memory _name) {
+        string memory _feedName;
+        uint[5] memory _seriesData;
+        uint8 _feedDecimals;
+        (_isCustom, _feedName, _seriesData, _feedDecimals) = factory.getNameData(seriesKey);
         _symbol = NameUtils.toSymbol(_isCover, _seriesNumber);
         _name = NameUtils.toName(_isCustom ? "Custom" : _feedName, _isCover, _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)], _seriesData[uint(OptinoFactory.SeriesDataFields.Expiry)], _seriesData[uint(OptinoFactory.SeriesDataFields.Strike)], _seriesData[uint(OptinoFactory.SeriesDataFields.Bound)], _feedDecimals);
     }
@@ -619,6 +624,41 @@ contract OptinoToken is BasicToken, OptinoV1 {
     function getSeriesData() public view returns (bytes32 _seriesKey, bytes32 _pairKey, uint[5] memory _data, OptinoToken _optinoToken, OptinoToken _coverToken) {
         _seriesKey = seriesKey;
         (_pairKey, _data, _optinoToken, _coverToken) = factory.getSeriesByKey(seriesKey);
+    }
+
+    function getInfo() public view returns (ERC20 token0, ERC20 token1, address feed0, bool _isCustom, uint callPut, uint expiry, uint strike, uint bound, bool _isCover) {
+        (bytes32 _pairKey, uint[5] memory _seriesData, /*_optinoToken*/, /*_coverToken*/) = factory.getSeriesByKey(seriesKey);
+        ERC20[2] memory _pair;
+        address[2] memory _feeds;
+        uint8[6] memory _pairParameters;
+        (_pair, _feeds, _pairParameters) = factory.getPairByKey(_pairKey);
+        callPut = _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)];
+        return (_pair[0], _pair[1], _feeds[0], isCustom, _seriesData[uint(OptinoFactory.SeriesDataFields.CallPut)], _seriesData[uint(OptinoFactory.SeriesDataFields.Expiry)], _seriesData[uint(OptinoFactory.SeriesDataFields.Strike)], _seriesData[uint(OptinoFactory.SeriesDataFields.Bound)], isCover);
+    }
+    function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint currentSpot) {
+        bytes32 _pairKey;
+        uint[5] memory _data;
+        OptinoToken _optinoToken;
+        OptinoToken _coverToken;
+        (_pairKey, _data, _optinoToken, _coverToken) = factory.getSeriesByKey(seriesKey);
+        ERC20[2] memory _pair;
+        address[2] memory _feeds;
+        uint8[6] memory _pairParameters;
+        (_pair, _feeds, _pairParameters) = factory.getPairByKey(_pairKey);
+        return (_feeds[0], _feeds[1], _pairParameters[0], _pairParameters[1], _pairParameters[2], _pairParameters[3], _pairParameters[4], _pairParameters[5], factory.getSeriesCurrentSpot(seriesKey));
+    }
+    function getPricingInfo() public view returns (uint currentSpot, uint currentPayoff, uint spot, uint payoff, uint collateral) {
+        uint tokens = 10 ** _decimals;
+        (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
+        collateral = computeCollateral(_seriesData, tokens, decimalsData);
+        currentSpot = factory.getSeriesCurrentSpot(seriesKey);
+        currentPayoff = computePayoff(_seriesData, currentSpot, tokens, decimalsData);
+        currentPayoff = isCover ? collateral.sub(currentPayoff) : currentPayoff;
+        spot = factory.getSeriesSpot(seriesKey);
+        if (spot > 0) {
+            payoff = computePayoff(_seriesData, spot, tokens, decimalsData);
+            payoff = isCover ? collateral.sub(payoff) : payoff;
+        }
     }
 
     function spot() public view returns (uint _spot) {
@@ -900,7 +940,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.975-testnet-pre-release";
+    string public message = "v0.976-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
