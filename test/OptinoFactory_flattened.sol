@@ -17,8 +17,8 @@ pragma solidity ^0.6.6;
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten:
+// OptinoToken deployment on Ropsten: 0x3B0812252553B6eFaD135d73564499De283c50d1
+// OptinoFactory deployment on Ropsten: 0x3b6811A1CFb43fAdCD452841b1d79562FF7d3ABE
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -26,7 +26,7 @@ pragma solidity ^0.6.6;
 // https://github.com/bokkypoobah/Optino
 //
 // NOTE: If you deploy this contract, or derivatives of this contract, please
-// forward 50% of the fees you earn from this code or derivative to
+// forward 50% of the fees you earn from this code or derivatives of it to
 // bokkypoobah.eth
 //
 // SPDX-License-Identifier: MIT

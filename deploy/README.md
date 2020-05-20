@@ -166,6 +166,7 @@ updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 
 "fAUD", "Fake AUD", 18
 "fCHF", "Fake CHF", 18
+"fCNY", "Fake CNY", 18
 "fEUR", "Fake EUR", 18
 "fGBP", "Fake GBP", 18
 "fJPY", "Fake JPY", 18

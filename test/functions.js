@@ -583,6 +583,8 @@ function printOptinoFactoryContractDetails() {
           seriesData[seriesKey] = { seriesKey: seriesKey, pairKey: pairKey, callPut: callPut, expiry: expiry, strike: strike, bound: bound, spot: spot, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken };
           console.log("RESULT:   optinoFactory.getSeriesByIndex(" + pairIndex + ", " + seriesIndex + "). seriesKey=" + seriesKey + ", pairKey=" + pairKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", spot=" + spot.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
 
+          // TODO
+          var rateDecimals = 18;
           [optinoToken, coverToken].forEach(function (tokenAddress) {
             console.log("RESULT:     token: " + getShortAddressName(tokenAddress) + " on " + token0 + "/" + token1);
             var tokenContract = web3.eth.contract(_optinoTokenContractAbi).at(tokenAddress);
@@ -591,7 +593,8 @@ function printOptinoFactoryContractDetails() {
             var collateralTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(collateralToken);
             var collateralDecimals = collateralTokenContract.decimals.call();
             var oneToken = new BigNumber("1").shift(tokenDecimals);
-            var spots = [new BigNumber(1).shift(rateDecimals), new BigNumber(25).shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(75).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals)];
+            // var spots = [new BigNumber(1).shift(rateDecimals), new BigNumber(25).shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(75).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals)];
+            var spots = [new BigNumber("9769.26390498279639").shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals), new BigNumber(300).shift(rateDecimals), new BigNumber(350).shift(rateDecimals), new BigNumber(400).shift(rateDecimals), new BigNumber(450).shift(rateDecimals), new BigNumber(500).shift(rateDecimals), new BigNumber(1000).shift(rateDecimals), new BigNumber(10000).shift(rateDecimals), new BigNumber(100000).shift(rateDecimals)];
             var pairData = tokenContract.getPairData.call();
             var seriesData = tokenContract.getSeriesData.call();
             console.log("RESULT:       .owner/new=" + getShortAddressName(tokenContract.owner.call()) + "/" + getShortAddressName(tokenContract.newOwner.call()));
@@ -607,9 +610,9 @@ function printOptinoFactoryContractDetails() {
             // // console.log("RESULT:     .factory/token0/token1/feed=" + getShortAddressName(optinoTokenContract.factory.call()) + "/" + getShortAddressName(optinoTokenContract.token0.call()) + "/" + getShortAddressName(optinoTokenContract.token1.call()) + "/" + getShortAddressName(optinoTokenContract.feed.call()));
             // // console.log("RESULT:     .callPut/expiry/strike/bound=" + optinoTokenContract.callPut.call() + "/" + optinoTokenContract.expiry.call() + "/" + optinoTokenContract.strike.call().shift(-rateDecimals) + "/" + optinoTokenContract.bound.call().shift(-rateDecimals));
             // // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + optinoTokenContract.description.call() + "/" + getShortAddressName(optinoTokenContract.pair.call()) + "/" + optinoTokenContract.seriesNumber.call() + "/" + optinoTokenContract.isCover.call());
-            console.log("RESULT:       .currentSpot/currentSpotAndPayoff(1)=" + tokenContract.currentSpot.call().shift(-rateDecimals) + "/" + JSON.stringify(tokenContract.currentSpotAndPayoff.call(oneToken)));
-            console.log("RESULT:       .spot/spotAndPayoff(1)=" + tokenContract.spot.call().shift(-rateDecimals) + "/" + tokenContract.spotAndPayoff.call(oneToken));
-            console.log("RESULT:       .payoffForSpots(1, " + JSON.stringify(shiftBigNumberArray(spots, -rateDecimals)) + ")=" + JSON.stringify(shiftBigNumberArray(tokenContract.payoffForSpots.call(oneToken, spots), -rateDecimals)));
+            console.log("RESULT:       .currentSpot/currentSpotAndPayoff(1)=" + tokenContract.currentSpot.call().shift(-rateDecimals) + "/" + tokenContract.currentSpotAndPayoff.call(oneToken)[1].shift(-collateralDecimals));
+            console.log("RESULT:       .spot/spotAndPayoff(1)=" + tokenContract.spot.call().shift(-rateDecimals) + "/" + tokenContract.spotAndPayoff.call(oneToken)[1].shift(-collateralDecimals));
+            console.log("RESULT:       .payoffForSpots(1, " + JSON.stringify(shiftBigNumberArray(spots, -rateDecimals)) + ")=" + JSON.stringify(shiftBigNumberArray(tokenContract.payoffForSpots.call(oneToken, spots), -collateralDecimals)));
             console.log("RESULT:       .getInfo=" + JSON.stringify(tokenContract.getInfo.call()));
             console.log("RESULT:       .getFeedInfo=" + JSON.stringify(tokenContract.getFeedInfo.call()));
             console.log("RESULT:       .getPricingInfo=" + JSON.stringify(tokenContract.getPricingInfo.call()));
