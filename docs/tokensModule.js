@@ -65,6 +65,19 @@ const Tokens = {
     balances() {
       return store.getters['tokens/balances'];
     },
+    tokenDataSorted() {
+      var results = [];
+      var tokenData = store.getters['tokens/tokenData'];
+      for (token in tokenData) {
+        if (/^\w+$/.test(tokenData[token].symbol)) {
+          results.push(tokenData[token]);
+        }
+      }
+      results.sort(function(a, b) {
+        return ('' + a.symbol).localeCompare(b.symbol);
+      });
+      return results;
+    },
   },
   mounted() {
     logInfo("Tokens", "mounted()")

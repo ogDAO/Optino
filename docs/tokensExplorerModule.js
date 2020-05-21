@@ -222,7 +222,6 @@ const TokensExplorer = {
       var tokenData = store.getters['tokens/tokenData'];
       for (token in tokenData) {
         if (/^\w+$/.test(tokenData[token].symbol)) {
-          // results.push(Object.assign({}, tokenData[token]));
           results.push(tokenData[token]);
         }
       }
