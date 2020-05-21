@@ -378,11 +378,11 @@ const optinoFactoryModule = {
 
             var _seriesLength = promisify(cb => contract.seriesLength(pairIndex, cb));
             var seriesLength = await _seriesLength;
-            logInfo("optinoFactoryModule", "execWeb3() seriesLength(" + pairIndex + "): " + seriesLength);
+            // logInfo("optinoFactoryModule", "execWeb3() seriesLength(" + pairIndex + "): " + seriesLength);
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
               var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(pairIndex).toString(), new BigNumber(seriesIndex).toString(), cb));
               var series = await _series;
-              logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
+              // logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               var seriesKey = series[0];
               var pairKey = series[1];
               var data = series[2];

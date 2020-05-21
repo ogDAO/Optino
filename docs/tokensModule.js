@@ -66,6 +66,18 @@ const Tokens = {
       return store.getters['tokens/balances'];
     },
   },
+  mounted() {
+    logInfo("Tokens", "mounted()")
+    if (localStorage.getItem('tokenAddressData')) {
+      logInfo("Tokens", "Restoring tokenAddressData: " + localStorage.getItem('tokenAddressData'));
+      var tokenAddressData = JSON.parse(localStorage.getItem('tokenAddressData'));
+      logInfo("Tokens", "Object.keys(tokenAddressData): " + Object.keys(tokenAddressData));
+      for (var address in tokenAddressData) {
+        logInfo("Tokens", "Restoring tokenAddressData: " + address);
+        store.dispatch('tokens/addTokenAddress', address);
+      }
+    }
+  },
 };
 
 
@@ -73,6 +85,7 @@ const tokensModule = {
   namespaced: true,
   state: {
     tokenData: {},
+    tokenAddressData: {},
 
     addresses: TOKENADDRESSES,
     symbols: ["WETH", "WEENUS"],
@@ -83,6 +96,7 @@ const tokensModule = {
   },
   getters: {
     tokenData: state => state.tokenData,
+    tokenAddressData: state => state.tokenAddressData,
 
     addresses: state => state.addresses,
     symbols: state => state.symbols,
@@ -91,6 +105,11 @@ const tokensModule = {
     params: state => state.params,
   },
   mutations: {
+    addTokenAddress(state, tokenAddress) {
+      Vue.set(state.tokenAddressData, tokenAddress, tokenAddress);
+      logInfo("tokensModule", "mutations.addTokenAddress(" + tokenAddress + "): " + JSON.stringify(state.tokenAddressData));
+      localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
+    },
     updateToken(state, {tokenAddress, token}) {
       Vue.set(state.tokenData, tokenAddress, token);
       // logInfo("tokensModule", "updateToken(" + tokenAddress + ", " + JSON.stringify(token) + ")")
@@ -120,6 +139,10 @@ const tokensModule = {
     },
   },
   actions: {
+    addTokenAddress(context, tokenAddress) {
+      logInfo("tokensModule", "actions.addTokenAddress(" + tokenAddress+ ")");
+      context.commit('addTokenAddress', tokenAddress);
+    },
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
       logDebug("tokensModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
@@ -136,11 +159,28 @@ const tokensModule = {
 
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
 
+          var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+
+          logInfo("tokensModule", "execWeb3() tokenAddress START");
+          for (var tokenAddress in state.tokenAddressData) {
+            logInfo("tokensModule", "execWeb3() tokenAddress: " + tokenAddress);
+            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(tokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+            var tokenInfo = await _tokenInfo;
+            logInfo("tokensModule", "execWeb3() tokenInfo: " + JSON.stringify(tokenInfo));
+            var symbol = tokenInfo[4];
+            var name = tokenInfo[5];
+            var decimals = parseInt(tokenInfo[0]);
+            var totalSupply = tokenInfo[1].shift(-decimals).toString();
+            var balance = tokenInfo[2].shift(-decimals).toString();
+            var allowance = tokenInfo[3].shift(-decimals).toString();
+            // if (!(tokenAddress in state.tokenData)) {
+              commit('updateToken', { tokenAddress: tokenAddress, token: { index: -1, tokenAddress: tokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance } } );
+            // }
+          }
+
           var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
           var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
           var fakeTokensLength = await _fakeTokensLength;
-          // logInfo("tokensModule", "execWeb3() fakeTokensLength: " + fakeTokensLength);
-          var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
 
           // logInfo("tokensModule", "execWeb3() tokenData keys: " + JSON.stringify(Object.keys(state.tokenData)));
           var startFakeTokensIndex = Object.keys(state.tokenData).length;
@@ -163,7 +203,6 @@ const tokensModule = {
             }
           }
 
-
           // TODO block by batches of addresses
           var tokens = Object.keys(state.tokenData);
           // logInfo("tokensModule", "execWeb3() tokensInfo: " + JSON.stringify(tokens));
@@ -175,7 +214,6 @@ const tokensModule = {
             // logInfo("tokensModule", "execWeb3() updateTokenStats: " + JSON.stringify({ tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]}));
             commit('updateTokenStats', { tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]} );
           }
-
 
           for (var i = 0; i < 2; i++) {
             var contract = web3.eth.contract(TOKENABI).at(state.addresses[i]);
@@ -193,5 +231,13 @@ const tokensModule = {
         logDebug("tokensModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       }
     },
+  },
+  mounted() {
+    logInfo("tokensModule", "mounted()")
+    if (localStorage.getItem('tokenAddressData')) {
+      logInfo("tokensModule", "Restoring tokenAddressData");
+      this.tokenAddressData = JSON.parse(localStorage.getItem('tokenAddressData'));
+      logInfo("tokensModule", "Restoring tokenAddressData: " + JSON.stringify(this.tokenAddressData));
+    }
   },
 };

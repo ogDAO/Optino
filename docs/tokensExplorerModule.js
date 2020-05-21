@@ -65,7 +65,7 @@ const TokensExplorer = {
                     </b-form-group>
                     <b-form-group label-cols="3" label="">
                       <b-button-group>
-                        <b-button size="sm" @click="addToken(tokenContractAddress)" variant="primary" v-b-popover.hover="'Add to list'">Add To List</b-button>
+                        <b-button size="sm" @click="addTokenAddress(tokenContractAddress)" variant="primary" v-b-popover.hover="'Add to list'">Add To List</b-button>
                       </b-button-group>
                     </b-form-group>
                   </b-form>
@@ -221,7 +221,7 @@ const TokensExplorer = {
       var results = [];
       var tokenData = store.getters['tokens/tokenData'];
       for (token in tokenData) {
-        if (tokenData[token].symbol.startsWith("f")) {
+        if (/^\w+$/.test(tokenData[token].symbol)) {
           // results.push(Object.assign({}, tokenData[token]));
           results.push(tokenData[token]);
         }
@@ -256,8 +256,9 @@ const TokensExplorer = {
     //   }
     //   testingCodeToCopy.setAttribute('type', 'hidden')
     // },
-    addToken(tokenContractAddress) {
-      logInfo("TokensExplorer", "addToken(" + tokenContractAddress + ")");
+    addTokenAddress(tokenContractAddress) {
+      logInfo("TokensExplorer", "addTokenAddress(" + tokenContractAddress + ")");
+      store.dispatch('tokens/addTokenAddress', tokenContractAddress);
       // var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
       //
       // var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenContractAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
