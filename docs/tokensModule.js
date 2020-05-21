@@ -103,7 +103,9 @@ const tokensModule = {
       Vue.set(state.tokenData, tokenAddress, token);
       // logInfo("tokensModule", "updateTokenStats(" + tokenAddress + ", " + JSON.stringify(token) + ")")
     },
-
+    updateTokenShowDetails(state, parameters){
+      parameters.ref.__showDetails = parameters.val
+    },
     updateBalance(state, {index, balance}) {
       Vue.set(state.balances, index, balance);
       logDebug("tokensModule", "updateBalances(" + index + ", " + balance + ")")
@@ -157,7 +159,7 @@ const tokensModule = {
             var balance = tokenInfo[2].shift(-decimals).toString();
             var allowance = tokenInfo[3].shift(-decimals).toString();
             if (!(fakeToken in state.tokenData)) {
-              commit('updateToken', { tokenAddress: fakeToken, token: { index: fakeTokensIndex, tokenAddress: fakeToken, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance} });
+              commit('updateToken', { tokenAddress: fakeToken, token: { index: fakeTokensIndex, tokenAddress: fakeToken, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance } } );
             }
           }
 

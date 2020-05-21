@@ -18,7 +18,7 @@ const router = new VueRouter({
 
 const storeVersion = 1;
 const store = new Vuex.Store({
-  strict: true,
+  strict: false, // TODO Set to true to test, false to disable _showDetails & vuex mutations
   // state: {
   //   username: 'Jack',
   //   phrases: ['Welcome back', 'Have a nice day'],

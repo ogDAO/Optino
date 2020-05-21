@@ -47,8 +47,34 @@ const TokensExplorer = {
                     <template slot="tokenAddress" slot-scope="data">
                       <b-link :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
-                    <template slot="action" slot-scope="data">
-                      <b-button size="sm" @click="getSome(data.item.tokenAddress)" variant="primary" v-b-popover.hover="'Get some tokens'">Get Some</b-button>
+                    <template slot="showDetails" slot-scope="row">
+                      <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+                        {{ row.detailsShowing ? 'Hide' : 'Show'}}
+                      </b-button>
+                    </template>
+                    <template v-slot:row-details="row">
+                      <b-card>
+                        <b-card-header header-tag="header" class="p-1">
+                          Token {{ row.item.symbol }} {{ row.item.name }}
+                        </b-card-header>
+                        <b-card-body>
+                          <b-form-group label-cols="3" label="Get some tokens">
+                            <b-input-group>
+                              <b-button size="sm" @click="getSome(row.item.tokenAddress)" variant="primary" v-b-popover.hover="'Get 1,000 tokens'">Get 1,000 {{ row.item.name }}</b-button>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label="Set allowance">
+                            <b-input-group>
+                              <b-form-input type="text" v-model.trim="newAllowance"></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label="">
+                            <b-input-group>
+                              <b-button size="sm" @click="setAllowance(row.item.tokenAddress, row.item.decimals, newAllowance)" variant="primary" v-b-popover.hover="'Set Allowance'">Set Allowance</b-button>
+                            </b-input-group>
+                          </b-form-group>
+                        </b-card-body>
+                      </b-card>
                     </template>
                   </b-table>
                 </b-card-body>
@@ -136,7 +162,7 @@ const TokensExplorer = {
     return {
       tokenContractAddress: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
       tokenInfo: {},
-      newAllowance: null,
+      newAllowance: 0,
       tokenDataFields: [
         { key: 'symbol', label: 'Symbol', variant: 'info', sortable: true },
         { key: 'name', label: 'Name', variant: 'info', sortable: true },
@@ -145,7 +171,7 @@ const TokensExplorer = {
         { key: 'balance', label: 'Balance', variant: 'info', sortable: true },
         { key: 'allowance', label: 'Spot', variant: 'info', sortable: true },
         { key: 'tokenAddress', label: 'Address', variant: 'primary', sortable: true },
-        { key: 'action', label: 'Action', variant: 'primary', sortable: true },
+        { key: 'showDetails', label: 'Details', variant: 'primary', sortable: false },
       ],
       show: true,
     }
@@ -168,6 +194,7 @@ const TokensExplorer = {
       var tokenData = store.getters['tokens/tokenData'];
       for (token in tokenData) {
         if (tokenData[token].symbol.startsWith("f")) {
+          // results.push(Object.assign({}, tokenData[token]));
           results.push(tokenData[token]);
         }
       }
@@ -194,7 +221,7 @@ const TokensExplorer = {
     },
     getSome(event) {
       logInfo("TokensExplorer", "getSome(" + JSON.stringify(event) + ")");
-      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[event].symbol + '?', {
+      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[event].name + '?', {
           title: 'Please Confirm',
           size: 'sm',
           buttonSize: 'sm',
@@ -250,8 +277,8 @@ const TokensExplorer = {
           // An error occurred
         });
     },
-    setAllowance(event) {
-      logDebug("TokensExplorer", "setAllowance()");
+    setAllowance(tokenAddress, decimals, newAllowance) {
+      logInfo("TokensExplorer", "setAllowance(" + tokenAddress + ", " + decimals + ", " + newAllowance + ")?");
       this.$bvModal.msgBoxConfirm('Set allowance for factory to transfer ' + this.newAllowance + ' tokens?', {
           title: 'Please Confirm',
           size: 'sm',
@@ -265,11 +292,11 @@ const TokensExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("TokensExplorer", "setAllowance(" + this.newAllowance + ")");
+            logInfo("TokensExplorer", "setAllowance(" + tokenAddress + ", " + decimals + ", " + newAllowance + ")");
             var factoryAddress = store.getters['optinoFactory/address']
-            var token = web3.eth.contract(ERC20ABI).at(this.tokenInfo.address);
-            var allowance = new BigNumber(this.newAllowance).shift(this.tokenInfo.decimals);
             logInfo("TokensExplorer", "setAllowance() factoryAddress=" + factoryAddress);
+            var token = web3.eth.contract(ERC20ABI).at(tokenAddress);
+            var allowance = new BigNumber(newAllowance).shift(decimals);
             logInfo("TokensExplorer", "setAllowance() allowance=" + allowance);
 
             var data = token.approve.getData(factoryAddress, allowance.toString());
