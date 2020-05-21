@@ -920,7 +920,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals, uint8 locked);
     event SeriesAdded(bytes32 indexed seriesKey, uint indexed seriesIndex, ERC20[2] indexed pair, address[2] feeds, uint8[6] feedParameters, uint[5] data, OptinoToken[2] optinos);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
-    event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] indexed optinos, uint tokens, ERC20 collateralToken, uint collateral, uint ownerFee, uint integratorFee);
+    event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos, uint tokens, ERC20 collateralToken, uint collateral, uint ownerFee, uint integratorFee);
     event LogInfo(string note, address addr, uint number);
 
     constructor(address _optinoTokenTemplate) public {

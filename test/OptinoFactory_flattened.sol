@@ -17,8 +17,8 @@ pragma solidity ^0.6.6;
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten:
+// OptinoToken deployment on Ropsten: 0x4da71c9C0cA50d9D800f89cbfB28f1DD1015B1D7
+// OptinoFactory deployment on Ropsten: 0xE36F1598a186835E7E6F213AC3ab6D26Fd8583B2
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -920,7 +920,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoV1, GetFeed {
     event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals, uint8 locked);
     event SeriesAdded(bytes32 indexed seriesKey, uint indexed seriesIndex, ERC20[2] indexed pair, address[2] feeds, uint8[6] feedParameters, uint[5] data, OptinoToken[2] optinos);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
-    event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] indexed optinos, uint tokens, ERC20 collateralToken, uint collateral, uint ownerFee, uint integratorFee);
+    event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos, uint tokens, ERC20 collateralToken, uint collateral, uint ownerFee, uint integratorFee);
     event LogInfo(string note, address addr, uint number);
 
     constructor(address _optinoTokenTemplate) public {
