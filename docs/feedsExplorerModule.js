@@ -78,14 +78,14 @@ const FeedsExplorer = {
   data: function () {
     return {
       feedDataFields: [
-        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, variant: 'info', sortable: true },
-        { key: 'feedDataType', label: 'Type', variant: 'info', sortable: true },
-        { key: 'feedDataDecimals', label: 'Decimals', variant: 'info', sortable: true },
-        { key: 'feedDataLocked', label: 'Locked', variant: 'info', sortable: true },
-        { key: 'spot', label: 'Spot', variant: 'info', sortable: true },
-        { key: 'hasData', label: 'Data?', variant: 'info', sortable: true },
-        { key: 'feedTimestamp', label: 'Timestamp', variant: 'info', formatter: d => { return new Date(d*1000).toLocaleString(); }, sortable: true },
-        { key: 'feedAddress', label: 'Address', variant: 'primary', sortable: true },
+        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, sortable: true },
+        { key: 'feedDataType', label: 'Type', sortable: true },
+        { key: 'feedDataDecimals', label: 'Decimals', sortable: true },
+        { key: 'feedDataLocked', label: 'Locked', sortable: true },
+        { key: 'spot', label: 'Spot', sortable: true },
+        { key: 'hasData', label: 'Data?', sortable: true },
+        { key: 'feedTimestamp', label: 'Timestamp', formatter: d => { return new Date(d*1000).toLocaleString(); }, sortable: true },
+        { key: 'feedAddress', label: 'Address', sortable: true },
       ],
       show: true,
       value: "0",

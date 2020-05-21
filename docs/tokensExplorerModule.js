@@ -7,24 +7,100 @@ const TokensExplorer = {
           <b-card no-body header="Tokens Explorer" class="border-0">
             <br />
             <b-card no-body class="mb-1">
+              <b-card-header header-tag="header" class="p-1">
+                <b-button href="#" v-b-toggle.addtoken variant="outline-info">Add Token</b-button>
+              </b-card-header>
+              <b-collapse id="addtoken" visible class="border-0">
+                <b-card-body>
+                  <b-form>
+                    <b-form-group label-cols="3" label="Token Contract Address">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenContractAddress"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Symbol">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.symbol" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Name">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.name" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Decimals">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.decimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Total Supply">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.totalSupply" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Balance">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.balance" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Allowance to factory">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="tokenInfo.allowance" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="">
+                      <b-button-group>
+                        <b-button size="sm" @click="checkTokenAddress()" variant="primary" v-b-popover.hover="'Check token address'">Check Token Address</b-button>
+                      </b-button-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="New allowance to factory">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="newAllowance"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="">
+                      <b-button-group>
+                        <b-button size="sm" @click="setAllowance(tokenContractAddress, tokenInfo.decimals, newAllowance)" variant="primary" v-b-popover.hover="'Set allowance to factory'">Set Allowance</b-button>
+                      </b-button-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="">
+                      <b-button-group>
+                        <b-button size="sm" @click="addToken(tokenContractAddress)" variant="primary" v-b-popover.hover="'Add to list'">Add To List</b-button>
+                      </b-button-group>
+                    </b-form-group>
+                  </b-form>
+                </b-card-body>
+              </b-collapse>
 
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.configuredtokens variant="outline-info">Configured Tokens</b-button>
+                <b-button href="#" v-b-toggle.tokenlist variant="outline-info">Tokens</b-button>
               </b-card-header>
-              <b-collapse id="configuredtokens" visible class="border-0">
+              <b-collapse id="tokenlist" visible class="border-0">
                 <b-card-body>
                   <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light">
                     <template slot="HEAD[decimals]" slot-scope="data">
-                      <div class="text-right">Decimals</div>
+                      <span style="font-size: 90%">Symbol</span>
+                    </template>
+                    <template slot="HEAD[decimals]" slot-scope="data">
+                      <span style="font-size: 90%">Name</span>
+                    </template>
+                    <template slot="HEAD[decimals]" slot-scope="data">
+                      <span class="text-right" style="font-size: 90%">Decimals</span>
                     </template>
                     <template slot="HEAD[totalSupply]" slot-scope="data">
-                      <div class="text-right">Total Supply</div>
+                      <span class="text-right" style="font-size: 90%">Total Supply</span>
                     </template>
                     <template slot="HEAD[balance]" slot-scope="data">
-                      <div class="text-right">Your Balance</div>
+                      <span class="text-right" style="font-size: 90%">Balance</span>
                     </template>
                     <template slot="HEAD[allowance]" slot-scope="data">
-                      <div class="text-right">Factory Allowance</div>
+                      <span class="text-right" style="font-size: 90%">Allowance To Factory</span>
+                    </template>
+                    <template slot="HEAD[tokenAddress]" slot-scope="data">
+                      <span class="text-right" style="font-size: 90%">Address</span>
+                    </template>
+                    <template slot="HEAD[showDetails]" slot-scope="data">
+                      <span class="text-right" style="font-size: 90%">Details</span>
                     </template>
                     <template slot="symbol" slot-scope="data">
                       <div>{{ data.item.symbol }} </div>
@@ -48,8 +124,8 @@ const TokensExplorer = {
                       <b-link :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
                     <template slot="showDetails" slot-scope="row">
-                      <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-                        {{ row.detailsShowing ? 'Hide' : 'Show'}}
+                      <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2">
+                        {{ row.detailsShowing ? 'Less ˄' : 'More ˅'}}
                       </b-button>
                     </template>
                     <template v-slot:row-details="row">
@@ -58,12 +134,27 @@ const TokensExplorer = {
                           Token {{ row.item.symbol }} {{ row.item.name }}
                         </b-card-header>
                         <b-card-body>
+                          <b-form-group label-cols="3" label="Address">
+                            <b-input-group>
+                              <b-link :href="explorer + 'token/' + row.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="row.item.tokenAddress">{{ row.item.tokenAddress }}</b-link>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label="Balance">
+                            <b-input-group>
+                              <b-form-input type="text" v-model.trim="row.item.balance" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
                           <b-form-group label-cols="3" label="Get some tokens">
                             <b-input-group>
                               <b-button size="sm" @click="getSome(row.item.tokenAddress)" variant="primary" v-b-popover.hover="'Get 1,000 tokens'">Get 1,000 {{ row.item.name }}</b-button>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="Set allowance">
+                          <b-form-group label-cols="3" label="Allowance to factory">
+                            <b-input-group>
+                              <b-form-input type="text" v-model.trim="row.item.allowance" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label="New allowance to factory">
                             <b-input-group>
                               <b-form-input type="text" v-model.trim="newAllowance"></b-form-input>
                             </b-input-group>
@@ -79,71 +170,6 @@ const TokensExplorer = {
                   </b-table>
                 </b-card-body>
               </b-collapse>
-
-              <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.personallist variant="outline-info">Personal List</b-button>
-              </b-card-header>
-              <b-collapse id="personallist" class="border-0">
-                <b-card-body>
-                  <b-form>
-                    <b-form-group label-cols="3" label="tokenContractAddress">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenContractAddress"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="symbol">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenInfo.symbol" readonly></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="name">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenInfo.name" readonly></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="decimals">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenInfo.decimals" readonly></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="totalSupply">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenInfo.totalSupply" readonly></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="balance">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenInfo.balance" readonly></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="allowance to factory">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokenInfo.allowance" readonly></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-
-                    <b-form-group label-cols="3" label="">
-                      <b-button-group>
-                        <b-button size="sm" @click="checkTokenAddress()" variant="primary" v-b-popover.hover="'Check token address'">Check Token Address</b-button>
-                      </b-button-group>
-                    </b-form-group>
-
-                    <b-form-group label-cols="3" label="set allowance to factory">
-                      <b-input-group>
-                        <b-form-input type="text" v-model.trim="newAllowance"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-
-                    <b-form-group label-cols="3" label="">
-                      <b-button-group>
-                        <b-button size="sm" @click="setAllowance()" variant="primary" v-b-popover.hover="'Set allowance to factory'">Set Allowance</b-button>
-                      </b-button-group>
-                    </b-form-group>
-
-                  </b-form>
-                </b-card-body>
-              </b-collapse>
-
             </b-card>
           </b-card>
         </b-col>
@@ -160,18 +186,20 @@ const TokensExplorer = {
   `,
   data: function () {
     return {
+      testingCode: "1234",
+
       tokenContractAddress: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
       tokenInfo: {},
       newAllowance: 0,
       tokenDataFields: [
-        { key: 'symbol', label: 'Symbol', variant: 'info', sortable: true },
-        { key: 'name', label: 'Name', variant: 'info', sortable: true },
-        { key: 'decimals', label: 'Decimals', variant: 'info', sortable: true },
-        { key: 'totalSupply', label: 'TotalSupply', variant: 'info', sortable: true },
-        { key: 'balance', label: 'Balance', variant: 'info', sortable: true },
-        { key: 'allowance', label: 'Spot', variant: 'info', sortable: true },
-        { key: 'tokenAddress', label: 'Address', variant: 'primary', sortable: true },
-        { key: 'showDetails', label: 'Details', variant: 'primary', sortable: false },
+        { key: 'symbol', label: 'Symbol', sortable: true },
+        { key: 'name', label: 'Name', sortable: true },
+        { key: 'decimals', label: 'Decimals', sortable: true },
+        { key: 'totalSupply', label: 'TotalSupply', sortable: true },
+        { key: 'balance', label: 'Balance', sortable: true },
+        { key: 'allowance', label: 'Spot', sortable: true },
+        { key: 'tokenAddress', label: 'Address', sortable: true },
+        { key: 'showDetails', label: 'Details', sortable: false },
       ],
       show: true,
     }
@@ -205,6 +233,43 @@ const TokensExplorer = {
     },
   },
   methods: {
+    // does not work
+    //
+    // <span class="btn btn-info text-white copy-btn ml-auto" @click.stop.prevent="copyAddress(row.item.tokenAddress)">
+    //   Copy
+    // </span>
+    // <input type="text" id="testing-code" :value="testingCode">
+    //
+    // copyAddress(event) {
+    //   alert("Copied " + JSON.stringify(event) + " to the clipboard");
+    //
+    //   testingCodeToCopy = document.querySelector('#testing-code')
+    //   testingCodeToCopy.setAttribute('type', 'text')
+    //   testingCodeToCopy.select()
+    //
+    //   try {
+    //     var successful = document.execCommand('copy');
+    //     var msg = successful ? 'successful' : 'unsuccessful';
+    //     alert('Testing code was copied ' + msg);
+    //   } catch (err) {
+    //     alert('Oops, unable to copy');
+    //   }
+    //   testingCodeToCopy.setAttribute('type', 'hidden')
+    // },
+    addToken(tokenContractAddress) {
+      logInfo("TokensExplorer", "addToken(" + tokenContractAddress + ")");
+      // var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+      //
+      // var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenContractAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+      // var tokenInfo = await _tokenInfo;
+      // logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(tokenInfo));
+      // var decimals = parseInt(tokenInfo[0]);
+      // var totalSupply = tokenInfo[1].shift(-decimals).toString();
+      // var balance = tokenInfo[2].shift(-decimals).toString();
+      // var allowance = tokenInfo[3].shift(-decimals).toString();
+      // this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
+      // logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
+    },
     async checkTokenAddress(event) {
       logInfo("TokensExplorer", "checkTokenAddress(" + this.tokenContractAddress + ")");
       var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
@@ -219,9 +284,9 @@ const TokensExplorer = {
       this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
       logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
     },
-    getSome(event) {
-      logInfo("TokensExplorer", "getSome(" + JSON.stringify(event) + ")");
-      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[event].name + '?', {
+    getSome(fakeTokenAddress) {
+      logInfo("TokensExplorer", "getSome(" + JSON.stringify(fakeTokenAddress) + ")");
+      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[fakeTokenAddress].name + '?', {
           title: 'Please Confirm',
           size: 'sm',
           buttonSize: 'sm',
@@ -234,9 +299,8 @@ const TokensExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("TokensExplorer", "getSome(" + this.tokenData[event].symbol + ")");
+            logInfo("TokensExplorer", "getSome(" + this.tokenData[fakeTokenAddress].symbol + ")");
             var factoryAddress = store.getters['optinoFactory/address']
-            var fakeTokenAddress = event;
             logInfo("TokensExplorer", "getSome(" + fakeTokenAddress + ")");
             web3.eth.sendTransaction({ to: fakeTokenAddress, from: store.getters['connection/coinbase'] }, function(error, tx) {
                 logInfo("TokensExplorer", "getSome() DEBUG2");
@@ -270,7 +334,7 @@ const TokensExplorer = {
             //   }
             // });
 
-            event.preventDefault();
+            fakeTokenAddress.preventDefault();
           }
         })
         .catch(err => {

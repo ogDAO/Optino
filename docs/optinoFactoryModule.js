@@ -50,7 +50,7 @@ const OptinoFactory = {
           <b-row v-for="(pair) in pairData" v-bind:key="pair.pairKey">
             <b-col>
               <b-row>
-                <b-col cols="4" class="small truncate"  style="font-size: 70%">
+                <b-col cols="4" class="small truncate" style="font-size: 70%">
                   {{ pair.pairKey }}
                 </b-col>
                 <b-col cols="4" class="small truncate" style="font-size: 70%">
@@ -69,7 +69,7 @@ const OptinoFactory = {
           <b-row v-for="(series) in seriesData" v-bind:key="series.seriesKey">
             <b-col>
               <b-row>
-                <b-col cols="4" class="small truncate"  style="font-size: 70%">
+                <b-col cols="4" class="small truncate" style="font-size: 70%">
                   {{ series.seriesKey }}
                 </b-col>
                 <b-col cols="4" class="small truncate" style="font-size: 70%">
