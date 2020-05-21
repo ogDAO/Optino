@@ -376,7 +376,7 @@ console.log("RESULT: ");
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
-var callStrike = new BigNumber("200.000000000000000000").shift(rateDecimals0);
+var callStrike = new BigNumber("175.000000000000000000").shift(rateDecimals0);
 var callCap = new BigNumber("0").shift(rateDecimals0);
 var putStrike = new BigNumber("200.000000000000000000").shift(rateDecimals0);
 var putFloor = new BigNumber("400").shift(rateDecimals0);

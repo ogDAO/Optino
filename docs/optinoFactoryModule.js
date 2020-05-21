@@ -292,7 +292,7 @@ const optinoFactoryModule = {
 
           var _feedLength = promisify(cb => contract.feedLength(cb));
           var feedLength = await _feedLength;
-          logDebug("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
+          logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
@@ -352,37 +352,37 @@ const optinoFactoryModule = {
           }
           */
 
-          var _pairLength = promisify(cb => contract.pairLength(cb));
-          var pairLength = await _pairLength;
-          logDebug("optinoFactoryModule", "execWeb3() pairLength: " + pairLength);
-          for (var pairIndex = 0; pairIndex < pairLength; pairIndex++) {
-            var _pair = promisify(cb => contract.getPairByIndex(new BigNumber(pairIndex).toString(), cb));
-            var pair = await _pair;
-            var pairKey = pair[0];
-            var token0 = pair[1][0];
-            var token1 = pair[1][1];
-            var feed0 = pair[2][0];
-            var feed1 = pair[2][1];
-            var feedType0 = pair[3][0];
-            var feedType1 = pair[3][1];
-            var decimals0 = pair[3][2];
-            var decimals1 = pair[3][3];
-            var inverse0 = pair[3][4];
-            var inverse1 = pair[3][5];
-            logDebug("optinoFactoryModule", "execWeb3() pair: " + JSON.stringify(pair));
-            if (!(pairKey in state.pairData)) {
-              commit('updatePair', { pairKey: pairKey, pair: { index: pairIndex, sortKey: pairIndex, pairKey: pairKey,
-                token0: token0, token1: token1, feed0: feed0, feed1: feed1,
-                feedType0: feedType0, feedType1: feedType1, decimals0: decimals0, decimals1: decimals1, inverse0: inverse0, inverse1: inverse1 } });
-            }
+          // var _pairLength = promisify(cb => contract.pairLength(cb));
+          // var pairLength = await _pairLength;
+          // logDebug("optinoFactoryModule", "execWeb3() pairLength: " + pairLength);
+          // for (var pairIndex = 0; pairIndex < pairLength; pairIndex++) {
+          //   var _pair = promisify(cb => contract.getPairByIndex(new BigNumber(pairIndex).toString(), cb));
+          //   var pair = await _pair;
+          //   var pairKey = pair[0];
+          //   var token0 = pair[1][0];
+          //   var token1 = pair[1][1];
+          //   var feed0 = pair[2][0];
+          //   var feed1 = pair[2][1];
+          //   var feedType0 = pair[3][0];
+          //   var feedType1 = pair[3][1];
+          //   var decimals0 = pair[3][2];
+          //   var decimals1 = pair[3][3];
+          //   var inverse0 = pair[3][4];
+          //   var inverse1 = pair[3][5];
+          //   logDebug("optinoFactoryModule", "execWeb3() pair: " + JSON.stringify(pair));
+          //   if (!(pairKey in state.pairData)) {
+          //     commit('updatePair', { pairKey: pairKey, pair: { index: pairIndex, sortKey: pairIndex, pairKey: pairKey,
+          //       token0: token0, token1: token1, feed0: feed0, feed1: feed1,
+          //       feedType0: feedType0, feedType1: feedType1, decimals0: decimals0, decimals1: decimals1, inverse0: inverse0, inverse1: inverse1 } });
+          //   }
 
-            var _seriesLength = promisify(cb => contract.seriesLength(pairIndex, cb));
+            var _seriesLength = promisify(cb => contract.seriesLength(cb));
             var seriesLength = await _seriesLength;
-            // logInfo("optinoFactoryModule", "execWeb3() seriesLength(" + pairIndex + "): " + seriesLength);
+            logInfo("optinoFactoryModule", "execWeb3() seriesLength): " + seriesLength);
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
-              var _series = promisify(cb => contract.getSeriesByIndex(new BigNumber(pairIndex).toString(), new BigNumber(seriesIndex).toString(), cb));
+              var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
-              // logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
+              logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               var seriesKey = series[0];
               var pairKey = series[1];
               var data = series[2];
@@ -394,7 +394,7 @@ const optinoFactoryModule = {
                   data: data, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken } });
               }
             }
-          }
+          // }
 // bytes32 _pairKey, ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters)
           /*
           var _seriesLength = promisify(cb => contract.seriesLength(cb));

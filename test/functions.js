@@ -598,7 +598,7 @@ function printOptinoFactoryContractDetails() {
         console.log("RESULT:   optinoFactory.getSeriesByIndex(" + seriesIndex + "). seriesKey=" + seriesKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-18) + ", bound=" + bound.shift(-18) + ", spot=" + spot.shift(-18) + ", timestamp=" + timestamp + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken);
 
         // TODO
-        var rateDecimals = 18;
+        var rateDecimals = 8;
         [optinoToken, coverToken].forEach(function (tokenAddress) {
           console.log("RESULT:     token: " + getShortAddressName(tokenAddress) + " on " + token0 + "/" + token1);
           var tokenContract = web3.eth.contract(_optinoTokenContractAbi).at(tokenAddress);

@@ -80,13 +80,12 @@ const Tokens = {
     },
   },
   mounted() {
-    logInfo("Tokens", "mounted()")
+    logDebug("Tokens", "mounted()")
     if (localStorage.getItem('tokenAddressData')) {
-      logInfo("Tokens", "Restoring tokenAddressData: " + localStorage.getItem('tokenAddressData'));
+      logDebug("Tokens", "Restoring tokenAddressData: " + localStorage.getItem('tokenAddressData'));
       var tokenAddressData = JSON.parse(localStorage.getItem('tokenAddressData'));
-      logInfo("Tokens", "Object.keys(tokenAddressData): " + Object.keys(tokenAddressData));
       for (var address in tokenAddressData) {
-        logInfo("Tokens", "Restoring tokenAddressData: " + address);
+        logDebug("Tokens", "Restoring tokenAddressData: " + address);
         store.dispatch('tokens/addTokenAddress', address);
       }
     }
@@ -120,7 +119,7 @@ const tokensModule = {
   mutations: {
     addTokenAddress(state, tokenAddress) {
       Vue.set(state.tokenAddressData, tokenAddress, tokenAddress);
-      logInfo("tokensModule", "mutations.addTokenAddress(" + tokenAddress + "): " + JSON.stringify(state.tokenAddressData));
+      // logInfo("tokensModule", "mutations.addTokenAddress(" + tokenAddress + "): " + JSON.stringify(state.tokenAddressData));
       localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
     },
     updateToken(state, {tokenAddress, token}) {
@@ -153,7 +152,7 @@ const tokensModule = {
   },
   actions: {
     addTokenAddress(context, tokenAddress) {
-      logInfo("tokensModule", "actions.addTokenAddress(" + tokenAddress+ ")");
+      // logInfo("tokensModule", "actions.addTokenAddress(" + tokenAddress+ ")");
       context.commit('addTokenAddress', tokenAddress);
     },
     // Called by Connection.execWeb3()
@@ -174,12 +173,11 @@ const tokensModule = {
 
           var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
 
-          logInfo("tokensModule", "execWeb3() tokenAddress START");
           for (var tokenAddress in state.tokenAddressData) {
-            logInfo("tokensModule", "execWeb3() tokenAddress: " + tokenAddress);
+            // logInfo("tokensModule", "execWeb3() tokenAddress: " + tokenAddress);
             var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(tokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
             var tokenInfo = await _tokenInfo;
-            logInfo("tokensModule", "execWeb3() tokenInfo: " + JSON.stringify(tokenInfo));
+            // logInfo("tokensModule", "execWeb3() tokenInfo: " + JSON.stringify(tokenInfo));
             var symbol = tokenInfo[4];
             var name = tokenInfo[5];
             var decimals = parseInt(tokenInfo[0]);
@@ -246,11 +244,10 @@ const tokensModule = {
     },
   },
   mounted() {
-    logInfo("tokensModule", "mounted()")
+    logDebug("tokensModule", "mounted()")
     if (localStorage.getItem('tokenAddressData')) {
-      logInfo("tokensModule", "Restoring tokenAddressData");
       this.tokenAddressData = JSON.parse(localStorage.getItem('tokenAddressData'));
-      logInfo("tokensModule", "Restoring tokenAddressData: " + JSON.stringify(this.tokenAddressData));
+      logDebug("tokensModule", "Restoring tokenAddressData: " + JSON.stringify(this.tokenAddressData));
     }
   },
 };
