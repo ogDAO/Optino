@@ -10,7 +10,7 @@ const TokensExplorer = {
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.addtoken variant="outline-info">Add Token</b-button>
               </b-card-header>
-              <b-collapse id="addtoken" visible class="border-0">
+              <b-collapse id="addtoken" class="border-0">
                 <b-card-body>
                   <b-form>
                     <b-form-group label-cols="3" label="Token Contract Address">
