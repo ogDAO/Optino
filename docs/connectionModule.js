@@ -110,7 +110,7 @@ const Connection = {
           </b-row>
           <b-row v-show="Object.keys(txs).length">
             <b-col cols="4" class="small">
-              Transaction(s)
+              Transactions
             </b-col>
             <b-col class="truncate" cols="8">
               <span v-for="(key, hash) in txs">

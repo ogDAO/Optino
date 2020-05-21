@@ -785,29 +785,6 @@ const OptinoExplorer = {
       logInfo("optinoExplorer", "calcPayoff(" + this.tokens + ")");
       var factoryAddress = store.getters['optinoFactory/address']
       var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
-
-      /// @dev Calculate collateral, fee, current spot and payoff, and payoffs based on the input array of spots
-      /// @param pair [token0, token1] ERC20 contract addresses
-      /// @param feeds [feed0, feed1] Price feed adaptor contract address
-      /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
-      /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
-      /// @param spots List of spots to compute the payoffs for
-      /// @return _collateralToken
-      /// @return _collateralTokens
-      /// @return _collateralFeeTokens
-      /// @return _collateralDecimals
-      /// @return _feedDecimals0
-      /// @return _currentSpot
-      /// @return _currentPayoff
-      /// @return _payoffs
-      // function calcPayoff(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, uint[] memory spots) public view returns (ERC20 _collateralToken, uint _collateralTokens, uint _collateralFeeTokens, uint8 _collateralDecimals, uint8 _feedDecimals0, uint _currentSpot, uint _currentPayoff, uint[] memory _payoffs)
-
-      // logInfo("optinoExplorer", "factory.calcPayoff([" + this.token0 + "', '" + this.token1 + "], [" + this.feed0 + ", " + this.feed1 + "], " +
-
-        // "[" + this.callPut + ", " + this.expiry + " (" + new Date(this.expiry * 1000).toUTCString() + "), '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
-      // var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
-      // logInfo("optinoExplorer", "  value=" + value);
-      // TODO
       var feedData = store.getters['optinoFactory/feedData'];
       var feed = feedData[this.feed0.toLowerCase()];
       logInfo("optinoExplorer", "this.feed0: " + this.feed0);
@@ -876,45 +853,38 @@ const OptinoExplorer = {
             logInfo("optinoExplorer", "mintOptinos(" + this.tokens + ")");
             var factoryAddress = store.getters['optinoFactory/address']
             var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
-            // logInfo("optinoExplorer", "factory.mintOptinoTokens('" + this.baseToken + "', '" + this.quoteToken + "', '" + this.priceFeed + "', " + this.callPut + ", " + this.expiry + "='" + new Date(this.expiry * 1000).toUTCString() + "', '" + new BigNumber(this.strike).shift(18).toString() + "', '" + new BigNumber(this.bound).shift(18).toString() + "', '" + new BigNumber(this.baseTokens).shift(18).toString() + "', '" + store.getters['connection/coinbase'] + "')");
-            // var value = this.collateralToken == ADDRESS0 ? new BigNumber(this.collateralPlusFee).shift(this.collateralDecimals).toString() : "0";
-            // logInfo("optinoExplorer", "  value=" + value);
-            logInfo("optinoExplorer", "mintOptinos DEBUG1");
-            var OPTINODECIMALS = 18;
-            var rateDecimals = 18;
-            var data = factory.mint.getData([this.token0, this.token1], [this.feed0, this.feed1],
-              [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
-              [this.callPut, this.expiry, new BigNumber(this.strike).shift(rateDecimals), new BigNumber(this.bound).shift(rateDecimals), new BigNumber(this.tokens).shift(OPTINODECIMALS)], ADDRESS0);
-            logInfo("optinoExplorer", "data=" + data);
+            var feedData = store.getters['optinoFactory/feedData'];
+            var feed = feedData[this.feed0.toLowerCase()];
+            logInfo("optinoExplorer", "this.feed0: " + this.feed0);
+            logInfo("optinoExplorer", "feed: " + feed);
+            logInfo("optinoExplorer", "feedData: " + JSON.stringify(feed));
+            if (!feed) {
+              alert("Feed data not available yet");
+            } else {
+              var feedDecimals0 = feed.feedDataDecimals;
+              logInfo("optinoExplorer", "feedDecimals0: " + feedDecimals0);
+              var OPTINODECIMALS = 18;
+              var data = factory.mint.getData([this.token0, this.token1], [this.feed0, this.feed1],
+                [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
+                [this.callPut, this.expiry, new BigNumber(this.strike).shift(feedDecimals0), new BigNumber(this.bound).shift(feedDecimals0), new BigNumber(this.tokens).shift(OPTINODECIMALS)], ADDRESS0);
+              logInfo("optinoExplorer", "data=" + data);
 
-            factory.mint([this.token0, this.token1], [this.feed0, this.feed1],
-              [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
-              [this.callPut, this.expiry, new BigNumber(this.strike).shift(rateDecimals), new BigNumber(this.bound).shift(rateDecimals), new BigNumber(this.tokens).shift(OPTINODECIMALS)], ADDRESS0, { from: store.getters['connection/coinbase'] }, function(error, tx) {
+              factory.mint([this.token0, this.token1], [this.feed0, this.feed1],
+                [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1],
+                [this.callPut, this.expiry, new BigNumber(this.strike).shift(feedDecimals0), new BigNumber(this.bound).shift(feedDecimals0), new BigNumber(this.tokens).shift(OPTINODECIMALS)], ADDRESS0, { from: store.getters['connection/coinbase'] }, function(error, tx) {
                 logInfo("optinoExplorer", "mintOptinos DEBUG1");
-              /// @dev Mint Optino and Cover tokens
-              /// @param pair [token0, token1] ERC20 contract addresses
-              /// @param feeds [feed0, feed1] Price feed adaptor contract address
-              /// @param feedParameters [type0, type1, decimals0, decimals1, inverse0, inverse1]
-              /// @param data [callPut(0=call,1=put), expiry(unixtime), strike, bound(0 for vanilla call & put, > strike for capped call, < strike for floored put), tokens(to mint)]
-              /// @param uiFeeAccount Set to 0x00 for the developer to receive the full fee, otherwise set to the UI developer's account to split the fees two ways
-              /// @return _optinoToken Existing or newly created Optino token contract address
-              /// @return _coverToken Existing or newly created Cover token contract address
-              // function mint(ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, address uiFeeAccount) public returns (OptinoToken _optinoToken, OptinoToken _coverToken)
+                if (!error) {
+                  logInfo("optinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
+                  store.dispatch('connection/addTx', tx);
+                } else {
+                  logInfo("optinoExplorer", "mintOptinos() factory.mintOptino() error: ");
+                  console.table(error);
+                  store.dispatch('connection/setTxError', error.message);
+                }
+              });
 
-
-
-
-              if (!error) {
-                logInfo("optinoExplorer", "mintOptinos() factory.mintOptino() tx: " + tx);
-                store.dispatch('connection/addTx', tx);
-              } else {
-                logInfo("optinoExplorer", "mintOptinos() factory.mintOptino() error: ");
-                console.table(error);
-                store.dispatch('connection/setTxError', error.message);
-              }
-            });
-
-            event.preventDefault();
+              event.preventDefault();
+            }
           }
         })
         .catch(err => {
