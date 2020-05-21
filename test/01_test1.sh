@@ -110,18 +110,18 @@ var deployGroup1_Message = "Deploy Group #1 - Contracts";
 
 var OPTINODECIMALS = 18;
 var token0Decimals = 18;
-var token1Decimals = 6;
+var token1Decimals = 18;
 var rateDecimals0 = 18;
-var rateDecimals1 = 8;
-var token0Symbol = 'BTCx';
-var token1Symbol = 'USDx';
-var token0Name = "BTC X (" + token0Decimals + " dp)";
-var token1Name = "USD X (" + token1Decimals + " dp)";
+var rateDecimals1 = 18;
+var token0Symbol = 'fWETH';
+var token1Symbol = 'fUSD';
+var token0Name = "Fake Wrapped Ether (" + token0Decimals + " dp)";
+var token1Name = "Fake USD (" + token1Decimals + " dp)";
 var tokenOwner = deployer;
 var initialSupply = new BigNumber("0").shift(18);
 
-var makerdaoFeed1Value = new BigNumber("45.5526555").shift(rateDecimals0); // BTC/ETH
-var makerdaoFeed2Value = new BigNumber("213.31").shift(rateDecimals1); // ETH/USD
+var makerdaoFeed1Value = new BigNumber("213.31").shift(rateDecimals0); // ETH/USD
+var makerdaoFeed2Value = new BigNumber("45.5526555").shift(rateDecimals1); // BTC/ETH
 console.log("RESULT: makerdaoFeed1Value ETH/USD=" + makerdaoFeed1Value.shift(-rateDecimals0).toString());
 console.log("RESULT: makerdaoFeed2Value MKR/ETH=" + makerdaoFeed2Value.shift(-rateDecimals0).toString());
 console.log("DATA: deployer=" + deployer);
@@ -315,6 +315,7 @@ var maxTerm = 60 * 60 * 24 * 12 + 60 * 60 * 3 + 60 * 4 + 5; // 12d 3h 4m 5s
 var fee = new BigNumber("1").shift(15); // 0.1%, so 1 ETH = 0.001 fee
 var ethAddress = "0x0000000000000000000000000000000000000000";
 var ethDecimals = 18;
+var FEEDTYPE_MAKER = 2;
 // -----------------------------------------------------------------------------
 console.log("RESULT: ---------- " + deployGroup2_Message + " ----------");
 var deployGroup2_1Tx = token0.mint(seller1, token0Tokens, {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
@@ -330,8 +331,8 @@ var deployGroup2_8Tx = token1.mint(buyer2, token1Tokens.toString(), {from: deplo
 var deployGroup2_9Tx = makerdaoFeed1.setValue(makerdaoFeed1Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
 // MKR/ETH 1.695
 var deployGroup2_10Tx = makerdaoFeed2.setValue(makerdaoFeed2Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = optinoFactory.updateFeed(makerdaoFeed1Address, "Maker ETH/USD", 2, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = optinoFactory.updateFeed(makerdaoFeed2Address, "Maker MKR/ETH", 2, 8, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = optinoFactory.updateFeed(makerdaoFeed1Address, "Maker ETH/USD", FEEDTYPE_MAKER, rateDecimals0, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = optinoFactory.updateFeed(makerdaoFeed2Address, "Maker MKR/ETH", FEEDTYPE_MAKER, rateDecimals1, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 // var deployGroup2_9Tx = optinoFactory.addConfig(token0Address, token1Address, feedAdaptorAddress, token0Decimals, token1Decimals, rateDecimals0, maxTerm, fee.toString(), "BASE/QUOTE MakerDAO PF", {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 
 // var deployGroup2_13Tx = optinoFactory.updateTokenDecimals(token1Address, 18, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
@@ -360,9 +361,9 @@ failIfTxStatusError(deployGroup2_9Tx, deployGroup2_Message + " - makerdaoFeed1.s
 printTxData("deployGroup2_9Tx", deployGroup2_9Tx);
 failIfTxStatusError(deployGroup2_10Tx, deployGroup2_Message + " - makerdaoFeed2.setValue(" + makerdaoFeed2Value.shift(-rateDecimals0).toString() + ", true)");
 printTxData("deployGroup2_10Tx", deployGroup2_10Tx);
-failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - optinoFactory.updateFeed(makerdaoFeed1, 'Maker BTC/ETH', MAKER, 18)");
+failIfTxStatusError(deployGroup2_11Tx, deployGroup2_Message + " - optinoFactory.updateFeed(makerdaoFeed1, 'Maker BTC/ETH', MAKER, " + rateDecimals0 + ")");
 printTxData("deployGroup2_11Tx", deployGroup2_11Tx);
-failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - optinoFactory.updateFeed(makerdaoFeed2, 'Maker ETH/USD', MAKER, 8)");
+failIfTxStatusError(deployGroup2_12Tx, deployGroup2_Message + " - optinoFactory.updateFeed(makerdaoFeed2, 'Maker ETH/USD', MAKER, " + rateDecimals1 + ")");
 printTxData("deployGroup2_12Tx", deployGroup2_12Tx);
 // failIfTxStatusError(deployGroup2_13Tx, deployGroup2_Message + " - optinoFactory.updateTokenDecimals(QUOTE, 18)");
 // printTxData("deployGroup2_13Tx", deployGroup2_13Tx);
@@ -382,14 +383,14 @@ console.log("RESULT: ");
 // -----------------------------------------------------------------------------
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
-var expiry = parseInt(new Date()/1000) + 4; // + 2 * 60*60;
-var callStrike = new BigNumber("9500.000000000000000000").shift(rateDecimals0);
+var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
+var callStrike = new BigNumber("200.000000000000000000").shift(rateDecimals0);
 var callCap = new BigNumber("0").shift(rateDecimals0);
 var putStrike = new BigNumber("200.000000000000000000").shift(rateDecimals0);
-var putFloor = new BigNumber("0").shift(rateDecimals0);
+var putFloor = new BigNumber("400").shift(rateDecimals0);
 var strike = callPut == "0" ? callStrike : putStrike;
 var bound = callPut == "0" ? callCap : putFloor;
-var tokens = new BigNumber("1").shift(OPTINODECIMALS);
+var tokens = new BigNumber("10").shift(OPTINODECIMALS);
 var value = web3.toWei("0", "ether").toString();
 var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
 // var _uiFeeAccount = uiFeeAccount;
@@ -398,9 +399,10 @@ var collateralDecimals = callPut == 0 ? token0Decimals : token1Decimals;
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var pair = [token0Address, token1Address];
 // var feeds = [NULLACCOUNT, makerdaoFeed1Address];
-// var feeds = [makerdaoFeed1Address, NULLACCOUNT];
-var feeds = [makerdaoFeed1Address, makerdaoFeed2Address];
+var feeds = [makerdaoFeed1Address, NULLACCOUNT];
+// var feeds = [makerdaoFeed1Address, makerdaoFeed2Address];
 // var feeds = [buyer2, NULLACCOUNT];
+console.log("RESULT: feeds " + JSON.stringify(feeds));
 var type0 = 0xff;
 var type1 = 0xff;
 var decimals0 = 0xff;

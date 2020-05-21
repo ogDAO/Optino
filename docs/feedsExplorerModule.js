@@ -13,7 +13,7 @@ const FeedsExplorer = {
               </b-card-header>
               <b-collapse id="configuredfeeds" visible class="border-0">
                 <b-card-body>
-                  <b-table small striped selectable responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
+                  <b-table small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
                     <template slot="HEAD[spot]" slot-scope="data">
                       <div class="text-right">Spot</div>
                     </template>
@@ -78,7 +78,7 @@ const FeedsExplorer = {
   data: function () {
     return {
       feedDataFields: [
-        { key: 'name', label: 'Name', stickyColumn: true, isRowHeader: true, sortable: true },
+        { key: 'name', label: 'Name', sortable: true },
         { key: 'feedDataType', label: 'Type', sortable: true },
         { key: 'feedDataDecimals', label: 'Decimals', sortable: true },
         { key: 'feedDataLocked', label: 'Locked', sortable: true },

@@ -103,25 +103,25 @@ const TokensExplorer = {
                       <span class="text-right" style="font-size: 90%">Details</span>
                     </template>
                     <template slot="symbol" slot-scope="data">
-                      <div>{{ data.item.symbol }} </div>
+                      <div style="font-size: 80%">{{ data.item.symbol }} </div>
                     </template>
                     <template slot="name" slot-scope="data">
-                      <div>{{ data.item.name }} </div>
+                      <div style="font-size: 80%">{{ data.item.name }} </div>
                     </template>
                     <template slot="decimals" slot-scope="data">
-                      <div class="text-right">{{ data.item.decimals }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ data.item.decimals }}</div>
                     </template>
                     <template slot="totalSupply" slot-scope="data">
-                      <div class="text-right">{{ data.item.totalSupply }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ data.item.totalSupply }}</div>
                     </template>
                     <template slot="balance" slot-scope="data">
-                      <div class="text-right">{{ data.item.balance }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ data.item.balance }}</div>
                     </template>
                     <template slot="allowance" slot-scope="data">
-                      <div class="text-right">{{ data.item.allowance }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ data.item.allowance }}</div>
                     </template>
                     <template slot="tokenAddress" slot-scope="data">
-                      <b-link :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
+                      <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
                     <template slot="showDetails" slot-scope="row">
                       <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2">
