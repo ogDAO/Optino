@@ -292,7 +292,7 @@ const optinoFactoryModule = {
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
-            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var feedAddress = feed[0];
             var feedName = feed[1];
             var feedDataType = parseInt(feed[2][0]);
@@ -378,7 +378,7 @@ const optinoFactoryModule = {
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
               var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
-              logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
+              // logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               // bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp
               // ["0x510c028170e742746cc9dc89d10ec720c81e6e9d11be00aa76a7b2715e3d317d",["0x452a2652d1245132f7f47700c24e217faceb1c6c","0x2269fbd941938ac213719cd3487323a0c75f1667"],["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590220800","17500000000","0","0"],["0xc62aee07b7e7b1c3fae4a5badd58fc87de3a06de","0x4313c4ee69d8637897f2c362172ecfd72c6884ad"],"1590125413"]
 

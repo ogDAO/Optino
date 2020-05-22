@@ -91,16 +91,19 @@ const TokensExplorer = {
                       <span class="text-right" style="font-size: 90%">Total Supply</span>
                     </template>
                     <template slot="HEAD[balance]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%">Balance</span>
+                      <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
                     </template>
                     <template slot="HEAD[allowance]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%">Allowance To Factory</span>
+                      <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
                     </template>
                     <template slot="HEAD[tokenAddress]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%">Address</span>
+                      <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
                     </template>
                     <template slot="HEAD[showDetails]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%">Details</span>
+                      <span class="text-right" style="font-size: 90%"></span>
+                    </template>
+                    <template slot="HEAD[favourite]" slot-scope="data">
+                      <b-button size="sm" :pressed.sync="showFavourite" variant="link" v-b-popover.hover="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>
                     <template slot="symbol" slot-scope="data">
                       <div style="font-size: 80%">{{ data.item.symbol }} </div>
@@ -124,12 +127,11 @@ const TokensExplorer = {
                       <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
                     <template slot="showDetails" slot-scope="row">
-                      <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2" v-if="row.detailsShowing">
-                        Less <b-icon-caret-up-fill></b-icon-caret-up-fill>
-                      </b-button>
-                      <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2" v-if="!row.detailsShowing">
-                        More <b-icon-caret-down-fill></b-icon-caret-down-fill>
-                      </b-button>
+                      <b-button size="sm" @click="row.toggleDetails" variant="link" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="1"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="1"></b-icon-caret-down-fill></div></b-button>
+                    </template>
+                    <template slot="favourite" slot-scope="row">
+                      <b-button size="sm" @click="toggleTokenFavourite(row.item.tokenAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
+                      <!-- <b-button size="sm" :pressed.sync="showFavourite" variant="link"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button> -->
                     </template>
                     <template v-slot:row-details="row">
                       <b-card>
@@ -214,6 +216,8 @@ const TokensExplorer = {
     return {
       testingCode: "1234",
 
+      showFavourite: false,
+
       tokenContractAddress: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
       tokenInfo: {},
       newAllowance: 0,
@@ -226,6 +230,7 @@ const TokensExplorer = {
         { key: 'allowance', label: 'Spot', sortable: true },
         { key: 'tokenAddress', label: 'Address', sortable: true },
         { key: 'showDetails', label: 'Details', sortable: false },
+        { key: 'favourite', label: 'Favourite', sortable: false },
       ],
       show: true,
     }
@@ -248,7 +253,9 @@ const TokensExplorer = {
       var tokenData = store.getters['tokens/tokenData'];
       for (token in tokenData) {
         if (/^\w+$/.test(tokenData[token].symbol)) {
-          results.push(tokenData[token]);
+          if (!this.showFavourite || tokenData[token].favourite) {
+            results.push(tokenData[token]);            
+          }
         }
       }
       results.sort(function(a, b) {
@@ -284,6 +291,21 @@ const TokensExplorer = {
     addTokenAddress(tokenContractAddress) {
       logInfo("TokensExplorer", "addTokenAddress(" + tokenContractAddress + ")");
       store.dispatch('tokens/addTokenAddress', tokenContractAddress);
+      // var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+      //
+      // var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenContractAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+      // var tokenInfo = await _tokenInfo;
+      // logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(tokenInfo));
+      // var decimals = parseInt(tokenInfo[0]);
+      // var totalSupply = tokenInfo[1].shift(-decimals).toString();
+      // var balance = tokenInfo[2].shift(-decimals).toString();
+      // var allowance = tokenInfo[3].shift(-decimals).toString();
+      // this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
+      // logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
+    },
+    toggleTokenFavourite(tokenAddress, favourite) {
+      logInfo("TokensExplorer", "toggleTokenFavourite(" + tokenAddress + ", " + favourite + ")");
+      store.dispatch('tokens/toggleTokenFavourite', { tokenAddress: tokenAddress, favourite: favourite });
       // var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
       //
       // var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenContractAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
