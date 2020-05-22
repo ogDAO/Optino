@@ -139,6 +139,11 @@ const TokensExplorer = {
                               <b-link :href="explorer + 'token/' + row.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="row.item.tokenAddress">{{ row.item.tokenAddress }}</b-link>
                             </b-input-group>
                           </b-form-group>
+                          <b-form-group label-cols="3" label="Total Supply">
+                            <b-input-group>
+                              <b-form-input type="text" v-model.trim="row.item.totalSupply" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
                           <b-form-group label-cols="3" label="Balance">
                             <b-input-group>
                               <b-form-input type="text" v-model.trim="row.item.balance" readonly></b-form-input>

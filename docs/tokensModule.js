@@ -9,9 +9,48 @@ const Tokens = {
           Please switch to the Ropsten testnet in MetaMask and refresh this page
         </b-card-text>
       </b-card>
-      <b-button v-b-toggle.tokens size="sm" block variant="outline-info">Tokens: {{ balances[0] + ' ' + symbols[0] + ' / ' + balances[1] + ' ' + symbols[1] }}</b-button>
+      <b-button v-b-toggle.tokens size="sm" block variant="outline-info">Tokens: {{ tokenDataSorted.length }}</b-button>
       <b-collapse id="tokens" visible class="mt-2">
         <b-card no-body class="border-0" v-if="network == 1337 || network == 3">
+          <b-row v-for="(token) in tokenDataSorted" v-bind:key="token.tokenAddress">
+            <b-col cols="4" class="small truncate mb-1" style="font-size: 80%" v-b-popover.hover="token.symbol + ' - ' + token.name + ' totalSupply ' + token.totalSupply + ' decimals ' + token.decimals">
+              <b-link :href="explorer + 'token/' + token.tokenAddress" class="card-link" target="_blank">{{ token.symbol }}</b-link>
+            </b-col>
+            <b-col cols="4" class="small truncate text-right mb-1"  style="font-size: 60%" v-b-popover.hover="'Balance'">
+              {{ token.balance }}
+            </b-col>
+            <b-col cols="4" class="small truncate text-right mb-1"  style="font-size: 60%" v-b-popover.hover="'Allowance'">
+              {{ token.allowance }}
+            </b-col>
+            <!--
+            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+              {{ feed.spot.shift(-feed.feedDataDecimals) }}
+            </b-col>
+            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+              {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
+            </b-col>
+            {{ token }}
+            -->
+          </b-row>
+
+          <!--
+          <b-row v-if="Object.keys(feedData).length > 0">
+            <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
+          </b-row>
+          <b-row v-for="(feed) in feedDataSorted" v-bind:key="feed.feedAddress">
+            <b-col cols="5" class="small truncate" style="font-size: 70%">
+              <b-link :href="explorer + 'address/' + feed.feedAddress + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
+            </b-col>
+            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+              {{ feed.spot.shift(-feed.feedDataDecimals) }}
+            </b-col>
+            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+              {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
+            </b-col>
+          </b-row>
+          -->
+
+          <!--
           <b-row>
             <b-col cols="4" class="small">
               <b-link :href="explorer + 'token/' + addresses[0]" class="card-link" target="_blank">{{ symbols[0] }}</b-link>
@@ -34,6 +73,7 @@ const Tokens = {
               {{ decimals[1] }} dp
             </b-col>
           </b-row>
+          -->
         </b-card>
       </b-collapse>
     </div>
@@ -53,18 +93,18 @@ const Tokens = {
     coinbase() {
       return store.getters['connection/coinbase'];
     },
-    addresses() {
-      return store.getters['tokens/addresses'];
-    },
-    symbols() {
-      return store.getters['tokens/symbols'];
-    },
-    decimals() {
-      return store.getters['tokens/decimals'];
-    },
-    balances() {
-      return store.getters['tokens/balances'];
-    },
+    // addresses() {
+    //   return store.getters['tokens/addresses'];
+    // },
+    // symbols() {
+    //   return store.getters['tokens/symbols'];
+    // },
+    // decimals() {
+    //   return store.getters['tokens/decimals'];
+    // },
+    // balances() {
+    //   return store.getters['tokens/balances'];
+    // },
     tokenDataSorted() {
       var results = [];
       var tokenData = store.getters['tokens/tokenData'];
@@ -99,10 +139,6 @@ const tokensModule = {
     tokenData: {},
     tokenAddressData: {},
 
-    addresses: TOKENADDRESSES,
-    symbols: ["WETH", "WEENUS"],
-    decimals: [18, 18],
-    balances: [new BigNumber(0), new BigNumber(0)],
     params: null,
     executing: false,
   },
@@ -110,10 +146,6 @@ const tokensModule = {
     tokenData: state => state.tokenData,
     tokenAddressData: state => state.tokenAddressData,
 
-    addresses: state => state.addresses,
-    symbols: state => state.symbols,
-    decimals: state => state.decimals,
-    balances: state => state.balances,
     params: state => state.params,
   },
   mutations: {
@@ -134,13 +166,9 @@ const tokensModule = {
       Vue.set(state.tokenData, tokenAddress, token);
       // logInfo("tokensModule", "updateTokenStats(" + tokenAddress + ", " + JSON.stringify(token) + ")")
     },
-    updateTokenShowDetails(state, parameters){
-      parameters.ref.__showDetails = parameters.val
-    },
-    updateBalance(state, {index, balance}) {
-      Vue.set(state.balances, index, balance);
-      logDebug("tokensModule", "updateBalances(" + index + ", " + balance + ")")
-    },
+    // updateTokenShowDetails(state, parameters){
+    //   parameters.ref.__showDetails = parameters.val
+    // },
     updateParams(state, params) {
       state.params = params;
       logDebug("tokensModule", "updateParams('" + params + "')")
@@ -226,15 +254,15 @@ const tokensModule = {
             commit('updateTokenStats', { tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]} );
           }
 
-          for (var i = 0; i < 2; i++) {
-            var contract = web3.eth.contract(TOKENABI).at(state.addresses[i]);
-            var _balanceOf = promisify(cb => contract.balanceOf.call(store.getters['connection/coinbase'], cb));
-            var balanceOf = new BigNumber(await _balanceOf).shift(-state.decimals[i]);
-            logDebug(state.addresses[i] + ".balanceOf(" + store.getters['connection/coinbase'] + ")=" + balanceOf);
-            if (!balanceOf.eq(state.balances[i])) {
-              commit('updateBalance', { index: i, balance: balanceOf });
-            }
-          }
+          // for (var i = 0; i < 2; i++) {
+          //   var contract = web3.eth.contract(TOKENABI).at(state.addresses[i]);
+          //   var _balanceOf = promisify(cb => contract.balanceOf.call(store.getters['connection/coinbase'], cb));
+          //   var balanceOf = new BigNumber(await _balanceOf).shift(-state.decimals[i]);
+          //   logDebug(state.addresses[i] + ".balanceOf(" + store.getters['connection/coinbase'] + ")=" + balanceOf);
+          //   if (!balanceOf.eq(state.balances[i])) {
+          //     commit('updateBalance', { index: i, balance: balanceOf });
+          //   }
+          // }
         }
         commit('updateExecuting', false);
         logDebug("tokensModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");

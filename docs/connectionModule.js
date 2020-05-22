@@ -124,7 +124,7 @@ const Connection = {
             </b-col>
           </b-row>
           <b-row v-show="txError.length > 0">
-            <b-col cols="4">
+            <b-col cols="4" class="small">
               Last Error
             </b-col>
             <b-col class="small truncate" cols="8">

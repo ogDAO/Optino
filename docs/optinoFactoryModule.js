@@ -29,18 +29,14 @@ const OptinoFactory = {
             <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
           </b-row>
           <b-row v-for="(feed) in feedDataSorted" v-bind:key="feed.feedAddress">
-            <b-col>
-              <b-row>
-                <b-col cols="5" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'address/' + feed.feedAddress + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
-                </b-col>
-                <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-                  {{ feed.spot.shift(-feed.feedDataDecimals) }}
-                </b-col>
-                <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-                  {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
-                </b-col>
-              </b-row>
+            <b-col cols="5" class="small truncate" style="font-size: 70%">
+              <b-link :href="explorer + 'address/' + feed.feedAddress + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
+            </b-col>
+            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+              {{ feed.spot.shift(-feed.feedDataDecimals) }}
+            </b-col>
+            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
+              {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
             </b-col>
           </b-row>
 
@@ -383,15 +379,24 @@ const optinoFactoryModule = {
               var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
               logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
+              // function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, uint[5] memory _data, uint _timestamp, OptinoToken[2] memory _optinos)
+              // ["0xe86439e111be6788a40ec6fe8baea2fbd1b4d972143ef756b1ba7e8d1c820bb6",["0","1590220800","650000000000000000","0","0"],"1590097310",["0x88d246bd0d82d67e5f15a81b50492ba7e1fb86a0","0x7bbc89e5198fdec457be7d9fc429f2b914a3ef0b"]]
+
               var seriesKey = series[0];
-              var pairKey = series[1];
-              var data = series[2];
-              var timestamp = parseInt(series[3]);
-              var optinoToken = series[4];
-              var coverToken = series[5];
+              var pair = series[1];
+              var feeds = series[2];
+              var feedParameters = series[3];
+              var feedDecimals0 = series[4];
+              var data = series[5];
+              var optinos = series[6];
+              // var callPut = data[0];
+              // var expiry = data[1];
+              // var strike = data[2];
+              // var bound = data[3];
+              // var spot = data[4];
+              var timestamp = series[7];
               if (!(seriesKey in state.seriesData) || state.seriesData[seriesKey].timestamp < timestamp) {
-                commit('updateSeries', { seriesKey: seriesKey, series: { index: i, seriesKey: seriesKey, pairKey: pairKey,
-                  data: data, timestamp: timestamp, optinoToken: optinoToken, coverToken: coverToken } });
+                commit('updateSeries', { seriesKey: seriesKey, series: { index: i, seriesKey: seriesKey, pair: pair, feeds: feeds, feedParameters: feedParameters, feedDecimals0: feedDecimals0, data: data, timestamp: timestamp, optinos: optinos } });
               }
             }
           // }
