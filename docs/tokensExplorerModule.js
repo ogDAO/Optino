@@ -124,8 +124,11 @@ const TokensExplorer = {
                       <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
                     <template slot="showDetails" slot-scope="row">
-                      <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2">
-                        {{ row.detailsShowing ? 'Less ˄' : 'More ˅'}}
+                      <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2" v-if="row.detailsShowing">
+                        Less <b-icon-caret-up-fill></b-icon-caret-up-fill>
+                      </b-button>
+                      <b-button size="sm" variant="outline-info" @click="row.toggleDetails" class="mr-2" v-if="!row.detailsShowing">
+                        More <b-icon-caret-down-fill></b-icon-caret-down-fill>
                       </b-button>
                     </template>
                     <template v-slot:row-details="row">
