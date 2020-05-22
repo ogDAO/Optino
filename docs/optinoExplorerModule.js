@@ -94,50 +94,57 @@ const OptinoExplorer = {
                     </b-form-group>
                     <b-form-group label-cols="3" label="feed0">
                       <b-input-group>
-                        <b-form-select v-model="feed0" :options="feedOptionsSorted"></b-form-select>
+                        <b-form-select v-model="feed0" :options="feedOptionsSorted" v-on:change="calculateSpot('feed0')"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="feed1">
                       <b-input-group>
-                        <b-form-select v-model="feed1" :options="feedOptionsSorted"></b-form-select>
+                        <b-form-select v-model="feed1" :options="feedOptionsSorted" v-on:change="calculateSpot('feed0')"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="type0">
                       <b-input-group>
-                        <b-form-select v-model.trim="type0" :options="typeOptions"></b-form-select>
+                        <b-form-select v-model.trim="type0" :options="typeOptions" v-on:change="calculateSpot('type0')"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="type1">
                       <b-input-group>
-                        <b-form-select v-model.trim="type1" :options="typeOptions"></b-form-select>
+                        <b-form-select v-model.trim="type1" :options="typeOptions" v-on:change="calculateSpot('type1')"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="decimals0">
                       <b-input-group>
-                        <b-form-select v-model.trim="decimals0" :options="decimalsOptions"></b-form-select>
+                        <b-form-select v-model.trim="decimals0" :options="decimalsOptions" v-on:change="calculateSpot('decimals0')"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="decimals1">
                       <b-input-group>
-                        <b-form-select v-model.trim="decimals1" :options="decimalsOptions"></b-form-select>
+                        <b-form-select v-model.trim="decimals1" :options="decimalsOptions" v-on:change="calculateSpot('decimals1')"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="inverse0">
-                      <b-form-radio-group id="radio-group-inverse0" v-model="inverse0">
+                      <b-form-radio-group id="radio-group-inverse0" v-model="inverse0" @input="calculateSpot('inverse0')">
                         <b-form-radio value="0">No</b-form-radio>
                         <b-form-radio value="1">Yes</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="inverse1">
-                      <b-form-radio-group id="radio-group-inverse1" v-model="inverse1">
+                      <b-form-radio-group id="radio-group-inverse1" v-model="inverse1" @input="calculateSpot('inverse1')">
                         <b-form-radio value="0">No</b-form-radio>
                         <b-form-radio value="1">Yes</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
+
+                    <b-form-group label-cols="3" label="Calculated spot">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="calculatedSpot" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+
                     <b-form-group label-cols="3" label="callPut">
                       <b-form-radio-group id="radio-group-callput" v-model="callPut">
                         <b-form-radio value="0">Call</b-form-radio>
@@ -398,6 +405,7 @@ const OptinoExplorer = {
       decimals1: 0xff,
       inverse0: 0,
       inverse1: 0,
+      calculatedSpot: null,
       callPut: 0,
       expiryInMillis: moment().utc().add(moment().utc().hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf() < moment() ? 1 : 0, 'd').add(1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf(),
       strike: "200",
@@ -686,6 +694,9 @@ const OptinoExplorer = {
       return results;
     },
   },
+  mounted: function() {
+    this.calculateSpot("mounted") // Calls the method before page loads
+  },
   methods: {
     configSelected(config) {
       logDebug("configSelected", "configSelected(" +JSON.stringify(config) + ")");
@@ -816,6 +827,25 @@ const OptinoExplorer = {
         .catch(err => {
           // An error occurred
         });
+    },
+    async calculateSpot(event) {
+      logInfo("optinoExplorer", "calculateSpot(" + JSON.stringify(event) + ")");
+      var factoryAddress = store.getters['optinoFactory/address']
+      var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
+      logInfo("optinoExplorer", "calculateSpot feedParameters:" + JSON.stringify([this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1]));
+      // function calculateSpot(address[2] memory feeds, uint8[6] memory feedParameters) public view returns (uint8 feedDecimals0, uint8 feedType0, uint spot, bool ok, string memory error)
+      try {
+        var _calculateSpot = promisify(cb => factory.calculateSpot([this.feed0, this.feed1],
+          [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1], cb));
+        var calculateSpot = await _calculateSpot;
+        logInfo("optinoExplorer", "calculateSpot: " + JSON.stringify(calculateSpot));
+        var feedDecimals0 = calculateSpot[0];
+        var feedType0 = calculateSpot[1];
+        // uint8 feedDecimals0, uint8 feedType0, uint spot, bool ok, string memory error
+        this.calculatedSpot = calculateSpot[2].shift(-feedDecimals0).toString();
+      } catch (e) {
+        this.calculatedSpot = "";
+      }
     },
     async calcPayoff(event) {
       logInfo("optinoExplorer", "calcPayoff(" + this.tokens + ")");

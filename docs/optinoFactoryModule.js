@@ -211,6 +211,23 @@ const optinoFactoryModule = {
       Vue.set(state.feedData, feedAddress, feed);
       // logDebug("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
     },
+    setFeedFavourite(state, { feedAddress, favourite }) {
+      logInfo("optinoFactoryModule", "mutations.setFeedFavourite(" + feedAddress + ", " + favourite + ")");
+      // var existing = state.tokenAddressData[tokenAddress];
+      // var source = "";
+      // if (existing) {
+      //   source = existing.source;
+      // }
+      // Vue.set(state.tokenAddressData, tokenAddress, { tokenAddress: tokenAddress, source: source, favourite: favourite });
+      // logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + "): " + favourite);
+      // localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
+      // logInfo("tokensModule", "mutations.setTokenFavourite tokenAddressData=" + JSON.stringify(state.tokenAddressData));
+      //
+      // var token = state.tokenData[tokenAddress];
+      // if (token) {
+      //   token.favourite = favourite;
+      // }
+    },
     updatePair(state, {pairKey, pair}) {
       Vue.set(state.pairData, pairKey, pair);
       // logInfo("optinoFactoryModule", "updatePair(" + pairKey + ", " + JSON.stringify(pair) + ")")
@@ -249,6 +266,10 @@ const optinoFactoryModule = {
     },
   },
   actions: {
+    setFeedFavourite(context, { feedAddress, favourite }) {
+      logInfo("optinoFactoryModule", "actions.setFeedFavourite(" + feedAddress + ", " + favourite + ")");
+      context.commit('setFeedFavourite', { feedAddress: feedAddress, favourite: favourite });
+    },
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
       logDebug("optinoFactoryModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
@@ -291,6 +312,7 @@ const optinoFactoryModule = {
           logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
+            // function getFeedByIndex(uint i) public view returns (address _feed, string memory _feedName, uint8[3] memory _feedData, uint _spot, bool _hasData, uint8 _feedReportedDecimals, uint _feedTimestamp)
             var feed = await _feed;
             // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var feedAddress = feed[0];
@@ -309,17 +331,18 @@ const optinoFactoryModule = {
               feedDataTypeString = "Unknown: " + feedDataType;
             }
             var feedDataDecimals = parseInt(feed[2][1]);
-            var feedDataLocked = parseInt(feed[2][2]) > 0 ? "y" : "n";
+            var feedDataLocked = parseInt(feed[2][2]) > 0;
             var spot = feed[3];
             var hasData = feed[4];
-            var feedDecimals = parseInt(feed[5]);
+            var feedReportedDecimals = parseInt(feed[5]);
             var feedTimestamp = parseInt(feed[6]);
             var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
-            if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp) {
+            var favourite = false;
+            if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp || state.feedData[feedAddress].feedDataLocked != feedDataLocked) {
               commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName,
                 feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
-                spot: spot, hasData: hasData ? "y" : "n", feedDecimals: feedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
+                spot: spot, hasData: hasData ? "y" : "n", feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
             }
           }
 
