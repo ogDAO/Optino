@@ -379,8 +379,8 @@ const optinoFactoryModule = {
               var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
               logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
-              // function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, uint[5] memory _data, uint _timestamp, OptinoToken[2] memory _optinos)
-              // ["0xe86439e111be6788a40ec6fe8baea2fbd1b4d972143ef756b1ba7e8d1c820bb6",["0","1590220800","650000000000000000","0","0"],"1590097310",["0x88d246bd0d82d67e5f15a81b50492ba7e1fb86a0","0x7bbc89e5198fdec457be7d9fc429f2b914a3ef0b"]]
+              // bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp
+              // ["0x510c028170e742746cc9dc89d10ec720c81e6e9d11be00aa76a7b2715e3d317d",["0x452a2652d1245132f7f47700c24e217faceb1c6c","0x2269fbd941938ac213719cd3487323a0c75f1667"],["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590220800","17500000000","0","0"],["0xc62aee07b7e7b1c3fae4a5badd58fc87de3a06de","0x4313c4ee69d8637897f2c362172ecfd72c6884ad"],"1590125413"]
 
               var seriesKey = series[0];
               var pair = series[1];
