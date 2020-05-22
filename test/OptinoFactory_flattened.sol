@@ -10,7 +10,7 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.979-testnet-pre-release
+// Optino Factory v0.980-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
@@ -625,14 +625,14 @@ contract OptinoToken is BasicToken, OptinoFormulae {
         callPut = data[uint(OptinoFactory.SeriesDataField.CallPut)];
         return (pair[0], pair[1], feeds[0], isCustom, data[uint(OptinoFactory.SeriesDataField.CallPut)], data[uint(OptinoFactory.SeriesDataField.Expiry)], data[uint(OptinoFactory.SeriesDataField.Strike)], data[uint(OptinoFactory.SeriesDataField.Bound)], isCover);
     }
-    function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint currentSpot) {
+    function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint8 feedDecimals0, uint currentSpot) {
         ERC20[2] memory pair;
         address[2] memory feeds;
         uint8[6] memory feedParameters;
         uint[5] memory data;
         OptinoToken[2] memory optinos;
         (/*seriesIndex*/, pair, feeds, feedParameters, data, optinos) = factory.getSeriesByKey(seriesKey);
-        return (feeds[0], feeds[1], feedParameters[0], feedParameters[1], feedParameters[2], feedParameters[3], feedParameters[4], feedParameters[5], factory.getSeriesCurrentSpot(seriesKey));
+        return (feeds[0], feeds[1], feedParameters[0], feedParameters[1], feedParameters[2], feedParameters[3], feedParameters[4], feedParameters[5], factory.getFeedDecimals0(seriesKey), factory.getSeriesCurrentSpot(seriesKey));
     }
     function getPricingInfo() public view returns (uint currentSpot, uint currentPayoff, uint spot, uint payoff, uint collateral) {
         uint tokens = 10 ** _decimals;
@@ -672,6 +672,12 @@ contract OptinoToken is BasicToken, OptinoFormulae {
             uint collateral = computeCollateral(_seriesData, tokens, decimalsData);
             payoff = isCover ? collateral.sub(payoff) : payoff;
         }
+    }
+    function payoffForSpot(uint tokens, uint _spot) public view returns (uint payoff) {
+        (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
+        uint collateral = computeCollateral(_seriesData, tokens, decimalsData);
+        payoff = computePayoff(_seriesData, _spot, tokens, decimalsData);
+        payoff = isCover ? collateral.sub(payoff) : payoff;
     }
     function payoffForSpots(uint tokens, uint[] memory spots) public view returns (uint[] memory payoffs) {
         payoffs = new uint[](spots.length);
@@ -905,7 +911,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, GetFeed {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.979-testnet-pre-release";
+    string public message = "v0.980-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -1035,6 +1041,14 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, GetFeed {
         return seriesIndex.length;
     }
 
+    function getFeedDecimals0(bytes32 seriesKey) public view returns (uint8 feedDecimals0) {
+        Series memory series = seriesData[seriesKey];
+        require(series.timestamp > 0, "Invalid key");
+        feedDecimals0 = series.feedParameters[uint(FeedParametersField.Decimals0)];
+        if (feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
+            feedDecimals0 = feedData[series.feeds[0]].data[uint(FeedTypeField.Decimals)];
+        }
+    }
     // uint8 decimalsData[] - 0=OptinoDecimals, 1=Decimals0, 2=Decimals1, 3=Rate1Decimals
     function getCalcData(bytes32 seriesKey) public view returns (uint[5] memory _seriesData, uint8[4] memory decimalsData) {
         Series memory series = seriesData[seriesKey];
@@ -1250,9 +1264,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, GetFeed {
             _optinos[1] = OptinoToken(payable(createClone(optinoTokenTemplate)));
             addSeries(inputData, _optinos);
             series = seriesData[_seriesKey];
-            // TODO Reset to 0
-            _optinos[0].initOptinoToken(this, _seriesKey, _optinos[1], series.index + 999, false, OPTINODECIMALS);
-            _optinos[1].initOptinoToken(this, _seriesKey, _optinos[0], series.index + 999, true, OPTINODECIMALS);
+            _optinos[0].initOptinoToken(this, _seriesKey, _optinos[1], series.index, false, OPTINODECIMALS);
+            _optinos[1].initOptinoToken(this, _seriesKey, _optinos[0], series.index, true, OPTINODECIMALS);
         } else {
             _optinos = series.optinos;
         }

@@ -634,6 +634,7 @@ function printOptinoFactoryContractDetails() {
           // // console.log("RESULT:     .description/pair/seriesNumber/isCover=" + optinoTokenContract.description.call() + "/" + getShortAddressName(optinoTokenContract.pair.call()) + "/" + optinoTokenContract.seriesNumber.call() + "/" + optinoTokenContract.isCover.call());
           console.log("RESULT:       .currentSpot/currentSpotAndPayoff(1)=" + tokenContract.currentSpot.call().shift(-rateDecimals) + "/" + tokenContract.currentSpotAndPayoff.call(oneToken)[1].shift(-collateralDecimals));
           console.log("RESULT:       .spot/spotAndPayoff(1)=" + tokenContract.spot.call().shift(-rateDecimals) + "/" + tokenContract.spotAndPayoff.call(oneToken)[1].shift(-collateralDecimals));
+          console.log("RESULT:       .payoffForSpot(1, " + spots[4].shift(-rateDecimals) + ")=" + tokenContract.payoffForSpot.call(oneToken, spots[4]).shift(-collateralDecimals));
           console.log("RESULT:       .payoffForSpots(1, " + JSON.stringify(shiftBigNumberArray(spots, -rateDecimals)) + ")=" + JSON.stringify(shiftBigNumberArray(tokenContract.payoffForSpots.call(oneToken, spots), -collateralDecimals)));
           console.log("RESULT:       .getInfo=" + JSON.stringify(tokenContract.getInfo.call()));
           console.log("RESULT:       .getFeedInfo=" + JSON.stringify(tokenContract.getFeedInfo.call()));
