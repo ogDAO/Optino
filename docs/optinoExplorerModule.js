@@ -81,6 +81,8 @@ const OptinoExplorer = {
                 <b-card-body>
                   <b-form>
                     <b-form-group label-cols="3" label="token0">
+                      <b-icon-arrow-up></b-icon-arrow-up>
+                      <b-icon-star-fill></b-icon-star-fill>
                       <b-input-group>
                         <!-- <b-form-select v-model="token0" :options="tokenOptions" class="mt-3"></b-form-select> -->
                         <b-form-select v-model="token0" :options="tokenOptionsSorted"></b-form-select>

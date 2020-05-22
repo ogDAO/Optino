@@ -140,6 +140,8 @@ Factory https://ropsten.etherscan.io/address/0xD202FA5bE3B0Fd4073cA644E78Ef853c9
 
 updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 
+0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507, "Chainlink ETH/USD", 0, 8
+
 0xAfd8186C962daf599f171B8600f3e19Af7B52c92, "Chainlink BAT/ETH", 0, 18
 0x5b8B87A0abA4be247e660B0e0143bB30Cdf566AF, "Chainlink BTC/ETH", 0, 18
 0x64b8e49baDeD7BFb2FD5A9235B2440C0eE02971B, "Chainlink DAI/ETH", 0, 18
@@ -153,7 +155,6 @@ updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
 0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", 0, 8
 0x882906a758207FeA9F21e0bb7d2f24E561bd0981, "Chainlink BTC/USD", 0, 8
 0xD49c81796BccAbb5cd804f9d186B5E00E9Ac21fF, "Chainlink CHF/USD", 0, 8
-0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507, "Chainlink ETH/USD", 0, 8
 0xe95feDE497d0c02a2DBc8e20C5E8bFFE9339F03a, "Chainlink EUR/USD", 0, 8
 0xa2Dbd50FD09B9572a8A37ED4C2aEE4093A4b3Ef7, "Chainlink GBP/USD", 0, 8
 0x8eAeBAF0eA3BC2a160b461703AF409d074CDEC6e, "Chainlink JPY/USD", 0, 8
