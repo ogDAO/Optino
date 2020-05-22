@@ -99,10 +99,8 @@ const TokensExplorer = {
                     <template slot="HEAD[tokenAddress]" slot-scope="data">
                       <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
                     </template>
-                    <template slot="HEAD[showDetails]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%"></span>
-                    </template>
                     <template slot="HEAD[favourite]" slot-scope="data">
+                      <b-button size="sm" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
                       <b-button size="sm" :pressed.sync="showFavourite" variant="link" v-b-popover.hover="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>
                     <template slot="symbol" slot-scope="data">
@@ -126,12 +124,9 @@ const TokensExplorer = {
                     <template slot="tokenAddress" slot-scope="data">
                       <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
-                    <template slot="showDetails" slot-scope="row">
-                      <b-button size="sm" @click="row.toggleDetails" variant="link" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="1"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="1"></b-icon-caret-down-fill></div></b-button>
-                    </template>
                     <template slot="favourite" slot-scope="row">
-                      <b-button size="sm" @click="toggleTokenFavourite(row.item.tokenAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
-                      <!-- <b-button size="sm" :pressed.sync="showFavourite" variant="link"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button> -->
+                      <b-button size="sm" @click="row.toggleDetails" variant="link" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
+                      <b-button size="sm" @click="setTokenFavourite(row.item.tokenAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>
                     <template v-slot:row-details="row">
                       <b-card>
@@ -229,7 +224,7 @@ const TokensExplorer = {
         { key: 'balance', label: 'Balance', sortable: true },
         { key: 'allowance', label: 'Spot', sortable: true },
         { key: 'tokenAddress', label: 'Address', sortable: true },
-        { key: 'showDetails', label: 'Details', sortable: false },
+        // { key: 'showDetails', label: 'Details', sortable: false },
         { key: 'favourite', label: 'Favourite', sortable: false },
       ],
       show: true,
@@ -254,7 +249,7 @@ const TokensExplorer = {
       for (token in tokenData) {
         if (/^\w+$/.test(tokenData[token].symbol)) {
           if (!this.showFavourite || tokenData[token].favourite) {
-            results.push(tokenData[token]);            
+            results.push(tokenData[token]);
           }
         }
       }
@@ -303,9 +298,9 @@ const TokensExplorer = {
       // this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
       // logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
     },
-    toggleTokenFavourite(tokenAddress, favourite) {
-      logInfo("TokensExplorer", "toggleTokenFavourite(" + tokenAddress + ", " + favourite + ")");
-      store.dispatch('tokens/toggleTokenFavourite', { tokenAddress: tokenAddress, favourite: favourite });
+    setTokenFavourite(tokenAddress, favourite) {
+      logInfo("TokensExplorer", "setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
+      store.dispatch('tokens/setTokenFavourite', { tokenAddress: tokenAddress, favourite: favourite });
       // var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
       //
       // var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenContractAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));

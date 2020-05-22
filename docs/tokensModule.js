@@ -160,17 +160,17 @@ const tokensModule = {
       Vue.set(state.tokenAddressData, data.tokenAddress, data);
       localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
     },
-    toggleTokenFavourite(state, { tokenAddress, favourite }) {
-      logInfo("tokensModule", "mutations.toggleTokenFavourite(" + tokenAddress + ", " + favourite + ")");
+    setTokenFavourite(state, { tokenAddress, favourite }) {
+      logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
       var existing = state.tokenAddressData[tokenAddress];
       var source = "";
       if (existing) {
         source = existing.source;
       }
       Vue.set(state.tokenAddressData, tokenAddress, { tokenAddress: tokenAddress, source: source, favourite: favourite });
-      logInfo("tokensModule", "mutations.toggleTokenFavourite(" + tokenAddress + "): " + favourite);
+      logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + "): " + favourite);
       localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
-      logInfo("tokensModule", "mutations.toggleTokenFavourite tokenAddressData=" + JSON.stringify(state.tokenAddressData));
+      logInfo("tokensModule", "mutations.setTokenFavourite tokenAddressData=" + JSON.stringify(state.tokenAddressData));
 
       var token = state.tokenData[tokenAddress];
       if (token) {
@@ -210,9 +210,9 @@ const tokensModule = {
       logInfo("tokensModule", "actions.restoreTokenAddress(" + JSON.stringify(data) + ")");
       context.commit('restoreTokenAddress', data);
     },
-    toggleTokenFavourite(context, { tokenAddress, favourite }) {
-      logInfo("tokensModule", "actions.toggleTokenFavourite(" + tokenAddress + ", " + favourite + ")");
-      context.commit('toggleTokenFavourite', { tokenAddress: tokenAddress, favourite: favourite });
+    setTokenFavourite(context, { tokenAddress, favourite }) {
+      logInfo("tokensModule", "actions.setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
+      context.commit('setTokenFavourite', { tokenAddress: tokenAddress, favourite: favourite });
     },
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
@@ -257,10 +257,10 @@ const tokensModule = {
           // logInfo("tokensModule", "execWeb3() startFakeTokensIndex: " + startFakeTokensIndex);
           startFakeTokensIndex = 0;
           for (var fakeTokensIndex = startFakeTokensIndex; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
-            var _fakeToken = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
-            var fakeToken = await _fakeToken;
-            // logInfo("tokensModule", "execWeb3() fakeToken: " + fakeToken);
-            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeToken, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+            var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
+            var fakeTokenAddress = await _fakeTokenAddress;
+            // logInfo("tokensModule", "execWeb3() fakeTokenAddress: " + fakeTokenAddress);
+            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
             var tokenInfo = await _tokenInfo;
             var symbol = tokenInfo[4];
             var name = tokenInfo[5];
@@ -268,13 +268,13 @@ const tokensModule = {
             var totalSupply = tokenInfo[1].shift(-decimals).toString();
             var balance = tokenInfo[2].shift(-decimals).toString();
             var allowance = tokenInfo[3].shift(-decimals).toString();
-            var favouriteData = state.tokenAddressData[fakeToken];
+            var favouriteData = state.tokenAddressData[fakeTokenAddress];
             var favourite = false;
             if (favouriteData) {
               favourite = favouriteData.favourite;
             }
-            if (!(fakeToken in state.tokenData)) {
-              commit('updateToken', { tokenAddress: fakeToken, token: { index: fakeTokensIndex, tokenAddress: fakeToken, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
+            if (!(fakeTokenAddress in state.tokenData)) {
+              commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
             }
           }
 

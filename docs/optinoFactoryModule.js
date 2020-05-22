@@ -319,7 +319,7 @@ const optinoFactoryModule = {
             if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp) {
               commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName,
                 feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
-                spot: spot, hasData: hasData ? "y" : "n", feedDecimals: feedDecimals, feedTimestamp: feedTimestamp } });
+                spot: spot, hasData: hasData ? "y" : "n", feedDecimals: feedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
             }
           }
 
