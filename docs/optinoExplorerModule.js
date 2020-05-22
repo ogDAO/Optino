@@ -82,22 +82,24 @@ const OptinoExplorer = {
                   <b-form>
                     <b-form-group label-cols="3" label="token0">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="token0"></b-form-input>
+                        <!-- <b-form-select v-model="token0" :options="tokenOptions" class="mt-3"></b-form-select> -->
+                        <b-form-select v-model="token0" :options="tokenOptionsSorted"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="token1">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="token1"></b-form-input>
+                        <!-- <b-form-input type="text" v-model.trim="token1"></b-form-input> -->
+                        <b-form-select v-model="token1" :options="tokenOptionsSorted"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="feed0">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="feed0"></b-form-input>
+                        <b-form-select v-model="feed0" :options="feedOptionsSorted"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="feed1">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="feed1"></b-form-input>
+                        <b-form-select v-model="feed1" :options="feedOptionsSorted"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
@@ -386,9 +388,9 @@ const OptinoExplorer = {
     return {
       ADDRESS0: ADDRESS0,
 
-      token0: "0xb603cEa165119701B58D56d10D2060fBFB3efad8",
-      token1: "0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA",
-      feed0: "0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507",
+      token0: "0x452a2652d1245132f7f47700c24e217faceb1c6c",
+      token1: "0x2269fbd941938ac213719cd3487323a0c75f1667",
+      feed0: "0x8468b2bdce073a157e560aa4d9ccf6db1db98507",
       feed1: "0x0000000000000000000000000000000000000000",
       type0: 0xff,
       type1: 0xff,
@@ -646,6 +648,40 @@ const OptinoExplorer = {
         } else {
           results.push({ value: e, text: "Token at address " + e, disabled: true });
         }
+      });
+      return results;
+    },
+    tokenOptionsSorted() {
+      var tokenData = store.getters['tokens/tokenData'];
+      var sortedData = [];
+      for (token in tokenData) {
+        if (/^\w+$/.test(tokenData[token].symbol)) {
+          sortedData.push(tokenData[token]);
+        }
+      }
+      sortedData.sort(function(a, b) {
+        return ('' + a.symbol).localeCompare(b.symbol);
+      });
+      var results = [];
+      sortedData.forEach(function(e) {
+        results.push({ value: e.tokenAddress, text: e.tokenAddress.substring(0, 10) + " " + e.symbol + " '" + e.name + "' " + e.decimals + " bal " + e.balance + " allow " + e.allowance, disabled: false });
+      });
+      return results;
+    },
+    feedOptionsSorted(includeNull) {
+      var feedData = store.getters['optinoFactory/feedData'];
+      var sortedData = [];
+      for (feed in feedData) {
+        // console.log("feed: " + JSON.stringify(feedData[feed]));
+        sortedData.push(feedData[feed]);
+      }
+      sortedData.sort(function(a, b) {
+        return ('' + a.sortKey).localeCompare(b.sortKey);
+      });
+      var results = [];
+      results.push({ value: "0x0000000000000000000000000000000000000000", text: "(Select optional second feed)", disabled: false });
+      sortedData.forEach(function(e) {
+        results.push({ value: e.feedAddress, text: e.feedAddress.substring(0, 10) + " " + e.name + " " + e.spot.shift(-e.feedDataDecimals) + " " + new Date(e.feedTimestamp*1000).toLocaleString(), disabled: false });
       });
       return results;
     },

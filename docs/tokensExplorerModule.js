@@ -134,37 +134,55 @@ const TokensExplorer = {
                           Token {{ row.item.symbol }} {{ row.item.name }}
                         </b-card-header>
                         <b-card-body>
-                          <b-form-group label-cols="3" label="Address">
+                          <b-form-group label-cols="3" label-size="sm" label="Address">
                             <b-input-group>
-                              <b-link :href="explorer + 'token/' + row.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="row.item.tokenAddress">{{ row.item.tokenAddress }}</b-link>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.tokenAddress" readonly></b-form-input>
+                              <b-input-group-append>
+                                <b-button size="sm" :href="explorer + 'token/' + row.item.tokenAddress" target="_blank" variant="outline-info">🔗</b-button>
+                              </b-input-group-append>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="Total Supply">
+                          <b-form-group label-cols="3" label-size="sm" label="Name">
                             <b-input-group>
-                              <b-form-input type="text" v-model.trim="row.item.totalSupply" readonly></b-form-input>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.name" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="Balance">
+                          <b-form-group label-cols="3" label-size="sm" label="Symbol">
                             <b-input-group>
-                              <b-form-input type="text" v-model.trim="row.item.balance" readonly></b-form-input>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.symbol" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="Get some tokens">
+                          <b-form-group label-cols="3" label-size="sm" label="Decimals">
                             <b-input-group>
-                              <b-button size="sm" @click="getSome(row.item.tokenAddress)" variant="primary" v-b-popover.hover="'Get 1,000 tokens'">Get 1,000 {{ row.item.name }}</b-button>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.decimals" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="Allowance to factory">
+                          <b-form-group label-cols="3" label-size="sm" label="Total Supply">
                             <b-input-group>
-                              <b-form-input type="text" v-model.trim="row.item.allowance" readonly></b-form-input>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.totalSupply" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="New allowance to factory">
+                          <b-form-group label-cols="3" label-size="sm" label="Balance">
                             <b-input-group>
-                              <b-form-input type="text" v-model.trim="newAllowance"></b-form-input>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.balance" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
-                          <b-form-group label-cols="3" label="">
+                          <b-form-group label-cols="3" label-size="sm" label="">
+                            <b-input-group>
+                              <b-button size="sm" class="pull-right" @click="getSome(row.item.tokenAddress)" variant="primary" v-b-popover.hover="'Get 1,000 tokens'">Get 1,000 {{ row.item.name }}</b-button>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Allowance to factory">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.allowance" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="New allowance to factory">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" v-model.trim="newAllowance"></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="">
                             <b-input-group>
                               <b-button size="sm" @click="setAllowance(row.item.tokenAddress, row.item.decimals, newAllowance)" variant="primary" v-b-popover.hover="'Set Allowance'">Set Allowance</b-button>
                             </b-input-group>

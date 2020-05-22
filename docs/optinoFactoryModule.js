@@ -292,7 +292,7 @@ const optinoFactoryModule = {
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
-            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var feedAddress = feed[0];
             var feedName = feed[1];
             var feedDataType = parseInt(feed[2][0]);
