@@ -344,11 +344,39 @@ const optinoFactoryModule = {
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
             var favourite = false;
             if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp || state.feedData[feedAddress].feedDataLocked != feedDataLocked) {
-              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage, 
+              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage,
                 feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
                 spot: spot, hasData: hasData ? "y" : "n", feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
             }
           }
+
+          // 0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", "https://feeds.chain.link/", 0, 8
+          // ["0x5b8b87a0aba4be247e660b0e0143bb30cdf566af","Chainlink BTC/ETH","https://feeds.chain.link/",["0","18","0"],"44198965000000000000",true,"255","1590192137"]
+          var feedAddress = "0x1c621Aab85F7879690B5407404A097068770b59a";
+          var feedName = "Chainlink AUD/USD Custom";
+          var feedMessage = "Custom";
+          var feedDataType = 2; // MAKER
+          var feedDataTypeString;
+          if (feedDataType == 0) {
+            feedDataTypeString = "Chainlink v4";
+          } else if (feedDataType == 1) {
+            feedDataTypeString = "Chainlink v6";
+          } else if (feedDataType == 2) {
+            feedDataTypeString = "MakerDAO";
+          } else if (feedDataType == 3) {
+            feedDataTypeString = "Adaptor";
+          } else {
+            feedDataTypeString = "Unknown: " + feedDataType;
+          }
+          var feedDataDecimals = 8;
+          var feedDataLocked = false;
+          var spot = new BigNumber(65000000);
+          var hasData = false;
+          var feedReportedDecimals = 8;
+          var feedTimestamp = 1590192137;
+          commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage,
+            feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
+            spot: spot, hasData: hasData ? "y" : "n", feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
 
           /*
 

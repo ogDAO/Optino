@@ -78,10 +78,10 @@ const TokensExplorer = {
               <b-collapse id="tokenlist" visible class="border-0">
                 <b-card-body>
                   <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light">
-                    <template slot="HEAD[decimals]" slot-scope="data">
+                    <template slot="HEAD[symbol]" slot-scope="data">
                       <span style="font-size: 90%">Symbol</span>
                     </template>
-                    <template slot="HEAD[decimals]" slot-scope="data">
+                    <template slot="HEAD[name]" slot-scope="data">
                       <span style="font-size: 90%">Name</span>
                     </template>
                     <template slot="HEAD[decimals]" slot-scope="data">
@@ -113,13 +113,13 @@ const TokensExplorer = {
                       <div class="text-right" style="font-size: 80%">{{ data.item.decimals }}</div>
                     </template>
                     <template slot="totalSupply" slot-scope="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.totalSupply }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.totalSupply, 8) }}</div>
                     </template>
                     <template slot="balance" slot-scope="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.balance }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.balance, 8) }}</div>
                     </template>
                     <template slot="allowance" slot-scope="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.allowance }}</div>
+                      <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.allowance, 8) }}</div>
                     </template>
                     <template slot="tokenAddress" slot-scope="data">
                       <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
@@ -159,12 +159,12 @@ const TokensExplorer = {
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="Total Supply">
                             <b-input-group>
-                              <b-form-input type="text" size="sm" v-model.trim="row.item.totalSupply" readonly></b-form-input>
+                              <b-form-input type="text" size="sm" :value="row.item.totalSupply.toString()" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="Balance">
                             <b-input-group>
-                              <b-form-input type="text" size="sm" v-model.trim="row.item.balance" readonly></b-form-input>
+                              <b-form-input type="text" size="sm" :value="row.item.balance.toString()" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="">
@@ -174,7 +174,7 @@ const TokensExplorer = {
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="Allowance to factory">
                             <b-input-group>
-                              <b-form-input type="text" size="sm" v-model.trim="row.item.allowance" readonly></b-form-input>
+                              <b-form-input type="text" size="sm" :value="row.item.allowance.toString()" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="New allowance to factory">
@@ -215,7 +215,7 @@ const TokensExplorer = {
 
       tokenContractAddress: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
       tokenInfo: {},
-      newAllowance: 0,
+      newAllowance: "0",
       tokenDataFields: [
         { key: 'symbol', label: 'Symbol', sortable: true },
         { key: 'name', label: 'Name', sortable: true },
@@ -260,6 +260,9 @@ const TokensExplorer = {
     },
   },
   methods: {
+    formatMaxDecimals(value, decimals) {
+      return parseFloat(new BigNumber(value).toFixed(decimals));
+    },
     // does not work
     //
     // <span class="btn btn-info text-white copy-btn ml-auto" @click.stop.prevent="copyAddress(row.item.tokenAddress)">

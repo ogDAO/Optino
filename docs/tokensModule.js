@@ -17,10 +17,10 @@ const Tokens = {
               <b-link :href="explorer + 'token/' + token.tokenAddress" class="card-link" target="_blank">{{ token.symbol }}</b-link>
             </b-col>
             <b-col cols="4" class="small truncate text-right mb-1"  style="font-size: 60%" v-b-popover.hover="'Balance'">
-              {{ token.balance }}
+              {{ formatMaxDecimals(token.balance, 4) }}
             </b-col>
             <b-col cols="4" class="small truncate text-right mb-1"  style="font-size: 60%" v-b-popover.hover="'Allowance'">
-              {{ token.allowance }}
+              {{ formatMaxDecimals(token.allowance, 4) }}
             </b-col>
             <!--
             <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
@@ -117,6 +117,11 @@ const Tokens = {
         return ('' + a.symbol).localeCompare(b.symbol);
       });
       return results;
+    },
+  },
+  methods: {
+    formatMaxDecimals(value, decimals) {
+      return parseFloat(new BigNumber(value).toFixed(decimals));
     },
   },
   mounted() {
@@ -257,24 +262,27 @@ const tokensModule = {
           // logInfo("tokensModule", "execWeb3() startFakeTokensIndex: " + startFakeTokensIndex);
           startFakeTokensIndex = 0;
           for (var fakeTokensIndex = startFakeTokensIndex; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
-            var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
-            var fakeTokenAddress = await _fakeTokenAddress;
-            // logInfo("tokensModule", "execWeb3() fakeTokenAddress: " + fakeTokenAddress);
-            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-            var tokenInfo = await _tokenInfo;
-            var symbol = tokenInfo[4];
-            var name = tokenInfo[5];
-            var decimals = parseInt(tokenInfo[0]);
-            var totalSupply = tokenInfo[1].shift(-decimals).toString();
-            var balance = tokenInfo[2].shift(-decimals).toString();
-            var allowance = tokenInfo[3].shift(-decimals).toString();
-            var favouriteData = state.tokenAddressData[fakeTokenAddress];
-            var favourite = false;
-            if (favouriteData) {
-              favourite = favouriteData.favourite;
-            }
-            if (!(fakeTokenAddress in state.tokenData)) {
-              commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
+            if (fakeTokensIndex == 1 || fakeTokensIndex == 4 || fakeTokensIndex == 7 || fakeTokensIndex == 13 || fakeTokensIndex == 18) {
+              var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
+              var fakeTokenAddress = await _fakeTokenAddress;
+              logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): " + fakeTokenAddress);
+              var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+              var tokenInfo = await _tokenInfo;
+              var symbol = tokenInfo[4];
+              var name = tokenInfo[5];
+              logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): '" + symbol + "', '" + name + "'");
+              var decimals = parseInt(tokenInfo[0]);
+              var totalSupply = tokenInfo[1].shift(-decimals).toString();
+              var balance = tokenInfo[2].shift(-decimals).toString();
+              var allowance = tokenInfo[3].shift(-decimals).toString();
+              var favouriteData = state.tokenAddressData[fakeTokenAddress];
+              var favourite = false;
+              if (favouriteData) {
+                favourite = favouriteData.favourite;
+              }
+              if (!(fakeTokenAddress in state.tokenData)) {
+                commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
+              }
             }
           }
 

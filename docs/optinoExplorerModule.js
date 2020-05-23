@@ -672,7 +672,7 @@ const OptinoExplorer = {
       });
       var results = [];
       sortedData.forEach(function(e) {
-        results.push({ value: e.tokenAddress, text: e.tokenAddress.substring(0, 10) + " " + e.symbol + " '" + e.name + "' " + e.decimals + " bal " + e.balance + " allow " + e.allowance, disabled: false });
+        results.push({ value: e.tokenAddress, text: e.tokenAddress.substring(0, 10) + " " + e.symbol + " '" + e.name + "' " + e.decimals + " bal " + parseFloat(new BigNumber(e.balance).toFixed(8)) + " allow " + parseFloat(new BigNumber(e.allowance).toFixed(8)), disabled: false });
       });
       return results;
     },
@@ -689,7 +689,7 @@ const OptinoExplorer = {
       var results = [];
       results.push({ value: "0x0000000000000000000000000000000000000000", text: "(Select optional second feed)", disabled: false });
       sortedData.forEach(function(e) {
-        results.push({ value: e.feedAddress, text: e.feedAddress.substring(0, 10) + " " + e.name + " " + e.spot.shift(-e.feedDataDecimals) + " " + new Date(e.feedTimestamp*1000).toLocaleString(), disabled: false });
+        results.push({ value: e.feedAddress, text: e.feedAddress.substring(0, 10) + " " + e.name + " " + parseFloat(e.spot.shift(-e.feedDataDecimals).toFixed(9)) + " " + new Date(e.feedTimestamp*1000).toLocaleString(), disabled: false });
       });
       return results;
     },
@@ -856,10 +856,10 @@ const OptinoExplorer = {
       logInfo("optinoExplorer", "this.feed0: " + this.feed0);
       logInfo("optinoExplorer", "feed: " + feed);
       logInfo("optinoExplorer", "feedData: " + JSON.stringify(feed));
-      if (!feed) {
+      if (!feed && (this.type0 == 0xff || this.decimals0 == 0xff)) {
         alert("Feed data not available yet");
       } else {
-        var feedDecimals0 = feed.feedDataDecimals;
+        var feedDecimals0 = this.decimals0 != 0xff ? this.decimals0 : feed.feedDataDecimals;
         logInfo("optinoExplorer", "feedDecimals0: " + feedDecimals0);
         var spots = [new BigNumber("9769.26390498279639").shift(feedDecimals0), new BigNumber(50).shift(feedDecimals0), new BigNumber(100).shift(feedDecimals0), new BigNumber(150).shift(feedDecimals0), new BigNumber(200).shift(feedDecimals0), new BigNumber(250).shift(feedDecimals0), new BigNumber(300).shift(feedDecimals0), new BigNumber(350).shift(feedDecimals0), new BigNumber(400).shift(feedDecimals0), new BigNumber(450).shift(feedDecimals0), new BigNumber(500).shift(feedDecimals0), new BigNumber(1000).shift(feedDecimals0), new BigNumber(10000).shift(feedDecimals0), new BigNumber(100000).shift(feedDecimals0)];
         function shiftBigNumberArray(data, decimals) {
@@ -924,10 +924,10 @@ const OptinoExplorer = {
             logInfo("optinoExplorer", "this.feed0: " + this.feed0);
             logInfo("optinoExplorer", "feed: " + feed);
             logInfo("optinoExplorer", "feedData: " + JSON.stringify(feed));
-            if (!feed) {
+            if (!feed && (this.type0 == 0xff || this.decimals0 == 0xff)) {
               alert("Feed data not available yet");
             } else {
-              var feedDecimals0 = feed.feedDataDecimals;
+              var feedDecimals0 = this.decimals0 != 0xff ? this.decimals0 : feed.feedDataDecimals;
               logInfo("optinoExplorer", "feedDecimals0: " + feedDecimals0);
               var OPTINODECIMALS = 18;
               var data = factory.mint.getData([this.token0, this.token1], [this.feed0, this.feed1],
