@@ -2,14 +2,14 @@
 makerdaoFeed0Value ETH/USD=193.50264978
 makerdaoFeed1Value BTC/ETH=45.5742405
 ---------- Deploy Group #1 - Contracts ----------
-optinoFactoryBin.length=48814, /2=24407
-optinoTokenBin.length=39520, /2=19760
+optinoFactoryBin.length=49696, /2=24848
+optinoTokenBin.length=43042, /2=21521
  # Account                                             EtherBalanceChange                          fWETH                           fUSD Name
                                                                                                        2                              3
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.096272250300000000           0.000000000000000000           0.000000000000000000 miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.100128636000000000           0.000000000000000000           0.000000000000000000 miner
                                                                                     0.000000000000000000           0.000000000000000000
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.096272250300000000           0.000000000000000000           0.000000000000000000 deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.100128636000000000           0.000000000000000000           0.000000000000000000 deployer
                                                                                     0.000000000000000000           0.000000000000000000
  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976        0.000000000000000000           0.000000000000000000           0.000000000000000000 seller1
                                                                                     0.000000000000000000           0.000000000000000000
@@ -23,19 +23,19 @@ optinoTokenBin.length=39520, /2=19760
                                                                                     0.000000000000000000           0.000000000000000000
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
                                                                                     0.000000000000000000           0.000000000000000000
- 8 0xd6f58f11ccfa252c5ccb12ae5330844a0926f929        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
+ 8 0xee179f16775417a6f9bd951d1f7e1bfec65648db        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
                                                                                     0.000000000000000000           0.000000000000000000
- 9 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
+ 9 0xfe1bdcd8ec120a6f18204618a7f7d016886c0097        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
                                                                                     0.000000000000000000           0.000000000000000000
-10 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+10 0x66fd2f0896a8f6f2fb276b9d82f226291517a2c7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
                                                                                     0.000000000000000000           0.000000000000000000
-11 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
+11 0x3aaf64b9003c6f52fe077a06cbfd3386e6466069        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
                                                                                     0.000000000000000000           0.000000000000000000
-12 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+12 0x07e7d8a469c45717919aa5e3c03727025cb54622        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
                                                                                     0.000000000000000000           0.000000000000000000
-13 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+13 0x0f6baedc63f80fd43e6934c4240c39d024c52f0f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
                                                                                     0.000000000000000000           0.000000000000000000
-14 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+14 0x792b53216151d433de6be62518bece1ff879b15a        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
                                                                                     0.000000000000000000           0.000000000000000000
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                                     0.000000000000000000           0.000000000000000000 Total Token Balances
@@ -43,46 +43,46 @@ optinoTokenBin.length=39520, /2=19760
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Deploy Group #1 - Contracts - Token0
-token0Tx status=0x1 Success gas=4000000 gasUsed=890612 costETH=0.0072139572 costUSD=1.417614729372 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79193 txIx=0 txId=0x47f98b3314e57c1c8fbec44afc6ca54d8003a2a5568b8e56a2b8aa8b009c203f @ 1590124445 Fri, 22 May 2020 05:14:05 GMT
+token0Tx status=0x1 Success gas=4000000 gasUsed=890612 costETH=0.0072139572 costUSD=1.417614729372 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120004 txIx=0 txId=0xc5bc49c8848dd6ec6287dd45134621a1f3aadc002d73498209832881d34c826a @ 1590195595 Sat, 23 May 2020 00:59:55 GMT
 PASS Deploy Group #1 - Contracts - Token1
-token1Tx status=0x1 Success gas=4000000 gasUsed=890480 costETH=0.007212888 costUSD=1.41740462088 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79193 txIx=1 txId=0x9c42a9d6ca0f78b00243f0cdeb5f77d2473e6887002a16631afdc06980a71c70 @ 1590124445 Fri, 22 May 2020 05:14:05 GMT
+token1Tx status=0x1 Success gas=4000000 gasUsed=890480 costETH=0.007212888 costUSD=1.41740462088 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120004 txIx=1 txId=0xae1e1e5ce5179eea482b5596a69806e4ea781a02ae9f9e0259ba649a9dec9cec @ 1590195595 Sat, 23 May 2020 00:59:55 GMT
 PASS Deploy Group #1 - Contracts - OptinoToken
-optinoTokenTx status=0x1 Success gas=5000000 gasUsed=4312248 costETH=0.0349292088 costUSD=6.863938821288 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79193 txIx=2 txId=0xbf1998bdbf1f103fbfae6c4ab45afcac402e519fb5bf0cc0b3f5aa998e9879e3 @ 1590124445 Fri, 22 May 2020 05:14:05 GMT
+optinoTokenTx status=0x1 Success gas=5000000 gasUsed=4692733 costETH=0.0380111373 costUSD=7.469568590823 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120004 txIx=2 txId=0x02403dc26dca62dfee0c4fe1bc617c4e8d6c32d37b1067fd1adb38ac26c8f5c6 @ 1590195595 Sat, 23 May 2020 00:59:55 GMT
 PASS Deploy Group #1 - Contracts - PriceFeed 1
-makerdaoFeed0Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79193 txIx=3 txId=0xec286c672f0dda1812370938836375027b0a5e85fe2a77896bf2b0e0fb9d080e @ 1590124445 Fri, 22 May 2020 05:14:05 GMT
+makerdaoFeed0Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120004 txIx=3 txId=0x669dbb11f3bed16070d52c8cdc621c74dbd98d2ce6f15558af98acb20944307b @ 1590195595 Sat, 23 May 2020 00:59:55 GMT
 PASS Deploy Group #1 - Contracts - PriceFeed 2
-makerdaoFeed1Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79193 txIx=4 txId=0xe719a912131e1db0d36b1b7e3d5e002ef88a3c7aeb4a7c2f63435ce9744a09d8 @ 1590124445 Fri, 22 May 2020 05:14:05 GMT
+makerdaoFeed1Tx status=0x1 Success gas=4000000 gasUsed=178976 costETH=0.0014497056 costUSD=0.284881647456 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120004 txIx=4 txId=0x690fdf8ca43001fea19d14012632265e8c681addac34140109f2e12f60b37935 @ 1590195595 Sat, 23 May 2020 00:59:55 GMT
 PASS Deploy Group #1 - Contracts - PriceFeedAdaptor
-feedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149320 costETH=0.001209492 costUSD=0.23767727292 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79195 txIx=0 txId=0x3e2db1cd80eba3edfa0f124cbd6330528fe03065db26ded7a4a2ce11697c0c90 @ 1590124447 Fri, 22 May 2020 05:14:07 GMT
+feedAdaptorTx status=0x1 Success gas=4000000 gasUsed=149308 costETH=0.0012093948 costUSD=0.237658172148 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120006 txIx=0 txId=0x246b86c4f38ad8c132503359c760bc40372d6a4db1e215ac753a301b6af0ab19 @ 1590195597 Sat, 23 May 2020 00:59:57 GMT
 PASS Deploy Group #1 - Contracts - OptinoFactory
-optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5284851 costETH=0.0428072931 costUSD=8.412061167081 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79195 txIx=1 txId=0x9b2d7b298cdf46bc9ed72856c8f82c497b8fa764f800a1e7fecc4c06fe485b2d @ 1590124447 Fri, 22 May 2020 05:14:07 GMT
+optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5380475 costETH=0.0435818475 costUSD=8.564268852225 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120006 txIx=1 txId=0xd59f0470aa6877693b7d727fd3ee0ff6401e4a2fb8fef043b9d048c8ecd30c5a @ 1590195597 Sat, 23 May 2020 00:59:57 GMT
 
-priceFeedContractAddress=PriceFeed 1:0xb315
+priceFeedContractAddress=PriceFeed 1:0x07e7
 priceFeed.peek=0x00000000000000000000000000000000000000000000000a3ee6e2a294d40000,true
 priceFeed.value=189 ETH/USD
 priceFeed.hasValue=true
-SetValue 0 #79193 value=189 hasValue=true
+SetValue 0 #120004 value=189 hasValue=true
 
-priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x7b74
-priceFeedAdaptor.sourceAddress=0xa52b1fee742e8c8c48746aff91d0de5ffe363127
+priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x0f6b
+priceFeedAdaptor.sourceAddress=0x3aaf64b9003c6f52fe077a06cbfd3386e6466069
 priceFeedAdaptor.spot=["189000000000000000000",true]
 
-token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5
+token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='fWETH' 'Fake Wrapped Ether (18 dp)' 18 dp
 token0.totalSupply=0
-token0.Transfer 0 #79193 from=null:0x0000 to=deployer:0xa11a tokens=0
+token0.Transfer 0 #120004 from=null:0x0000 to=deployer:0xa11a tokens=0
 
-token1ContractAddress='fUSD' 'Fake USD (18 dp)':0x9ecf
+token1ContractAddress='fUSD' 'Fake USD (18 dp)':0xfe1b
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='fUSD' 'Fake USD (18 dp)' 18 dp
 token1.totalSupply=0
-token1.Transfer 0 #79193 from=null:0x0000 to=deployer:0xa11a tokens=0
+token1.Transfer 0 #120004 from=null:0x0000 to=deployer:0xa11a tokens=0
 
-optinoFactoryContractAddress=OptinoFactory:0x69a5
+optinoFactoryContractAddress=OptinoFactory:0x792b
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-optinoFactory.optinoTokenTemplate=OptinoToken Template:0xbf52
-optinoFactory.message/fee='v0.981-testnet-pre-release'/0.1%
+optinoFactory.optinoTokenTemplate=OptinoToken Template:0x66fd
+optinoFactory.message/fee='v0.982-testnet-pre-release'/0.1%
 optinoFactory.feedLength=0
 optinoFactory.seriesLength=0
 
@@ -90,9 +90,9 @@ optinoFactory.seriesLength=0
  # Account                                             EtherBalanceChange                          fWETH                           fUSD Name
                                                                                                        2                              3
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.104566666500000000           0.000000000000000000           0.000000000000000000 miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.108825460200000000           0.000000000000000000           0.000000000000000000 miner
                                                                                     0.000000000000000000           0.000000000000000000
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.103854384900000000           0.000000000000000000           0.000000000000000000 deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.108113178600000000           0.000000000000000000           0.000000000000000000 deployer
                                                                                     0.000000000000000000           0.000000000000000000
  2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.000712281600000000     1000000.000000000000000000     1000000.000000000000000000 seller1
                                                                                     0.000000000000000000           0.000000000000000000
@@ -106,19 +106,19 @@ optinoFactory.seriesLength=0
                                                                                     0.000000000000000000           0.000000000000000000
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
                                                                                     0.000000000000000000           0.000000000000000000
- 8 0xd6f58f11ccfa252c5ccb12ae5330844a0926f929        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
+ 8 0xee179f16775417a6f9bd951d1f7e1bfec65648db        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
                                                                                     0.000000000000000000           0.000000000000000000
- 9 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
+ 9 0xfe1bdcd8ec120a6f18204618a7f7d016886c0097        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
                                                                                     0.000000000000000000           0.000000000000000000
-10 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+10 0x66fd2f0896a8f6f2fb276b9d82f226291517a2c7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
                                                                                     0.000000000000000000           0.000000000000000000
-11 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
+11 0x3aaf64b9003c6f52fe077a06cbfd3386e6466069        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
                                                                                     0.000000000000000000           0.000000000000000000
-12 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+12 0x07e7d8a469c45717919aa5e3c03727025cb54622        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
                                                                                     0.000000000000000000           0.000000000000000000
-13 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+13 0x0f6baedc63f80fd43e6934c4240c39d024c52f0f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
                                                                                     0.000000000000000000           0.000000000000000000
-14 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+14 0x792b53216151d433de6be62518bece1ff879b15a        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
                                                                                     0.000000000000000000           0.000000000000000000
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -126,67 +126,67 @@ optinoFactory.seriesLength=0
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Deploy Group #2 - Setup - token0.mint(seller1, 1000000)
-deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=2 txId=0x09dfde2381f95cfe6d13e25b5e5c1963b725a74e2695aeb946a3ac9a6245f503 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_1Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=0 txId=0x46511e94fa1222ef8e3cd15e08d57930aed1acadf78e459efcbe84e0820640f8 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token0.mint(seller2, 1000000)
-deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=3 txId=0xc1d463f363f588f9def1b4b579b8439a0a722644b010957f12a3c491c371ace5 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_2Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=1 txId=0x356ddcd852c33e786b73202b3e9b1172a1d919090042e3b481dbf20539b2ac46 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token0.mint(buyer1, 1000000)
-deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=4 txId=0xf315f9a93e71fd5a321977424c06d508db44367fe40850622a84f2c87bf0bf5e @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_3Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=2 txId=0x8f345d0bd366284983988a61952f6561de1b63e17c932c47a95841b0cf6b27ee @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token0.mint(buyer2, 1000000)
-deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=5 txId=0x77f1325a691b9b74be269a8e40619cb575ffc5e75ae735c2f70732b578b3a23f @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_4Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=3 txId=0x0813c00eca746d3fc084649856ced78a002788e53c8b77cbd5f319319520503e @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token1.mint(seller1, 1000000)
-deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=6 txId=0xe80fdb3d1217f2fe66fd8c50101b5aa88e4c2240a892ea8a6e05fab359d89b90 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_5Tx status=0x1 Success gas=100000 gasUsed=66635 costETH=0.0005397435 costUSD=0.106064995185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=4 txId=0x57f39bd20f3ac67923c21c2bc22da2405d5e28adf109e9401e7c18decf045f99 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token1.mint(seller2, 1000000)
-deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=7 txId=0x72862a39c8b58b269d840a0a89b27be2bd6d4767ba201ad568eaeadf249baea4 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_6Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=5 txId=0x60576f82ffa464df94df5496bde59944b6eeb1a39db1258f13cb018058a024fe @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token1.mint(buyer1, 1000000)
-deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=8 txId=0xaaf34c4cfb2b4da5256df6144228fd0acdb766815ce76e9d00677b133a4771c2 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_7Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=6 txId=0x2d50ea66bc40ddf480ac210be645a11675f81d10d60a8bfcab72eefc4bc02b34 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - token1.mint(buyer2, 1000000)
-deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=9 txId=0x09bdc0d4b796c18d6850b7e97f8f9ccc5f6fbea678858218c2f2e307ab4622d5 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_8Tx status=0x1 Success gas=100000 gasUsed=51635 costETH=0.0004182435 costUSD=0.082189030185 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=7 txId=0x92c573d19a618b1412fc38c3089fdd4f19b957ece9b61743d882b85abc76a296 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - makerdaoFeed0.setValue(193.50264978, true)
-deployGroup2_9Tx status=0x1 Success gas=6000000 gasUsed=29644 costETH=0.0002401164 costUSD=0.047185273764 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=10 txId=0x63317405e45e4dc5170f2ae5bec8a59f32c133ee9e6fe31f36220839aa6935c1 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_9Tx status=0x1 Success gas=6000000 gasUsed=29644 costETH=0.0002401164 costUSD=0.047185273764 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=8 txId=0xfabad8d70283628b4384c8cb1997c18edcb562f2192537a28fb441834a94beb5 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - makerdaoFeed1.setValue(193.50264978, true)
-deployGroup2_10Tx status=0x1 Success gas=6000000 gasUsed=29644 costETH=0.0002401164 costUSD=0.047185273764 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=11 txId=0xae4178831b9ec225a5c63d1292fef02d2f0847e6620938c695fe8ada57e7dd0b @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_10Tx status=0x1 Success gas=6000000 gasUsed=29644 costETH=0.0002401164 costUSD=0.047185273764 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=9 txId=0x0f430b4b93a040cefb39b97ae25a37c074bb04ec20a103cfe2b163aec95a795d @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - optinoFactory.updateFeed(makerdaoFeed0, 'Maker BTC/ETH', MAKER, 8)
-deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=214749 costETH=0.0017394669 costUSD=0.341822640519 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=12 txId=0xe27891d5571882237d3a7e821ced4d4cb494310549cb7d9a16c3fa535277a94a @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_11Tx status=0x1 Success gas=1000000 gasUsed=239583 costETH=0.0019406223 costUSD=0.381351688173 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=10 txId=0x6ebe74edb6b6bd16f830ffff00d45b3adfdfe2c8779413b620621ba13ae456d4 @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - optinoFactory.updateFeed(makerdaoFeed1, 'Maker ETH/USD', MAKER, 8)
-deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=218949 costETH=0.0017734869 costUSD=0.348507910719 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=13 txId=0xc31f1cbc27c95c8f812f58b1ecd1f017f627cd2364f3a3e98ce0d70a6d3204dd @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_12Tx status=0x1 Success gas=1000000 gasUsed=243795 costETH=0.0019747395 costUSD=0.388056059145 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=11 txId=0x56e0e9a82d85e0956e725d9ea4d5c4fc9afad1f8775e4efbbce6169bc1ec9bde @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - seller1 -> token0.approve(optinoFactory, 1000000)
-deployGroup2_13Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=0 txId=0x2f59d2159b6f52bf681e0ae99e48954a62b8ec566f28dc53b8e381fcbab60b19 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_13Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=12 txId=0xbbb59e0c6bc239872943717cb1dd1e05e6ae8d553bd260e2beebe9680903017c @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 PASS Deploy Group #2 - Setup - seller1 -> token1.approve(optinoFactory, 1000000)
-deployGroup2_14Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79197 txIx=1 txId=0xd9169e536565f1b69e382e5a08aa13785fa127fd44b2ed34473c3f07273e0bf5 @ 1590124449 Fri, 22 May 2020 05:14:09 GMT
+deployGroup2_14Tx status=0x1 Success gas=1000000 gasUsed=43968 costETH=0.0003561408 costUSD=0.069985228608 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120008 txIx=13 txId=0xf93e8116e65ec3986ac0485eecc5a1d1201b83965a8fd0bf0c70718eb84b759a @ 1590195599 Sat, 23 May 2020 00:59:59 GMT
 
-token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5
+token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='fWETH' 'Fake Wrapped Ether (18 dp)' 18 dp
 token0.totalSupply=4000000
-token0.Approval 0 #79197 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x69a5 tokens=1000000
-token0.Transfer 0 #79197 from=null:0x0000 to=seller1:0xa22a tokens=1000000
-token0.Transfer 1 #79197 from=null:0x0000 to=seller2:0xa33a tokens=1000000
-token0.Transfer 2 #79197 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
-token0.Transfer 3 #79197 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
+token0.Approval 0 #120008 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x792b tokens=1000000
+token0.Transfer 0 #120008 from=null:0x0000 to=seller1:0xa22a tokens=1000000
+token0.Transfer 1 #120008 from=null:0x0000 to=seller2:0xa33a tokens=1000000
+token0.Transfer 2 #120008 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
+token0.Transfer 3 #120008 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
 
-token1ContractAddress='fUSD' 'Fake USD (18 dp)':0x9ecf
+token1ContractAddress='fUSD' 'Fake USD (18 dp)':0xfe1b
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='fUSD' 'Fake USD (18 dp)' 18 dp
 token1.totalSupply=4000000
-token1.Approval 0 #79197 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x69a5 tokens=1000000
-token1.Transfer 0 #79197 from=null:0x0000 to=seller1:0xa22a tokens=1000000
-token1.Transfer 1 #79197 from=null:0x0000 to=seller2:0xa33a tokens=1000000
-token1.Transfer 2 #79197 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
-token1.Transfer 3 #79197 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
+token1.Approval 0 #120008 tokenOwner=seller1:0xa22a spender=OptinoFactory:0x792b tokens=1000000
+token1.Transfer 0 #120008 from=null:0x0000 to=seller1:0xa22a tokens=1000000
+token1.Transfer 1 #120008 from=null:0x0000 to=seller2:0xa33a tokens=1000000
+token1.Transfer 2 #120008 from=null:0x0000 to=buyer1:0xa44a tokens=1000000
+token1.Transfer 3 #120008 from=null:0x0000 to=buyer2:0xa55a tokens=1000000
 
-optinoFactoryContractAddress=OptinoFactory:0x69a5
+optinoFactoryContractAddress=OptinoFactory:0x792b
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-optinoFactory.optinoTokenTemplate=OptinoToken Template:0xbf52
-optinoFactory.message/fee='v0.981-testnet-pre-release'/0.1%
+optinoFactory.optinoTokenTemplate=OptinoToken Template:0x66fd
+optinoFactory.message/fee='v0.982-testnet-pre-release'/0.1%
 optinoFactory.feedLength=2
-optinoFactory.getFeedByIndex(0). ["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","Maker ETH/USD",["2","8","0"],"19350264978",true,"255","255"]
-optinoFactory.getFeedByIndex(1). ["0xb31541e8f29775197de03bf2e0483fd72beb7f46","Maker MKR/ETH",["2","8","0"],"4557424050",true,"255","255"]
+optinoFactory.getFeedByIndex(0). ["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","Maker ETH/USD","https://feeds.chain.link/",["2","8","0"],"19350264978",true,"255","255"]
+optinoFactory.getFeedByIndex(1). ["0x07e7d8a469c45717919aa5e3c03727025cb54622","Maker MKR/ETH","https://feeds.chain.link/",["2","8","0"],"4557424050",true,"255","255"]
 optinoFactory.seriesLength=0
 
 ---------- Mint Optino Group #1 ----------
-feeds ["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000"]
-calcPayoffs ["0xd6f58f11ccfa252c5ccb12ae5330844a0926f929",["10000000000000000000","10000000000000000","18","8","19350264978","956196196849826931"],["9820866749325103561","0","0","0","1250000000000000000","3000000000000000000","4166666666666666666","5000000000000000000","5625000000000000000","6111111111111111111","6500000000000000000","8250000000000000000","9825000000000000000","9982500000000000000"],"ok"]
-_collateralToken 'fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5
+feeds ["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"]
+calcPayoffs ["0xee179f16775417a6f9bd951d1f7e1bfec65648db",["10000000000000000000","10000000000000000","18","8","19350264978","956196196849826931"],["9820866749325103561","0","0","0","1250000000000000000","3000000000000000000","4166666666666666666","5000000000000000000","5625000000000000000","6111111111111111111","6500000000000000000","8250000000000000000","9825000000000000000","9982500000000000000"],"ok"]
+_collateralToken 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
 _collateralTokens 10
 _collateralFee 0.01
 _collateralDecimals 18
@@ -197,15 +197,15 @@ spots ["9769.26390498279639","50","100","150","200","250","300","350","400","450
 calcPayoffs: ["9.820866749325103561","0","0","0","1.25","3","4.166666666666666666","5","5.625","6.111111111111111111","6.5","8.25","9.825","9.9825"]
 error ok
 getOptinoTokens start
-got SeriesAdded 0 #79199 {"seriesKey":"0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e","seriesIndex":"0","pair":["0x63b702ae772e59f2517f289c9b9b1e3de85fc85e","0x"],"feeds":["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000"],"feedParameters":["255","255","255","255","0","0"],"data":["0","1590124455","17500000000","0","0"],"optinos":["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]}
+got SeriesAdded 0 #120010 {"seriesKey":"0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","seriesIndex":"0","optinos":["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]}
  # Account                                             EtherBalanceChange                          fWETH                           fUSD Name
                                                                                           zOPT0000000000                 zCOV0000000000
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
- 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.115082240400000000           0.000000000000000000           0.000000000000000000 miner
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.119349190800000000           0.000000000000000000           0.000000000000000000 miner
                                                                                     0.000000000000000000           0.000000000000000000
- 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.103854384900000000           0.010000000000000000           0.000000000000000000 deployer
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.108113178600000000           0.010000000000000000           0.000000000000000000 deployer
                                                                                     0.000000000000000000           0.000000000000000000
- 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.011227855500000000      999989.990000000000000000     1000000.000000000000000000 seller1
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.011236012200000000      999989.990000000000000000     1000000.000000000000000000 seller1
                                                                                    10.000000000000000000          10.000000000000000000
  3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 seller2
                                                                                     0.000000000000000000           0.000000000000000000
@@ -217,23 +217,23 @@ got SeriesAdded 0 #79199 {"seriesKey":"0xe18576d2c2585d71db00061c52cd29b8a99e04a
                                                                                     0.000000000000000000           0.000000000000000000
  7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
                                                                                     0.000000000000000000           0.000000000000000000
- 8 0xd6f58f11ccfa252c5ccb12ae5330844a0926f929        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
+ 8 0xee179f16775417a6f9bd951d1f7e1bfec65648db        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
                                                                                     0.000000000000000000           0.000000000000000000
- 9 0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
+ 9 0xfe1bdcd8ec120a6f18204618a7f7d016886c0097        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
                                                                                     0.000000000000000000           0.000000000000000000
-10 0xbf524cbb67ed0cd0cc2656d1252327a6eeae9296        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+10 0x66fd2f0896a8f6f2fb276b9d82f226291517a2c7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
                                                                                     0.000000000000000000           0.000000000000000000
-11 0xa52b1fee742e8c8c48746aff91d0de5ffe363127        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
+11 0x3aaf64b9003c6f52fe077a06cbfd3386e6466069        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
                                                                                     0.000000000000000000           0.000000000000000000
-12 0xb31541e8f29775197de03bf2e0483fd72beb7f46        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+12 0x07e7d8a469c45717919aa5e3c03727025cb54622        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
                                                                                     0.000000000000000000           0.000000000000000000
-13 0x7b740adee635850e781a6ff7352495b072d05a8f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+13 0x0f6baedc63f80fd43e6934c4240c39d024c52f0f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
                                                                                     0.000000000000000000           0.000000000000000000
-14 0x69a54484da3c51d1d02da3a5e08b59b140f5c261        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+14 0x792b53216151d433de6be62518bece1ff879b15a        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
                                                                                     0.000000000000000000           0.000000000000000000
-15 0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+15 0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
                                                                                     0.000000000000000000           0.000000000000000000
-16 0x9e56da235fe490954c1e6c3d65295240259cb290        0.000000000000000000          10.000000000000000000           0.000000000000000000 CoverToken
+16 0x449d9e881ee832015165baf4ef5427939991b48b        0.000000000000000000          10.000000000000000000           0.000000000000000000 CoverToken
                                                                                     0.000000000000000000           0.000000000000000000
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
                                                                               4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
@@ -241,81 +241,454 @@ got SeriesAdded 0 #79199 {"seriesKey":"0xe18576d2c2585d71db00061c52cd29b8a99e04a
 -- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
 
 PASS Mint Optino Group #1 - optinoFactory.mint(BASE, QUOTE, makerdaoFeed0, 10, ...)
-mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1298219 costETH=0.0105155739 costUSD=2.066415427089 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79199 txIx=0 txId=0x97317a33d5d14e7e9bae58db43cb3a0a7344df54070482a9b05b9717375d3b97 @ 1590124451 Fri, 22 May 2020 05:14:11 GMT
+mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1299226 costETH=0.0105237306 costUSD=2.068018300206 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120010 txIx=0 txId=0xb54d979a91546f9c5373cf1d7633aaada11b4f6a55e6c620b3f26b64ecfef091 @ 1590195601 Sat, 23 May 2020 01:00:01 GMT
 
-optinoFactoryContractAddress=OptinoFactory:0x69a5
+optinoFactoryContractAddress=OptinoFactory:0x792b
 optinoFactory.owner/new=deployer:0xa11a/null:0x0000
-optinoFactory.optinoTokenTemplate=OptinoToken Template:0xbf52
-optinoFactory.message/fee='v0.981-testnet-pre-release'/0.1%
+optinoFactory.optinoTokenTemplate=OptinoToken Template:0x66fd
+optinoFactory.message/fee='v0.982-testnet-pre-release'/0.1%
 optinoFactory.feedLength=2
-optinoFactory.getFeedByIndex(0). ["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","Maker ETH/USD",["2","8","0"],"19350264978",true,"255","255"]
-optinoFactory.getFeedByIndex(1). ["0xb31541e8f29775197de03bf2e0483fd72beb7f46","Maker MKR/ETH",["2","8","0"],"4557424050",true,"255","255"]
+optinoFactory.getFeedByIndex(0). ["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","Maker ETH/USD","https://feeds.chain.link/",["2","8","0"],"19350264978",true,"255","255"]
+optinoFactory.getFeedByIndex(1). ["0x07e7d8a469c45717919aa5e3c03727025cb54622","Maker MKR/ETH","https://feeds.chain.link/",["2","8","0"],"4557424050",true,"255","255"]
 optinoFactory.seriesLength=1
-optinoFactory.getSeriesByIndex(0)=["0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e",["0xd6f58f11ccfa252c5ccb12ae5330844a0926f929","0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899"],["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590124455","17500000000","0","0"],["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"],"1590124451"]
-  optinoFactory.getSeriesByIndex(0). seriesKey=0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e, callPut=0, expiry=1590124455, strike=175, bound=0, spot=0, optinoToken=0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7, coverToken=0x9e56da235fe490954c1e6c3d65295240259cb290, timestamp=1590124451
-    token: OptinoToken:0x6c43 on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5/'fUSD' 'Fake USD (18 dp)':0x9ecf
-      .owner/new=OptinoFactory:0x69a5/null:0x0000
-      .details='zOPT0000000000' 'Vanilla Call Optino 2020-05-22T05:14:15Z 175 Maker ETH/USD' 18 dp
+optinoFactory.getSeriesByIndex(0)=["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590195605","17500000000","0","0"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"],"1590195601"]
+  optinoFactory.getSeriesByIndex(0). seriesKey=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29, callPut=0, expiry=1590195605, strike=175, bound=0, spot=0, optinoToken=0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e, coverToken=0x449d9e881ee832015165baf4ef5427939991b48b, timestamp=1590195601
+    token: OptinoToken:0x7e8f on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
       .totalSupply=10
-      .seriesKey/seriesNumber=0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e/0
-      .isCover/optinoPair=false/CoverToken:0x9e56
-      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5/18
-      .seriesData: ["0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e","0",["0xd6f58f11ccfa252c5ccb12ae5330844a0926f929","0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899"],["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590124455","17500000000","0","0"],["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]]
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=false/CoverToken:0x449d
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","0"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
       .closedOrSettled=0
       .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.095619619684982693
       .spot/spotAndPayoff(1)=0/0
       .payoffForSpot(1, 200)=0.125
       .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.982086674932510356","0","0","0","0.125","0.3","0.416666666666666666","0.5","0.5625","0.611111111111111111","0.65","0.825","0.9825","0.99825"]
-      .getInfo=["0xd6f58f11ccfa252c5ccb12ae5330844a0926f929","0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899","0xa52b1fee742e8c8c48746aff91d0de5ffe363127",false,"0","1590124455","17500000000","0",false]
-      .getFeedInfo=["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",false]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
       .getPricingInfo=["19350264978","95619619684982693","0","0","1000000000000000000"]
-    token: CoverToken:0x9e56 on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5/'fUSD' 'Fake USD (18 dp)':0x9ecf
-      .owner/new=OptinoFactory:0x69a5/null:0x0000
-      .details='zCOV0000000000' 'Vanilla Call Cover 2020-05-22T05:14:15Z 175 Maker ETH/USD' 18 dp
+    token: CoverToken:0x449d on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
       .totalSupply=10
-      .seriesKey/seriesNumber=0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e/0
-      .isCover/optinoPair=true/OptinoToken:0x6c43
-      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5/18
-      .seriesData: ["0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e","0",["0xd6f58f11ccfa252c5ccb12ae5330844a0926f929","0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899"],["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590124455","17500000000","0","0"],["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]]
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=true/OptinoToken:0x7e8f
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","0"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
       .closedOrSettled=0
       .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.904380380315017307
       .spot/spotAndPayoff(1)=0/0
       .payoffForSpot(1, 200)=0.875
       .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.017913325067489644","1","1","1","0.875","0.7","0.583333333333333334","0.5","0.4375","0.388888888888888889","0.35","0.175","0.0175","0.00175"]
-      .getInfo=["0xd6f58f11ccfa252c5ccb12ae5330844a0926f929","0x9ecf1cec9fa06316525c1e30e3cd01ca0c7ca899","0xa52b1fee742e8c8c48746aff91d0de5ffe363127",false,"0","1590124455","17500000000","0",true]
-      .getFeedInfo=["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",true]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
       .getPricingInfo=["19350264978","904380380315017307","0","0","1000000000000000000"]
-SeriesAdded 0 #79199 {"seriesKey":"0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e","seriesIndex":"0","pair":["0x63b702ae772e59f2517f289c9b9b1e3de85fc85e","0x"],"feeds":["0xa52b1fee742e8c8c48746aff91d0de5ffe363127","0x0000000000000000000000000000000000000000"],"feedParameters":["255","255","255","255","0","0"],"data":["0","1590124455","17500000000","0","0"],"optinos":["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"]}
-OptinosMinted 0 #79199 {"seriesKey":"0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e","seriesIndex":"0","optinos":["0x6c43e9196f4b0d16e776193172624e3b7fd7bdf7","0x9e56da235fe490954c1e6c3d65295240259cb290"],"tokens":"10000000000000000000","collateralToken":"0xd6f58f11ccfa252c5ccb12ae5330844a0926f929","collateral":"10000000000000000000","ownerFee":"10000000000000000","integratorFee":"0"}
-OptinosMinted 0 #79199 seriesKey=0xe18576d2c2585d71db00061c52cd29b8a99e04ad5b935cf0b1f19a7bb785eb4e optinoToken=OptinoToken:0x6c43 coverToken=CoverToken:0x9e56 tokens=10 collateralToken='fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5 collateral=10 ownerFee=0.01 integratorFee=0
+SeriesAdded 0 #120010 {"seriesKey":"0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","seriesIndex":"0","optinos":["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]}
+OptinosMinted 0 #120010 {"seriesKey":"0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","seriesIndex":"0","optinos":["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"],"tokens":"10000000000000000000","ownerFee":"10000000000000000","integratorFee":"0"}
 
-token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xd6f5
+token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
 token0.owner/new=deployer:0xa11a/null:0x0000
 token0.details='fWETH' 'Fake Wrapped Ether (18 dp)' 18 dp
 token0.totalSupply=4000000
-token0.Transfer 0 #79199 from=seller1:0xa22a to=CoverToken:0x9e56 tokens=10
-token0.Transfer 1 #79199 from=seller1:0xa22a to=deployer:0xa11a tokens=0.01
+token0.Transfer 0 #120010 from=seller1:0xa22a to=CoverToken:0x449d tokens=10
+token0.Transfer 1 #120010 from=seller1:0xa22a to=deployer:0xa11a tokens=0.01
 
-token1ContractAddress='fUSD' 'Fake USD (18 dp)':0x9ecf
+token1ContractAddress='fUSD' 'Fake USD (18 dp)':0xfe1b
 token1.owner/new=deployer:0xa11a/null:0x0000
 token1.details='fUSD' 'Fake USD (18 dp)' 18 dp
 token1.totalSupply=4000000
 
-token2ContractAddress=OptinoToken:0x6c43
-token2.owner/new=OptinoFactory:0x69a5/null:0x0000
-token2.details='zOPT0000000000' 'Vanilla Call Optino 2020-05-22T05:14:15Z 175 Maker ETH/USD' 18 dp
+token2ContractAddress=OptinoToken:0x7e8f
+token2.owner/new=OptinoFactory:0x792b/null:0x0000
+token2.details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
 token2.totalSupply=10
-token2.Transfer 0 #79199 from=null:0x0000 to=seller1:0xa22a tokens=10
+token2.Transfer 0 #120010 from=null:0x0000 to=seller1:0xa22a tokens=10
 
-token3ContractAddress=CoverToken:0x9e56
-token3.owner/new=OptinoFactory:0x69a5/null:0x0000
-token3.details='zCOV0000000000' 'Vanilla Call Cover 2020-05-22T05:14:15Z 175 Maker ETH/USD' 18 dp
+token3ContractAddress=CoverToken:0x449d
+token3.owner/new=OptinoFactory:0x792b/null:0x0000
+token3.details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
 token3.totalSupply=10
-token3.Transfer 0 #79199 from=null:0x0000 to=seller1:0xa22a tokens=10
+token3.Transfer 0 #120010 from=null:0x0000 to=seller1:0xa22a tokens=10
+
+---------- Close Optino & Cover ----------
+ # Account                                             EtherBalanceChange                          fWETH                           fUSD Name
+                                                                                          zOPT0000000000                 zCOV0000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.120826533600000000           0.000000000000000000           0.000000000000000000 miner
+                                                                                    0.000000000000000000           0.000000000000000000
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.108113178600000000           0.010000000000000000           0.000000000000000000 deployer
+                                                                                    0.000000000000000000           0.000000000000000000
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.012713355000000000      999994.990000000000000000     1000000.000000000000000000 seller1
+                                                                                    5.000000000000000000           5.000000000000000000
+ 3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 seller2
+                                                                                    0.000000000000000000           0.000000000000000000
+ 4 0xa44a08d3f6933c69212114bb66e2df1813651844        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 buyer1
+                                                                                    0.000000000000000000           0.000000000000000000
+ 5 0xa55a151eb00fded1634d27d1127b4be4627079ea        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 buyer2
+                                                                                    0.000000000000000000           0.000000000000000000
+ 6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.000000000000000000 uiFeeAccount
+                                                                                    0.000000000000000000           0.000000000000000000
+ 7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
+                                                                                    5.000000000000000000           5.000000000000000000
+ 8 0xee179f16775417a6f9bd951d1f7e1bfec65648db        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
+                                                                                    0.000000000000000000           0.000000000000000000
+ 9 0xfe1bdcd8ec120a6f18204618a7f7d016886c0097        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
+                                                                                    0.000000000000000000           0.000000000000000000
+10 0x66fd2f0896a8f6f2fb276b9d82f226291517a2c7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+                                                                                    0.000000000000000000           0.000000000000000000
+11 0x3aaf64b9003c6f52fe077a06cbfd3386e6466069        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
+                                                                                    0.000000000000000000           0.000000000000000000
+12 0x07e7d8a469c45717919aa5e3c03727025cb54622        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+                                                                                    0.000000000000000000           0.000000000000000000
+13 0x0f6baedc63f80fd43e6934c4240c39d024c52f0f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+                                                                                    0.000000000000000000           0.000000000000000000
+14 0x792b53216151d433de6be62518bece1ff879b15a        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+                                                                                    0.000000000000000000           0.000000000000000000
+15 0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+                                                                                    0.000000000000000000           0.000000000000000000
+16 0x449d9e881ee832015165baf4ef5427939991b48b        0.000000000000000000           5.000000000000000000           0.000000000000000000 CoverToken
+                                                                                    0.000000000000000000           0.000000000000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+                                                                              4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
+                                                                                   10.000000000000000000          10.000000000000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+
+PASS Close Optino & Cover - optino.close(5)
+closeGroup1_1Tx status=0x1 Success gas=2000000 gasUsed=182388 costETH=0.0014773428 costUSD=0.290312633628 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120013 txIx=0 txId=0xde708ce7b642030e3aa17fe495b767faee170b5a01578448ae1b9030c64829b4 @ 1590195604 Sat, 23 May 2020 01:00:04 GMT
+
+priceFeedContractAddress=PriceFeed 1:0x07e7
+priceFeed.peek=0x000000000000000000000000000000000000000000000000000000010fa4c5b2,true
+priceFeed.value=4.55742405e-9 ETH/USD
+priceFeed.hasValue=true
+SetValue 0 #120008 value=4.55742405e-9 hasValue=true
+
+priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x0f6b
+priceFeedAdaptor.sourceAddress=0x3aaf64b9003c6f52fe077a06cbfd3386e6466069
+priceFeedAdaptor.spot=["19350264978",true]
+
+optinoFactoryContractAddress=OptinoFactory:0x792b
+optinoFactory.owner/new=deployer:0xa11a/null:0x0000
+optinoFactory.optinoTokenTemplate=OptinoToken Template:0x66fd
+optinoFactory.message/fee='v0.982-testnet-pre-release'/0.1%
+optinoFactory.feedLength=2
+optinoFactory.getFeedByIndex(0). ["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","Maker ETH/USD","https://feeds.chain.link/",["2","8","0"],"19350264978",true,"255","255"]
+optinoFactory.getFeedByIndex(1). ["0x07e7d8a469c45717919aa5e3c03727025cb54622","Maker MKR/ETH","https://feeds.chain.link/",["2","8","0"],"4557424050",true,"255","255"]
+optinoFactory.seriesLength=1
+optinoFactory.getSeriesByIndex(0)=["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590195605","17500000000","0","0"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"],"1590195601"]
+  optinoFactory.getSeriesByIndex(0). seriesKey=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29, callPut=0, expiry=1590195605, strike=175, bound=0, spot=0, optinoToken=0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e, coverToken=0x449d9e881ee832015165baf4ef5427939991b48b, timestamp=1590195601
+    token: OptinoToken:0x7e8f on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+      .totalSupply=5
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=false/CoverToken:0x449d
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","0"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
+      .closedOrSettled=5
+      .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.095619619684982693
+      .spot/spotAndPayoff(1)=0/0
+      .payoffForSpot(1, 200)=0.125
+      .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.982086674932510356","0","0","0","0.125","0.3","0.416666666666666666","0.5","0.5625","0.611111111111111111","0.65","0.825","0.9825","0.99825"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",false]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getPricingInfo=["19350264978","95619619684982693","0","0","1000000000000000000"]
+    token: CoverToken:0x449d on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+      .totalSupply=5
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=true/OptinoToken:0x7e8f
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","0"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
+      .closedOrSettled=5
+      .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.904380380315017307
+      .spot/spotAndPayoff(1)=0/0
+      .payoffForSpot(1, 200)=0.875
+      .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.017913325067489644","1","1","1","0.875","0.7","0.583333333333333334","0.5","0.4375","0.388888888888888889","0.35","0.175","0.0175","0.00175"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",true]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getPricingInfo=["19350264978","904380380315017307","0","0","1000000000000000000"]
+      .Close 0 #120013 optinoToken=OptinoToken:0x7e8f coverToken=CoverToken:0x449d tokenOwner=seller1:0xa22a tokens=5 collateralRefunded=5
+
+token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
+token0.owner/new=deployer:0xa11a/null:0x0000
+token0.details='fWETH' 'Fake Wrapped Ether (18 dp)' 18 dp
+token0.totalSupply=4000000
+token0.Transfer 0 #120013 from=CoverToken:0x449d to=seller1:0xa22a tokens=5
+
+token1ContractAddress='fUSD' 'Fake USD (18 dp)':0xfe1b
+token1.owner/new=deployer:0xa11a/null:0x0000
+token1.details='fUSD' 'Fake USD (18 dp)' 18 dp
+token1.totalSupply=4000000
+
+token2ContractAddress=OptinoToken:0x7e8f
+token2.owner/new=OptinoFactory:0x792b/null:0x0000
+token2.details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+token2.totalSupply=5
+token2.Transfer 0 #120013 from=seller1:0xa22a to=null:0x0000 tokens=5
+
+token3ContractAddress=CoverToken:0x449d
+token3.owner/new=OptinoFactory:0x792b/null:0x0000
+token3.details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+token3.totalSupply=5
+token3.Transfer 0 #120013 from=seller1:0xa22a to=null:0x0000 tokens=5
+
+transferAmount=2.5
+---------- Transfer, then settle Optino & Cover ----------
+Waiting until 'optino.expiry()' at 1590195605+0s=Sat May 23 2020 11:00:06 GMT+1000 (AEST) now=Sat May 23 2020 11:00:05 GMT+1000 (AEST)
+Waited until 'optino.expiry()' at 1590195605+0s=Sat May 23 2020 11:00:06 GMT+1000 (AEST) now=Sat May 23 2020 11:00:06 GMT+1000 (AEST)
+
+ # Account                                             EtherBalanceChange                          fWETH                           fUSD Name
+                                                                                          zOPT0000000000                 zCOV0000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.123634528200000000           0.000000000000000000           0.000000000000000000 miner
+                                                                                    0.000000000000000000           0.000000000000000000
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.108113178600000000           0.010000000000000000           0.000000000000000000 deployer
+                                                                                    0.000000000000000000           0.000000000000000000
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.015521349600000000      999997.490000000000000000     1000000.000000000000000000 seller1
+                                                                                    0.000000000000000000           0.000000000000000000
+ 3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 seller2
+                                                                                    0.000000000000000000           0.000000000000000000
+ 4 0xa44a08d3f6933c69212114bb66e2df1813651844        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 buyer1
+                                                                                    2.500000000000000000           0.000000000000000000
+ 5 0xa55a151eb00fded1634d27d1127b4be4627079ea        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 buyer2
+                                                                                    0.000000000000000000           2.500000000000000000
+ 6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.000000000000000000 uiFeeAccount
+                                                                                    0.000000000000000000           0.000000000000000000
+ 7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
+                                                                                    7.500000000000000000           7.500000000000000000
+ 8 0xee179f16775417a6f9bd951d1f7e1bfec65648db        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
+                                                                                    0.000000000000000000           0.000000000000000000
+ 9 0xfe1bdcd8ec120a6f18204618a7f7d016886c0097        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
+                                                                                    0.000000000000000000           0.000000000000000000
+10 0x66fd2f0896a8f6f2fb276b9d82f226291517a2c7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+                                                                                    0.000000000000000000           0.000000000000000000
+11 0x3aaf64b9003c6f52fe077a06cbfd3386e6466069        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
+                                                                                    0.000000000000000000           0.000000000000000000
+12 0x07e7d8a469c45717919aa5e3c03727025cb54622        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+                                                                                    0.000000000000000000           0.000000000000000000
+13 0x0f6baedc63f80fd43e6934c4240c39d024c52f0f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+                                                                                    0.000000000000000000           0.000000000000000000
+14 0x792b53216151d433de6be62518bece1ff879b15a        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+                                                                                    0.000000000000000000           0.000000000000000000
+15 0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+                                                                                    0.000000000000000000           0.000000000000000000
+16 0x449d9e881ee832015165baf4ef5427939991b48b        0.000000000000000000           2.500000000000000000           0.000000000000000000 CoverToken
+                                                                                    0.000000000000000000           0.000000000000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+                                                                              4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
+                                                                                   10.000000000000000000          10.000000000000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+
+PASS Transfer, then settle Optino & Cover - seller1 -> optino.transfer(buyer1, 2.5)
+transferThenSettleGroup1_1Tx status=0x1 Success gas=1000000 gasUsed=51704 costETH=0.0004188024 costUSD=0.082298859624 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120017 txIx=0 txId=0x27e5ce28250df2e84c5f60f7da6ea71e09bcc79e5fc4376ea982d8392d658309 @ 1590195608 Sat, 23 May 2020 01:00:08 GMT
+PASS Transfer, then settle Optino & Cover - seller1 -> cover.transfer(buyer2, 2.5)
+transferThenSettleGroup1_2Tx status=0x1 Success gas=1000000 gasUsed=51704 costETH=0.0004188024 costUSD=0.082298859624 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120017 txIx=1 txId=0x3f7448d04886f733b78383edbdbcc9dbe38105d59b50c773a03899c7047b40f0 @ 1590195608 Sat, 23 May 2020 01:00:08 GMT
+PASS Transfer, then settle Optino & Cover - seller1 -> optino.settle()
+transferThenSettleGroup1_4Tx status=0x1 Success gas=2000000 gasUsed=243258 costETH=0.0019703898 costUSD=0.387201299598 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120019 txIx=0 txId=0x21b5243ef3629b05bcf2f8f802f876a3e19d3119d44f906b8b8a3b58a3d8c6e6 @ 1590195610 Sat, 23 May 2020 01:00:10 GMT
+
+priceFeedContractAddress=PriceFeed 1:0x07e7
+priceFeed.peek=0x000000000000000000000000000000000000000000000000000000010fa4c5b2,true
+priceFeed.value=4.55742405e-9 ETH/USD
+priceFeed.hasValue=true
+
+priceFeedAdaptorContractAddress=PriceFeedAdaptor on PriceFeed1:0x0f6b
+priceFeedAdaptor.sourceAddress=0x3aaf64b9003c6f52fe077a06cbfd3386e6466069
+priceFeedAdaptor.spot=["19350264978",true]
+
+optinoFactoryContractAddress=OptinoFactory:0x792b
+optinoFactory.owner/new=deployer:0xa11a/null:0x0000
+optinoFactory.optinoTokenTemplate=OptinoToken Template:0x66fd
+optinoFactory.message/fee='v0.982-testnet-pre-release'/0.1%
+optinoFactory.feedLength=2
+optinoFactory.getFeedByIndex(0). ["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","Maker ETH/USD","https://feeds.chain.link/",["2","8","0"],"19350264978",true,"255","255"]
+optinoFactory.getFeedByIndex(1). ["0x07e7d8a469c45717919aa5e3c03727025cb54622","Maker MKR/ETH","https://feeds.chain.link/",["2","8","0"],"4557424050",true,"255","255"]
+optinoFactory.seriesLength=1
+optinoFactory.getSeriesByIndex(0)=["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590195605","17500000000","0","19350264978"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"],"1590195610"]
+  optinoFactory.getSeriesByIndex(0). seriesKey=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29, callPut=0, expiry=1590195605, strike=175, bound=0, spot=193.50264978, optinoToken=0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e, coverToken=0x449d9e881ee832015165baf4ef5427939991b48b, timestamp=1590195610
+    token: OptinoToken:0x7e8f on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+      .totalSupply=2.5
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=false/CoverToken:0x449d
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","19350264978"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
+      .closedOrSettled=7.5
+      .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.095619619684982693
+      .spot/spotAndPayoff(1)=193.50264978/0.095619619684982693
+      .payoffForSpot(1, 200)=0.125
+      .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.982086674932510356","0","0","0","0.125","0.3","0.416666666666666666","0.5","0.5625","0.611111111111111111","0.65","0.825","0.9825","0.99825"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",false]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getPricingInfo=["19350264978","95619619684982693","19350264978","95619619684982693","1000000000000000000"]
+    token: CoverToken:0x449d on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+      .totalSupply=2.5
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=true/OptinoToken:0x7e8f
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","19350264978"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
+      .closedOrSettled=7.5
+      .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.904380380315017307
+      .spot/spotAndPayoff(1)=193.50264978/0.904380380315017307
+      .payoffForSpot(1, 200)=0.875
+      .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.017913325067489644","1","1","1","0.875","0.7","0.583333333333333334","0.5","0.4375","0.388888888888888889","0.35","0.175","0.0175","0.00175"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",true]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getPricingInfo=["19350264978","904380380315017307","19350264978","904380380315017307","1000000000000000000"]
+      .Payoff 0 #120019 optinoOrCoverToken=OptinoToken:0x7e8f tokenOwner=seller1:0xa22a tokens=2.5 collateralPaid=0.239049049212456732
+      .Payoff 1 #120019 optinoOrCoverToken=CoverToken:0x449d tokenOwner=seller1:0xa22a tokens=2.5 collateralPaid=2.260950950787543268
+SeriesSpotUpdated 0 #120019 {"seriesKey":"0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","spot":"19350264978"}
+
+token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
+token0.owner/new=deployer:0xa11a/null:0x0000
+token0.details='fWETH' 'Fake Wrapped Ether (18 dp)' 18 dp
+token0.totalSupply=4000000
+token0.Transfer 0 #120019 from=CoverToken:0x449d to=seller1:0xa22a tokens=0.239049049212456732
+token0.Transfer 1 #120019 from=CoverToken:0x449d to=seller1:0xa22a tokens=2.260950950787543268
+
+token1ContractAddress='fUSD' 'Fake USD (18 dp)':0xfe1b
+token1.owner/new=deployer:0xa11a/null:0x0000
+token1.details='fUSD' 'Fake USD (18 dp)' 18 dp
+token1.totalSupply=4000000
+
+token2ContractAddress=OptinoToken:0x7e8f
+token2.owner/new=OptinoFactory:0x792b/null:0x0000
+token2.details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+token2.totalSupply=2.5
+token2.Transfer 0 #120017 from=seller1:0xa22a to=buyer1:0xa44a tokens=2.5
+token2.Transfer 1 #120019 from=seller1:0xa22a to=null:0x0000 tokens=2.5
+
+token3ContractAddress=CoverToken:0x449d
+token3.owner/new=OptinoFactory:0x792b/null:0x0000
+token3.details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+token3.totalSupply=2.5
+token3.Transfer 0 #120017 from=seller1:0xa22a to=buyer2:0xa55a tokens=2.5
+token3.Transfer 1 #120019 from=seller1:0xa22a to=null:0x0000 tokens=2.5
+
+ # Account                                             EtherBalanceChange                          fWETH                           fUSD Name
+                                                                                          zOPT0000000000                 zCOV0000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+ 0 0xa00af22d07c87d96eeeb0ed583f8f6ac7812827e        0.125978562900000000           0.000000000000000000           0.000000000000000000 miner
+                                                                                    0.000000000000000000           0.000000000000000000
+ 1 0xa11aae29840fbb5c86e6fd4cf809eba183aef433       -0.108113178600000000           0.010000000000000000           0.000000000000000000 deployer
+                                                                                    0.000000000000000000           0.000000000000000000
+ 2 0xa22ab8a9d641ce77e06d98b7d7065d324d3d6976       -0.015521349600000000      999997.490000000000000000     1000000.000000000000000000 seller1
+                                                                                    0.000000000000000000           0.000000000000000000
+ 3 0xa33a6c312d9ad0e0f2e95541beed0cc081621fd0        0.000000000000000000     1000000.000000000000000000     1000000.000000000000000000 seller2
+                                                                                    0.000000000000000000           0.000000000000000000
+ 4 0xa44a08d3f6933c69212114bb66e2df1813651844       -0.001222759800000000     1000000.239049049212456732     1000000.000000000000000000 buyer1
+                                                                                    0.000000000000000000           0.000000000000000000
+ 5 0xa55a151eb00fded1634d27d1127b4be4627079ea       -0.001121274900000000     1000002.260950950787543268     1000000.000000000000000000 buyer2
+                                                                                    0.000000000000000000           0.000000000000000000
+ 6 0xa66a85ede0cbe03694aa9d9de0bb19c99ff55bd9        0.000000000000000000           0.000000000000000000           0.000000000000000000 uiFeeAccount
+                                                                                    0.000000000000000000           0.000000000000000000
+ 7 0x0000000000000000000000000000000000000000        0.000000000000000000           0.000000000000000000           0.000000000000000000 null
+                                                                                   10.000000000000000000          10.000000000000000000
+ 8 0xee179f16775417a6f9bd951d1f7e1bfec65648db        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fWETH' 'Fake Wrapped Ether (18 dp)'
+                                                                                    0.000000000000000000           0.000000000000000000
+ 9 0xfe1bdcd8ec120a6f18204618a7f7d016886c0097        0.000000000000000000           0.000000000000000000           0.000000000000000000 'fUSD' 'Fake USD (18 dp)'
+                                                                                    0.000000000000000000           0.000000000000000000
+10 0x66fd2f0896a8f6f2fb276b9d82f226291517a2c7        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken Template
+                                                                                    0.000000000000000000           0.000000000000000000
+11 0x3aaf64b9003c6f52fe077a06cbfd3386e6466069        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 0
+                                                                                    0.000000000000000000           0.000000000000000000
+12 0x07e7d8a469c45717919aa5e3c03727025cb54622        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeed 1
+                                                                                    0.000000000000000000           0.000000000000000000
+13 0x0f6baedc63f80fd43e6934c4240c39d024c52f0f        0.000000000000000000           0.000000000000000000           0.000000000000000000 PriceFeedAdaptor on PriceFeed1
+                                                                                    0.000000000000000000           0.000000000000000000
+14 0x792b53216151d433de6be62518bece1ff879b15a        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoFactory
+                                                                                    0.000000000000000000           0.000000000000000000
+15 0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e        0.000000000000000000           0.000000000000000000           0.000000000000000000 OptinoToken
+                                                                                    0.000000000000000000           0.000000000000000000
+16 0x449d9e881ee832015165baf4ef5427939991b48b        0.000000000000000000           0.000000000000000000           0.000000000000000000 CoverToken
+                                                                                    0.000000000000000000           0.000000000000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+                                                                              4000000.000000000000000000     4000000.000000000000000000 Total Token Balances
+                                                                                   10.000000000000000000          10.000000000000000000
+-- ------------------------------------------ --------------------------- ------------------------------ ------------------------------ ---------------------------
+
+PASS Transfer, then settle Optino & Cover - buyer1 -> optino.settle()
+transferThenSettleGroup1_5Tx status=0x1 Success gas=2000000 gasUsed=150958 costETH=0.0012227598 costUSD=0.240284528298 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120022 txIx=0 txId=0xf0a6d6b535e59bb5be65458375f30c206065e6a4feefb1f4d2973c63f79b5e97 @ 1590195613 Sat, 23 May 2020 01:00:13 GMT
+PASS Transfer, then settle Optino & Cover - buyer2 -> optino.settle()
+transferThenSettleGroup1_6Tx status=0x1 Success gas=2000000 gasUsed=138429 costETH=0.0011212749 costUSD=0.220341730599 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120024 txIx=0 txId=0x9e820afcfd32f5034e1f2879997b74da11ab5ccd28e083fa0ff28fcf1247b199 @ 1590195615 Sat, 23 May 2020 01:00:15 GMT
+
+optinoFactoryContractAddress=OptinoFactory:0x792b
+optinoFactory.owner/new=deployer:0xa11a/null:0x0000
+optinoFactory.optinoTokenTemplate=OptinoToken Template:0x66fd
+optinoFactory.message/fee='v0.982-testnet-pre-release'/0.1%
+optinoFactory.feedLength=2
+optinoFactory.getFeedByIndex(0). ["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","Maker ETH/USD","https://feeds.chain.link/",["2","8","0"],"19350264978",true,"255","255"]
+optinoFactory.getFeedByIndex(1). ["0x07e7d8a469c45717919aa5e3c03727025cb54622","Maker MKR/ETH","https://feeds.chain.link/",["2","8","0"],"4557424050",true,"255","255"]
+optinoFactory.seriesLength=1
+optinoFactory.getSeriesByIndex(0)=["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590195605","17500000000","0","19350264978"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"],"1590195610"]
+  optinoFactory.getSeriesByIndex(0). seriesKey=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29, callPut=0, expiry=1590195605, strike=175, bound=0, spot=193.50264978, optinoToken=0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e, coverToken=0x449d9e881ee832015165baf4ef5427939991b48b, timestamp=1590195610
+    token: OptinoToken:0x7e8f on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+      .totalSupply=0
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=false/CoverToken:0x449d
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","19350264978"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
+      .closedOrSettled=10
+      .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.095619619684982693
+      .spot/spotAndPayoff(1)=193.50264978/0.095619619684982693
+      .payoffForSpot(1, 200)=0.125
+      .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.982086674932510356","0","0","0","0.125","0.3","0.416666666666666666","0.5","0.5625","0.611111111111111111","0.65","0.825","0.9825","0.99825"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",false]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getPricingInfo=["19350264978","95619619684982693","19350264978","95619619684982693","1000000000000000000"]
+    token: CoverToken:0x449d on 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/'fUSD' 'Fake USD (18 dp)':0xfe1b
+      .owner/new=OptinoFactory:0x792b/null:0x0000
+      .details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+      .totalSupply=0
+      .seriesKey/seriesNumber=0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29/0
+      .isCover/optinoPair=true/OptinoToken:0x7e8f
+      .collateralToken/decimals: 'fWETH' 'Fake Wrapped Ether (18 dp)':0xee17/18
+      .seriesData: ["0x81f982d4c3ce3188be9aa0ed08a6a21e58330178383140b6afde3c34aae50c29","0",["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097"],["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],["0","1590195605","17500000000","0","19350264978"],["0x7e8f8c6587da19ede152d9beefbc13bb1cf2029e","0x449d9e881ee832015165baf4ef5427939991b48b"]]
+      .closedOrSettled=10
+      .currentSpot/currentSpotAndPayoff(1)=193.50264978/0.904380380315017307
+      .spot/spotAndPayoff(1)=193.50264978/0.904380380315017307
+      .payoffForSpot(1, 200)=0.875
+      .payoffForSpots(1, ["9769.26390498279639","50","100","150","200","250","300","350","400","450","500","1000","10000","100000"])=["0.017913325067489644","1","1","1","0.875","0.7","0.583333333333333334","0.5","0.4375","0.388888888888888889","0.35","0.175","0.0175","0.00175"]
+      .getInfo=["0xee179f16775417a6f9bd951d1f7e1bfec65648db","0xfe1bdcd8ec120a6f18204618a7f7d016886c0097","0x3aaf64b9003c6f52fe077a06cbfd3386e6466069",false,"0","1590195605","17500000000","0",true]
+      .getFeedInfo=["0x3aaf64b9003c6f52fe077a06cbfd3386e6466069","0x0000000000000000000000000000000000000000","255","255","255","255","0","0","8","19350264978"]
+      .getPricingInfo=["19350264978","904380380315017307","19350264978","904380380315017307","1000000000000000000"]
+      .Payoff 0 #120022 optinoOrCoverToken=OptinoToken:0x7e8f tokenOwner=buyer1:0xa44a tokens=2.5 collateralPaid=0.239049049212456732
+      .Payoff 1 #120024 optinoOrCoverToken=CoverToken:0x449d tokenOwner=buyer2:0xa55a tokens=2.5 collateralPaid=2.260950950787543268
+
+token0ContractAddress='fWETH' 'Fake Wrapped Ether (18 dp)':0xee17
+token0.owner/new=deployer:0xa11a/null:0x0000
+token0.details='fWETH' 'Fake Wrapped Ether (18 dp)' 18 dp
+token0.totalSupply=4000000
+token0.Transfer 0 #120022 from=CoverToken:0x449d to=buyer1:0xa44a tokens=0.239049049212456732
+token0.Transfer 1 #120024 from=CoverToken:0x449d to=buyer2:0xa55a tokens=2.260950950787543268
+
+token1ContractAddress='fUSD' 'Fake USD (18 dp)':0xfe1b
+token1.owner/new=deployer:0xa11a/null:0x0000
+token1.details='fUSD' 'Fake USD (18 dp)' 18 dp
+token1.totalSupply=4000000
+
+token2ContractAddress=OptinoToken:0x7e8f
+token2.owner/new=OptinoFactory:0x792b/null:0x0000
+token2.details='zOPT0000000000' 'Vanilla Call Optino 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+token2.totalSupply=0
+token2.Transfer 0 #120022 from=buyer1:0xa44a to=null:0x0000 tokens=2.5
+
+token3ContractAddress=CoverToken:0x449d
+token3.owner/new=OptinoFactory:0x792b/null:0x0000
+token3.details='zCOV0000000000' 'Vanilla Call Cover 2020-05-23T01:00:05Z 175 Maker ETH/USD' 18 dp
+token3.totalSupply=0
+token3.Transfer 0 #120024 from=buyer2:0xa55a to=null:0x0000 tokens=2.5
 
 --- Main contracts gas usage ---
-optinoTokenTx status=0x1 Success gas=5000000 gasUsed=4312248 costETH=0.0349292088 costUSD=6.863938821288 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79193 txIx=2 txId=0xbf1998bdbf1f103fbfae6c4ab45afcac402e519fb5bf0cc0b3f5aa998e9879e3 @ 1590124445 Fri, 22 May 2020 05:14:05 GMT
-optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5284851 costETH=0.0428072931 costUSD=8.412061167081 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79195 txIx=1 txId=0x9b2d7b298cdf46bc9ed72856c8f82c497b8fa764f800a1e7fecc4c06fe485b2d @ 1590124447 Fri, 22 May 2020 05:14:07 GMT
-mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1298219 costETH=0.0105155739 costUSD=2.066415427089 @ ETH/USD=196.51 gasPrice=8.1 gwei block=79199 txIx=0 txId=0x97317a33d5d14e7e9bae58db43cb3a0a7344df54070482a9b05b9717375d3b97 @ 1590124451 Fri, 22 May 2020 05:14:11 GMT
-optinoFactoryBin.length=48814, /2=24407
-optinoTokenBin.length=39520, /2=19760
+optinoTokenTx status=0x1 Success gas=5000000 gasUsed=4692733 costETH=0.0380111373 costUSD=7.469568590823 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120004 txIx=2 txId=0x02403dc26dca62dfee0c4fe1bc617c4e8d6c32d37b1067fd1adb38ac26c8f5c6 @ 1590195595 Sat, 23 May 2020 00:59:55 GMT
+optinoFactoryTx status=0x1 Success gas=6000000 gasUsed=5380475 costETH=0.0435818475 costUSD=8.564268852225 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120006 txIx=1 txId=0xd59f0470aa6877693b7d727fd3ee0ff6401e4a2fb8fef043b9d048c8ecd30c5a @ 1590195597 Sat, 23 May 2020 00:59:57 GMT
+mintOptinoGroup1_1Tx status=0x1 Success gas=5000000 gasUsed=1299226 costETH=0.0105237306 costUSD=2.068018300206 @ ETH/USD=196.51 gasPrice=8.1 gwei block=120010 txIx=0 txId=0xb54d979a91546f9c5373cf1d7633aaada11b4f6a55e6c620b3f26b64ecfef091 @ 1590195601 Sat, 23 May 2020 01:00:01 GMT
+optinoFactoryBin.length=49696, /2=24848
+optinoTokenBin.length=43042, /2=21521

@@ -328,8 +328,8 @@ var deployGroup2_7Tx = token1.mint(buyer1, token1Tokens.toString(), {from: deplo
 var deployGroup2_8Tx = token1.mint(buyer2, token1Tokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_9Tx = makerdaoFeed0.setValue(makerdaoFeed0Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
 var deployGroup2_10Tx = makerdaoFeed1.setValue(makerdaoFeed1Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = optinoFactory.updateFeed(makerdaoFeed0Address, "Maker ETH/USD", FEEDTYPE_MAKER, rateDecimals0, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = optinoFactory.updateFeed(makerdaoFeed1Address, "Maker MKR/ETH", FEEDTYPE_MAKER, rateDecimals1, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = optinoFactory.updateFeed(makerdaoFeed0Address, "Maker ETH/USD", "https://feeds.chain.link/", FEEDTYPE_MAKER, rateDecimals0, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = optinoFactory.updateFeed(makerdaoFeed1Address, "Maker MKR/ETH", "https://feeds.chain.link/", FEEDTYPE_MAKER, rateDecimals1, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_13Tx = token0.approve(optinoFactoryAddress, token0Tokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_14Tx = token1.approve(optinoFactoryAddress, token1Tokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -479,7 +479,7 @@ printTokenContractDetails(3);
 console.log("RESULT: ");
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var closeGroup1_Message = "Close Optino & Cover";
   // var closeAmount = optino.balanceOf.call(seller1);
@@ -554,7 +554,7 @@ if (false) {
 }
 
 
-if (false) {
+if (true) {
   // -----------------------------------------------------------------------------
   var transferThenSettleGroup1_Message = "Transfer, then settle Optino & Cover";
   var rate = new BigNumber("250").shift(rateDecimals0);

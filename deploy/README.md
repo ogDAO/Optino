@@ -135,31 +135,36 @@ Factory https://ropsten.etherscan.io/address/0x85E2C1067398B236B2094B27BC43294E2
 OptinoToken https://ropsten.etherscan.io/address/0xEb9835C5fb2AAb105DBe6c3fDA36c32E3FC7A5A6#code
 Factory https://ropsten.etherscan.io/address/0xD202FA5bE3B0Fd4073cA644E78Ef853c9a0CF1f7#code
 
+## v0.982-testnet-pre-release
+0.6.6 and 0.6.8 verification failed. 0.6.7 verified
+OptinoToken https://ropsten.etherscan.io/address/0x9BBd6Fa8DdBF66a216b7BbBCb3Bb787F1f23AE31#code
+Factory https://ropsten.etherscan.io/address/0x2CD73CEC1962730A0fe3C202052b9e24f94B1020#code
 
 # Ropsten Feed data
 
-updateFeed(address feed, string memory name, uint8 feedType, uint8 decimals)
+updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)
+# message added in 0.981
 
-0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507, "Chainlink ETH/USD", 0, 8
-0x5b8B87A0abA4be247e660B0e0143bB30Cdf566AF, "Chainlink BTC/ETH", 0, 18
+0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507, "Chainlink ETH/USD", "https://feeds.chain.link/", 0, 8
+0x5b8B87A0abA4be247e660B0e0143bB30Cdf566AF, "Chainlink BTC/ETH", "https://feeds.chain.link/", 0, 18
+0x811B1f727F8F4aE899774B568d2e72916D91F392, "Chainlink MKR/ETH", "https://feeds.chain.link/", 0, 18
 
-0xAfd8186C962daf599f171B8600f3e19Af7B52c92, "Chainlink BAT/ETH", 0, 18
-0x64b8e49baDeD7BFb2FD5A9235B2440C0eE02971B, "Chainlink DAI/ETH", 0, 18
-0xDab909dedB72573c626481fC98CEE1152b81DEC2, "Chainlink MANA/ETH", 0, 18
-0x811B1f727F8F4aE899774B568d2e72916D91F392, "Chainlink MKR/ETH", 0, 18
-0xa949eE9bA80c0F381481f2eaB538bC5547a5aC67, "Chainlink REP/ETH", 0, 18
-0xA95674a8Ed9aa9D2E445eb0024a9aa05ab44f6bf, "Chainlink SNX/ETH", 0, 18
-0x1d0052E4ae5b4AE4563cBAc50Edc3627Ca0460d7, "Chainlink ZRX/ETH", 0, 18
+0xAfd8186C962daf599f171B8600f3e19Af7B52c92, "Chainlink BAT/ETH", "https://feeds.chain.link/", 0, 18
+0x64b8e49baDeD7BFb2FD5A9235B2440C0eE02971B, "Chainlink DAI/ETH", "https://feeds.chain.link/", 0, 18
+0xDab909dedB72573c626481fC98CEE1152b81DEC2, "Chainlink MANA/ETH", "https://feeds.chain.link/", 0, 18
+0xa949eE9bA80c0F381481f2eaB538bC5547a5aC67, "Chainlink REP/ETH", "https://feeds.chain.link/", 0, 18
+0xA95674a8Ed9aa9D2E445eb0024a9aa05ab44f6bf, "Chainlink SNX/ETH", "https://feeds.chain.link/", 0, 18
+0x1d0052E4ae5b4AE4563cBAc50Edc3627Ca0460d7, "Chainlink ZRX/ETH", "https://feeds.chain.link/", 0, 18
 
 # below failed. need more gas
-0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", 0, 8
-0x882906a758207FeA9F21e0bb7d2f24E561bd0981, "Chainlink BTC/USD", 0, 8
-0xD49c81796BccAbb5cd804f9d186B5E00E9Ac21fF, "Chainlink CHF/USD", 0, 8
-0xe95feDE497d0c02a2DBc8e20C5E8bFFE9339F03a, "Chainlink EUR/USD", 0, 8
-0xa2Dbd50FD09B9572a8A37ED4C2aEE4093A4b3Ef7, "Chainlink GBP/USD", 0, 8
-0x8eAeBAF0eA3BC2a160b461703AF409d074CDEC6e, "Chainlink JPY/USD", 0, 8
-0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A, "Chainlink XAG/USD", 0, 8
-0x2419A5aA4A82a6A18cA9b20Ea2934d7467E6a2cf, "Chainlink XAU/USD", 0, 8
+0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", "https://feeds.chain.link/", 0, 8
+0x882906a758207FeA9F21e0bb7d2f24E561bd0981, "Chainlink BTC/USD", "https://feeds.chain.link/", 0, 8
+0xD49c81796BccAbb5cd804f9d186B5E00E9Ac21fF, "Chainlink CHF/USD", "https://feeds.chain.link/", 0, 8
+0xe95feDE497d0c02a2DBc8e20C5E8bFFE9339F03a, "Chainlink EUR/USD", "https://feeds.chain.link/", 0, 8
+0xa2Dbd50FD09B9572a8A37ED4C2aEE4093A4b3Ef7, "Chainlink GBP/USD", "https://feeds.chain.link/", 0, 8
+0x8eAeBAF0eA3BC2a160b461703AF409d074CDEC6e, "Chainlink JPY/USD", "https://feeds.chain.link/", 0, 8
+0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A, "Chainlink XAG/USD", "https://feeds.chain.link/", 0, 8
+0x2419A5aA4A82a6A18cA9b20Ea2934d7467E6a2cf, "Chainlink XAU/USD", "https://feeds.chain.link/", 0, 8
 
 
 "fWETH", "Fake Wrapped Ether", 18
