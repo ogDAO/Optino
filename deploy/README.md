@@ -140,6 +140,11 @@ Factory https://ropsten.etherscan.io/address/0xD202FA5bE3B0Fd4073cA644E78Ef853c9
 OptinoToken https://ropsten.etherscan.io/address/0x9BBd6Fa8DdBF66a216b7BbBCb3Bb787F1f23AE31#code
 Factory https://ropsten.etherscan.io/address/0x2CD73CEC1962730A0fe3C202052b9e24f94B1020#code
 
+v0.983-testnet-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x4783d05009F13439F80c8CA63CE6BD21694A19CD#code
+Factory https://ropsten.etherscan.io/address/0x754509B0c79DC725A1F01d61c4369AB2F72B28E9#code
+
+
 # Ropsten Feed data
 
 updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)

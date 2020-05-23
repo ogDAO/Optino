@@ -314,10 +314,14 @@ const optinoFactoryModule = {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             // function getFeedByIndex(uint i) public view returns (address _feed, string memory _feedName, uint8[3] memory _feedData, uint _spot, bool _hasData, uint8 _feedReportedDecimals, uint _feedTimestamp)
             var feed = await _feed;
-            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+
+            // feed: ["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","Chainlink ETH/USD","https://feeds.chain.link/",["0","8","0"],"20931000000",true,"255","1590195660"]
+
             var feedAddress = feed[0];
             var feedName = feed[1];
-            var feedDataType = parseInt(feed[2][0]);
+            var feedMessage = feed[2];
+            var feedDataType = parseInt(feed[3][0]);
             var feedDataTypeString;
             if (feedDataType == 0) {
               feedDataTypeString = "Chainlink v4";
@@ -330,17 +334,17 @@ const optinoFactoryModule = {
             } else {
               feedDataTypeString = "Unknown: " + feedDataType;
             }
-            var feedDataDecimals = parseInt(feed[2][1]);
-            var feedDataLocked = parseInt(feed[2][2]) > 0;
-            var spot = feed[3];
-            var hasData = feed[4];
-            var feedReportedDecimals = parseInt(feed[5]);
-            var feedTimestamp = parseInt(feed[6]);
+            var feedDataDecimals = parseInt(feed[3][1]);
+            var feedDataLocked = parseInt(feed[3][2]) > 0;
+            var spot = feed[4];
+            var hasData = feed[5];
+            var feedReportedDecimals = parseInt(feed[6]);
+            var feedTimestamp = parseInt(feed[7]);
             var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
             var favourite = false;
             if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp || state.feedData[feedAddress].feedDataLocked != feedDataLocked) {
-              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName,
+              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage, 
                 feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
                 spot: spot, hasData: hasData ? "y" : "n", feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
             }
