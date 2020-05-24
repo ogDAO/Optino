@@ -1,6 +1,3 @@
-var TOKENADDRESSES = ["0xb603cea165119701b58d56d10d2060fbfb3efad8", "0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA"];
-var TOKENABI = [{"constant":false,"inputs":[{"name":"token","type":"address"},{"name":"tokens","type":"uint256"}],"name":"recoverTokens","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_owner","type":"address"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"acceptOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"symbol","type":"string"},{"name":"name","type":"string"},{"name":"decimals","type":"uint8"},{"name":"fixedSupply","type":"uint256"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"},{"name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"newOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"tokenOwner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Approval","type":"event"}];
-
 const Tokens = {
   template: `
     <div>
@@ -22,58 +19,7 @@ const Tokens = {
             <b-col cols="4" class="small truncate text-right mb-1"  style="font-size: 60%" v-b-popover.hover="'Allowance'">
               {{ formatMaxDecimals(token.allowance, 4) }}
             </b-col>
-            <!--
-            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-              {{ feed.spot.shift(-feed.feedDataDecimals) }}
-            </b-col>
-            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-              {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
-            </b-col>
-            {{ token }}
-            -->
           </b-row>
-
-          <!--
-          <b-row v-if="Object.keys(feedData).length > 0">
-            <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
-          </b-row>
-          <b-row v-for="(feed) in feedDataSorted" v-bind:key="feed.feedAddress">
-            <b-col cols="5" class="small truncate" style="font-size: 70%">
-              <b-link :href="explorer + 'address/' + feed.feedAddress + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
-            </b-col>
-            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-              {{ feed.spot.shift(-feed.feedDataDecimals) }}
-            </b-col>
-            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-              {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
-            </b-col>
-          </b-row>
-          -->
-
-          <!--
-          <b-row>
-            <b-col cols="4" class="small">
-              <b-link :href="explorer + 'token/' + addresses[0]" class="card-link" target="_blank">{{ symbols[0] }}</b-link>
-            </b-col>
-            <b-col class="small truncate" cols="4">
-              <b-link :href="explorer + 'token/' + addresses[0] + '?a=' + coinbase" class="card-link" target="_blank">{{ balances[0] }}</b-link>
-            </b-col>
-            <b-col class="small truncate" cols="4">
-              {{ decimals[0] }} dp
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="4" class="small">
-              <b-link :href="explorer + 'token/' + addresses[1]" class="card-link" target="_blank">{{ symbols[1] }}</b-link>
-            </b-col>
-            <b-col class="small truncate" cols="4">
-              <b-link :href="explorer + 'token/' + addresses[1] + '?a=' + coinbase" class="card-link" target="_blank">{{ balances[1] }}</b-link>
-            </b-col>
-            <b-col class="small truncate" cols="4">
-              {{ decimals[1] }} dp
-            </b-col>
-          </b-row>
-          -->
         </b-card>
       </b-collapse>
     </div>
@@ -93,18 +39,6 @@ const Tokens = {
     coinbase() {
       return store.getters['connection/coinbase'];
     },
-    // addresses() {
-    //   return store.getters['tokens/addresses'];
-    // },
-    // symbols() {
-    //   return store.getters['tokens/symbols'];
-    // },
-    // decimals() {
-    //   return store.getters['tokens/decimals'];
-    // },
-    // balances() {
-    //   return store.getters['tokens/balances'];
-    // },
     tokenDataSorted() {
       var results = [];
       var tokenData = store.getters['tokens/tokenData'];
@@ -262,15 +196,16 @@ const tokensModule = {
           // logInfo("tokensModule", "execWeb3() startFakeTokensIndex: " + startFakeTokensIndex);
           startFakeTokensIndex = 0;
           for (var fakeTokensIndex = startFakeTokensIndex; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
+            // TODO: Sort out list
             if (fakeTokensIndex == 1 || fakeTokensIndex == 4 || fakeTokensIndex == 7 || fakeTokensIndex == 13 || fakeTokensIndex == 18) {
               var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
               var fakeTokenAddress = await _fakeTokenAddress;
-              logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): " + fakeTokenAddress);
+              // logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): " + fakeTokenAddress);
               var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
               var tokenInfo = await _tokenInfo;
               var symbol = tokenInfo[4];
               var name = tokenInfo[5];
-              logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): '" + symbol + "', '" + name + "'");
+              // logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): '" + symbol + "', '" + name + "'");
               var decimals = parseInt(tokenInfo[0]);
               var totalSupply = tokenInfo[1].shift(-decimals).toString();
               var balance = tokenInfo[2].shift(-decimals).toString();

@@ -10,15 +10,15 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.982-testnet-pre-release
+// Optino Factory v0.983-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten:
+// OptinoToken deployment on Ropsten: 0x4783d05009F13439F80c8CA63CE6BD21694A19CD
+// OptinoFactory deployment on Ropsten: 0x754509B0c79DC725A1F01d61c4369AB2F72B28E9
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -914,7 +914,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.982-testnet-pre-release";
+    string public message = "v0.983-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -968,6 +968,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     }
     function lockFeed(address _feed) public onlyOwner {
         Feed storage feed = feedData[_feed];
+        require(feed.timestamp > 0, "Invalid feed");
         require(feed.data[uint(FeedTypeField.Locked)] == 0, "Locked");
         feed.data[uint(FeedTypeField.Locked)] = 1;
         feed.timestamp = block.timestamp;
@@ -975,6 +976,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     }
     function updateFeedMessage(address _feed, string memory _message) public onlyOwner {
         Feed storage feed = feedData[_feed];
+        require(feed.timestamp > 0, "Invalid feed");
         feed.text[1] = _message;
         feed.timestamp = block.timestamp;
         emit FeedMessageUpdated(_feed, feed.text[1]);

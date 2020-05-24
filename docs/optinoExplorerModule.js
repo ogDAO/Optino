@@ -1,10 +1,9 @@
 const OptinoExplorer = {
   template: `
-  <div>
-    <div>
+    <div class="mt-5 pt-3">
       <b-row>
-        <b-col cols="12" md="9">
-          <b-card no-body header="Optino Explorer" class="border-0">
+        <b-col cols="12" md="9" class="m-0 p-1">
+          <b-card no-body header="Optino Explorer" class="border-0" header-class="p-1">
             <br />
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
@@ -380,7 +379,7 @@ const OptinoExplorer = {
             </b-card>
           </b-card>
         </b-col>
-        <b-col cols="12" md="3">
+        <b-col cols="12" md="3" class="m-0 p-1">
           <connection></connection>
           <br />
           <optinoFactory></optinoFactory>
@@ -389,7 +388,6 @@ const OptinoExplorer = {
         </b-col>
       </b-row>
     </div>
-  </div>
   `,
   data: function () {
     return {
@@ -640,10 +638,10 @@ const OptinoExplorer = {
       return results;
     },
     tokenData() {
-      return store.getters['optinoFactory/tokenData'];
+      return store.getters['tokens/tokenData'];
     },
     tokenOptions() {
-      var tokenData = store.getters['optinoFactory/tokenData'];
+      var tokenData = store.getters['tokens/tokenData'];
       var results = [];
       results.push({ value: null, text: "(select Config or Series above)", disabled: true });
 

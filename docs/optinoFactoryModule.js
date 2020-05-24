@@ -40,6 +40,7 @@ const OptinoFactory = {
             </b-col>
           </b-row>
 
+          <!--
           <b-row v-if="Object.keys(pairData).length > 0">
             <b-col colspan="2" class="small truncate"><b>Pairs</b></b-col>
           </b-row>
@@ -58,6 +59,7 @@ const OptinoFactory = {
               </b-row>
             </b-col>
           </b-row>
+          -->
 
           <b-row v-if="Object.keys(seriesData).length > 0">
             <b-col colspan="2" class="small truncate"><b>Series</b></b-col>
@@ -69,10 +71,10 @@ const OptinoFactory = {
                   {{ series.seriesKey }}
                 </b-col>
                 <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'token/' + series.optinoToken" class="card-link" target="_blank">{{ series.optinoToken }}</b-link>
+                  <b-link :href="explorer + 'token/' + series.pair[0]" class="card-link" target="_blank">{{ tokenData[series.pair[0]].symbol || "" }}</b-link>
                 </b-col>
                 <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'token/' + series.coverToken" class="card-link" target="_blank">{{ series.coverToken }}</b-link>
+                  <b-link :href="explorer + 'token/' + series.pair[1]" class="card-link" target="_blank">{{ tokenData[series.pair[1]].symbol || "" }}</b-link>
                 </b-col>
               </b-row>
             </b-col>
@@ -167,11 +169,14 @@ const OptinoFactory = {
       });
       return results;
     },
-    pairData() {
-      return store.getters['optinoFactory/pairData'];
-    },
+    // pairData() {
+    //   return store.getters['optinoFactory/pairData'];
+    // },
     seriesData() {
       return store.getters['optinoFactory/seriesData'];
+    },
+    tokenData() {
+      return store.getters['tokens/tokenData'];
     },
   },
 };
@@ -186,10 +191,9 @@ const optinoFactoryModule = {
     message: null,
     fee: null,
     feedData: {},
-    pairData: {},
     feedDataSorted: [],
     seriesData: {},
-    tokenData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
+    optinoData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
     params: null,
     executing: false,
   },
@@ -200,10 +204,9 @@ const optinoFactoryModule = {
     message: state => state.message,
     fee: state => state.fee,
     feedData: state => state.feedData,
-    pairData: state => state.pairData,
     feedDataSorted: state => state.feedDataSorted,
     seriesData: state => state.seriesData,
-    tokenData: state => state.tokenData,
+    optinoData: state => state.optinoData,
     params: state => state.params,
   },
   mutations: {
@@ -223,22 +226,22 @@ const optinoFactoryModule = {
       // localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
       // logInfo("tokensModule", "mutations.setTokenFavourite tokenAddressData=" + JSON.stringify(state.tokenAddressData));
       //
-      // var token = state.tokenData[tokenAddress];
+      // var token = state.optinoData[tokenAddress];
       // if (token) {
       //   token.favourite = favourite;
       // }
     },
-    updatePair(state, {pairKey, pair}) {
-      Vue.set(state.pairData, pairKey, pair);
-      // logInfo("optinoFactoryModule", "updatePair(" + pairKey + ", " + JSON.stringify(pair) + ")")
-    },
+    // updatePair(state, {pairKey, pair}) {
+    //   Vue.set(state.pairData, pairKey, pair);
+    //   // logInfo("optinoFactoryModule", "updatePair(" + pairKey + ", " + JSON.stringify(pair) + ")")
+    // },
     updateSeries(state, {seriesKey, series}) {
       Vue.set(state.seriesData, seriesKey, series);
-      // logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
+      logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
     },
-    updateToken(state, {key, token}) {
-      Vue.set(state.tokenData, key, token);
-      logDebug("optinoFactoryModule", "updateToken(" + key + ", " + JSON.stringify(token) + ")")
+    updateOptino(state, {optinoAddress, optino}) {
+      Vue.set(state.optinoData, optinoAddress, optino);
+      logDebug("optinoFactoryModule", "updateOptino(" + optinoAddress + ", " + JSON.stringify(optino) + ")")
     },
     updateOptinoTokenTemplate(state, optinoTokenTemplate) {
       state.optinoTokenTemplate = optinoTokenTemplate;
@@ -350,6 +353,7 @@ const optinoFactoryModule = {
             }
           }
 
+          // Testing custom feed, i.e., not registered
           // 0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", "https://feeds.chain.link/", 0, 8
           // ["0x5b8b87a0aba4be247e660b0e0143bb30cdf566af","Chainlink BTC/ETH","https://feeds.chain.link/",["0","18","0"],"44198965000000000000",true,"255","1590192137"]
           var feedAddress = "0x1c621Aab85F7879690B5407404A097068770b59a";
@@ -382,9 +386,9 @@ const optinoFactoryModule = {
 
             // TODO: Fix updating of token info. Refresh for now
             [baseToken, quoteToken].forEach(async function(t) {
-              if (!(t in state.tokenData)) {
+              if (!(t in state.optinoData)) {
                 // Commit first so it does not get redone
-                commit('updateToken', { key: t, token: { address: t } });
+                commit('updateOptino', { key: t, token: { address: t } });
                 var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], OPTINOFACTORYADDRESS, cb));
                 var tokenInfo = await _tokenInfo;
                 var totalSupply;
@@ -397,7 +401,7 @@ const optinoFactoryModule = {
                   totalSupply = new BigNumber(tokenInfo[1]);
                   balance = new BigNumber(tokenInfo[2]);
                 }
-                commit('updateToken', { key: t, token: { address: t, symbol: tokenInfo[4], name: tokenInfo[5], decimals: tokenInfo[0], totalSupply: totalSupply.toString(), balance: balance.toString(), allowance: tokenInfo[3] } });
+                commit('updateOptino', { key: t, token: { address: t, symbol: tokenInfo[4], name: tokenInfo[5], decimals: tokenInfo[0], totalSupply: totalSupply.toString(), balance: balance.toString(), allowance: tokenInfo[3] } });
               }
             });
           }
@@ -433,9 +437,18 @@ const optinoFactoryModule = {
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
               var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
-              // logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
+              logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               // bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp
               // ["0x510c028170e742746cc9dc89d10ec720c81e6e9d11be00aa76a7b2715e3d317d",["0x452a2652d1245132f7f47700c24e217faceb1c6c","0x2269fbd941938ac213719cd3487323a0c75f1667"],["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590220800","17500000000","0","0"],["0xc62aee07b7e7b1c3fae4a5badd58fc87de3a06de","0x4313c4ee69d8637897f2c362172ecfd72c6884ad"],"1590125413"]
+
+              // function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds,
+              // uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp)
+              // 15:41:25 INFO optinoFactoryModule:series: ["0x39bb49a56161c57c18c6996eec33509dc915f410272a2b5c4d91fa71d232c276",
+              // ["0x452a2652d1245132f7f47700c24e217faceb1c6c","0x2269fbd941938ac213719cd3487323a0c75f1667"],
+              // ["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","0x0000000000000000000000000000000000000000"],
+              // ["255","255","255","255","0","0"],"8",
+              // ["0","1590307200","20000000000","0","0"],
+              // ["0x2f1305acc1f6ed57cc5f7b6917edafde5fb88544","0x771f4ee836420fe568342d7e20099e76e735a4db"],"1590200917"]
 
               var seriesKey = series[0];
               var pair = series[1];
@@ -477,7 +490,7 @@ const optinoFactoryModule = {
             [optinoToken, coverToken].forEach(async function(t) {
               if (!(t in state.tokenData)) {
                 // Commit first so it does not get redone
-                commit('updateToken', { key: t, token: { address: t } });
+                commit('updateOptino', { key: t, token: { address: t } });
                 var _tokenInfo = promisify(cb => contract.getTokenInfo(t, store.getters['connection/coinbase'], OPTINOFACTORYADDRESS, cb));
                 var tokenInfo = await _tokenInfo;
                 var totalSupply;
@@ -490,7 +503,7 @@ const optinoFactoryModule = {
                   totalSupply = new BigNumber(tokenInfo[1]);
                   balance = new BigNumber(tokenInfo[2]);
                 }
-                commit('updateToken', { key: t, token: { address: t, symbol: tokenInfo[4], name: tokenInfo[5], decimals: tokenInfo[0], totalSupply: totalSupply.toString(), balance: balance.toString(), allowance: tokenInfo[3] } });
+                commit('updateOptino', { key: t, token: { address: t, symbol: tokenInfo[4], name: tokenInfo[5], decimals: tokenInfo[0], totalSupply: totalSupply.toString(), balance: balance.toString(), allowance: tokenInfo[3] } });
               }
             });
             // TODO: Check timestamp for updated info
