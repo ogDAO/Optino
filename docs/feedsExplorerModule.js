@@ -13,53 +13,53 @@ const FeedsExplorer = {
               <b-collapse id="configuredfeeds" visible class="border-0">
                 <b-card-body class="p-1">
                   <b-table small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
-                    <template slot="HEAD[name]" slot-scope="data">
+                    <template v-slot:head(name)="data">
                       <span style="font-size: 90%">Name</span>
                     </template>
-                    <template slot="HEAD[feedDataType]" slot-scope="data">
+                    <template v-slot:head(feedDataType)="data">
                       <span style="font-size: 90%">Type</span>
                     </template>
-                    <template slot="HEAD[feedDataDecimals]" slot-scope="data">
+                    <template v-slot:head(feedDataDecimals)="data">
                       <span style="font-size: 90%">Decimals</span>
                     </template>
-                    <template slot="HEAD[spot]" slot-scope="data">
+                    <template v-slot:head(spot)="data">
                       <span class="text-right" style="font-size: 90%">Spot</span>
                     </template>
-                    <template slot="HEAD[hasData]" slot-scope="data">
+                    <template v-slot:head(hasData)="data">
                       <span class="text-right" style="font-size: 90%">Data?</span>
                     </template>
-                    <template slot="HEAD[feedTimestamp]" slot-scope="data">
+                    <template v-slot:head(feedTimestamp)="data">
                       <span class="text-right" style="font-size: 90%">Timestamp</span>
                     </template>
-                    <template slot="HEAD[feedAddress]" slot-scope="data">
+                    <template v-slot:head(feedAddress)="data">
                       <span class="text-right" style="font-size: 90%">Address</span>
                     </template>
-                    <template slot="HEAD[extra]" slot-scope="data">
+                    <template v-slot:head(extra)="data">
                       <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
                       <b-button size="sm" class="m-0 p-0" :pressed.sync="showFavourite" variant="link" v-b-popover.hover="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>
-                    <template slot="name" slot-scope="data">
+                    <template v-slot:cell(name)="data">
                       <div style="font-size: 80%">{{ data.item.name }} </div>
                     </template>
-                    <template slot="feedDataType" slot-scope="data">
+                    <template v-slot:cell(feedDataType)="data">
                       <div class="text-right" style="font-size: 80%">{{ data.item.feedDataTypeString }} </div>
                     </template>
-                    <template slot="feedDataDecimals" slot-scope="data">
+                    <template v-slot:cell(feedDataDecimals)="data">
                       <div class="text-right" style="font-size: 80%">{{ data.item.feedDataDecimals }} </div>
                     </template>
-                    <template slot="hasData" slot-scope="data">
+                    <template v-slot:cell(hasData)="data">
                       <div class="text-right" style="font-size: 80%">{{ data.item.hasData }} </div>
                     </template>
-                    <template slot="spot" slot-scope="data">
+                    <template v-slot:cell(spot)="data">
                       <div class="text-right" style="font-size: 80%">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
                     </template>
-                    <template slot="feedTimestamp" slot-scope="data">
+                    <template v-slot:cell(feedTimestamp)="data">
                       <div class="text-right" style="font-size: 80%">{{ new Date(data.item.feedTimestamp*1000).toLocaleString() }} </div>
                     </template>
-                    <template slot="feedAddress" slot-scope="data">
+                    <template v-slot:cell(feedAddress)="data">
                       <b-link style="font-size: 80%" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
                     </template>
-                    <template slot="extra" slot-scope="row">
+                    <template v-slot:cell(extra)="row">
                       <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" v-if="row.item.feedDataLocked" v-b-popover.hover="'Feed configuration cannot be updated'"></b-icon-lock-fill>
                       <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" v-if="!row.item.feedDataLocked" v-b-popover.hover="'Feed configuration can still be updated'"></b-icon-unlock-fill>
                       <b-button size="sm" class="m-0 p-0" @click="setFeedFavourite(row.item.feedAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
@@ -210,10 +210,10 @@ const feedsExplorerModule = {
     },
   },
   actions: {
-    async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
+    async execWeb3NotUsed({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
       if (!state.executing) {
         commit('updateExecuting', true);
-        logDebug("feedsExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
+        logInfo("feedsExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
 
         var paramsChanged = false;
         if (state.params != rootState.route.params.param) {

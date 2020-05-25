@@ -77,53 +77,53 @@ const TokensExplorer = {
               <b-collapse id="tokenlist" visible class="border-0">
                 <b-card-body class="p-1">
                   <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light">
-                    <template slot="HEAD[symbol]" slot-scope="data">
+                    <template v-slot:head(symbol)="data">
                       <span style="font-size: 90%">Symbol</span>
                     </template>
-                    <template slot="HEAD[name]" slot-scope="data">
+                    <template v-slot:head(name)="data">
                       <span style="font-size: 90%">Name</span>
                     </template>
-                    <template slot="HEAD[decimals]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%">Decimals</span>
+                    <template v-slot:head(decimals)="data">
+                      <span style="font-size: 90%">Decimals</span>
                     </template>
-                    <template slot="HEAD[totalSupply]" slot-scope="data">
-                      <span class="text-right" style="font-size: 90%">Total Supply</span>
+                    <template v-slot:head(totalSupply)="data">
+                      <span style="font-size: 90%">Total Supply</span>
                     </template>
-                    <template slot="HEAD[balance]" slot-scope="data">
+                    <template v-slot:head(balance)="data">
                       <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
                     </template>
-                    <template slot="HEAD[allowance]" slot-scope="data">
+                    <template v-slot:head(allowance)="data">
                       <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
                     </template>
-                    <template slot="HEAD[tokenAddress]" slot-scope="data">
+                    <template v-slot:head(tokenAddress)="data">
                       <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
                     </template>
-                    <template slot="HEAD[extra]" slot-scope="data">
+                    <template v-slot:head(extra)="data">
                       <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
                       <b-button size="sm" class="m-0 p-0" :pressed.sync="showFavourite" variant="link" v-b-popover.hover="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>
-                    <template slot="symbol" slot-scope="data">
+                    <template v-slot:cell(symbol)="data">
                       <div style="font-size: 80%">{{ data.item.symbol }} </div>
                     </template>
-                    <template slot="name" slot-scope="data">
+                    <template v-slot:cell(name)="data">
                       <div style="font-size: 80%">{{ data.item.name }} </div>
                     </template>
-                    <template slot="decimals" slot-scope="data">
+                    <template v-slot:cell(decimals)="data">
                       <div class="text-right" style="font-size: 80%">{{ data.item.decimals }}</div>
                     </template>
-                    <template slot="totalSupply" slot-scope="data">
+                    <template v-slot:cell(totalSupply)="data">
                       <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.totalSupply, 8) }}</div>
                     </template>
-                    <template slot="balance" slot-scope="data">
+                    <template v-slot:cell(balance)="data">
                       <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.balance, 8) }}</div>
                     </template>
-                    <template slot="allowance" slot-scope="data">
+                    <template v-slot:cell(allowance)="data">
                       <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.allowance, 8) }}</div>
                     </template>
-                    <template slot="tokenAddress" slot-scope="data">
+                    <template v-slot:cell(tokenAddress)="data">
                       <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.tokenAddress" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.tokenAddress">{{ data.item.tokenAddress.substr(0, 10) }}...</b-link>
                     </template>
-                    <template slot="extra" slot-scope="row">
+                    <template v-slot:cell(extra)="row">
                       <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
                       <b-button size="sm" class="m-0 p-0" @click="setTokenFavourite(row.item.tokenAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>

@@ -357,9 +357,9 @@ const optinoFactoryModule = {
           // 0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", "https://feeds.chain.link/", 0, 8
           // ["0x5b8b87a0aba4be247e660b0e0143bb30cdf566af","Chainlink BTC/ETH","https://feeds.chain.link/",["0","18","0"],"44198965000000000000",true,"255","1590192137"]
           var feedAddress = "0x1c621Aab85F7879690B5407404A097068770b59a";
-          var feedName = "Chainlink AUD/USD Custom";
-          var feedMessage = "Custom";
-          var feedDataType = 2; // MAKER
+          var feedName = "Chainlink AUD/USD Test Custom";
+          var feedMessage = "Test Custom";
+          var feedDataType = 0; // MAKER
           var feedDataTypeString;
           if (feedDataType == 0) {
             feedDataTypeString = "Chainlink v4";
@@ -374,7 +374,7 @@ const optinoFactoryModule = {
           }
           var feedDataDecimals = 8;
           var feedDataLocked = false;
-          var spot = new BigNumber(65000000);
+          var spot = new BigNumber(65656565);
           var hasData = false;
           var feedReportedDecimals = 8;
           var feedTimestamp = 1590192137;
@@ -437,19 +437,7 @@ const optinoFactoryModule = {
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
               var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
-              logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
-              // bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp
-              // ["0x510c028170e742746cc9dc89d10ec720c81e6e9d11be00aa76a7b2715e3d317d",["0x452a2652d1245132f7f47700c24e217faceb1c6c","0x2269fbd941938ac213719cd3487323a0c75f1667"],["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","0x0000000000000000000000000000000000000000"],["255","255","255","255","0","0"],"8",["0","1590220800","17500000000","0","0"],["0xc62aee07b7e7b1c3fae4a5badd58fc87de3a06de","0x4313c4ee69d8637897f2c362172ecfd72c6884ad"],"1590125413"]
-
-              // function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds,
-              // uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp)
-              // 15:41:25 INFO optinoFactoryModule:series: ["0x39bb49a56161c57c18c6996eec33509dc915f410272a2b5c4d91fa71d232c276",
-              // ["0x452a2652d1245132f7f47700c24e217faceb1c6c","0x2269fbd941938ac213719cd3487323a0c75f1667"],
-              // ["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","0x0000000000000000000000000000000000000000"],
-              // ["255","255","255","255","0","0"],"8",
-              // ["0","1590307200","20000000000","0","0"],
-              // ["0x2f1305acc1f6ed57cc5f7b6917edafde5fb88544","0x771f4ee836420fe568342d7e20099e76e735a4db"],"1590200917"]
-
+              // logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               var seriesKey = series[0];
               var pair = series[1];
               var feeds = series[2];
@@ -457,14 +445,15 @@ const optinoFactoryModule = {
               var feedDecimals0 = series[4];
               var data = series[5];
               var optinos = series[6];
-              // var callPut = data[0];
-              // var expiry = data[1];
-              // var strike = data[2];
-              // var bound = data[3];
-              // var spot = data[4];
+              var callPut = data[0];
+              var expiry = parseInt(data[1]);
+              var strike = data[2].toString();
+              var bound = data[3].toString();
+              var spot = data[4].toString();
               var timestamp = series[7];
               if (!(seriesKey in state.seriesData) || state.seriesData[seriesKey].timestamp < timestamp) {
-                commit('updateSeries', { seriesKey: seriesKey, series: { index: i, seriesKey: seriesKey, pair: pair, feeds: feeds, feedParameters: feedParameters, feedDecimals0: feedDecimals0, data: data, timestamp: timestamp, optinos: optinos } });
+                commit('updateSeries', { seriesKey: seriesKey, series: { index: i, seriesKey: seriesKey, pair: pair, feeds: feeds, feedParameters: feedParameters, feedDecimals0: feedDecimals0,
+                  callPut: callPut, expiry: expiry, strike: strike, bound: bound, spot: spot, timestamp: timestamp, optinos: optinos } });
               }
             }
           // }
