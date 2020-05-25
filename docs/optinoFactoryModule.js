@@ -71,10 +71,10 @@ const OptinoFactory = {
                   {{ series.seriesKey }}
                 </b-col>
                 <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'token/' + series.pair[0]" class="card-link" target="_blank">{{ tokenData[series.pair[0]].symbol || "" }}</b-link>
+                  <b-link :href="explorer + 'token/' + series.pair[0]" class="card-link" target="_blank">{{ displayTokenSymbol(series.pair[0]) }}</b-link>
                 </b-col>
                 <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'token/' + series.pair[1]" class="card-link" target="_blank">{{ tokenData[series.pair[1]].symbol || "" }}</b-link>
+                  <b-link :href="explorer + 'token/' + series.pair[1]" class="card-link" target="_blank">{{ displayTokenSymbol(series.pair[1]) }}</b-link>
                 </b-col>
               </b-row>
             </b-col>
@@ -177,6 +177,16 @@ const OptinoFactory = {
     },
     tokenData() {
       return store.getters['tokens/tokenData'];
+    },
+  },
+  methods: {
+    displayTokenSymbol(tokenAddress) {
+      var token = store.getters['tokens/tokenData'][tokenAddress];
+      if (token == null) {
+        return tokenAddress.substr(0, 10);
+      } else {
+        return token.symbol;
+      }
     },
   },
 };
