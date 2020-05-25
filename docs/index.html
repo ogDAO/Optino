@@ -4,14 +4,13 @@
     <title>Optino - Crypto Options</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Goblok Control Panel (c) Bok Consulting Pty Ltd 2019">
+    <meta name="description" content="Optino - Crypto Options (c) Bok Consulting Pty Ltd 2020">
     <meta name="author" content="BokkyPooBah@bokconsulting.com.au">
     <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" href="css/bootstrap-vue.min.css"/>
     <link type="text/css" rel="stylesheet" href="css/bootstrap-vue-icons.min.css"/>
     <link type="text/css" rel="stylesheet" href="css/flatpickr.css"/>
     <link href="css/app.css" rel="stylesheet" media="screen" />
-    <!-- <link rel="stylesheet" href="highlight.js-styles/hopscotch.css"> -->
     <!-- <link type="text/css" rel="stylesheet" href="css/theme.css" /> -->
     <!-- <script src="js/polyfill.js"></script> -->
     <script src="js/flatpickr.js"></script>
@@ -25,7 +24,6 @@
     <script src="js/apexcharts.js"></script>
     <script src="js/vue-apexcharts.js"></script>
 
-    <!-- <script src="js/w2ui-1.5.rc1.js"></script> -->
     <script src="js/bignumber.min.js"></script>
     <script src="js/moment.min.js"></script>
     <script src="js/web3.js"></script>
@@ -70,7 +68,6 @@
         <div>
           <b-navbar type="dark" variant="primary" fixed="top">
             <b-navbar-brand to="/">
-              <!-- <img src="images/Me-zoomed.png" style="max-width:53px; margin-top: -16px;" class="d-inline-block align-top" alt="Ether Vending Machine" /> -->
               <img src="images/Me-zoomed.png" style="max-width:30px; margin-top: -4px;" alt="Optinos" />
               Optino - Crypto Options
             </b-navbar-brand>
@@ -79,12 +76,6 @@
               <b-nav-item to="/tokensExplorer/all" v-b-popover.hover="'View and add tokens'">Tokens</b-nav-item>
               <b-nav-item to="/feedsExplorer/all" v-b-popover.hover="'View and set feeds'">Feeds</b-nav-item>
               <b-nav-item href="https://github.com/bokkypoobah/Optino/wiki" target="_blank" v-b-popover.hover="'View the docs (work in progress)'">Docs</b-nav-item>
-              <!--
-              <b-nav-item to="/tokenContractExplorer/all" v-b-popover.hover="'Mint your ERC721 Non-Fungible Tokens; view and set token attributes'">Token Contract Explorer</b-nav-item>
-              <b-nav-item to="/dataServiceExplorer/all" v-b-popover.hover="'State and media held on Data Server'">Data Service Explorer</b-nav-item>
-              <b-nav-item to="/ipfsExplorer/all" v-b-popover.hover="'IPFS Explorer'">IPFS Explorer</b-nav-item>
-              <b-nav-item to="/apiReference/all" v-b-popover.hover="'API Reference'">API Reference</b-nav-item>
-              -->
             </b-navbar-nav>
           </b-navbar>
         </div>
@@ -92,6 +83,5 @@
       </b-container>
     </div>
     <script src="index.js"></script>
-    <!-- <script>hljs.initHighlightingOnLoad();</script> -->
   </body>
 </html>
