@@ -3,13 +3,10 @@ Vue.use(VueApexCharts);
 
 Vue.component('apexchart', VueApexCharts);
 Vue.component('connection', Connection);
-Vue.component('tokenContract', TokenContract);
 Vue.component('tokens', Tokens);
 Vue.component('payoff', Payoff);
 Vue.component('feeds', Feeds);
 Vue.component('optinoFactory', OptinoFactory);
-Vue.component('dataService', DataService);
-Vue.component('ipfsService', IpfsService);
 Vue.component('flat-pickr', VueFlatpickr);
 
 const router = new VueRouter({
@@ -52,20 +49,13 @@ const store = new Vuex.Store({
   },
   modules: {
     connection: connectionModule,
-    tokenContract: tokenContractModule,
     tokens: tokensModule,
     payoff: payoffModule,
     feeds: feedsModule,
     optinoFactory: optinoFactoryModule,
-    dataService: dataServiceModule,
-    ipfsService: ipfsServiceModule,
-    tokenContractExplorer: tokenContractExplorerModule,
     optinoExplorer: optinoExplorerModule,
     feedsExplorer: feedsExplorerModule,
     tokensExplorer: tokensExplorerModule,
-    goblokIpfsExplorer: goblokIpfsExplorerModule,
-    goblokApi: apiReferenceModule,
-    goblokDataServiceExplorer: goblokDataServiceExplorerModule,
   }
 });
 
