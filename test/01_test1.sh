@@ -26,7 +26,7 @@ printf "START_DATE  = '$START_DATE' '$START_DATE_S'\n" | tee -a $TEST1OUTPUT
 printf "END_DATE    = '$END_DATE' '$END_DATE_S'\n" | tee -a $TEST1OUTPUT
 
 # Make copy of SOL file ---
-cp $SOURCEDIR/$WETH9SOL .
+# cp $SOURCEDIR/$WETH9SOL .
 # cp $SOURCEDIR/$DAISOL .
 # rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol --exclude=test/ # */
 # rsync -rp $SOURCEDIR/* . --exclude=Multisig.sol # */
