@@ -46,13 +46,13 @@ cp $SOURCEDIR/$WETH9SOL .
 # echo "--- Differences $SOURCEDIR/*.sol *.sol ---" | tee -a $TEST1OUTPUT
 # echo "$DIFFS1" | tee -a $TEST1OUTPUT
 
-solc_0.6.6 --version | tee -a $TEST1OUTPUT
+solc_0.6.8 --version | tee -a $TEST1OUTPUT
 
-echo "var wethOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
-echo "var tokenOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
-echo "var makerdaoFeedOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MAKERDAOFEEDFLATTENED`;" > $MAKERDAOFEEDJS
-echo "var feedAdaptorOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $FEEDADAPTORFLATTENED`;" > $FEEDADAPTORJS
-echo "var optinoFactoryOutput=`solc_0.6.6 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $OPTINOFACTORYFLATTENED`;" > $OPTINOFACTORYJS
+# echo "var wethOutput=`solc_0.6.8 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $WETH9SOL`;" > $WETH9JS
+echo "var tokenOutput=`solc_0.6.8 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MINTABLETOKENFLATTENED`;" > $MINTABLETOKENJS
+echo "var makerdaoFeedOutput=`solc_0.6.8 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $MAKERDAOFEEDFLATTENED`;" > $MAKERDAOFEEDJS
+echo "var feedAdaptorOutput=`solc_0.6.8 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $FEEDADAPTORFLATTENED`;" > $FEEDADAPTORJS
+echo "var optinoFactoryOutput=`solc_0.6.8 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $OPTINOFACTORYFLATTENED`;" > $OPTINOFACTORYJS
 # echo "var token1Output=`solc_0.6.0 --allow-paths . --optimize --pretty-json --combined-json abi,bin,interface $DAISOL`;" > $DAIJS
 # ../scripts/solidityFlattener.pl --contractsdir=../contracts --mainsol=$TOKENFACTORYSOL --outputsol=$TOKENFACTORYFLATTENED --verbose | tee -a $TEST1OUTPUT
 
@@ -63,7 +63,7 @@ if [ "$MODE" = "compile" ]; then
 fi
 
 geth --verbosity 3 attach $GETHATTACHPOINT << EOF | tee -a $TEST1OUTPUT
-loadScript("$WETH9JS");
+// loadScript("$WETH9JS");
 loadScript("$MINTABLETOKENJS");
 loadScript("$MAKERDAOFEEDJS");
 loadScript("$FEEDADAPTORJS");
@@ -71,8 +71,8 @@ loadScript("$OPTINOFACTORYJS");
 loadScript("lookups.js");
 loadScript("functions.js");
 
-var wethAbi = JSON.parse(wethOutput.contracts["$WETH9SOL:$WETH9NAME"].abi);
-var wethBin = "0x" + wethOutput.contracts["$WETH9SOL:$WETH9NAME"].bin;
+// var wethAbi = JSON.parse(wethOutput.contracts["$WETH9SOL:$WETH9NAME"].abi);
+// var wethBin = "0x" + wethOutput.contracts["$WETH9SOL:$WETH9NAME"].bin;
 var tokenAbi = JSON.parse(tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].abi);
 var tokenBin = "0x" + tokenOutput.contracts["$MINTABLETOKENFLATTENED:$MINTABLETOKENNAME"].bin;
 var makerdaoFeedAbi = JSON.parse(makerdaoFeedOutput.contracts["$MAKERDAOFEEDFLATTENED:$MAKERDAOFEEDNAME"].abi);

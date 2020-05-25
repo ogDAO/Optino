@@ -1,4 +1,4 @@
-pragma solidity ^0.6.6;
+pragma solidity ^0.6.8;
 
 // ----------------------------------------------------------------------------
 //    ____        _   _               ______         _
@@ -10,15 +10,15 @@ pragma solidity ^0.6.6;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.983-testnet-pre-release
+// Optino Factory v0.984-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x4783d05009F13439F80c8CA63CE6BD21694A19CD
-// OptinoFactory deployment on Ropsten: 0x754509B0c79DC725A1F01d61c4369AB2F72B28E9
+// OptinoToken deployment on Ropsten:
+// OptinoFactory deployment on Ropsten:
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -877,7 +877,7 @@ contract FeedHandler {
 contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     using SafeMath for uint;
 
-    enum FeedTypeField { Type, Decimals, Locked }
+    enum FeedDataField { Type, Decimals, Locked }
     enum FeedParametersField { Type0, Type1, Decimals0, Decimals1, Inverse0, Inverse1 }
     enum SeriesDataField { CallPut, Expiry, Strike, Bound, Spot }
     enum InputDataField { CallPut, Expiry, Strike, Bound, Tokens }
@@ -887,7 +887,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         uint index;
         address feed;
         string[2] text; // [name, message]
-        uint8[3] data; // FeedTypeField: [type, decimals, locked]
+        uint8[3] data; // FeedDataField: [type, decimals, locked]
     }
     struct Series {
         uint timestamp;
@@ -914,7 +914,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
-    string public message = "v0.983-testnet-pre-release";
+    string public message = "v0.984-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -949,7 +949,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
 
     function updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals) public onlyOwner {
         Feed storage feed = feedData[_feed];
-        require(feed.data[uint(FeedTypeField.Locked)] == 0, "Locked");
+        require(feed.data[uint(FeedDataField.Locked)] == 0, "Locked");
         (uint spot, bool hasData, uint8 feedDecimals, uint timestamp) = getRateFromFeed(_feed, FeedType(feedType));
         if (feedDecimals != NODATA) {
             require(decimals == feedDecimals, "Feed decimals mismatch");
@@ -969,8 +969,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     function lockFeed(address _feed) public onlyOwner {
         Feed storage feed = feedData[_feed];
         require(feed.timestamp > 0, "Invalid feed");
-        require(feed.data[uint(FeedTypeField.Locked)] == 0, "Locked");
-        feed.data[uint(FeedTypeField.Locked)] = 1;
+        require(feed.data[uint(FeedDataField.Locked)] == 0, "Locked");
+        feed.data[uint(FeedDataField.Locked)] = 1;
         feed.timestamp = block.timestamp;
         emit FeedLocked(_feed);
     }
@@ -986,7 +986,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         feed = feedIndex[i];
         Feed memory _feed = feedData[feed];
         (feedName, _message, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
-        (spot, hasData, feedReportedDecimals, feedTimestamp) = getRateFromFeed(_feed.feed, FeedType(_feed.data[uint(FeedTypeField.Type)]));
+        (spot, hasData, feedReportedDecimals, feedTimestamp) = getRateFromFeed(_feed.feed, FeedType(_feed.data[uint(FeedDataField.Type)]));
     }
     function feedLength() public view returns (uint) {
         return feedIndex.length;
@@ -1037,7 +1037,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         Series memory series = seriesData[_seriesKey];
         feedDecimals0 = series.feedParameters[uint(FeedParametersField.Decimals0)];
         if (feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            feedDecimals0 = feedData[series.feeds[0]].data[uint(FeedTypeField.Decimals)];
+            feedDecimals0 = feedData[series.feeds[0]].data[uint(FeedDataField.Decimals)];
         }
         (pair, feeds, feedParameters, data, optinos, timestamp) = (series.pair, series.feeds, series.feedParameters, series.data, series.optinos, series.timestamp);
     }
@@ -1055,7 +1055,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         require(series.timestamp > 0, "Invalid key");
         feedDecimals0 = series.feedParameters[uint(FeedParametersField.Decimals0)];
         if (feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
-            feedDecimals0 = feedData[series.feeds[0]].data[uint(FeedTypeField.Decimals)];
+            feedDecimals0 = feedData[series.feeds[0]].data[uint(FeedDataField.Decimals)];
         }
     }
     // uint8 decimalsData[] - 0=OptinoDecimals, 1=decimals0, 2=decimals1, 3=feedDecimals0
@@ -1088,10 +1088,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         }
         if (ok) {
             if (feedDecimals == FEEDPARAMETERS_DEFAULT) {
-                feedDecimals = feed.data[uint(FeedTypeField.Decimals)];
+                feedDecimals = feed.data[uint(FeedDataField.Decimals)];
             }
             if (feedType == FEEDPARAMETERS_DEFAULT) {
-                feedType = feed.data[uint(FeedTypeField.Type)];
+                feedType = feed.data[uint(FeedDataField.Type)];
             }
             (spot, hasData, /*feedDecimals*/, /*timestamp*/) = getRateFromFeed(feeds[i], FeedType(feedType));
             if (feedParameters[uint(FeedParametersField.Inverse0) + i] != 0) {
@@ -1257,8 +1257,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         bytes32 _seriesKey = makeSeriesKey(inputData);
         Series storage series = seriesData[_seriesKey];
         if (series.timestamp == 0) {
-            _optinos[0] = OptinoToken(payable(createClone(optinoTokenTemplate)));
-            _optinos[1] = OptinoToken(payable(createClone(optinoTokenTemplate)));
+            _optinos[0] = OptinoToken(createClone(optinoTokenTemplate));
+            _optinos[1] = OptinoToken(createClone(optinoTokenTemplate));
             addSeries(inputData, _optinos);
             series = seriesData[_seriesKey];
             _optinos[0].initOptinoToken(this, _seriesKey, _optinos[1], series.index, false, OPTINODECIMALS);

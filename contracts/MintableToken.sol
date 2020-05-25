@@ -8,6 +8,7 @@ pragma solidity ^0.6.0;
 //
 // https://github.com/bokkypoobah/Optino
 //
+// SPDX-License-Identifier: MIT
 //
 // Enjoy.
 //
