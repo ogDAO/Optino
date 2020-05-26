@@ -10,15 +10,15 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.984-testnet-pre-release
+// Optino Factory v0.985-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x7B1F3901350392c8479D6e48503F0ebb1af7A081
-// OptinoFactory deployment on Ropsten: 0x27c4C6e60Ea7Ce4e548C7ecDd433e8eCc8Ed633a
+// OptinoToken deployment on Ropsten:
+// OptinoFactory deployment on Ropsten: 
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -233,8 +233,8 @@ contract NameUtils is DataType {
     uint8 constant COLON = 58;
     uint8 constant CHAR_T = 84;
     uint8 constant CHAR_Z = 90;
-    uint constant MAXSYMBOL = 8;
-    uint constant MAXFEED = 24;
+    uint constant MAXSYMBOLLENGTH = 8;
+    uint constant MAXFEEDLENGTH = 24;
 
     function numToBytes(uint number, uint8 decimals) internal pure returns (bytes memory b, uint _length) {
         uint i;
@@ -348,12 +348,12 @@ contract NameUtils is DataType {
         uint j;
         b = new bytes(40);
         bytes memory b1 = bytes(pair[0].symbol());
-        for (i = 0; i < b1.length && i < MAXSYMBOL; i++) {
+        for (i = 0; i < b1.length && i < MAXSYMBOLLENGTH; i++) {
             b[j++] = b1[i];
         }
         b[j++] = byte(SLASH);
         b1 = bytes(pair[1].symbol());
-        for (i = 0; i < b1.length && i < MAXSYMBOL; i++) {
+        for (i = 0; i < b1.length && i < MAXSYMBOLLENGTH; i++) {
             b[j++] = b1[i];
         }
         return (b, j);
@@ -361,7 +361,7 @@ contract NameUtils is DataType {
     function feedToBytes(OptinoFactory factory, address[2] memory feeds, uint8[6] memory feedParameters) internal view returns (bytes memory b, uint _length) {
         uint i;
         uint j;
-        b = new bytes(40);
+        b = new bytes(80);
         bytes memory b1;
 
         (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) = factory.getFeedName(feeds[0]);
@@ -374,7 +374,7 @@ contract NameUtils is DataType {
                 }
             }
             b1 = bytes(feedName);
-            for (i = 0; i < b1.length && i < MAXFEED; i++) {
+            for (i = 0; i < b1.length && i < MAXFEEDLENGTH; i++) {
                 b[j++] = b1[i];
             }
             if (feedParameters[uint(FeedParametersField.Inverse0)] != 0) {
@@ -398,7 +398,7 @@ contract NameUtils is DataType {
                 } else {
                 }
                 b1 = bytes(feedName);
-                for (i = 0; i < b1.length && i < MAXFEED; i++) {
+                for (i = 0; i < b1.length && i < MAXFEEDLENGTH; i++) {
                     b[j++] = b1[i];
                 }
                 if (feedParameters[uint(FeedParametersField.Inverse1)] != 0) {
@@ -1005,7 +1005,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.984-testnet-pre-release";
+    string public message = "v0.985-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed

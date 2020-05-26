@@ -615,7 +615,7 @@ function printOptinoFactoryContractDetails() {
           var collateralToken = tokenContract.collateralToken.call();
           var collateralTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(collateralToken);
           var collateralDecimals = collateralTokenContract.decimals.call();
-          var oneToken = new BigNumber("10000").shift(tokenDecimals);
+          var oneToken = new BigNumber("1").shift(tokenDecimals);
           var seriesData = tokenContract.getSeriesData.call();
           var feedInfo = tokenContract.getFeedInfo.call();
           var rateDecimals = parseInt(feedInfo[8]);
