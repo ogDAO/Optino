@@ -109,7 +109,7 @@ console.log("RESULT: ");
 var deployGroup1_Message = "Deploy Group #1 - Contracts";
 
 var OPTINODECIMALS = 18;
-var token0Decimals = 18;
+var token0Decimals = 0;
 var token1Decimals = 18;
 var rateDecimals0 = 18;
 var rateDecimals1 = 8;
@@ -124,6 +124,7 @@ var makerdaoFeed0Value = new BigNumber("193.50264978").shift(rateDecimals0); // 
 var makerdaoFeed1Value = new BigNumber("45.5742405").shift(rateDecimals1); // BTC/ETH
 console.log("RESULT: makerdaoFeed0Value ETH/USD=" + makerdaoFeed0Value.shift(-rateDecimals0).toString());
 console.log("RESULT: makerdaoFeed1Value BTC/ETH=" + makerdaoFeed1Value.shift(-rateDecimals1).toString());
+
 console.log("DATA: deployer=" + deployer);
 console.log("DATA: defaultGasPrice=" + defaultGasPrice);
 // -----------------------------------------------------------------------------
@@ -376,13 +377,13 @@ console.log("RESULT: ");
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
-var callStrike = new BigNumber("175.000000000000000001").shift(rateDecimals0);
-var callCap = new BigNumber("350.000000000000000002").shift(rateDecimals0);
+var callStrike = new BigNumber("175.000000000000000000").shift(rateDecimals0);
+var callCap = new BigNumber("0.000000000000000000").shift(rateDecimals0);
 var putStrike = new BigNumber("200.000000000000000000").shift(rateDecimals0);
 var putFloor = new BigNumber("400").shift(rateDecimals0);
 var strike = callPut == "0" ? callStrike : putStrike;
 var bound = callPut == "0" ? callCap : putFloor;
-var tokens = new BigNumber("10").shift(OPTINODECIMALS);
+var tokens = new BigNumber("10000").shift(OPTINODECIMALS);
 var value = web3.toWei("0", "ether").toString();
 var _uiFeeAccount = "0x0000000000000000000000000000000000000000"; // or uiFeeAccount
 // var _uiFeeAccount = uiFeeAccount;
@@ -391,8 +392,8 @@ var collateralDecimals = callPut == 0 ? token0Decimals : token1Decimals;
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var pair = [token0Address, token1Address];
 // var feeds = [NULLACCOUNT, makerdaoFeed0Address];
-// var feeds = [makerdaoFeed0Address, NULLACCOUNT];
-var feeds = [makerdaoFeed0Address, makerdaoFeed1Address];
+var feeds = [makerdaoFeed0Address, NULLACCOUNT];
+// var feeds = [makerdaoFeed0Address, makerdaoFeed1Address];
 // var feeds = [buyer2, NULLACCOUNT];
 console.log("RESULT: feeds " + JSON.stringify(feeds));
 var type0 = 0xff;

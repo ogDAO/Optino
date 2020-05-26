@@ -17,8 +17,8 @@ pragma solidity ^0.6.8;
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten:
+// OptinoToken deployment on Ropsten: 0x7B1F3901350392c8479D6e48503F0ebb1af7A081
+// OptinoFactory deployment on Ropsten: 0x27c4C6e60Ea7Ce4e548C7ecDd433e8eCc8Ed633a
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -488,7 +488,6 @@ contract NameUtils is DataType {
             }
         }
         b[j++] = byte(SPACE);
-
 
         (b1, l1) = feedToBytes(factory, feeds, feedParameters);
         for (i = 0; i < b1.length && i < l1; i++) {
@@ -999,12 +998,11 @@ contract FeedHandler {
 contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     using SafeMath for uint;
 
-
     uint8 private constant OPTINODECIMALS = 18;
     uint private constant FEEDECIMALS = 18;
     uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
     uint private constant ONEDAY = 24 * 60 * 60;
-    uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
+    uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
     string public message = "v0.984-testnet-pre-release";
@@ -1297,14 +1295,16 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         if (inputData.pair[1] == ERC20(0)) {
             return (false, "token1 must != 0");
         }
-        if (inputData.pair[0] == inputData.pair[1]) {
-            return (false, "token0 must != token1");
+        if (inputData.pair[0].totalSupply() == 0 || inputData.pair[0].decimals() > 18) {
+            return (false, "token0 error");
         }
-        if (inputData.pair[0].totalSupply() == 0) {
-            return (false, "token0 totalSupply failure");
-        }
-        if (inputData.pair[1] != ERC20(0) && inputData.pair[1].totalSupply() == 0) {
-            return (false, "token1 totalSupply failure");
+        if (inputData.pair[1] != ERC20(0)) {
+            if (inputData.pair[0] == inputData.pair[1]) {
+                return (false, "token0 must != token1");
+            }
+            if (inputData.pair[1].totalSupply() == 0 || inputData.pair[1].decimals() > 18) {
+                return (false, "token1 error");
+            }
         }
         if (inputData.feeds[0] == address(0)) {
             return (false, "feed0 must != 0");
@@ -1321,18 +1321,18 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
             return (false, "callPut must be 0 or 1");
         }
         if (inputData.data[uint(InputDataField.Expiry)] <= block.timestamp) {
-            return (false, "expiry must > now");
+            return (false, "expiry must be > now");
         }
         if (strike == 0) {
             return (false, "strike must be > 0");
         }
         if (callPut == 0) {
             if (bound > 0 && bound <= strike) {
-                return (false, "Call bound must = 0 or > strike");
+                return (false, "Call bound must be 0 or > strike");
             }
         } else {
             if (bound >= strike) {
-                return (false, "Put bound must = 0 or < strike");
+                return (false, "Put bound must be 0 or < strike");
             }
         }
         if (inputData.data[uint(InputDataField.Tokens)] == 0) {
