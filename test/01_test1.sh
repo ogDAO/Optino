@@ -391,8 +391,8 @@ var collateralDecimals = callPut == 0 ? token0Decimals : token1Decimals;
 console.log("RESULT: ---------- " + mintOptinoGroup1_Message + " ----------");
 var pair = [token0Address, token1Address];
 // var feeds = [NULLACCOUNT, makerdaoFeed0Address];
-var feeds = [makerdaoFeed0Address, NULLACCOUNT];
-// var feeds = [makerdaoFeed0Address, makerdaoFeed1Address];
+// var feeds = [makerdaoFeed0Address, NULLACCOUNT];
+var feeds = [makerdaoFeed0Address, makerdaoFeed1Address];
 // var feeds = [buyer2, NULLACCOUNT];
 console.log("RESULT: feeds " + JSON.stringify(feeds));
 var type0 = 0xff;
@@ -478,6 +478,7 @@ console.log("RESULT: ");
 printTokenContractDetails(3);
 console.log("RESULT: ");
 
+exit;
 
 if (true) {
   // -----------------------------------------------------------------------------
