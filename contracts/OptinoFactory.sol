@@ -301,7 +301,12 @@ library NameUtils {
         } while (i > 0);
         s = string(b);
     }
-    function toName(string memory description, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint8 decimals) internal pure returns (string memory s) {
+    function toName(OptinoFactory factory, bytes32 seriesKey, string memory feedDescription, bool cover, uint callPut, uint expiry, uint strike, uint bound, uint8 decimals) internal view returns (string memory s) {
+        (/*uint seriesIndex*/, /*ERC20[2] memory pair*/, /*address[2] memory feeds*/, /*uint8[6] memory feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
+
+
+// function getSeriesByKey(bytes32 seriesKey) public view returns (uint _seriesIndex, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, OptinoToken[2] memory optinos) {
+
         bytes memory b = new bytes(256);
         uint i;
         uint j;
@@ -366,9 +371,9 @@ library NameUtils {
         }
         b[j++] = byte(SPACE);
 
-        bytes memory _description = bytes(description);
-        for (i = 0; i < _description.length; i++) {
-            b[j++] = _description[i];
+        bytes memory _feedDescription = bytes(feedDescription);
+        for (i = 0; i < _feedDescription.length; i++) {
+            b[j++] = _feedDescription[i];
         }
         s = string(b);
     }
@@ -579,7 +584,6 @@ contract OptinoFormulae {
 contract OptinoToken is BasicToken, OptinoFormulae {
     OptinoFactory public factory;
     bytes32 public seriesKey;
-    uint public seriesNumber;
     bool public isCover;
     bool public isCustom;
     OptinoToken public optinoPair;
@@ -589,14 +593,14 @@ contract OptinoToken is BasicToken, OptinoFormulae {
     event Payoff(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPaid);
     event LogInfo(string note, address addr, uint number);
 
-    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, uint _seriesNumber, bool _isCover, uint _decimals) public {
-        (factory, seriesKey, optinoPair, seriesNumber, isCover) = (_factory, _seriesKey, _optinoPair, _seriesNumber, _isCover);
-        (/*seriesIndex*/, ERC20[2] memory pair, /*feeds*/, /*feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
+    function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, bool _isCover, uint _decimals) public {
+        (factory, seriesKey, optinoPair, isCover) = (_factory, _seriesKey, _optinoPair, _isCover);
+        (uint seriesIndex, ERC20[2] memory pair, /*feeds*/, /*feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
         collateralToken = data[uint(OptinoFactory.SeriesDataField.CallPut)] == 0 ? pair[0] : pair[1];
         string memory _feedName;
         (isCustom, _feedName) = factory.getNameData(seriesKey);
-        string memory _symbol = NameUtils.toSymbol(isCover, _seriesNumber);
-        string memory _name = NameUtils.toName(isCustom ? "Custom" : _feedName, isCover, data[uint(OptinoFactory.SeriesDataField.CallPut)], data[uint(OptinoFactory.SeriesDataField.Expiry)], data[uint(OptinoFactory.SeriesDataField.Strike)], data[uint(OptinoFactory.SeriesDataField.Bound)], factory.getFeedDecimals0(seriesKey));
+        string memory _symbol = NameUtils.toSymbol(isCover, seriesIndex);
+        string memory _name = NameUtils.toName(_factory, _seriesKey, isCustom ? "Custom" : _feedName, isCover, data[uint(OptinoFactory.SeriesDataField.CallPut)], data[uint(OptinoFactory.SeriesDataField.Expiry)], data[uint(OptinoFactory.SeriesDataField.Strike)], data[uint(OptinoFactory.SeriesDataField.Bound)], factory.getFeedDecimals0(seriesKey));
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
 
@@ -1261,8 +1265,8 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
             _optinos[1] = OptinoToken(createClone(optinoTokenTemplate));
             addSeries(inputData, _optinos);
             series = seriesData[_seriesKey];
-            _optinos[0].initOptinoToken(this, _seriesKey, _optinos[1], series.index, false, OPTINODECIMALS);
-            _optinos[1].initOptinoToken(this, _seriesKey, _optinos[0], series.index, true, OPTINODECIMALS);
+            _optinos[0].initOptinoToken(this, _seriesKey, _optinos[1], false, OPTINODECIMALS);
+            _optinos[1].initOptinoToken(this, _seriesKey, _optinos[0], true, OPTINODECIMALS);
         } else {
             _optinos = series.optinos;
         }

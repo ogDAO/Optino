@@ -623,7 +623,7 @@ function printOptinoFactoryContractDetails() {
           console.log("RESULT:       .owner/new=" + getShortAddressName(tokenContract.owner.call()) + "/" + getShortAddressName(tokenContract.newOwner.call()));
           console.log("RESULT:       .details='" + tokenContract.symbol.call() + "' '" + tokenContract.name.call() + "' " + tokenDecimals + " dp");
           console.log("RESULT:       .totalSupply=" + tokenContract.totalSupply.call().shift(-tokenDecimals));
-          console.log("RESULT:       .seriesKey/seriesNumber=" + tokenContract.seriesKey.call() + "/" + tokenContract.seriesNumber.call());
+          console.log("RESULT:       .seriesKey=" + tokenContract.seriesKey.call());
           console.log("RESULT:       .isCover/optinoPair=" + tokenContract.isCover.call() + "/" + getShortAddressName(tokenContract.optinoPair.call()));
           console.log("RESULT:       .collateralToken/decimals: " + getShortAddressName(collateralToken) + "/" + collateralDecimals);
           console.log("RESULT:       .seriesData: " + JSON.stringify(seriesData));
