@@ -111,7 +111,7 @@ var deployGroup1_Message = "Deploy Group #1 - Contracts";
 var OPTINODECIMALS = 18;
 var token0Decimals = 18;
 var token1Decimals = 18;
-var rateDecimals0 = 8;
+var rateDecimals0 = 18;
 var rateDecimals1 = 8;
 var token0Symbol = 'fWETH';
 var token1Symbol = 'fUSD';
@@ -174,7 +174,7 @@ var optinoTokenContract = web3.eth.contract(optinoTokenAbi);
 // console.log("DATA: makerdaoFeedContract=" + JSON.stringify(makerdaoFeedContract));
 var optinoTokenTx = null;
 var optinoTokenAddress = null;
-var optinoToken = optinoTokenContract.new({from: deployer, data: optinoTokenBin, gas: 5000000, gasPrice: defaultGasPrice},
+var optinoToken = optinoTokenContract.new({from: deployer, data: optinoTokenBin, gas: 6000000, gasPrice: defaultGasPrice},
   function(e, contract) {
     if (!e) {
       if (!contract.address) {
@@ -328,8 +328,8 @@ var deployGroup2_7Tx = token1.mint(buyer1, token1Tokens.toString(), {from: deplo
 var deployGroup2_8Tx = token1.mint(buyer2, token1Tokens.toString(), {from: deployer, gas: 100000, gasPrice: defaultGasPrice});
 var deployGroup2_9Tx = makerdaoFeed0.setValue(makerdaoFeed0Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
 var deployGroup2_10Tx = makerdaoFeed1.setValue(makerdaoFeed1Value, true, {from: deployer, gas: 6000000, gasPrice: defaultGasPrice});
-var deployGroup2_11Tx = optinoFactory.updateFeed(makerdaoFeed0Address, "Maker ETH/USD", "https://feeds.chain.link/", FEEDTYPE_MAKER, rateDecimals0, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
-var deployGroup2_12Tx = optinoFactory.updateFeed(makerdaoFeed1Address, "Maker MKR/ETH", "https://feeds.chain.link/", FEEDTYPE_MAKER, rateDecimals1, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_11Tx = optinoFactory.updateFeed(makerdaoFeed0Address, "Maker:ETH/USD", "https://feeds.chain.link/", FEEDTYPE_MAKER, rateDecimals0, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
+var deployGroup2_12Tx = optinoFactory.updateFeed(makerdaoFeed1Address, "Maker:MKR/ETH", "https://feeds.chain.link/", FEEDTYPE_MAKER, rateDecimals1, {from: deployer, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_13Tx = token0.approve(optinoFactoryAddress, token0Tokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 var deployGroup2_14Tx = token1.approve(optinoFactoryAddress, token1Tokens, {from: seller1, gas: 1000000, gasPrice: defaultGasPrice});
 while (txpool.status.pending > 0) {
@@ -376,8 +376,8 @@ console.log("RESULT: ");
 var mintOptinoGroup1_Message = "Mint Optino Group #1";
 var callPut = "0"; // 0 Call, 1 Put
 var expiry = parseInt(new Date()/1000) + 6; // + 2 * 60*60;
-var callStrike = new BigNumber("175.000000000000000000").shift(rateDecimals0);
-var callCap = new BigNumber("0").shift(rateDecimals0);
+var callStrike = new BigNumber("175.000000000000000001").shift(rateDecimals0);
+var callCap = new BigNumber("350.000000000000000002").shift(rateDecimals0);
 var putStrike = new BigNumber("200.000000000000000000").shift(rateDecimals0);
 var putFloor = new BigNumber("400").shift(rateDecimals0);
 var strike = callPut == "0" ? callStrike : putStrike;
@@ -437,7 +437,7 @@ console.log("RESULT: error " + _error);
 // var mintOptinoGroup1_1Tx = eth.sendTransaction({ to: optinoFactoryAddress, from: seller1, data: data, value: value, gas: 5000000, gasPrice: defaultGasPrice });
 
 // console.log("RESULT: optinoFactory.mint(" + token0Address + ", " + token1Address + ", " + feedAdaptorAddress + ", " + callPut + ", " + expiry + ", " + strike + ", " + bound + ", " + tokens + ", " + _uiFeeAccount + ")");
-var mintOptinoGroup1_1Tx = optinoFactory.mint(pair, feeds, feedParameters, mintData, _uiFeeAccount, {from: seller1, gas: 5000000, gasPrice: defaultGasPrice});
+var mintOptinoGroup1_1Tx = optinoFactory.mint(pair, feeds, feedParameters, mintData, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 
 // var mintOptinoGroup1_2Tx = optinoFactory.mintOptinoTokens(token0Address, token1Address, feedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
 // var mintOptinoGroup1_3Tx = optinoFactory.mintOptinoTokens(token0Address, token1Address, feedAdaptorAddress, callPut, expiry, strike, tokens, _uiFeeAccount, {from: seller1, gas: 6000000, gasPrice: defaultGasPrice});
@@ -478,7 +478,6 @@ console.log("RESULT: ");
 printTokenContractDetails(3);
 console.log("RESULT: ");
 
-exit;
 
 if (true) {
   // -----------------------------------------------------------------------------

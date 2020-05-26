@@ -175,8 +175,42 @@ contract CloneFactory {
 // End CloneFactory.sol
 
 
+contract DataType {
+    enum FeedDataField { Type, Decimals, Locked }
+    enum FeedParametersField { Type0, Type1, Decimals0, Decimals1, Inverse0, Inverse1 }
+    enum SeriesDataField { CallPut, Expiry, Strike, Bound, Spot }
+    enum InputDataField { CallPut, Expiry, Strike, Bound, Tokens }
+
+    struct Feed {
+        uint timestamp;
+        uint index;
+        address feed;
+        string[2] text; // [name, message]
+        uint8[3] data; // FeedDataField: [type, decimals, locked]
+    }
+    struct Series {
+        uint timestamp;
+        uint index;
+        bytes32 key;
+        ERC20[2] pair; // [token0, token1]
+        address[2] feeds; // [feed0, feed1]
+        uint8[6] feedParameters; // FeedParametersField: [type0, type1, decimals0, decimals1, inverse0, inverse1]
+        uint[5] data; // SeriesDataField: [callPut, expiry, strike, bound, spot]
+        OptinoToken[2] optinos; // optino and cover
+    }
+    struct InputData {
+        ERC20[2] pair; // [token0, token1]
+        address[2] feeds; // [feed0, feed1]
+        uint8[6] feedParameters; // FeedParametersField: [type0, type1, decimals0, decimals1, inverse0, inverse1]
+        uint[5] data; // InputDataField: [callPut, expiry, strike, bound, tokens]
+    }
+
+    uint8 immutable FEEDPARAMETERS_DEFAULT = uint8(0xff);
+}
+
+
 /// @notice Name utils
-library NameUtils {
+contract NameUtils is DataType {
     // TODO: Remove 'z' before deployment to reduce symbol space pollution
     bytes constant OPTINOSYMBOL = "zOPT";
     bytes constant COVERSYMBOL = "zCOV";
@@ -187,7 +221,11 @@ library NameUtils {
     bytes constant OPTINO = "Optino";
     bytes constant COVERNAME = "Cover";
     bytes constant CUSTOMFEED = "CustomFeed";
+    bytes constant INVERSESTART = "Inv(";
+    uint8 constant INVERSEEND = 41; // ")"
     uint8 constant SPACE = 32;
+    uint8 constant MULTIPLY = 42;
+    uint8 constant DIVIDE = 246;
     uint8 constant DASH = 45;
     uint8 constant DOT = 46;
     uint8 constant SLASH = 47;
@@ -195,7 +233,7 @@ library NameUtils {
     uint8 constant COLON = 58;
     uint8 constant CHAR_T = 84;
     uint8 constant CHAR_Z = 90;
-    uint constant MAXSYMBOL = 6;
+    uint constant MAXSYMBOL = 8;
     uint constant MAXFEED = 24;
 
     function numToBytes(uint number, uint8 decimals) internal pure returns (bytes memory b, uint _length) {
@@ -305,16 +343,85 @@ library NameUtils {
         } while (i > 0);
         s = string(b);
     }
+    function pairSymbolToBytes(ERC20[2] memory pair) internal view returns (bytes memory b, uint _length) {
+        uint i;
+        uint j;
+        b = new bytes(40);
+        bytes memory b1 = bytes(pair[0].symbol());
+        for (i = 0; i < b1.length && i < MAXSYMBOL; i++) {
+            b[j++] = b1[i];
+        }
+        b[j++] = byte(SLASH);
+        b1 = bytes(pair[1].symbol());
+        for (i = 0; i < b1.length && i < MAXSYMBOL; i++) {
+            b[j++] = b1[i];
+        }
+        return (b, j);
+    }
+    function feedToBytes(OptinoFactory factory, address[2] memory feeds, uint8[6] memory feedParameters) internal view returns (bytes memory b, uint _length) {
+        uint i;
+        uint j;
+        b = new bytes(40);
+        bytes memory b1;
+
+        (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) = factory.getFeedName(feeds[0]);
+        if (isRegistered &&
+            (feedParameters[uint(FeedParametersField.Type0)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Type0)] == feedType) &&
+            (feedParameters[uint(FeedParametersField.Decimals0)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Decimals0)] == decimals)) {
+            if (feedParameters[uint(FeedParametersField.Inverse0)] != 0) {
+                for (i = 0; i < INVERSESTART.length; i++) {
+                    b[j++] = INVERSESTART[i];
+                }
+            }
+            b1 = bytes(feedName);
+            for (i = 0; i < b1.length && i < MAXFEED; i++) {
+                b[j++] = b1[i];
+            }
+            if (feedParameters[uint(FeedParametersField.Inverse0)] != 0) {
+                b[j++] = byte(INVERSEEND);
+            }
+        } else {
+            for (i = 0; i < CUSTOMFEED.length; i++) {
+                b[j++] = CUSTOMFEED[i];
+            }
+        }
+        if (feeds[1] != address(0)) {
+            (isRegistered, feedName, feedType, decimals)  = factory.getFeedName(feeds[1]);
+            b[j++] = byte(MULTIPLY);
+            if (isRegistered &&
+                (feedParameters[uint(FeedParametersField.Type1)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Type1)] == feedType) &&
+                (feedParameters[uint(FeedParametersField.Decimals1)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Decimals1)] == decimals)) {
+                if (feedParameters[uint(FeedParametersField.Inverse1)] != 0) {
+                    for (i = 0; i < INVERSESTART.length; i++) {
+                        b[j++] = INVERSESTART[i];
+                    }
+                } else {
+                }
+                b1 = bytes(feedName);
+                for (i = 0; i < b1.length && i < MAXFEED; i++) {
+                    b[j++] = b1[i];
+                }
+                if (feedParameters[uint(FeedParametersField.Inverse1)] != 0) {
+                    b[j++] = byte(INVERSEEND);
+                }
+            } else {
+                for (i = 0; i < CUSTOMFEED.length; i++) {
+                    b[j++] = CUSTOMFEED[i];
+                }
+            }
+        }
+        return (b, j);
+    }
     function toName(OptinoFactory factory, bytes32 seriesKey, bool cover) internal view returns (string memory s) {
-        (/*uint seriesIndex*/, ERC20[2] memory pair, address[2] memory feeds, /*uint8[6] memory feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
+        (/*uint seriesIndex*/, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
 
         uint8 feedDecimals0 = factory.getFeedDecimals0(seriesKey);
 
-        bytes memory b = new bytes(1256);
+        bytes memory b = new bytes(256);
         uint i;
         uint j;
-        if (data[uint(OptinoFactory.SeriesDataField.Bound)] == 0) {
-            if (data[uint(OptinoFactory.SeriesDataField.CallPut)] == 0) {
+        if (data[uint(SeriesDataField.Bound)] == 0) {
+            if (data[uint(SeriesDataField.CallPut)] == 0) {
                 for (i = 0; i < VANILLACALLNAME.length; i++) {
                     b[j++] = VANILLACALLNAME[i];
                 }
@@ -324,7 +431,7 @@ library NameUtils {
                 }
             }
         } else {
-            if (data[uint(OptinoFactory.SeriesDataField.CallPut)] == 0) {
+            if (data[uint(SeriesDataField.CallPut)] == 0) {
                 for (i = 0; i < CAPPEDCALLNAME.length; i++) {
                     b[j++] = CAPPEDCALLNAME[i];
                 }
@@ -347,72 +454,47 @@ library NameUtils {
         }
         b[j++] = byte(SPACE);
 
-        bytes memory symbol = bytes(pair[0].symbol());
-        for (i = 0; i < symbol.length && i < MAXSYMBOL; i++) {
-            b[j++] = symbol[i];
-        }
-        // b[j++] = byte(SLASH);
-        // symbol = bytes(pair[1].symbol());
-        // for (i = 0; i < symbol.length && i < MAXSYMBOL; i++) {
-        //     b[j++] = symbol[i];
-        // }
-        // b[j++] = byte(SPACE);
-
         bytes memory b1;
         uint l1;
 
-        b1 = dateTimeToBytes(data[uint(OptinoFactory.SeriesDataField.Expiry)]);
+        (b1, l1) = pairSymbolToBytes(pair);
+        for (i = 0; i < b1.length && i < l1; i++) {
+            b[j++] = b1[i];
+        }
+        b[j++] = byte(SPACE);
+
+        b1 = dateTimeToBytes(data[uint(SeriesDataField.Expiry)]);
         for (i = 0; i < b1.length; i++) {
             b[j++] = b1[i];
         }
         b[j++] = byte(SPACE);
 
-        if (data[uint(OptinoFactory.SeriesDataField.CallPut)] != 0 && data[uint(OptinoFactory.SeriesDataField.Bound)] != 0) {
-            (b1, l1) = numToBytes(data[uint(OptinoFactory.SeriesDataField.Bound)], feedDecimals0);
+        if (data[uint(SeriesDataField.CallPut)] != 0 && data[uint(SeriesDataField.Bound)] != 0) {
+            (b1, l1) = numToBytes(data[uint(SeriesDataField.Bound)], feedDecimals0);
             for (i = 0; i < b1.length && i < l1; i++) {
                 b[j++] = b1[i];
             }
             b[j++] = byte(DASH);
         }
-
-        (b1, l1) = numToBytes(data[uint(OptinoFactory.SeriesDataField.Strike)], feedDecimals0);
+        (b1, l1) = numToBytes(data[uint(SeriesDataField.Strike)], feedDecimals0);
         for (i = 0; i < b1.length && i < l1; i++) {
             b[j++] = b1[i];
         }
-        if (data[uint(OptinoFactory.SeriesDataField.CallPut)] == 0 && data[uint(OptinoFactory.SeriesDataField.Bound)] != 0) {
+        if (data[uint(SeriesDataField.CallPut)] == 0 && data[uint(SeriesDataField.Bound)] != 0) {
             b[j++] = byte(DASH);
-            (b1, l1) = numToBytes(data[uint(OptinoFactory.SeriesDataField.Bound)], feedDecimals0);
+            (b1, l1) = numToBytes(data[uint(SeriesDataField.Bound)], feedDecimals0);
             for (i = 0; i < b1.length && i < l1; i++) {
                 b[j++] = b1[i];
             }
         }
         b[j++] = byte(SPACE);
 
-        (bool isRegistered, string memory feedName) = factory.getFeedName(feeds[0]);
-        if (isRegistered) {
-            b1 = bytes(feedName);
-            for (i = 0; i < b1.length && i < MAXFEED; i++) {
-                b[j++] = b1[i];
-            }
-        } else {
-            for (i = 0; i < CUSTOMFEED.length; i++) {
-                b[j++] = CUSTOMFEED[i];
-            }
+
+        (b1, l1) = feedToBytes(factory, feeds, feedParameters);
+        for (i = 0; i < b1.length && i < l1; i++) {
+            b[j++] = b1[i];
         }
-        if (feeds[1] != address(0)) {
-            b[j++] = byte(SLASH);
-            (isRegistered, feedName)  = factory.getFeedName(feeds[1]);
-            if (isRegistered) {
-                b1 = bytes(feedName);
-                for (i = 0; i < b1.length && i < MAXFEED; i++) {
-                    b[j++] = b1[i];
-                }
-            } else {
-                for (i = 0; i < CUSTOMFEED.length; i++) {
-                    b[j++] = CUSTOMFEED[i];
-                }
-            }
-        }
+
         return string(b);
     }
 }
@@ -558,7 +640,7 @@ contract BasicToken is ERC20, Owned {
 // flooredPutPayoff  = max(strike - max(spot, floor), 0)
 //                   = max(strike - spot, 0) - max(floor - spot, 0)
 // ----------------------------------------------------------------------------
-contract OptinoFormulae {
+contract OptinoFormulae is DataType {
     using SafeMath for uint;
 
     function shiftRightThenLeft(uint amount, uint8 right, uint8 left) internal pure returns (uint _result) {
@@ -572,7 +654,7 @@ contract OptinoFormulae {
     }
 
     function computeCollateral(uint[5] memory _seriesData, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _collateral) {
-        (uint callPut, uint strike, uint bound) = (_seriesData[uint(OptinoFactory.SeriesDataField.CallPut)], _seriesData[uint(OptinoFactory.SeriesDataField.Strike)], _seriesData[uint(OptinoFactory.SeriesDataField.Bound)]);
+        (uint callPut, uint strike, uint bound) = (_seriesData[uint(SeriesDataField.CallPut)], _seriesData[uint(SeriesDataField.Strike)], _seriesData[uint(SeriesDataField.Bound)]);
         (uint8 decimals, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
         require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
@@ -589,7 +671,7 @@ contract OptinoFormulae {
     }
 
     function computePayoff(uint[5] memory _seriesData, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _payoff) {
-        (uint callPut, uint strike, uint bound) = (_seriesData[uint(OptinoFactory.SeriesDataField.CallPut)], _seriesData[uint(OptinoFactory.SeriesDataField.Strike)], _seriesData[uint(OptinoFactory.SeriesDataField.Bound)]);
+        (uint callPut, uint strike, uint bound) = (_seriesData[uint(SeriesDataField.CallPut)], _seriesData[uint(SeriesDataField.Strike)], _seriesData[uint(SeriesDataField.Bound)]);
         return _computePayoff(callPut, strike, bound, spot, tokens, decimalsData);
     }
     function _computePayoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _payoff) {
@@ -619,7 +701,7 @@ contract OptinoFormulae {
 
 
 /// @notice OptinoToken = basic token + burn + payoff + close + settle
-contract OptinoToken is BasicToken, OptinoFormulae {
+contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
     OptinoFactory public factory;
     bytes32 public seriesKey;
     bool public isCover;
@@ -629,16 +711,14 @@ contract OptinoToken is BasicToken, OptinoFormulae {
 
     event Close(OptinoToken indexed optinoToken, OptinoToken indexed coverToken, address indexed tokenOwner, uint tokens, uint collateralRefunded);
     event Payoff(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPaid);
-    event LogInfo(string note, address addr, uint number);
+    event LogInfo(bytes note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, bool _isCover, uint _decimals) public {
         (factory, seriesKey, optinoPair, isCover) = (_factory, _seriesKey, _optinoPair, _isCover);
         (uint seriesIndex, ERC20[2] memory pair, /*feeds*/, /*feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
-        collateralToken = data[uint(OptinoFactory.SeriesDataField.CallPut)] == 0 ? pair[0] : pair[1];
-        // string memory _feedName;
-        // (isCustom, _feedName) = factory.getNameData(seriesKey);
-        string memory _symbol = NameUtils.toSymbol(isCover, seriesIndex);
-        string memory _name = NameUtils.toName(_factory, _seriesKey, isCover);
+        collateralToken = data[uint(SeriesDataField.CallPut)] == 0 ? pair[0] : pair[1];
+        string memory _symbol = toSymbol(isCover, seriesIndex);
+        string memory _name = toName(_factory, _seriesKey, isCover);
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
 
@@ -657,8 +737,8 @@ contract OptinoToken is BasicToken, OptinoFormulae {
 
     function getInfo() public view returns (ERC20 token0, ERC20 token1, address feed0, bool _isCustom, uint callPut, uint expiry, uint strike, uint bound, bool _isCover) {
         (/*seriesIndex*/, ERC20[2] memory pair, address[2] memory feeds, /*_feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
-        callPut = data[uint(OptinoFactory.SeriesDataField.CallPut)];
-        return (pair[0], pair[1], feeds[0], isCustom, data[uint(OptinoFactory.SeriesDataField.CallPut)], data[uint(OptinoFactory.SeriesDataField.Expiry)], data[uint(OptinoFactory.SeriesDataField.Strike)], data[uint(OptinoFactory.SeriesDataField.Bound)], isCover);
+        callPut = data[uint(SeriesDataField.CallPut)];
+        return (pair[0], pair[1], feeds[0], isCustom, data[uint(SeriesDataField.CallPut)], data[uint(SeriesDataField.Expiry)], data[uint(SeriesDataField.Strike)], data[uint(SeriesDataField.Bound)], isCover);
     }
     function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint8 feedDecimals0, uint currentSpot) {
         ERC20[2] memory pair;
@@ -919,41 +999,12 @@ contract FeedHandler {
 contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     using SafeMath for uint;
 
-    enum FeedDataField { Type, Decimals, Locked }
-    enum FeedParametersField { Type0, Type1, Decimals0, Decimals1, Inverse0, Inverse1 }
-    enum SeriesDataField { CallPut, Expiry, Strike, Bound, Spot }
-    enum InputDataField { CallPut, Expiry, Strike, Bound, Tokens }
-
-    struct Feed {
-        uint timestamp;
-        uint index;
-        address feed;
-        string[2] text; // [name, message]
-        uint8[3] data; // FeedDataField: [type, decimals, locked]
-    }
-    struct Series {
-        uint timestamp;
-        uint index;
-        bytes32 key;
-        ERC20[2] pair; // [token0, token1]
-        address[2] feeds; // [feed0, feed1]
-        uint8[6] feedParameters; // FeedParametersField: [type0, type1, decimals0, decimals1, inverse0, inverse1]
-        uint[5] data; // SeriesDataField: [callPut, expiry, strike, bound, spot]
-        OptinoToken[2] optinos; // optino and cover
-    }
-    struct InputData {
-        ERC20[2] pair; // [token0, token1]
-        address[2] feeds; // [feed0, feed1]
-        uint8[6] feedParameters; // FeedParametersField: [type0, type1, decimals0, decimals1, inverse0, inverse1]
-        uint[5] data; // InputDataField: [callPut, expiry, strike, bound, tokens]
-    }
 
     uint8 private constant OPTINODECIMALS = 18;
     uint private constant FEEDECIMALS = 18;
     uint private constant MAXFEE = 5 * 10 ** 15; // 0.5 %, 1 ETH = 0.005 fee
     uint private constant ONEDAY = 24 * 60 * 60;
     uint private constant GRACEPERIOD = 7 * 24 * 60 * 60; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
-    uint8 private constant FEEDPARAMETERS_DEFAULT = uint8(0xff);
 
     address public optinoTokenTemplate;
     string public message = "v0.984-testnet-pre-release";
@@ -973,9 +1024,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     event SeriesAdded(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
     event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos, uint tokens, uint ownerFee, uint integratorFee);
-    event LogInfo(string note, address addr, uint number);
+    event LogInfo(bytes note, address addr, uint number);
 
     constructor(address _optinoTokenTemplate) public {
+        require(_optinoTokenTemplate != address(0), "Invalid template");
         super.initOwned(msg.sender);
         optinoTokenTemplate = _optinoTokenTemplate;
     }
@@ -1107,29 +1159,13 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         decimalsData = [OPTINODECIMALS, series.pair[0].decimals(), series.pair[1].decimals(), getFeedDecimals0(seriesKey)];
         return (series.data, decimalsData);
     }
-    function getFeedName(address _feed) public view returns (bool isRegistered, string memory feedName) {
+    function getFeedName(address _feed) public view returns (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) {
         Feed memory feed = feedData[_feed];
         if (feed.timestamp > 0) {
-            return (true, feed.text[0]);
+            return (true, feed.text[0], feed.data[uint(FeedDataField.Type)], feed.data[uint(FeedDataField.Decimals)]);
         } else {
-            return (false, "Custom");
+            return (false, "Custom", FEEDPARAMETERS_DEFAULT, FEEDPARAMETERS_DEFAULT);
         }
-    }
-    // function getNameData(bytes32 seriesKey) public view returns (bool isCustom, string memory feedName) {
-    //     Series memory series = seriesData[seriesKey];
-    //     require(series.timestamp > 0, "Invalid key");
-    //     Feed memory feed = feedData[series.feeds[0]];
-    //     (isCustom, feedName) = (isDefaultFeed(series.feeds, series.feedParameters), feed.text[0]);
-    // }
-        // Feed memory _feed = feedData[feed];
-        // (feedName, _message, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
-        // (spot, hasData, feedReportedDecimals, feedTimestamp) = getRateFromFeed(_feed.feed, FeedType(_feed.data[uint(FeedDataField.Type)]));
-
-    function isDefaultFeed(address[2] memory feeds, uint8[6] memory feedParameters) internal pure returns (bool) {
-        return feeds[1] != address(0) ||
-            feedParameters[uint(FeedParametersField.Type0)] != FEEDPARAMETERS_DEFAULT ||feedParameters[uint(FeedParametersField.Type1)] != FEEDPARAMETERS_DEFAULT ||
-            feedParameters[uint(FeedParametersField.Decimals0)] != FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Decimals1)] != FEEDPARAMETERS_DEFAULT ||
-            feedParameters[uint(FeedParametersField.Inverse0)] != 0 || feedParameters[uint(FeedParametersField.Inverse1)] != 0;
     }
     function getFeed(address[2] memory feeds, uint8[6] memory feedParameters, uint i) internal view returns (uint8 feedDecimals, uint8 feedType, uint spot, bool hasData, bool ok, string memory error) {
         Feed memory feed = feedData[feeds[i]];

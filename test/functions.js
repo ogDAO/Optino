@@ -608,7 +608,6 @@ function printOptinoFactoryContractDetails() {
         console.log("RESULT:   optinoFactory.getSeriesByIndex(" + seriesIndex + "). seriesKey=" + seriesKey + ", callPut=" + callPut + ", expiry=" + expiry + ", strike=" + strike.shift(-feedDecimals0) + ", bound=" + bound.shift(-feedDecimals0) + ", spot=" + spot.shift(-feedDecimals0) + ", optinoToken=" + optinoToken + ", coverToken=" + coverToken + ", timestamp=" + timestamp);
 
         // TODO
-        var rateDecimals = 8;
         [optinoToken, coverToken].forEach(function (tokenAddress) {
           console.log("RESULT:     token: " + getShortAddressName(tokenAddress) + " on " + getShortAddressName(pair[0]) + "/" + getShortAddressName(pair[1]));
           var tokenContract = web3.eth.contract(_optinoTokenContractAbi).at(tokenAddress);
@@ -617,15 +616,16 @@ function printOptinoFactoryContractDetails() {
           var collateralTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(collateralToken);
           var collateralDecimals = collateralTokenContract.decimals.call();
           var oneToken = new BigNumber("1").shift(tokenDecimals);
-          // var spots = [new BigNumber(1).shift(rateDecimals), new BigNumber(25).shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(75).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals)];
-          var spots = [new BigNumber("9769.26390498279639").shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals), new BigNumber(300).shift(rateDecimals), new BigNumber(350).shift(rateDecimals), new BigNumber(400).shift(rateDecimals), new BigNumber(450).shift(rateDecimals), new BigNumber(500).shift(rateDecimals), new BigNumber(1000).shift(rateDecimals), new BigNumber(10000).shift(rateDecimals), new BigNumber(100000).shift(rateDecimals)];
           var seriesData = tokenContract.getSeriesData.call();
+          var feedInfo = tokenContract.getFeedInfo.call();
+          var rateDecimals = parseInt(feedInfo[8]);
+          var spots = [new BigNumber("9769.26390498279639").shift(rateDecimals), new BigNumber(50).shift(rateDecimals), new BigNumber(100).shift(rateDecimals), new BigNumber(150).shift(rateDecimals), new BigNumber(200).shift(rateDecimals), new BigNumber(250).shift(rateDecimals), new BigNumber(300).shift(rateDecimals), new BigNumber(350).shift(rateDecimals), new BigNumber(400).shift(rateDecimals), new BigNumber(450).shift(rateDecimals), new BigNumber(500).shift(rateDecimals), new BigNumber(1000).shift(rateDecimals), new BigNumber(10000).shift(rateDecimals), new BigNumber(100000).shift(rateDecimals)];
           console.log("RESULT:       .owner/new=" + getShortAddressName(tokenContract.owner.call()) + "/" + getShortAddressName(tokenContract.newOwner.call()));
           console.log("RESULT:       .details='" + tokenContract.symbol.call() + "' '" + tokenContract.name.call() + "' " + tokenDecimals + " dp");
           console.log("RESULT:       .totalSupply=" + tokenContract.totalSupply.call().shift(-tokenDecimals));
           console.log("RESULT:       .seriesKey=" + tokenContract.seriesKey.call());
           console.log("RESULT:       .isCover/optinoPair=" + tokenContract.isCover.call() + "/" + getShortAddressName(tokenContract.optinoPair.call()));
-          console.log("RESULT:       .collateralToken/decimals: " + getShortAddressName(collateralToken) + "/" + collateralDecimals);
+          console.log("RESULT:       .collateralToken/decimals/rateDecimals: " + getShortAddressName(collateralToken) + "/" + collateralDecimals + "/" + rateDecimals);
           console.log("RESULT:       .seriesData: " + JSON.stringify(seriesData));
           // console.log("RESULT: - optinoToken:");
           console.log("RESULT:       .closedOrSettled=" + tokenContract.balanceOf.call(NULLACCOUNT).shift(-collateralDecimals));
@@ -637,7 +637,7 @@ function printOptinoFactoryContractDetails() {
           console.log("RESULT:       .payoffForSpot(1, " + spots[4].shift(-rateDecimals) + ")=" + tokenContract.payoffForSpot.call(oneToken, spots[4]).shift(-collateralDecimals));
           console.log("RESULT:       .payoffForSpots(1, " + JSON.stringify(shiftBigNumberArray(spots, -rateDecimals)) + ")=" + JSON.stringify(shiftBigNumberArray(tokenContract.payoffForSpots.call(oneToken, spots), -collateralDecimals)));
           console.log("RESULT:       .getInfo=" + JSON.stringify(tokenContract.getInfo.call()));
-          console.log("RESULT:       .getFeedInfo=" + JSON.stringify(tokenContract.getFeedInfo.call()));
+          console.log("RESULT:       .getFeedInfo=" + JSON.stringify(feedInfo));
           console.log("RESULT:       .getPricingInfo=" + JSON.stringify(tokenContract.getPricingInfo.call()));
 
           var optinoTransferEvents = tokenContract.Transfer({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
@@ -728,19 +728,17 @@ function printOptinoFactoryContractDetails() {
     var optinosMintedEvents = contract.OptinosMinted({}, { fromBlock: _optinoFactoryFromBlock, toBlock: latestBlock });
     i = 0;
     optinosMintedEvents.watch(function (error, result) {
-      console.log("RESULT: OptinosMinted " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
+      // console.log("RESULT: OptinosMinted " + i++ + " #" + result.blockNumber + " " + JSON.stringify(result.args));
       var series = seriesData[result.args.seriesKey];
       var optinoTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(result.args.optinos[0]);
       var optinoDecimals = optinoTokenContract.decimals.call();
-      var collateralTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(result.args.collateralToken);
+      var collateralTokenContract = web3.eth.contract(_optinoTokenContractAbi).at(optinoTokenContract.collateralToken.call());
       var collateralDecimals = collateralTokenContract.decimals.call();
       console.log("RESULT: OptinosMinted " + j++ + " #" + result.blockNumber +
         " seriesKey=" + result.args.seriesKey +
         " optinoToken=" + getShortAddressName(result.args.optinos[0]) +
         " coverToken=" + getShortAddressName(result.args.optinos[1]) +
         " tokens=" + result.args.tokens.shift(-optinoDecimals) +
-        " collateralToken=" + getShortAddressName(result.args.collateralToken) +
-        " collateral=" + result.args.collateral.shift(-collateralDecimals) +
         " ownerFee=" + result.args.ownerFee.shift(-collateralDecimals) +
         " integratorFee=" + result.args.integratorFee.shift(-collateralDecimals));
     });
