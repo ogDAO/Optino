@@ -247,7 +247,7 @@ const optinoFactoryModule = {
     // },
     updateSeries(state, {seriesKey, series}) {
       Vue.set(state.seriesData, seriesKey, series);
-      logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
+      // logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
     },
     updateOptino(state, {optinoAddress, optino}) {
       Vue.set(state.optinoData, optinoAddress, optino);
@@ -322,15 +322,11 @@ const optinoFactoryModule = {
 
           var _feedLength = promisify(cb => contract.feedLength(cb));
           var feedLength = await _feedLength;
-          logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
+          // logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
-            // function getFeedByIndex(uint i) public view returns (address _feed, string memory _feedName, uint8[3] memory _feedData, uint _spot, bool _hasData, uint8 _feedReportedDecimals, uint _feedTimestamp)
             var feed = await _feed;
-            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
-
-            // feed: ["0x8468b2bdce073a157e560aa4d9ccf6db1db98507","Chainlink ETH/USD","https://feeds.chain.link/",["0","8","0"],"20931000000",true,"255","1590195660"]
-
+            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var feedAddress = feed[0];
             var feedName = feed[1];
             var feedMessage = feed[2];
@@ -443,7 +439,7 @@ const optinoFactoryModule = {
 
             var _seriesLength = promisify(cb => contract.seriesLength(cb));
             var seriesLength = await _seriesLength;
-            logInfo("optinoFactoryModule", "execWeb3() seriesLength): " + seriesLength);
+            // logInfo("optinoFactoryModule", "execWeb3() seriesLength): " + seriesLength);
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
               var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
