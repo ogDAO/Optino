@@ -271,6 +271,7 @@ const OptinoExplorer = {
                     </b-modal>
                     -->
 
+                    <!--
                     <b-form-group label-cols="3" label="baseToken">
                       <b-input-group>
                         <b-form-select v-model="baseToken" :options="tokenOptions"></b-form-select>
@@ -312,12 +313,17 @@ const OptinoExplorer = {
                         <b-form-input type="text" v-model.trim="rateDecimals" readonly></b-form-input>
                       </b-input-group>
                     </b-form-group>
+                    -->
+
+                    <!--
                     <b-form-group label-cols="3" label="maxTerm">
                       <b-input-group append="seconds">
                         <b-form-input type="text" v-model.trim="maxTerm" readonly></b-form-input>
                       </b-input-group>
                     </b-form-group>
+                    -->
 
+                    <!--
                     <b-form-group label-cols="3" label="fee">
                       <b-input-group append="%">
                         <b-form-input type="text" v-model.trim="fee" readonly></b-form-input>
@@ -328,6 +334,7 @@ const OptinoExplorer = {
                         <b-form-input type="text" v-model.trim="description" readonly></b-form-input>
                       </b-input-group>
                     </b-form-group>
+                    -->
                     <!--
                     <b-form-group label-cols="3" label="callPut">
                       <b-form-radio-group id="radio-group-callput" v-model="callPut">
@@ -336,6 +343,7 @@ const OptinoExplorer = {
                       </b-form-radio-group>
                     </b-form-group>
                     -->
+                    <!--
                     <b-form-group label-cols="3" label="baseTokens">
                       <b-input-group>
                         <b-form-input type="text" v-model.trim="baseTokens"></b-form-input>
@@ -355,7 +363,9 @@ const OptinoExplorer = {
                         </b-input-group>
                       </b-input-group>
                     </b-form-group>
+                    -->
 
+                    <!--
                     <b-card :title="collateralSymbol" v-if="collateralToken != null && collateralToken != ADDRESS0">
                       <b-card-text>
                       Current allowance {{ tokenData[collateralToken].allowance.shift(-collateralDecimals).toString() }}
@@ -371,9 +381,10 @@ const OptinoExplorer = {
                         </b-button-group>
                       </div>
                     </b-card>
+                    -->
 
                     <br />
-                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="baseTokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals" :baseSymbol="baseSymbol" :quoteSymbol="quoteSymbol"></payoff>
+                    <payoff :callPut="callPut" :strike="strike" :bound="bound" :baseTokens="tokens" :baseDecimals="baseDecimals" :rateDecimals="rateDecimals" :baseSymbol="baseSymbol" :quoteSymbol="quoteSymbol"></payoff>
                   </b-form>
                 </b-card-body>
               </b-collapse>
