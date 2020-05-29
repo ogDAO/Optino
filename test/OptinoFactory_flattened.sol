@@ -10,15 +10,15 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.986-testnet-pre-release
+// Optino Factory v0.987-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten:
+// OptinoToken deployment on Ropsten: 0xE5019B08121b3B19e38D266Ef9Fe964346725D02
+// OptinoFactory deployment on Ropsten: 0xE5019B08121b3B19e38D266Ef9Fe964346725D02
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -733,28 +733,21 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
         (_seriesIndex, pair, feeds, feedParameters, data, optinos) = factory.getSeriesByKey(seriesKey);
     }
 
-    function getInfo() public view returns (ERC20 token0, ERC20 token1, ERC20 _collateralToken, uint8 collateralDecimals, address feed0, uint callPut, uint expiry, uint strike, uint bound, bool _isCover) {
-        (/*seriesIndex*/, ERC20[2] memory pair, address[2] memory feeds, /*_feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
+    function getInfo() public view returns (ERC20 token0, ERC20 token1, ERC20 _collateralToken, uint8 collateralDecimals, uint callPut, uint expiry, uint strike, uint bound, bool _isCover, OptinoToken _optinoPair) {
+        (/*seriesIndex*/, ERC20[2] memory pair, /*feeds*/, /*_feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
         callPut = data[uint(SeriesDataField.CallPut)];
-        return (pair[0], pair[1], collateralToken, collateralToken.decimals(), feeds[0], data[uint(SeriesDataField.CallPut)], data[uint(SeriesDataField.Expiry)], data[uint(SeriesDataField.Strike)], data[uint(SeriesDataField.Bound)], isCover);
+        return (pair[0], pair[1], collateralToken, collateralToken.decimals(), data[uint(SeriesDataField.CallPut)], data[uint(SeriesDataField.Expiry)], data[uint(SeriesDataField.Strike)], data[uint(SeriesDataField.Bound)], isCover, optinoPair);
     }
-    function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint8 feedDecimals0, uint currentSpot) {
-        ERC20[2] memory pair;
-        address[2] memory feeds;
-        uint8[6] memory feedParameters;
-        uint[5] memory data;
-        OptinoToken[2] memory optinos;
-        (/*seriesIndex*/, pair, feeds, feedParameters, data, optinos) = factory.getSeriesByKey(seriesKey);
-        (feedDecimals0, /*_feedType0*/, currentSpot, /*ok*/, /*error*/) = factory.calculateSpot(feeds, feedParameters);
-        return (feeds[0], feeds[1], feedParameters[0], feedParameters[1], feedParameters[2], feedParameters[3], feedParameters[4], feedParameters[5], feedDecimals0, currentSpot);
+    function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint8 usedFeedDecimals0, uint8 usedFeedType0, uint currentSpot) {
+        (/*seriesIndex*/, /*pair*/, address[2] memory feeds, uint8[6] memory feedParameters, /*data*/, /*optinos*/) = factory.getSeriesByKey(seriesKey);
+        (usedFeedDecimals0, usedFeedType0, currentSpot, /*ok*/, /*error*/) = factory.calculateSpot(feeds, feedParameters);
+        return (feeds[0], feeds[1], feedParameters[0], feedParameters[1], feedParameters[2], feedParameters[3], feedParameters[4], feedParameters[5], usedFeedDecimals0, usedFeedType0, currentSpot);
     }
     function getPricingInfo() public view returns (uint currentSpot, uint currentPayoff, uint spot, uint payoff, uint collateral) {
         uint tokens = 10 ** _decimals;
         (uint[5] memory data, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
         collateral = computeCollateral(data, tokens, decimalsData);
-        address[2] memory feeds;
-        uint8[6] memory feedParameters;
-        (/*seriesIndex*/, /*pair*/, feeds, feedParameters, /*data*/, /*optinos*/) = factory.getSeriesByKey(seriesKey);
+        (/*seriesIndex*/, /*pair*/, address[2] memory feeds, uint8[6] memory feedParameters, /*data*/, /*optinos*/) = factory.getSeriesByKey(seriesKey);
         (/*_feedDecimals0*/, /*_feedType0*/, currentSpot, /*ok*/, /*error*/) = factory.calculateSpot(feeds, feedParameters);
         currentPayoff = computePayoff(data, currentSpot, tokens, decimalsData);
         currentPayoff = isCover ? collateral.sub(currentPayoff) : currentPayoff;
@@ -1004,7 +997,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.986-testnet-pre-release";
+    string public message = "v0.987-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed

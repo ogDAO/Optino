@@ -18,7 +18,7 @@ pragma solidity ^0.6.8;
 // european optinos and the associated collateral optinos
 //
 // OptinoToken deployment on Ropsten: 0xE5019B08121b3B19e38D266Ef9Fe964346725D02
-// OptinoFactory deployment on Ropsten: 0xE5019B08121b3B19e38D266Ef9Fe964346725D02
+// OptinoFactory deployment on Ropsten: 0xC1B376c9697B525e9FC6b5Ac913fc3d5bd2D021B
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
