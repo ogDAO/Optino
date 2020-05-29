@@ -10,7 +10,7 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.985-testnet-pre-release
+// Optino Factory v0.986-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
@@ -18,7 +18,7 @@ pragma solidity ^0.6.8;
 // european optinos and the associated collateral optinos
 //
 // OptinoToken deployment on Ropsten:
-// OptinoFactory deployment on Ropsten: 
+// OptinoFactory deployment on Ropsten:
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -704,7 +704,6 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
     OptinoFactory public factory;
     bytes32 public seriesKey;
     bool public isCover;
-    bool public isCustom;
     OptinoToken public optinoPair;
     ERC20 public collateralToken;
 
@@ -734,10 +733,10 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
         (_seriesIndex, pair, feeds, feedParameters, data, optinos) = factory.getSeriesByKey(seriesKey);
     }
 
-    function getInfo() public view returns (ERC20 token0, ERC20 token1, address feed0, bool _isCustom, uint callPut, uint expiry, uint strike, uint bound, bool _isCover) {
+    function getInfo() public view returns (ERC20 token0, ERC20 token1, ERC20 _collateralToken, uint8 collateralDecimals, address feed0, uint callPut, uint expiry, uint strike, uint bound, bool _isCover) {
         (/*seriesIndex*/, ERC20[2] memory pair, address[2] memory feeds, /*_feedParameters*/, uint[5] memory data, /*_optinos*/) = factory.getSeriesByKey(seriesKey);
         callPut = data[uint(SeriesDataField.CallPut)];
-        return (pair[0], pair[1], feeds[0], isCustom, data[uint(SeriesDataField.CallPut)], data[uint(SeriesDataField.Expiry)], data[uint(SeriesDataField.Strike)], data[uint(SeriesDataField.Bound)], isCover);
+        return (pair[0], pair[1], collateralToken, collateralToken.decimals(), feeds[0], data[uint(SeriesDataField.CallPut)], data[uint(SeriesDataField.Expiry)], data[uint(SeriesDataField.Strike)], data[uint(SeriesDataField.Bound)], isCover);
     }
     function getFeedInfo() public view returns (address feed0, address feed1, uint8 feedType0, uint8 feedType1, uint8 decimals0, uint8 decimals1, uint8 inverse0, uint8 inverse1, uint8 feedDecimals0, uint currentSpot) {
         ERC20[2] memory pair;
@@ -746,8 +745,8 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
         uint[5] memory data;
         OptinoToken[2] memory optinos;
         (/*seriesIndex*/, pair, feeds, feedParameters, data, optinos) = factory.getSeriesByKey(seriesKey);
-        (/*_feedDecimals0*/, /*_feedType0*/, currentSpot, /*ok*/, /*error*/) = factory.calculateSpot(feeds, feedParameters);
-        return (feeds[0], feeds[1], feedParameters[0], feedParameters[1], feedParameters[2], feedParameters[3], feedParameters[4], feedParameters[5], factory.getFeedDecimals0(seriesKey), currentSpot);
+        (feedDecimals0, /*_feedType0*/, currentSpot, /*ok*/, /*error*/) = factory.calculateSpot(feeds, feedParameters);
+        return (feeds[0], feeds[1], feedParameters[0], feedParameters[1], feedParameters[2], feedParameters[3], feedParameters[4], feedParameters[5], feedDecimals0, currentSpot);
     }
     function getPricingInfo() public view returns (uint currentSpot, uint currentPayoff, uint spot, uint payoff, uint collateral) {
         uint tokens = 10 ** _decimals;
@@ -1005,7 +1004,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.985-testnet-pre-release";
+    string public message = "v0.986-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed

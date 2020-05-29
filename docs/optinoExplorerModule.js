@@ -7,9 +7,9 @@ const OptinoExplorer = {
             <br />
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
-                <b-button href="#" v-b-toggle.factoryConfig variant="outline-info">Factory Config</b-button>
+                <b-button href="#" v-b-toggle.factoryseries variant="outline-info">Series</b-button>
               </b-card-header>
-              <b-collapse id="factoryConfig" class="border-0">
+              <b-collapse id="factoryseries" class="border-0">
                 <b-card-body>
                   <b-form>
                     <b-row v-for="(config, index) in configData" v-bind:key="index">
@@ -79,18 +79,6 @@ const OptinoExplorer = {
               <b-collapse id="mintOptino" visible class="border-0">
                 <b-card-body>
                   <b-form>
-                    <b-form-group label-cols="3" label="token0">
-                      <b-input-group>
-                        <!-- <b-form-select v-model="token0" :options="tokenOptions" class="mt-3"></b-form-select> -->
-                        <b-form-select v-model="token0" :options="tokenOptionsSorted"></b-form-select>
-                      </b-input-group>
-                    </b-form-group>
-                    <b-form-group label-cols="3" label="token1">
-                      <b-input-group>
-                        <!-- <b-form-input type="text" v-model.trim="token1"></b-form-input> -->
-                        <b-form-select v-model="token1" :options="tokenOptionsSorted"></b-form-select>
-                      </b-input-group>
-                    </b-form-group>
                     <b-form-group label-cols="3" label="feed0">
                       <b-input-group>
                         <b-form-select v-model="feed0" :options="feedOptionsSorted" v-on:change="calculateSpot('feed0')"></b-form-select>
@@ -144,13 +132,26 @@ const OptinoExplorer = {
                       </b-input-group>
                     </b-form-group>
 
+                    <b-form-group label-cols="3" label="token0">
+                      <b-input-group>
+                        <!-- <b-form-select v-model="token0" :options="tokenOptions" class="mt-3"></b-form-select> -->
+                        <b-form-select v-model="token0" :options="tokenOptionsSorted"></b-form-select>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="token1">
+                      <b-input-group>
+                        <!-- <b-form-input type="text" v-model.trim="token1"></b-form-input> -->
+                        <b-form-select v-model="token1" :options="tokenOptionsSorted"></b-form-select>
+                      </b-input-group>
+                    </b-form-group>
+
                     <b-form-group label-cols="3" label="callPut">
                       <b-form-radio-group id="radio-group-callput" v-model="callPut">
                         <b-form-radio value="0">Call</b-form-radio>
                         <b-form-radio value="1">Put</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="expiry" :description="'yyyy-mm-dd hh:mm:ss. In your default locale format: ' + new Date(expiryInMillis).toLocaleString() + '. Time defaults to 08:00:00 UTC'">
+                    <b-form-group label-cols="3" label="expiry" :description="'Selection in your local timezone. In UTC format: ' + formatUTC(expiryInMillis) + '. Time defaults to 08:00:00Z (UTC)'">
                       <b-input-group>
                         <!-- <b-form-input type="text" v-model.trim="expiry"></b-form-input> -->
                         <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="form-control"></flat-pickr>
@@ -540,6 +541,7 @@ const OptinoExplorer = {
         },
         formatDate(date, format) {
           return moment(date).format();
+          // return moment(date).utc().format();
           // return moment.tz([
           //   date.getFullYear(),
           //   date.getMonth(),
@@ -696,6 +698,9 @@ const OptinoExplorer = {
     this.calculateSpot("mounted") // Calls the method before page loads
   },
   methods: {
+    formatUTC(d) {
+      return moment(d).utc().format();
+    },
     configSelected(config) {
       logDebug("configSelected", "configSelected(" +JSON.stringify(config) + ")");
       if (config != null) {
