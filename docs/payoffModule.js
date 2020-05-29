@@ -1,7 +1,7 @@
 const Payoff = {
   template: `
     <div>
-      <!-- <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Payoff {{ callPut }} {{ strike }} {{ bound }} {{ baseTokens }} {{ baseDecimals }} {{ rateDecimals }}</b-button> -->
+      <!-- <b-button v-b-toggle.priceFeed size="sm" block variant="outline-info">Payoff {{ callPut }} {{ strike }} {{ bound }} {{ tokens }} {{ decimals0 }} {{ rateDecimals }}</b-button> -->
       <b-collapse id="priceFeed" visible class="mt-2">
         <b-card no-body class="border-0">
           <div>
@@ -15,8 +15,9 @@ const Payoff = {
     callPut: [String, Number, Object],
     strike: [String, Number, Object],
     bound: [String, Number, Object],
-    baseTokens: [String, Number, Object],
-    baseDecimals: [String, Number, Object],
+    tokens: [String, Number, Object],
+    decimals0: [String, Number, Object],
+    decimals1: [String, Number, Object],
     rateDecimals: [String, Number, Object],
     spotFrom: {
       type: [String, Number, Object],
@@ -30,11 +31,11 @@ const Payoff = {
       type: [String, Number, Object],
       default: "400",
     },
-    baseSymbol: {
+    symbol0: {
       type: [String, Number, Object],
       default: "ETH",
     },
-    quoteSymbol: {
+    symbol1: {
       type: [String, Number, Object],
       default: "DAI",
     },
@@ -50,23 +51,23 @@ const Payoff = {
       var strike = this.strike == null ? new BigNumber(0) : new BigNumber(this.strike).shift(rateDecimals);
       if (this.bound == 0) {
         if (this.callPut == "0") {
-          return 'Vanilla Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike;
+          return 'Vanilla Call Optino ' + this.symbol0 + '/' + this.symbol1 + ' ' + this.strike;
         } else {
-          return 'Vanilla Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike;
+          return 'Vanilla Put Optino ' + this.symbol0 + '/' + this.symbol1 + ' ' + this.strike;
         }
       } else {
         if (this.callPut == "0") {
-          return 'Capped Call Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.strike + '-' + this.bound;
+          return 'Capped Call Optino ' + this.symbol0 + '/' + this.symbol1 + ' ' + this.strike + '-' + this.bound;
         } else {
-          return 'Floored Put Optino ' + this.baseSymbol + '/' + this.quoteSymbol + ' ' + this.bound + '-' + this.strike;
+          return 'Floored Put Optino ' + this.symbol0 + '/' + this.symbol1 + ' ' + this.bound + '-' + this.strike;
         }
       }
     },
     yaxis1Title() {
-      return this.callPut == "0" ? 'Delivery Token (base) ' + this.baseSymbol : 'Delivery Token (quote) ' + this.quoteSymbol;
+      return this.callPut == "0" ? 'Delivery Token (base) ' + this.symbol0 : 'Delivery Token (quote) ' + this.symbol1;
     },
     yaxis2Title() {
-      return this.callPut == "0" ? 'Non-Delivery Token (quote) ' + this.quoteSymbol : 'Non-Delivery Token (base) ' + this.baseSymbol;
+      return this.callPut == "0" ? 'Non-Delivery Token (quote) ' + this.symbol1 : 'Non-Delivery Token (base) ' + this.symbol0;
     },
     series() {
       var categories = [];
@@ -77,7 +78,7 @@ const Payoff = {
 
       var callPut = this.callPut == null ? 0 : parseInt(this.callPut);
       var decimals = 18;
-      var baseDecimals = this.baseDecimals == null ? 18 : parseInt(this.baseDecimals);
+      var decimals0 = this.decimals0 == null ? 18 : parseInt(this.decimals0);
       var quoteDecimals = this.quoteDecimals == null ? 18 : parseInt(this.quoteDecimals);
       var rateDecimals = this.rateDecimals == null ? 18 : parseInt(this.rateDecimals);
       var strike;
@@ -92,13 +93,13 @@ const Payoff = {
       } catch (e) {
         bound = new BigNumber(0);
       }
-      var baseTokens;
+      var tokens;
       try {
-        baseTokens = new BigNumber(this.baseTokens).shift(rateDecimals);
+        tokens = new BigNumber(this.tokens).shift(rateDecimals);
       } catch (e) {
-        baseTokens = new BigNumber(0);
+        tokens = new BigNumber(0);
       }
-      // console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", baseTokens: " + baseTokens.toString() + ", baseDecimals: " + baseDecimals + ", rateDecimals: " + rateDecimals);
+      // console.log("callPut: " + callPut + ", strike: " + strike.toString() + ", bound: " + bound.toString() + ", tokens: " + tokens.toString() + ", decimals0: " + decimals0 + ", rateDecimals: " + rateDecimals);
 
       function convert(n) {
         return n && new BigNumber(n).shift(-rateDecimals);
@@ -110,7 +111,7 @@ const Payoff = {
       // console.log("spotFrom: " + spotFrom.toString() + ", spotTo: " + spotTo.toString() + ", spotStep: " + spotStep.toString());
       for (spot = spotFrom; spot.lte(spotTo); spot = spot.add(spotStep)) {
         // console.log("spot: " + spot.toString());
-        var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
+        var result = payoffInDeliveryToken(callPut, strike, bound, spot, tokens, decimals, decimals0, quoteDecimals, rateDecimals);
         var x = result.map(convert);
         // console.log("payoffInDeliveryToken: " + spot.shift(-rateDecimals).toString() + " => " + JSON.stringify(x));
         if (result[0] != null) {
@@ -211,25 +212,25 @@ const Payoff = {
         //   }
         // },
         markers: {
-          size: [3, 2, 0, 0],
+          size: [3, 2, 1, 1],
         },
         title: {
           text: this.title,
           align: 'left',
           offsetX: 0, // 110,
         },
-        // annotations: {
-        //   xaxis: [{
-        //     x: 600,
+        annotations: {
+          xaxis: [{
+            x: 200,
         //     // x: this.categories != null && this.categories.length > 10 ? this.categories[10] : 200,
         //     // x2: this.categories[20],
-        //     borderColor: '#775DD0',
-        //     label: {
-        //       style: {
-        //         color: '#000000',
-        //       },
-        //       text: 'X-axis annotation - 22 Nov',
-        //     },
+            borderColor: '#775DD0',
+            label: {
+              style: {
+                color: '#000000',
+              },
+              text: 'X-axis annotation - 22 Nov',
+            },
         //   }],
         //   points: [{
         //     x: '200',
@@ -243,8 +244,8 @@ const Payoff = {
         //       },
         //       text: 'Bananas are good',
         //     }
-        //   }],
-        // },
+          }],
+        },
         // xaxis: {
         //   type: 'category',
         //   title: {
