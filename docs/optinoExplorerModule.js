@@ -81,46 +81,46 @@ const OptinoExplorer = {
                   <b-form>
                     <b-form-group label-cols="3" label="feed0">
                       <b-input-group>
-                        <b-form-select v-model="feed0" :options="feedOptionsSorted" @input="calculateSpot('feed0', $event)"></b-form-select>
+                        <b-form-select v-model="feed0" :options="feedOptionsSorted" @input="recalculate('feed0', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="feed1">
                       <b-input-group>
-                        <b-form-select v-model="feed1" :options="feedOptionsSorted" v-on:change="calculateSpot('feed1', $event)"></b-form-select>
+                        <b-form-select v-model="feed1" :options="feedOptionsSorted" v-on:change="recalculate('feed1', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="type0">
                       <b-input-group>
-                        <b-form-select v-model.trim="type0" :options="typeOptions" v-on:change="calculateSpot('type0', $event)"></b-form-select>
+                        <b-form-select v-model.trim="type0" :options="typeOptions" v-on:change="recalculate('type0', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="type1">
                       <b-input-group>
-                        <b-form-select v-model.trim="type1" :options="typeOptions" v-on:change="calculateSpot('type1', $event)"></b-form-select>
+                        <b-form-select v-model.trim="type1" :options="typeOptions" v-on:change="recalculate('type1', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="decimals0">
                       <b-input-group>
-                        <b-form-select v-model.trim="decimals0" :options="decimalsOptions" v-on:change="calculateSpot('decimals0', $event)"></b-form-select>
+                        <b-form-select v-model.trim="decimals0" :options="decimalsOptions" v-on:change="recalculate('decimals0', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="decimals1">
                       <b-input-group>
-                        <b-form-select v-model.trim="decimals1" :options="decimalsOptions" v-on:change="calculateSpot('decimals1', $event)"></b-form-select>
+                        <b-form-select v-model.trim="decimals1" :options="decimalsOptions" v-on:change="recalculate('decimals1', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="inverse0">
-                      <b-form-radio-group id="radio-group-inverse0" v-model="inverse0" @input="calculateSpot('inverse0', $event)">
+                      <b-form-radio-group id="radio-group-inverse0" v-model="inverse0" @input="recalculate('inverse0', $event)">
                         <b-form-radio value="0">No</b-form-radio>
                         <b-form-radio value="1">Yes</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="inverse1">
-                      <b-form-radio-group id="radio-group-inverse1" v-model="inverse1" @input="calculateSpot('inverse1', $event)">
+                      <b-form-radio-group id="radio-group-inverse1" v-model="inverse1" @input="recalculate('inverse1', $event)">
                         <b-form-radio value="0">No</b-form-radio>
                         <b-form-radio value="1">Yes</b-form-radio>
                       </b-form-radio-group>
@@ -135,18 +135,18 @@ const OptinoExplorer = {
                     <b-form-group label-cols="3" label="token0">
                       <b-input-group>
                         <!-- <b-form-select v-model="token0" :options="tokenOptions" class="mt-3"></b-form-select> -->
-                        <b-form-select v-model="token0" :options="tokenOptionsSorted" @input="calculateSpot('token0', $event)"></b-form-select>
+                        <b-form-select v-model="token0" :options="tokenOptionsSorted" @input="recalculate('token0', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="token1">
                       <b-input-group>
                         <!-- <b-form-input type="text" v-model.trim="token1"></b-form-input> -->
-                        <b-form-select v-model="token1" :options="tokenOptionsSorted" @input="calculateSpot('token1', $event)"></b-form-select>
+                        <b-form-select v-model="token1" :options="tokenOptionsSorted" @input="recalculate('token1', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
                     <b-form-group label-cols="3" label="callPut">
-                      <b-form-radio-group id="radio-group-callput" v-model="callPut" @input="calculateSpot('callPut', $event)">
+                      <b-form-radio-group id="radio-group-callput" v-model="callPut" @input="recalculate('callPut', $event)">
                         <b-form-radio value="0">Call</b-form-radio>
                         <b-form-radio value="1">Put</b-form-radio>
                       </b-form-radio-group>
@@ -154,7 +154,7 @@ const OptinoExplorer = {
                     <b-form-group label-cols="3" label="expiry" :description="'Selection in your local timezone. In UTC format: ' + formatUTC(expiryInMillis) + '. Time defaults to 08:00:00Z (UTC)'">
                       <b-input-group>
                         <!-- <b-form-input type="text" v-model.trim="expiry"></b-form-input> -->
-                        <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="form-control" @input="calculateSpot('expiryInMillis', $event)"></flat-pickr>
+                        <flat-pickr v-model="expiryInMillis" :config="dateConfig" class="form-control" @input="recalculate('expiryInMillis', $event)"></flat-pickr>
                         <template v-slot:append>
                           <b-form-select v-model.trim="expirySelection" :options="expiryOptions" @input="expirySelected($event)"></b-form-select>
                         </template>
@@ -163,30 +163,28 @@ const OptinoExplorer = {
 
                     <b-form-group label-cols="3" label="strike">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="strike" @input="calculateSpot('strike', $event)"></b-form-input>
+                        <b-form-input type="text" v-model.trim="strike" @input="recalculate('strike', $event)"></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="cap" description="Cap (bound) for Capped Call. Set to 0 for Vanilla Call" v-if="callPut == 0">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="cap" @input="calculateSpot('cap', $event)"></b-form-input>
+                        <b-form-input type="text" v-model.trim="cap" @input="recalculate('cap', $event)"></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="floor" description="Floor (bound) for Floored Put. Set to 0 for Vanilla Put" v-if="callPut != 0">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="floor" @input="calculateSpot('floor', $event)"></b-form-input>
+                        <b-form-input type="text" v-model.trim="floor" @input="recalculate('floor', $event)"></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="tokens">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="tokens" @input="calculateSpot('tokens', $event)"></b-form-input>
+                        <b-form-input type="text" v-model.trim="tokens" @input="recalculate('tokens', $event)"></b-form-input>
                       </b-input-group>
                     </b-form-group>
-                    <div class="text-center">
-                      <!--
+                    <div class="text-center pb-4">
                       <b-button-group>
-                        <b-button @click="calcPayoff()" variant="primary" v-b-popover.hover="'Calc Payoff'">Calc Payoff</b-button>
+                        <b-button @click="recalculate()" variant="primary" v-b-popover.hover="'Calc Payoff'">Recalc Payoff</b-button>
                       </b-button-group>
-                      -->
                       <b-button-group>
                         <b-button @click="mintOptinos()" variant="primary" v-b-popover.hover="'Mint Optinos'">Mint Optinos</b-button>
                       </b-button-group>
@@ -728,7 +726,7 @@ const OptinoExplorer = {
       // Feed loaded
       if (Object.keys(seriesData).length > 0) {
         this.reschedule = false;
-        this.calculateSpot("mounted", "mounted") // Calls the method before page loads
+        this.recalculate("mounted", "mounted") // Calls the method before page loads
       }
       var t = this;
       if (this.reschedule) {
@@ -797,42 +795,30 @@ const OptinoExplorer = {
       event.preventDefault();
     },
     expirySelected(expiryString) {
-      // logInfo("expirySelected", "expirySelected(" + expiryString + ")");
       if (expiryString != null) {
         var match = expiryString.match(/^([\+|e])([0-9]*)([dwM])$/);
         if (match != null) {
           if (match[1] == "+") {
             var check = moment().utc().hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
-            // if (check.valueOf() < moment()) {
-              this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'd').add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-              logInfo("expirySelected", "expirySelected(" + expiryString + ") => " + this.expiryInMillis);
-            // } else {
-              // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            // }
+            this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'd').add(parseInt(match[2]), match[3]).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            logInfo("expirySelected", "expirySelected(" + expiryString + ") => " + this.expiryInMillis);
           } else if (match[1] == "e" && match[3] == "w") {
             var check = moment().utc().day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
-            // if (check.valueOf() < moment()) {
-              this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'w').add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            // } else {
-                // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            // }
+            this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'w').add(parseInt(match[2]), match[3]).day(DEFAULTEXPIRYUTCDAYOFWEEK).hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            logInfo("expirySelected", "expirySelected(" + expiryString + ") => " + this.expiryInMillis);
           } else if (match[1] == "e" && match[3] == "M") {
             var check = moment().utc().add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0);
-            // if (check.valueOf() < moment()) {
-              this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'M').add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            // } else {
-              // this.expiryInMillis = moment().utc().add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
-            // }
+            this.expiryInMillis = moment().utc().add(check.valueOf() < moment() ? 1 : 0, 'M').add(parseInt(match[2]), match[3]).add(1, 'M').date(1).add(-1, 'd').hours(DEFAULTEXPIRYUTCHOUR).minutes(0).seconds(0).valueOf();
+            logInfo("expirySelected", "expirySelected(" + expiryString + ") => " + this.expiryInMillis);
           }
         }
       }
     },
-    async calculateSpot(source, event) {
-      logInfo("optinoExplorer", "calculateSpot(" + source + ", " + JSON.stringify(event) + ")");
+    async recalculate(source, event) {
+      logInfo("optinoExplorer", "recalculate(" + source + ", " + JSON.stringify(event) + ")");
       var factoryAddress = store.getters['optinoFactory/address']
       var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
-      logInfo("optinoExplorer", "calculateSpot feedParameters:" + JSON.stringify([this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1]));
-      // function calculateSpot(address[2] memory feeds, uint8[6] memory feedParameters) public view returns (uint8 feedDecimals0, uint8 feedType0, uint spot, bool ok, string memory error)
+      logInfo("optinoExplorer", "recalculate feedParameters:" + JSON.stringify([this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1]));
       try {
         var _calculateSpot = promisify(cb => factory.calculateSpot([this.feed0, this.feed1],
           [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1], cb));
@@ -840,22 +826,11 @@ const OptinoExplorer = {
         logInfo("optinoExplorer", "calculateSpot: " + JSON.stringify(calculateSpot));
         var feedDecimals0 = calculateSpot[0];
         var feedType0 = calculateSpot[1];
-        // uint8 feedDecimals0, uint8 feedType0, uint spot, bool ok, string memory error
         this.calculatedSpot = calculateSpot[2].shift(-feedDecimals0).toString();
       } catch (e) {
         this.calculatedSpot = "";
       }
 
-      if (source = 'expirySelected') {
-        this.expirySelected(event);
-      }
-
-      this.calcPayoff("calculateSpot");
-    },
-    async calcPayoff(event) {
-      logInfo("optinoExplorer", "calcPayoff(" + event + ")");
-      var factoryAddress = store.getters['optinoFactory/address']
-      var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
       var feedData = store.getters['optinoFactory/feedData'];
       var feed = feedData[this.feed0.toLowerCase()];
       logInfo("optinoExplorer", "this.feed0: " + this.feed0);
@@ -879,7 +854,7 @@ const OptinoExplorer = {
 
         var OPTINODECIMALS = 18;
         logInfo("optinoExplorer", "feedDecimals0: " + feedDecimals0);
-        logInfo("optinoExplorer", "calcPayoffs inputs([" + this.token0 + ", " + this.token1 + "], [" + this.feed0 + ", " + this.feed1 + "], " +
+        logInfo("optinoExplorer", "recalculates inputs([" + this.token0 + ", " + this.token1 + "], [" + this.feed0 + ", " + this.feed1 + "], " +
           "[" + this.type0 + ", " + this.type1 + ", " + this.decimals0 + ", " + this.decimals1 + ", " + this.inverse0 + ", " + this.inverse1 + "], " +
           "[callPut:" + this.callPut + ", expiry:" + this.expiry + ", strike:" + new BigNumber(this.strike).shift(feedDecimals0) + ", bound:" + new BigNumber(this.bound).shift(feedDecimals0) + ", tokens:" + new BigNumber(this.tokens).shift(OPTINODECIMALS) + "], [" + JSON.stringify(spots) + "])");
 
@@ -888,7 +863,7 @@ const OptinoExplorer = {
           [this.callPut, this.expiry, new BigNumber(this.strike).shift(feedDecimals0), new BigNumber(this.bound).shift(feedDecimals0), new BigNumber(this.tokens).shift(OPTINODECIMALS)], spots, cb));
 
         var calcPayoff = await _calcPayoff;
-        logInfo("optinoExplorer", "calcPayoff: " + JSON.stringify(calcPayoff));
+        logInfo("optinoExplorer", "recalculate - calcPayoff: " + JSON.stringify(calcPayoff));
         this.collateralTokenNew = calcPayoff[0];
         this.collateralDecimalsNew = calcPayoff[1][2].toString();
         this.collateralTokens = new BigNumber(calcPayoff[1][0]).shift(-this.collateralDecimalsNew).toString();
