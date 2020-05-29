@@ -113,10 +113,22 @@ const Payoff = {
         var result = payoffInDeliveryToken(callPut, strike, bound, spot, baseTokens, decimals, baseDecimals, quoteDecimals, rateDecimals);
         var x = result.map(convert);
         // console.log("payoffInDeliveryToken: " + spot.shift(-rateDecimals).toString() + " => " + JSON.stringify(x));
-        payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
-        coverPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
-        collateralInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));
-        payoffInNonDeliveryTokenSeries.push(result[3] == null ? null : result[3].shift(-rateDecimals));
+        if (result[0] != null) {
+            payoffInDeliveryTokenSeries.push({ x: parseFloat(spot.shift(-rateDecimals)), y: result[0].shift(-rateDecimals)});
+        }
+        if (result[1] != null) {
+            coverPayoffInDeliveryTokenSeries.push({ x: parseFloat(spot.shift(-rateDecimals)), y: result[1].shift(-rateDecimals)});
+        }
+        if (result[2] != null) {
+            collateralInDeliveryTokenSeries.push({ x: parseFloat(spot.shift(-rateDecimals)), y: result[2].shift(-rateDecimals)});
+        }
+        if (result[3] != null) {
+            payoffInNonDeliveryTokenSeries.push({ x: parseFloat(spot.shift(-rateDecimals)), y: result[3].shift(-rateDecimals)});
+        }
+        // payoffInDeliveryTokenSeries.push(result[0] == null ? null : result[0].shift(-rateDecimals));
+        // coverPayoffInDeliveryTokenSeries.push(result[1] == null ? null : result[1].shift(-rateDecimals));
+        // collateralInDeliveryTokenSeries.push(result[2] == null ? null : result[2].shift(-rateDecimals));
+        // payoffInNonDeliveryTokenSeries.push(result[3] == null ? null : result[3].shift(-rateDecimals));
       }
 
       return [{
@@ -233,13 +245,19 @@ const Payoff = {
         //     }
         //   }],
         // },
+        // xaxis: {
+        //   type: 'category',
+        //   title: {
+        //     text: 'Spot',
+        //     // align: 'right',
+        //   },
+        //   categories: this.categories,
+        // },
         xaxis: {
-          type: 'category',
-          title: {
-            text: 'Spot',
-            // align: 'right',
-          },
-          categories: this.categories,
+          type: 'numeric',
+          min: parseFloat(this.spotFrom),
+          max: parseFloat(this.spotTo),
+          tickAmount: 20
         },
         yaxis: [
           {
