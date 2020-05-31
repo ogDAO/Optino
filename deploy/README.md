@@ -152,6 +152,9 @@ v0.988-testnet-pre-release
 OptinoToken https://ropsten.etherscan.io/address/0x10ca1e8171a4Fdf0B74f86A40F4665b1730F1504#code
 Factory https://ropsten.etherscan.io/address/0xcba52E28225a14119D1dE8F5A0e9afe11B50b46E#code
 
+v0.989-testnet-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x4FDBD28f04A758bE949f315DA29Eba2717C69133#code
+Factory https://ropsten.etherscan.io/address/0x46c3C6F76E4cA194AeEf79d5322716cb27d4BF53#code
 
 # Ropsten Feed data
 

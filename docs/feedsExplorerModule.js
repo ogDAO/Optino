@@ -96,6 +96,7 @@ const FeedsExplorer = {
                     </template>
                     <template v-slot:head(extra)="data">
                       <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
+                      <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
                       <b-button size="sm" class="m-0 p-0" :pressed.sync="showFavourite" variant="link" v-b-popover.hover.bottom="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                     </template>
                     <template v-slot:cell(name)="data">
@@ -120,9 +121,119 @@ const FeedsExplorer = {
                       <b-link style="font-size: 80%" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
                     </template>
                     <template v-slot:cell(extra)="row">
-                      <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" v-if="row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration cannot be updated'"></b-icon-lock-fill>
-                      <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" v-if="!row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration can still be updated'"></b-icon-unlock-fill>
+                      <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.top="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
+                      <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration cannot be updated'"></b-icon-lock-fill>
+                      <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="!row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration can still be updated'"></b-icon-unlock-fill>
                       <b-button size="sm" class="m-0 p-0" @click="setFeedFavourite(row.item.feedAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover.bottom="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
+                    </template>
+                    <template v-slot:row-details="row">
+                      <b-card>
+                        <b-card-header header-tag="header" class="p-1">
+                          {{ row.item.name }} @ {{ row.item.feedAddress }}
+                        </b-card-header>
+                        <b-card-body>
+                          <b-form-group label-cols="3" label-size="sm" label="Address">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.feedAddress" readonly></b-form-input>
+                              <b-input-group-append>
+                                <b-button size="sm" :href="explorer + 'address/' + row.item.feedAddress + '#readContract'" target="_blank" variant="outline-info">🔗</b-button>
+                              </b-input-group-append>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Name">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.name" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Message">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" v-model.trim="row.item.message" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Type">
+                            <b-input-group>
+                              <b-form-select :value="row.item.feedDataType" :options="typeOptions" disabled></b-form-select>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Decimals">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" :value="row.item.feedDataDecimals" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Spot">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" :value="row.item.spot.shift(-row.item.feedDataDecimals).toString()" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Has Data">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" :value="row.item.hasData" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Timestamp">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" :value="new Date(row.item.feedTimestamp*1000).toLocaleString()" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                        </b-card-body>
+                        <div v-if="coinbase == owner">
+                          <b-card-header header-tag="header" class="p-1">
+                            <code>updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)</code>
+                          </b-card-header>
+                          <b-card-body>
+                            <b-form-group label-cols="3" label-size="sm" label="Name">
+                              <b-input-group>
+                                <b-form-input type="text" size="sm" v-model.trim="feed.name"></b-form-input>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label-size="sm" label="Message">
+                              <b-input-group>
+                                <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label-size="sm" label="Type">
+                              <b-input-group>
+                                <b-form-select v-model.trim="feed.type" :options="typeOptions"></b-form-select>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label-size="sm" label="Decimals">
+                              <b-input-group>
+                                <b-form-select v-model.trim="feed.decimals" :options="decimalsOptions"></b-form-select>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label-size="sm" label="">
+                              <b-input-group>
+                                <b-button size="sm" :disabled="row.item.feedDataLocked" @click="updateFeed(row.item.feedAddress, feed.name, feed.message, feed.type, feed.decimals)" variant="primary" v-b-popover.hover="'Update Feed'">Update Feed</b-button>
+                              </b-input-group>
+                            </b-form-group>
+                          </b-card-body>
+                          <b-card-header header-tag="header" class="p-1">
+                            <code>lockFeed(address _feed)</code>
+                          </b-card-header>
+                          <b-card-body>
+                            <b-form-group label-cols="3" label-size="sm" label="">
+                              <b-input-group>
+                                <b-button size="sm" :disabled="row.item.feedDataLocked" @click="lockFeed(row.item.feedAddress)" variant="primary" v-b-popover.hover="'Lock Feed'">Lock Feed</b-button>
+                              </b-input-group>
+                            </b-form-group>
+                          </b-card-body>
+                          <b-card-header header-tag="header" class="p-1">
+                            <code>updateFeedMessage(address _feed, string memory _message)</code>
+                          </b-card-header>
+                          <b-card-body>
+                            <b-form-group label-cols="3" label-size="sm" label="Message">
+                              <b-input-group>
+                                <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
+                              </b-input-group>
+                            </b-form-group>
+                            <b-form-group label-cols="3" label-size="sm" label="">
+                              <b-input-group>
+                                <b-button size="sm" @click="updateFeedMessage(row.item.feedAddress, feed.message)" variant="primary" v-b-popover.hover="'Update Feed Message'">Update Feed Message</b-button>
+                              </b-input-group>
+                            </b-form-group>
+                          </b-card-body>
+                        </div>
+                      </b-card>
                     </template>
                   </b-table>
                 </b-card-body>
@@ -204,7 +315,7 @@ const FeedsExplorer = {
       return store.getters['connection/coinbase'];
     },
     owner() {
-      return store.getters['feeds/owner'];
+      return store.getters['optinoFactory/owner'];
     },
     feedData() {
       return store.getters['optinoFactory/feedData'];
@@ -267,6 +378,108 @@ const FeedsExplorer = {
       } catch (e) {
 
       }
+    },
+    updateFeed(feedAddress, name, message, feedType, decimals) {
+      logInfo("FeedsExplorer", "updateFeed(" + feedAddress + ", '" + name + "')?");
+      this.$bvModal.msgBoxConfirm('Update feed for "' + feedAddress + '" "' + name + '"?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            logInfo("FeedsExplorer", "updateFeed(" + feedAddress + ", '" + message + "')");
+            var factory = web3.eth.contract(OPTINOFACTORYABI).at(store.getters['optinoFactory/address']);
+            factory.updateFeed(feedAddress, name, message, feedType, decimals, { from: store.getters['connection/coinbase'] }, function(error, tx) {
+              if (!error) {
+                logInfo("FeedsExplorer", "updateFeed() token.approve() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("FeedsExplorer", "updateFeed() token.approve() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+            event.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
+    },
+    lockFeed(feedAddress, message) {
+      logInfo("FeedsExplorer", "lockFeed(" + feedAddress + ")?");
+      this.$bvModal.msgBoxConfirm('Lock feed "' + feedAddress + '"?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            logInfo("FeedsExplorer", "lockFeed(" + feedAddress + ")");
+            var factory = web3.eth.contract(OPTINOFACTORYABI).at(store.getters['optinoFactory/address']);
+            factory.lockFeed(feedAddress, { from: store.getters['connection/coinbase'] }, function(error, tx) {
+              if (!error) {
+                logInfo("FeedsExplorer", "lockFeed() token.approve() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("FeedsExplorer", "lockFeed() token.approve() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+            event.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
+    },
+    updateFeedMessage(feedAddress, message) {
+      logInfo("FeedsExplorer", "updateFeedMessage(" + feedAddress + ", '" + message + "')?");
+      this.$bvModal.msgBoxConfirm('Update feed message for "' + feedAddress + '" to "' + message + '"?', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            logInfo("FeedsExplorer", "updateFeedMessage(" + feedAddress + ", '" + message + "')");
+            var factory = web3.eth.contract(OPTINOFACTORYABI).at(store.getters['optinoFactory/address']);
+            factory.updateFeedMessage(feedAddress, message, { from: store.getters['connection/coinbase'] }, function(error, tx) {
+              if (!error) {
+                logInfo("FeedsExplorer", "updateFeedMessage() token.approve() tx: " + tx);
+                store.dispatch('connection/addTx', tx);
+              } else {
+                logInfo("FeedsExplorer", "updateFeedMessage() token.approve() error: ");
+                console.table(error);
+                store.dispatch('connection/setTxError', error.message);
+              }
+            });
+            event.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
     },
     updateValue(event) {
       this.$bvModal.msgBoxConfirm('Set value ' + this.value + '; hasValue ' + this.hasValue + '?', {

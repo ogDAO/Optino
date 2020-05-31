@@ -10,15 +10,15 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.988-testnet-pre-release
+// Optino Factory v0.989-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x10ca1e8171a4Fdf0B74f86A40F4665b1730F1504
-// OptinoFactory deployment on Ropsten: 0xcba52E28225a14119D1dE8F5A0e9afe11B50b46E
+// OptinoToken deployment on Ropsten: 0x4FDBD28f04A758bE949f315DA29Eba2717C69133
+// OptinoFactory deployment on Ropsten: 0x46c3C6F76E4cA194AeEf79d5322716cb27d4BF53
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -997,7 +997,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.988-testnet-pre-release";
+    string public message = "v0.989-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -1008,7 +1008,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     event MessageUpdated(string _message);
     event FeeUpdated(uint fee);
     event TokenDecimalsUpdated(ERC20 indexed token, uint8 decimals, uint8 locked);
-    event FeedUpdated(address indexed feed, string name, string message, uint8 feedType, uint8 decimals);
+    event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals);
     event FeedLocked(address indexed feed);
     event FeedMessageUpdated(address indexed feed, string message);
     event SeriesAdded(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos);
@@ -1046,9 +1046,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
             feedData[_feed] = Feed(block.timestamp, feedIndex.length - 1, _feed, [name, _message], [feedType, decimals, 0]);
         } else {
             feed.text[0] = name;
+            feed.text[1] = message;
             feed.data = [feedType, decimals, 0];
         }
-        emit FeedUpdated(_feed, name, message, feedType, decimals);
+        emit FeedUpdated(_feed, name, feedType, decimals);
     }
     function lockFeed(address _feed) public onlyOwner {
         Feed storage feed = feedData[_feed];
