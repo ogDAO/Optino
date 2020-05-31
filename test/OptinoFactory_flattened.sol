@@ -10,15 +10,15 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.987-testnet-pre-release
+// Optino Factory v0.988-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0xE5019B08121b3B19e38D266Ef9Fe964346725D02
-// OptinoFactory deployment on Ropsten: 0xE5019B08121b3B19e38D266Ef9Fe964346725D02
+// OptinoToken deployment on Ropsten: 0x10ca1e8171a4Fdf0B74f86A40F4665b1730F1504
+// OptinoFactory deployment on Ropsten: 0xcba52E28225a14119D1dE8F5A0e9afe11B50b46E
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -364,7 +364,7 @@ contract NameUtils is DataType {
         b = new bytes(80);
         bytes memory b1;
 
-        (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) = factory.getFeedName(feeds[0]);
+        (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) = factory.getFeedData(feeds[0]);
         if (isRegistered &&
             (feedParameters[uint(FeedParametersField.Type0)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Type0)] == feedType) &&
             (feedParameters[uint(FeedParametersField.Decimals0)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Decimals0)] == decimals)) {
@@ -386,7 +386,7 @@ contract NameUtils is DataType {
             }
         }
         if (feeds[1] != address(0)) {
-            (isRegistered, feedName, feedType, decimals)  = factory.getFeedName(feeds[1]);
+            (isRegistered, feedName, feedType, decimals)  = factory.getFeedData(feeds[1]);
             b[j++] = byte(MULTIPLY);
             if (isRegistered &&
                 (feedParameters[uint(FeedParametersField.Type1)] == FEEDPARAMETERS_DEFAULT || feedParameters[uint(FeedParametersField.Type1)] == feedType) &&
@@ -642,7 +642,7 @@ contract BasicToken is ERC20, Owned {
 contract OptinoFormulae is DataType {
     using SafeMath for uint;
 
-    function shiftRightThenLeft(uint amount, uint8 right, uint8 left) internal pure returns (uint _result) {
+    function shiftRightThenLeft(uint amount, uint8 right, uint8 left) internal pure returns (uint result) {
         if (right == left) {
             return amount;
         } else if (right > left) {
@@ -652,7 +652,7 @@ contract OptinoFormulae is DataType {
         }
     }
 
-    function computeCollateral(uint[5] memory _seriesData, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _collateral) {
+    function computeCollateral(uint[5] memory _seriesData, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint collateral) {
         (uint callPut, uint strike, uint bound) = (_seriesData[uint(SeriesDataField.CallPut)], _seriesData[uint(SeriesDataField.Strike)], _seriesData[uint(SeriesDataField.Bound)]);
         (uint8 decimals, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
         require(strike > 0, "strike must be > 0");
@@ -669,11 +669,11 @@ contract OptinoFormulae is DataType {
         }
     }
 
-    function computePayoff(uint[5] memory _seriesData, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _payoff) {
+    function computePayoff(uint[5] memory _seriesData, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint payoff) {
         (uint callPut, uint strike, uint bound) = (_seriesData[uint(SeriesDataField.CallPut)], _seriesData[uint(SeriesDataField.Strike)], _seriesData[uint(SeriesDataField.Bound)]);
         return _computePayoff(callPut, strike, bound, spot, tokens, decimalsData);
     }
-    function _computePayoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint _payoff) {
+    function _computePayoff(uint callPut, uint strike, uint bound, uint spot, uint tokens, uint8[4] memory decimalsData) internal pure returns (uint payoff) {
         (uint8 decimals, uint8 decimals0, uint8 decimals1, uint8 rateDecimals) = (decimalsData[0], decimalsData[1], decimalsData[2], decimalsData[3]);
         require(strike > 0, "strike must be > 0");
         if (callPut == 0) {
@@ -941,42 +941,42 @@ contract FeedHandler {
     uint8 immutable NODATA = uint8(0xff);
     uint immutable FEEDTYPECOUNT = 4;
 
-    function getRateFromFeed(address feed, FeedType feedType) public view returns (uint _rate, bool _hasData, uint8 _decimals, uint _timestamp) {
+    function getRateFromFeed(address feed, FeedType feedType) public view returns (uint rate, bool hasData, uint8 decimals, uint timestamp) {
         if (feedType == FeedType.CHAINLINK4) {
-            int _iRate = AggregatorInterface4(feed).latestAnswer();
-            _hasData = _iRate > 0;
-            _rate = _hasData ? uint(_iRate) : 0;
-            _decimals = NODATA;
-            _timestamp = AggregatorInterface4(feed).latestTimestamp();
+            int iRate = AggregatorInterface4(feed).latestAnswer();
+            hasData = iRate > 0;
+            rate = hasData ? uint(iRate) : 0;
+            decimals = NODATA;
+            timestamp = AggregatorInterface4(feed).latestTimestamp();
         } else if (feedType == FeedType.CHAINLINK6) {
-            int _iRate = AggregatorInterface6(feed).latestAnswer();
-            _hasData = _iRate > 0;
-            _rate = _hasData ? uint(_iRate) : 0;
-            _decimals = AggregatorInterface6(feed).decimals();
-            _timestamp = AggregatorInterface6(feed).latestTimestamp();
+            int iRate = AggregatorInterface6(feed).latestAnswer();
+            hasData = iRate > 0;
+            rate = hasData ? uint(iRate) : 0;
+            decimals = AggregatorInterface6(feed).decimals();
+            timestamp = AggregatorInterface6(feed).latestTimestamp();
         } else if (feedType == FeedType.MAKER) {
-            bytes32 _bRate;
-            (_bRate, _hasData) = MakerFeed(feed).peek();
-            _rate = uint(_bRate);
-            if (!_hasData) {
-                _rate = 0;
+            bytes32 bRate;
+            (bRate, hasData) = MakerFeed(feed).peek();
+            rate = uint(bRate);
+            if (!hasData) {
+                rate = 0;
             }
-            _decimals = NODATA;
-            _timestamp = NODATA;
+            decimals = NODATA;
+            timestamp = NODATA;
         } else if (feedType == FeedType.ADAPTOR) {
-            (_rate, _hasData) = AdaptorFeed(feed).spot();
-            if (!_hasData) {
-                _rate = 0;
+            (rate, hasData) = AdaptorFeed(feed).spot();
+            if (!hasData) {
+                rate = 0;
             }
-            _decimals = NODATA;
-            _timestamp = NODATA;
+            decimals = NODATA;
+            timestamp = NODATA;
         // } else if (feedType == FeedType.COMPOUND) {
         //     // TODO - Remove COMPOUND, or add a parameter to save asset
-        //     uint _uRate = V1PriceOracleInterface(feed).assetPrices(address(0));
-        //     _rate = uint(_uRate);
-        //     _hasData = _rate > 0;
-        //     _decimals = NODATA;
-        //     _timestamp = block.timestamp;
+        //     uint uRate = V1PriceOracleInterface(feed).assetPrices(address(0));
+        //     rate = uint(uRate);
+        //     hasData = rate > 0;
+        //     decimals = NODATA;
+        //     timestamp = block.timestamp;
         } else {
             revert("Invalid feedType");
         }
@@ -997,7 +997,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.987-testnet-pre-release";
+    string public message = "v0.988-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -1072,23 +1072,31 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         (feedName, _message, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
         (spot, hasData, feedReportedDecimals, feedTimestamp) = getRateFromFeed(_feed.feed, FeedType(_feed.data[uint(FeedDataField.Type)]));
     }
+    function getFeedData(address _feed) public view returns (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) {
+        Feed memory feed = feedData[_feed];
+        if (feed.timestamp > 0) {
+            return (true, feed.text[0], feed.data[uint(FeedDataField.Type)], feed.data[uint(FeedDataField.Decimals)]);
+        } else {
+            return (false, "Custom", FEEDPARAMETERS_DEFAULT, FEEDPARAMETERS_DEFAULT);
+        }
+    }
     function feedLength() public view returns (uint) {
         return feedIndex.length;
     }
 
-    function makeSeriesKey(InputData memory inputData) internal pure returns (bytes32 _seriesKey) {
+    function makeSeriesKey(InputData memory inputData) internal pure returns (bytes32 seriesKey) {
         return keccak256(abi.encodePacked(inputData.pair, inputData.feeds, inputData.feedParameters, inputData.data[uint(InputDataField.CallPut)], inputData.data[uint(InputDataField.Expiry)], inputData.data[uint(InputDataField.Strike)], inputData.data[uint(InputDataField.Bound)]));
     }
-    function addSeries(InputData memory inputData, OptinoToken[2] memory optinos) internal returns (bytes32 _seriesKey) {
+    function addSeries(InputData memory inputData, OptinoToken[2] memory optinos) internal returns (bytes32 seriesKey) {
         (uint callPut, uint expiry, uint strike, uint bound) = (inputData.data[uint(InputDataField.CallPut)], inputData.data[uint(InputDataField.Expiry)], inputData.data[uint(InputDataField.Strike)], inputData.data[uint(InputDataField.Bound)]);
         require(optinos[0] != OptinoToken(0), "Invalid optinoToken");
         require(optinos[1] != OptinoToken(0), "Invalid coverToken");
-        _seriesKey = makeSeriesKey(inputData);
-        require(seriesData[_seriesKey].timestamp == 0, "Cannot add duplicate");
-        seriesIndex.push(_seriesKey);
+        seriesKey = makeSeriesKey(inputData);
+        require(seriesData[seriesKey].timestamp == 0, "Cannot add duplicate");
+        seriesIndex.push(seriesKey);
         uint _seriesIndex = seriesIndex.length - 1;
-        seriesData[_seriesKey] = Series(block.timestamp, _seriesIndex, _seriesKey, inputData.pair, inputData.feeds, inputData.feedParameters, [callPut, expiry, strike, bound, 0], optinos);
-        emit SeriesAdded(_seriesKey, _seriesIndex, optinos);
+        seriesData[seriesKey] = Series(block.timestamp, _seriesIndex, seriesKey, inputData.pair, inputData.feeds, inputData.feedParameters, [callPut, expiry, strike, bound, 0], optinos);
+        emit SeriesAdded(seriesKey, _seriesIndex, optinos);
     }
 
     function getSeriesSpot(bytes32 seriesKey) public view returns (uint spot) {
@@ -1115,10 +1123,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         series.data[uint(SeriesDataField.Spot)] = spot;
         emit SeriesSpotUpdated(seriesKey, spot);
     }
-    function getSeriesByIndex(uint i) public view returns (bytes32 _seriesKey, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp) {
+    function getSeriesByIndex(uint i) public view returns (bytes32 seriesKey, ERC20[2] memory pair, address[2] memory feeds, uint8[6] memory feedParameters, uint8 feedDecimals0, uint[5] memory data, OptinoToken[2] memory optinos, uint timestamp) {
         require(i < seriesIndex.length, "Invalid series index");
-        _seriesKey = seriesIndex[i];
-        Series memory series = seriesData[_seriesKey];
+        seriesKey = seriesIndex[i];
+        Series memory series = seriesData[seriesKey];
         feedDecimals0 = series.feedParameters[uint(FeedParametersField.Decimals0)];
         if (feedDecimals0 == FEEDPARAMETERS_DEFAULT) {
             feedDecimals0 = feedData[series.feeds[0]].data[uint(FeedDataField.Decimals)];
@@ -1148,14 +1156,6 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         require(series.timestamp > 0, "Invalid key");
         decimalsData = [OPTINODECIMALS, series.pair[0].decimals(), series.pair[1].decimals(), getFeedDecimals0(seriesKey)];
         return (series.data, decimalsData);
-    }
-    function getFeedName(address _feed) public view returns (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) {
-        Feed memory feed = feedData[_feed];
-        if (feed.timestamp > 0) {
-            return (true, feed.text[0], feed.data[uint(FeedDataField.Type)], feed.data[uint(FeedDataField.Decimals)]);
-        } else {
-            return (false, "Custom", FEEDPARAMETERS_DEFAULT, FEEDPARAMETERS_DEFAULT);
-        }
     }
     function getFeed(address[2] memory feeds, uint8[6] memory feedParameters, uint i) internal view returns (uint8 feedDecimals, uint8 feedType, uint spot, bool hasData, bool ok, string memory error) {
         Feed memory feed = feedData[feeds[i]];

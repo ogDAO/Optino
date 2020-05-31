@@ -128,7 +128,7 @@ const OptinoExplorer = {
 
                     <b-form-group label-cols="3" label="Calculated spot">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="calculatedSpot" readonly></b-form-input>
+                        <b-form-input type="text" v-model.trim="calculatedSpot" readonly placeholder="Retrieving latest rate"></b-form-input>
                       </b-input-group>
                     </b-form-group>
 
@@ -439,35 +439,35 @@ const OptinoExplorer = {
       // TODO Delete
       baseTokens: "0.1",
 
-      typeOptions: [
-        { value: 0xff, text: 'Default' },
-        { value: 0, text: 'Chainlink v4' },
-        { value: 1, text: 'Chainlink v6' },
-        { value: 2, text: 'MakerDAO' },
-        { value: 3, text: 'Adaptor' },
-      ],
-      decimalsOptions: [
-        { value: 0xff, text: 'Default' },
-        { value: 18, text: '18' },
-        { value: 17, text: '17' },
-        { value: 16, text: '16' },
-        { value: 15, text: '15' },
-        { value: 14, text: '14' },
-        { value: 13, text: '13' },
-        { value: 12, text: '12' },
-        { value: 11, text: '11' },
-        { value: 10, text: '10' },
-        { value: 9, text: '9' },
-        { value: 8, text: '8' },
-        { value: 7, text: '7' },
-        { value: 6, text: '6' },
-        { value: 5, text: '5' },
-        { value: 4, text: '4' },
-        { value: 3, text: '3' },
-        { value: 2, text: '2' },
-        { value: 1, text: '1' },
-        { value: 0, text: '0' },
-      ],
+      // typeOptions: [
+      //   { value: 0xff, text: 'Default' },
+      //   { value: 0, text: 'Chainlink v4' },
+      //   { value: 1, text: 'Chainlink v6' },
+      //   { value: 2, text: 'MakerDAO' },
+      //   { value: 3, text: 'Adaptor' },
+      // ],
+      // decimalsOptions: [
+      //   { value: 0xff, text: 'Default' },
+      //   { value: 18, text: '18' },
+      //   { value: 17, text: '17' },
+      //   { value: 16, text: '16' },
+      //   { value: 15, text: '15' },
+      //   { value: 14, text: '14' },
+      //   { value: 13, text: '13' },
+      //   { value: 12, text: '12' },
+      //   { value: 11, text: '11' },
+      //   { value: 10, text: '10' },
+      //   { value: 9, text: '9' },
+      //   { value: 8, text: '8' },
+      //   { value: 7, text: '7' },
+      //   { value: 6, text: '6' },
+      //   { value: 5, text: '5' },
+      //   { value: 4, text: '4' },
+      //   { value: 3, text: '3' },
+      //   { value: 2, text: '2' },
+      //   { value: 1, text: '1' },
+      //   { value: 0, text: '0' },
+      // ],
 
       expired: false,
       selectedSeries: null,
@@ -655,6 +655,12 @@ const OptinoExplorer = {
     tokenData() {
       return store.getters['tokens/tokenData'];
     },
+    typeOptions() {
+      return store.getters['optinoFactory/typeOptions'];
+    },
+    decimalsOptions() {
+      return store.getters['optinoFactory/decimalsOptions'];
+    },
     tokenOptions() {
       var tokenData = store.getters['tokens/tokenData'];
       var results = [];
@@ -818,14 +824,16 @@ const OptinoExplorer = {
       logInfo("optinoExplorer", "recalculate(" + source + ", " + JSON.stringify(event) + ")");
       var factoryAddress = store.getters['optinoFactory/address']
       var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
+      var feedDecimals0 = null;
+      var feedType0 = null;
       // logInfo("optinoExplorer", "recalculate feedParameters:" + JSON.stringify([this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1]));
       try {
         var _calculateSpot = promisify(cb => factory.calculateSpot([this.feed0, this.feed1],
           [this.type0, this.type1, this.decimals0, this.decimals1, this.inverse0, this.inverse1], cb));
         var calculateSpot = await _calculateSpot;
         logInfo("optinoExplorer", "recalculate - calculateSpot: " + JSON.stringify(calculateSpot));
-        var feedDecimals0 = calculateSpot[0];
-        var feedType0 = calculateSpot[1];
+        feedDecimals0 = calculateSpot[0];
+        feedType0 = calculateSpot[1];
         this.calculatedSpot = calculateSpot[2].shift(-feedDecimals0).toString();
       } catch (e) {
         this.calculatedSpot = "";

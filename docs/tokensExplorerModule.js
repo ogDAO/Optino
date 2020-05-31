@@ -6,6 +6,7 @@ const TokensExplorer = {
           <b-card no-body header="Tokens Explorer" class="border-0" header-class="p-1">
             <br />
             <b-card no-body class="mb-1">
+            
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.addtoken variant="outline-info">Add Token</b-button>
               </b-card-header>

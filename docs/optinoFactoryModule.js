@@ -204,6 +204,35 @@ const optinoFactoryModule = {
     feedDataSorted: [],
     seriesData: {},
     optinoData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
+    typeOptions: [
+      { value: 0xff, text: 'Default' },
+      { value: 0, text: 'Chainlink v4' },
+      { value: 1, text: 'Chainlink v6' },
+      { value: 2, text: 'MakerDAO' },
+      { value: 3, text: 'Adaptor' },
+    ],
+    decimalsOptions: [
+      { value: 0xff, text: 'Default' },
+      { value: 18, text: '18' },
+      { value: 17, text: '17' },
+      { value: 16, text: '16' },
+      { value: 15, text: '15' },
+      { value: 14, text: '14' },
+      { value: 13, text: '13' },
+      { value: 12, text: '12' },
+      { value: 11, text: '11' },
+      { value: 10, text: '10' },
+      { value: 9, text: '9' },
+      { value: 8, text: '8' },
+      { value: 7, text: '7' },
+      { value: 6, text: '6' },
+      { value: 5, text: '5' },
+      { value: 4, text: '4' },
+      { value: 3, text: '3' },
+      { value: 2, text: '2' },
+      { value: 1, text: '1' },
+      { value: 0, text: '0' },
+    ],
     params: null,
     executing: false,
   },
@@ -217,6 +246,8 @@ const optinoFactoryModule = {
     feedDataSorted: state => state.feedDataSorted,
     seriesData: state => state.seriesData,
     optinoData: state => state.optinoData,
+    typeOptions: state => state.typeOptions,
+    decimalsOptions: state => state.decimalsOptions,
     params: state => state.params,
   },
   mutations: {
@@ -322,11 +353,11 @@ const optinoFactoryModule = {
 
           var _feedLength = promisify(cb => contract.feedLength(cb));
           var feedLength = await _feedLength;
-          // logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
+          logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
-            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var feedAddress = feed[0];
             var feedName = feed[1];
             var feedMessage = feed[2];

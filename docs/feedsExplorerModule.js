@@ -8,6 +8,66 @@ const FeedsExplorer = {
             <b-card no-body class="mb-1">
 
               <b-card-header header-tag="header" class="p-1 m-1">
+                <b-button href="#" v-b-toggle.addfeed variant="outline-info">Add Feed</b-button>
+              </b-card-header>
+              <b-collapse id="addfeed" visible class="border-0">
+                <b-card-body>
+                  <b-form>
+                    <b-form-group label-cols="3" label="Address">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="feed.address"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Name">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="feed.name"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Message">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="feed.message"></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Type">
+                      <b-input-group>
+                        <b-form-select v-model.trim="feed.type" :options="typeOptions"></b-form-select>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Decimals">
+                      <b-input-group>
+                        <b-form-select v-model.trim="feed.decimals" :options="decimalsOptions"></b-form-select>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="">
+                      <b-button-group>
+                        <b-button size="sm" @click="checkFeed()" variant="primary" v-b-popover.hover="'Check feed address'">Check Feed</b-button>
+                      </b-button-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Feed Reported Rate">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="feed.results.rate" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Feed Has Data">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="feed.results.hasData" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Feed Reported Decimals">
+                      <b-input-group>
+                        <b-form-input type="text" v-model.trim="feed.results.decimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-group label-cols="3" label="Rate using decimals">
+                      <b-input-group>
+                         <b-form-input type="text" :value="rateUsingDecimals" readonly></b-form-input>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-form>
+                </b-card-body>
+              </b-collapse>
+
+              <b-card-header header-tag="header" class="p-1 m-1">
                 <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Feeds</b-button>
               </b-card-header>
               <b-collapse id="configuredfeeds" visible class="border-0">
@@ -107,6 +167,20 @@ const FeedsExplorer = {
     return {
       showFavourite: false,
 
+      feed: {
+        address: "0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A",
+        name: "Chainlink:XAG/USD",
+        message: "https://feeds.chain.link/",
+        type: 0,
+        decimals: 8,
+        results: {
+          rate: null,
+          hasData: null,
+          decimals: null,
+          timestamp: null,
+        },
+      },
+
       feedDataFields: [
         { key: 'name', label: 'Name', sortable: true },
         { key: 'feedDataType', label: 'Type', sortable: true },
@@ -147,12 +221,52 @@ const FeedsExplorer = {
       });
       return results;
     },
+    typeOptions() {
+      return store.getters['optinoFactory/typeOptions'];
+    },
+    decimalsOptions() {
+      return store.getters['optinoFactory/decimalsOptions'];
+    },
+    rateUsingDecimals() {
+      return this.feed.results.rate == null ? null : new BigNumber(this.feed.results.rate).shift(-this.feed.decimals).toString();
+    }
   },
   methods: {
     setFeedFavourite(feedAddress, favourite) {
       logInfo("FeedsExplorer", "setFeedFavourite(" + feedAddress + ", " + favourite + ")");
       store.dispatch('optinoFactory/setFeedFavourite', { feedAddress: feedAddress, favourite: favourite });
       alert("TODO: Not implemented yet");
+    },
+    async checkFeed(event) {
+      logInfo("FeedsExplorer", "checkFeed(" + this.feed.address + ")");
+      var factory = web3.eth.contract(OPTINOFACTORYABI).at(store.getters['optinoFactory/address']);
+      // var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+      //
+      try {
+
+        // function getFeedData(address _feed) public view returns (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals)
+        var _getFeedData = promisify(cb => factory.getFeedData(this.feed.address, cb));
+        var getFeedData = await _getFeedData;
+        logInfo("FeedsExplorer", "checkFeed - getFeedData: " + JSON.stringify(getFeedData));
+
+        var _getRateFromFeed = promisify(cb => factory.getRateFromFeed(this.feed.address, this.feed.type, cb));
+        var getRateFromFeed = await _getRateFromFeed;
+        logInfo("FeedsExplorer", "checkFeed - getRateFromFeed: " + JSON.stringify(getRateFromFeed));
+        this.feed.results.rate = getRateFromFeed[0].toString();
+        this.feed.results.hasData = getRateFromFeed[1].toString();
+        this.feed.results.decimals = parseInt(getRateFromFeed[2]);
+        this.feed.results.timestamp = parseInt(getRateFromFeed[3]);
+        logInfo("FeedsExplorer", "checkFeed: " + JSON.stringify(this.feed.results));
+        // var decimals = parseInt(tokenInfo[0]);
+        // var totalSupply = tokenInfo[1].shift(-decimals).toString();
+        // var balance = tokenInfo[2].shift(-decimals).toString();
+        // var allowance = tokenInfo[3].shift(-decimals).toString();
+        // this.tokenInfo = { address: this.tokenContractAddress, symbol: tokenInfo[4], name: tokenInfo[5], decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance };
+        // logInfo("FeedsExplorer", "checkFeed: " + JSON.stringify(this.tokenInfo));
+
+      } catch (e) {
+
+      }
     },
     updateValue(event) {
       this.$bvModal.msgBoxConfirm('Set value ' + this.value + '; hasValue ' + this.hasValue + '?', {
