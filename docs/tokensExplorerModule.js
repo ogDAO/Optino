@@ -487,7 +487,7 @@ const TokensExplorer = {
     // },
     addTokenAddress(address, source) {
       logInfo("TokensExplorer", "addTokenAddress(" + address + ", '" + source + "', '" + this.tokenInfo.symbol + "')");
-      this.$bvToast.toast(`Added ${this.tokenInfo.symbol} to your token list`, {
+      this.$bvToast.toast(`Added ${this.tokenInfo.symbol} to your personal token list. Your list will be updated shortly`, {
         title: 'Tokens',
         variant: 'primary',
         autoHideDelay: 10000,
@@ -498,7 +498,7 @@ const TokensExplorer = {
     },
     addTokenFromList(list, source) {
       logInfo("TokensExplorer", "addTokenFromList(" + JSON.stringify(list) + ")");
-      this.$bvToast.toast(`Added ${list.length} items to your token list`, {
+      this.$bvToast.toast(`Added ${list.length} item(s) to your personal token list. Your list will be updated shortly`, {
         title: 'Tokens',
         variant: 'primary',
         autoHideDelay: 10000,

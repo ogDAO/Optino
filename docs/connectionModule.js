@@ -349,10 +349,10 @@ const Connection = {
     },
     timeoutCallback() {
       var t = this;
-      if (this.count++ % 15 == 0 || store.getters['connection/processNow']) {
-        if (store.getters['connection/processNow']) {
-          store.dispatch('connection/setProcessNow', false);
-        }
+      if (this.count++ % 15 == 0 /* || store.getters['connection/processNow'] */) {
+        // if (store.getters['connection/processNow']) {
+        //   store.dispatch('connection/setProcessNow', false);
+        // }
         t.execWeb3();
       }
       if (store.getters['connection/block'] != null) {

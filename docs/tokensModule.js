@@ -97,7 +97,7 @@ const tokensModule = {
       // Vue.set(state.tokenData, address, { tokenAddress: address });
       // commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
       localStorage.setItem('personalTokenList', JSON.stringify(state.personalTokenList));
-      store.dispatch('connection/setProcessNow', true);
+      // store.dispatch('connection/setProcessNow', true);
     },
     removeFromPersonalTokenList(state, address) {
       logInfo("tokensModule", "mutations.removeFromPersonalTokenList(" + address + ")");
