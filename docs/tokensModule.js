@@ -60,13 +60,15 @@ const Tokens = {
   },
   mounted() {
     logDebug("Tokens", "mounted()")
-    if (localStorage.getItem('tokenAddressData')) {
-      logInfo("Tokens", "Restoring tokenAddressData: " + localStorage.getItem('tokenAddressData'));
-      var tokenAddressData = JSON.parse(localStorage.getItem('tokenAddressData'));
-      for (var address in tokenAddressData) {
-        var data = tokenAddressData[address];
-        logInfo("Tokens", "Restoring tokenAddressData: " + JSON.stringify(data));
-        store.dispatch('tokens/restoreTokenAddress', data);
+    if (localStorage.getItem('personalTokenList')) {
+      var personalTokenList = JSON.parse(localStorage.getItem('personalTokenList'));
+      logInfo("Tokens", "Restoring personalTokenList: " + JSON.stringify(personalTokenList));
+      logInfo("Tokens", "Restoring personalTokenList keys: " + JSON.stringify(Object.keys(personalTokenList)));
+      var keys = Object.keys(personalTokenList);
+      for (var i = 0; i < keys.length; i++) {
+        var data = personalTokenList[keys[i]];
+        logInfo("Tokens", "Restoring personalTokenList: " + JSON.stringify(data));
+        store.dispatch('tokens/addToPersonalTokenList', { address: data.address, source: data.source, favourite: data.favourite });
       }
     }
   },
@@ -77,39 +79,50 @@ const tokensModule = {
   namespaced: true,
   state: {
     tokenData: {},
-    tokenAddressData: {},
+    personalTokenList: {},
 
     params: null,
     executing: false,
   },
   getters: {
     tokenData: state => state.tokenData,
-    tokenAddressData: state => state.tokenAddressData,
+    personalTokenList: state => state.personalTokenList,
 
     params: state => state.params,
   },
   mutations: {
-    addTokenAddress(state, tokenAddress) {
-      logInfo("tokensModule", "mutations.addTokenAddress(" + tokenAddress + "): " + JSON.stringify(state.tokenAddressData));
-      Vue.set(state.tokenAddressData, tokenAddress, { tokenAddress: tokenAddress, source: "custom", favourite: true });
-      localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
+    addToPersonalTokenList(state, { address, source, favourite }) {
+      logInfo("tokensModule", "mutations.addToPersonalTokenList(" + address + ", '" + source + "', " + favourite + ")");
+      Vue.set(state.personalTokenList, address, { address: address, source: source, favourite: favourite });
+      // Vue.set(state.tokenData, address, { tokenAddress: address });
+      // commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
+      localStorage.setItem('personalTokenList', JSON.stringify(state.personalTokenList));
+      store.dispatch('connection/setProcessNow', true);
     },
-    restoreTokenAddress(state, data) {
-      logInfo("tokensModule", "mutations.restoreTokenAddress(" + JSON.stringify(data) + ")");
-      Vue.set(state.tokenAddressData, data.tokenAddress, data);
-      localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
+    removeFromPersonalTokenList(state, address) {
+      logInfo("tokensModule", "mutations.removeFromPersonalTokenList(" + address + ")");
+      Vue.delete(state.personalTokenList, address);
+      Vue.delete(state.tokenData, address);
+      localStorage.setItem('personalTokenList', JSON.stringify(state.personalTokenList));
+    },
+    resetPersonalTokenList(state, blah) {
+      logInfo("tokensModule", "mutations.resetPersonalTokenList()");
+      state.personalTokenList = {};
+      state.tokenData = {};
+      // Vue.set(state.personalTokenList, address, { address: address, source: source, favourite: favourite });
+      localStorage.removeItem('personalTokenList');
     },
     setTokenFavourite(state, { tokenAddress, favourite }) {
       logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
-      var existing = state.tokenAddressData[tokenAddress];
+      var existing = state.personalTokenList[tokenAddress];
       var source = "";
       if (existing) {
         source = existing.source;
       }
-      Vue.set(state.tokenAddressData, tokenAddress, { tokenAddress: tokenAddress, source: source, favourite: favourite });
+      Vue.set(state.personalTokenList, tokenAddress, { tokenAddress: tokenAddress, source: source, favourite: favourite });
       logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + "): " + favourite);
-      localStorage.setItem('tokenAddressData', JSON.stringify(state.tokenAddressData));
-      logInfo("tokensModule", "mutations.setTokenFavourite tokenAddressData=" + JSON.stringify(state.tokenAddressData));
+      localStorage.setItem('personalTokenList', JSON.stringify(state.personalTokenList));
+      logInfo("tokensModule", "mutations.setTokenFavourite personalTokenList=" + JSON.stringify(state.personalTokenList));
 
       var token = state.tokenData[tokenAddress];
       if (token) {
@@ -122,11 +135,13 @@ const tokensModule = {
     },
     updateTokenStats(state, {tokenAddress, totalSupply, balance, allowance}) {
       var token = state.tokenData[tokenAddress];
-      token.totalSupply = totalSupply.shift(-token.decimals);
-      token.balance = balance.shift(-token.decimals);
-      token.allowance = allowance.shift(-token.decimals);
-      Vue.set(state.tokenData, tokenAddress, token);
-      // logInfo("tokensModule", "updateTokenStats(" + tokenAddress + ", " + JSON.stringify(token) + ")")
+      if (token != null && typeof token.decimals !== "undefined") {
+        token.totalSupply = totalSupply.shift(-token.decimals);
+        token.balance = balance.shift(-token.decimals);
+        token.allowance = allowance.shift(-token.decimals);
+        Vue.set(state.tokenData, tokenAddress, token);
+        // logInfo("tokensModule", "updateTokenStats(" + tokenAddress + ", " + JSON.stringify(token) + ")")
+      }
     },
     // updateTokenShowDetails(state, parameters){
     //   parameters.ref.__showDetails = parameters.val
@@ -141,13 +156,17 @@ const tokensModule = {
     },
   },
   actions: {
-    addTokenAddress(context, tokenAddress) {
-      // logInfo("tokensModule", "actions.addTokenAddress(" + tokenAddress + ")");
-      context.commit('addTokenAddress', tokenAddress);
+    addToPersonalTokenList(context, { address, source, favourite }) {
+      logInfo("tokensModule", "actions.addToPersonalTokenList(" + address + ", '" + source + "', " + favourite + ")");
+      context.commit('addToPersonalTokenList', { address, source, favourite });
     },
-    restoreTokenAddress(context, data) {
-      logInfo("tokensModule", "actions.restoreTokenAddress(" + JSON.stringify(data) + ")");
-      context.commit('restoreTokenAddress', data);
+    removeFromPersonalTokenList(context, address) {
+      logInfo("tokensModule", "actions.removeFromPersonalTokenList(" + address + ")");
+      context.commit('removeFromPersonalTokenList', address);
+    },
+    resetPersonalTokenList(context, blah) {
+      logInfo("tokensModule", "actions.resetPersonalTokenList(" + blah + ")");
+      context.commit('resetPersonalTokenList', blah);
     },
     setTokenFavourite(context, { tokenAddress, favourite }) {
       logInfo("tokensModule", "actions.setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
@@ -171,21 +190,21 @@ const tokensModule = {
 
           var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
 
-          // for (var tokenAddress in state.tokenAddressData) {
-          //   // logInfo("tokensModule", "execWeb3() tokenAddress: " + tokenAddress);
-          //   var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(tokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-          //   var tokenInfo = await _tokenInfo;
-          //   // logInfo("tokensModule", "execWeb3() tokenInfo: " + JSON.stringify(tokenInfo));
-          //   var symbol = tokenInfo[4];
-          //   var name = tokenInfo[5];
-          //   var decimals = parseInt(tokenInfo[0]);
-          //   var totalSupply = tokenInfo[1].shift(-decimals).toString();
-          //   var balance = tokenInfo[2].shift(-decimals).toString();
-          //   var allowance = tokenInfo[3].shift(-decimals).toString();
-          //   // if (!(tokenAddress in state.tokenData)) {
-          //     commit('updateToken', { tokenAddress: tokenAddress, token: { index: -1, tokenAddress: tokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance } } );
-          //   // }
-          // }
+          for (var tokenAddress in state.personalTokenList) {
+            logInfo("tokensModule", "execWeb3() tokenAddress: " + tokenAddress);
+            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(tokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+            var tokenInfo = await _tokenInfo;
+            logInfo("tokensModule", "execWeb3() tokenInfo: " + JSON.stringify(tokenInfo));
+            var symbol = tokenInfo[4];
+            var name = tokenInfo[5];
+            var decimals = parseInt(tokenInfo[0]);
+            var totalSupply = tokenInfo[1].shift(-decimals).toString();
+            var balance = tokenInfo[2].shift(-decimals).toString();
+            var allowance = tokenInfo[3].shift(-decimals).toString();
+            if (!(tokenAddress in state.tokenData)) {
+              commit('updateToken', { tokenAddress: tokenAddress, token: { index: -1, tokenAddress: tokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance } } );
+            }
+          }
 
           var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
           var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
@@ -195,28 +214,30 @@ const tokensModule = {
           var startFakeTokensIndex = Object.keys(state.tokenData).length;
           // logInfo("tokensModule", "execWeb3() startFakeTokensIndex: " + startFakeTokensIndex);
           startFakeTokensIndex = 0;
-          for (var fakeTokensIndex = startFakeTokensIndex; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
-            // TODO: Sort out list
-            if (fakeTokensIndex == 1 || fakeTokensIndex == 4 || fakeTokensIndex == 7 || fakeTokensIndex == 13 || fakeTokensIndex == 18) {
-              var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
-              var fakeTokenAddress = await _fakeTokenAddress;
-              // logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): " + fakeTokenAddress);
-              var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-              var tokenInfo = await _tokenInfo;
-              var symbol = tokenInfo[4];
-              var name = tokenInfo[5];
-              // logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): '" + symbol + "', '" + name + "'");
-              var decimals = parseInt(tokenInfo[0]);
-              var totalSupply = tokenInfo[1].shift(-decimals).toString();
-              var balance = tokenInfo[2].shift(-decimals).toString();
-              var allowance = tokenInfo[3].shift(-decimals).toString();
-              var favouriteData = state.tokenAddressData[fakeTokenAddress];
-              var favourite = false;
-              if (favouriteData) {
-                favourite = favouriteData.favourite;
-              }
-              if (!(fakeTokenAddress in state.tokenData)) {
-                commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
+          if (false) {
+            for (var fakeTokensIndex = startFakeTokensIndex; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
+              // TODO: Sort out list
+              if (fakeTokensIndex == 1 || fakeTokensIndex == 4 || fakeTokensIndex == 7 || fakeTokensIndex == 13 || fakeTokensIndex == 18) {
+                var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
+                var fakeTokenAddress = await _fakeTokenAddress;
+                // logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): " + fakeTokenAddress);
+                var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+                var tokenInfo = await _tokenInfo;
+                var symbol = tokenInfo[4];
+                var name = tokenInfo[5];
+                // logInfo("tokensModule", "execWeb3() fakeTokenAddress(" + fakeTokensIndex + "): '" + symbol + "', '" + name + "'");
+                var decimals = parseInt(tokenInfo[0]);
+                var totalSupply = tokenInfo[1].shift(-decimals).toString();
+                var balance = tokenInfo[2].shift(-decimals).toString();
+                var allowance = tokenInfo[3].shift(-decimals).toString();
+                var favouriteData = state.personalTokenList[fakeTokenAddress];
+                var favourite = false;
+                if (favouriteData) {
+                  favourite = favouriteData.favourite;
+                }
+                if (!(fakeTokenAddress in state.tokenData)) {
+                  commit('updateToken', { tokenAddress: fakeTokenAddress, token: { index: fakeTokensIndex, tokenAddress: fakeTokenAddress, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, favourite: favourite } } );
+                }
               }
             }
           }
@@ -229,7 +250,7 @@ const tokensModule = {
           // logInfo("tokensModule", "execWeb3() tokensInfo: " + JSON.stringify(tokensInfo));
           for (var tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
             var tokenAddress = tokens[tokenIndex];
-            // logInfo("tokensModule", "execWeb3() updateTokenStats: " + JSON.stringify({ tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]}));
+            logInfo("tokensModule", "execWeb3() updateTokenStats: " + JSON.stringify({ tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]}));
             commit('updateTokenStats', { tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]} );
           }
 

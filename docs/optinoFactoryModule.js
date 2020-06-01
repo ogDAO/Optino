@@ -353,11 +353,11 @@ const optinoFactoryModule = {
 
           var _feedLength = promisify(cb => contract.feedLength(cb));
           var feedLength = await _feedLength;
-          logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
+          // logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
           for (var i = 0; i < feedLength; i++) {
             var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
             var feed = await _feed;
-            logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var feedAddress = feed[0];
             var feedName = feed[1];
             var feedMessage = feed[2];
@@ -386,7 +386,7 @@ const optinoFactoryModule = {
             if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp || state.feedData[feedAddress].feedDataLocked != feedDataLocked) {
               commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage,
                 feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
-                spot: spot, hasData: hasData ? "y" : "n", feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
+                spot: spot, hasData: hasData.toString(), feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
             }
           }
 
@@ -417,7 +417,7 @@ const optinoFactoryModule = {
           var feedTimestamp = 1590192137;
           commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage,
             feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
-            spot: spot, hasData: hasData ? "y" : "n", feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
+            spot: spot, hasData: hasData.toString(), feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
 
           /*
 

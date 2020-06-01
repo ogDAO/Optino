@@ -349,7 +349,10 @@ const Connection = {
     },
     timeoutCallback() {
       var t = this;
-      if (this.count++ % 15 == 0 /*|| store.getters['tokenContractExplorer/executionQueue'].length > 0  || store.getters['feedsExplorer/executionQueue'].length > 0 */) {
+      if (this.count++ % 15 == 0 || store.getters['connection/processNow']) {
+        if (store.getters['connection/processNow']) {
+          store.dispatch('connection/setProcessNow', false);
+        }
         t.execWeb3();
       }
       if (store.getters['connection/block'] != null) {
@@ -399,6 +402,7 @@ const connectionModule = {
     block: null,
     txs: {},
     txError: "",
+    processNow: false,
   },
   getters: {
     isOk: state => state.isOk,
@@ -413,6 +417,7 @@ const connectionModule = {
     block: state => state.block,
     txs: state => state.txs,
     txError: state => state.txError,
+    processNow: state => state.processNow,
   },
   mutations: {
     setIsOk(state, ok) {
@@ -451,7 +456,11 @@ const connectionModule = {
     setTxError(state, txError) {
       logInfo("connectionModule", "mutations.setTxError(): " + txError);
       state.txError = txError;
-    }
+    },
+    setProcessNow(state, _processNow) {
+      logInfo("connectionModule", "mutations.setProcessNow(" + _processNow + ")");
+      state.processNow = _processNow;
+    },
   },
   actions: {
     setIsOk(context, ok) {
@@ -486,6 +495,10 @@ const connectionModule = {
     setTxError(context, txError) {
       logInfo("connectionModule", "actions.setTxError(): " + txError);
       context.commit('setTxError', txError);
+    },
+    setProcessNow(context, _processNow) {
+      logInfo("connectionModule", "actions.setProcessNow(" + _processNow + ")");
+      context.commit('setProcessNow', _processNow);
     },
   },
 };

@@ -68,9 +68,9 @@ const FeedsExplorer = {
               </b-collapse>
 
               <b-card-header header-tag="header" class="p-1 m-1">
-                <b-button href="#" v-b-toggle.configuredfeeds variant="outline-info">Configured Feeds</b-button>
+                <b-button href="#" v-b-toggle.registeredfeeds variant="outline-info">Registered Feeds</b-button>
               </b-card-header>
-              <b-collapse id="configuredfeeds" visible class="border-0">
+              <b-collapse id="registeredfeeds" visible class="border-0">
                 <b-card-body class="p-1">
                   <b-table small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
                     <template v-slot:head(name)="data">
@@ -152,12 +152,17 @@ const FeedsExplorer = {
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="Type">
                             <b-input-group>
-                              <b-form-select :value="row.item.feedDataType" :options="typeOptions" disabled></b-form-select>
+                              <b-form-select size="sm" :value="row.item.feedDataType" :options="typeOptions" disabled></b-form-select>
                             </b-input-group>
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="Decimals">
                             <b-input-group>
                               <b-form-input type="text" size="sm" :value="row.item.feedDataDecimals" readonly></b-form-input>
+                            </b-input-group>
+                          </b-form-group>
+                          <b-form-group label-cols="3" label-size="sm" label="Locked">
+                            <b-input-group>
+                              <b-form-input type="text" size="sm" :value="row.item.feedDataLocked.toString()" readonly></b-form-input>
                             </b-input-group>
                           </b-form-group>
                           <b-form-group label-cols="3" label-size="sm" label="Spot">
@@ -193,12 +198,12 @@ const FeedsExplorer = {
                             </b-form-group>
                             <b-form-group label-cols="3" label-size="sm" label="Type">
                               <b-input-group>
-                                <b-form-select v-model.trim="feed.type" :options="typeOptions"></b-form-select>
+                                <b-form-select size="sm" v-model.trim="feed.type" :options="typeOptions"></b-form-select>
                               </b-input-group>
                             </b-form-group>
                             <b-form-group label-cols="3" label-size="sm" label="Decimals">
                               <b-input-group>
-                                <b-form-select v-model.trim="feed.decimals" :options="decimalsOptions"></b-form-select>
+                                <b-form-select size="sm" v-model.trim="feed.decimals" :options="decimalsOptions"></b-form-select>
                               </b-input-group>
                             </b-form-group>
                             <b-form-group label-cols="3" label-size="sm" label="">
