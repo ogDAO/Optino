@@ -333,9 +333,9 @@ const Connection = {
       }
 
       if (store.getters['connection/isOk']) {
+        /*await*/ store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         /*await*/ store.dispatch('feeds/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         /*await*/ store.dispatch('optinoFactory/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        /*await*/ store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // await store.dispatch('tokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // if (this.$route.name == "DeployTokenContract") {
         //   await store.dispatch('deployTokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
@@ -348,8 +348,9 @@ const Connection = {
       logDebug("Connection", "execWeb3() end[" + this.count + "]");
     },
     timeoutCallback() {
+      // logInfo("Connection", "timeoutCallback() - store.getters['tokens/executionQueue']: " + JSON.stringify(store.getters['tokens/executionQueue']));
       var t = this;
-      if (this.count++ % 15 == 0 /* || store.getters['connection/processNow'] */) {
+      if (this.count++ % 15 == 0  /* || store.getters['tokens/executionQueue'].length > 0 */) {
         // if (store.getters['connection/processNow']) {
         //   store.dispatch('connection/setProcessNow', false);
         // }

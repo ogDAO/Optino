@@ -3,10 +3,46 @@ const FeedsExplorer = {
     <div class="mt-5 pt-3">
       <b-row>
         <b-col cols="12" md="9" class="m-0 p-1">
-          <b-card no-body header="Feeds Explorer" class="border-0" header-class="p-1">
+          <b-card no-body header="Personal Feed List" class="border-0" header-class="p-1">
             <br />
             <b-card no-body class="mb-1">
+              <b-card-body class="p-1">
 
+                <div class="d-flex justify-content-end m-0 p-0" style="height: 37px;">
+                  <div class="pr-1">
+                    <b-form-input type="text" size="sm" v-model.trim="filter" debounce="600" placeholder="Search..." v-b-popover.hover.bottom="'Search'"></b-form-input>
+                  </div>
+                  <div class="pt-1 pr-1">
+                    <b-pagination pills size="sm" v-model="currentPage" :total-rows="feedDataSorted.length" :per-page="perPage" v-b-popover.hover.bottom="'Page through records'"></b-pagination>
+                  </div>
+                  <div class="pr-1">
+                    <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover.bottom="'Select page size'"/>
+                  </div>
+                  <div class="pr-1">
+                    <!-- <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover.bottom="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> -->
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover.bottom="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
+                  </div>
+                  <div class="pr-1">
+                    <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" no-caret v-b-popover.hover.bottom="'Additional Menu Items...'">
+                      <template v-slot:button-content>
+                        <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
+                      </template>
+                      <b-dropdown-item-button @click="resetTokenList()">Reset Personal Token List ...</b-dropdown-item-button>
+                    </b-dropdown>
+                  </div>
+                </div>
+              </b-card-body>
+
+              <b-modal id="bv-modal-addfeed" size="xl" hide-footer>
+                <template v-slot:modal-title>
+                  Add Feed To List [{{ networkName }}]
+                </template>
+                <b-card-body class="m-0 p-0">
+                  Add Feed To List
+                </b-card-body>
+              </b-modal>
+
+              <!--
               <b-card-header header-tag="header" class="p-1 m-1">
                 <b-button href="#" v-b-toggle.addfeed variant="outline-info">Add Feed</b-button>
               </b-card-header>
@@ -66,183 +102,177 @@ const FeedsExplorer = {
                   </b-form>
                 </b-card-body>
               </b-collapse>
+              -->
 
-              <b-card-header header-tag="header" class="p-1 m-1">
-                <b-button href="#" v-b-toggle.registeredfeeds variant="outline-info">Registered Feeds</b-button>
-              </b-card-header>
-              <b-collapse id="registeredfeeds" visible class="border-0">
-                <b-card-body class="p-1">
-                  <b-table small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light">
-                    <template v-slot:head(name)="data">
-                      <span style="font-size: 90%">Name</span>
-                    </template>
-                    <template v-slot:head(feedDataType)="data">
-                      <span style="font-size: 90%">Type</span>
-                    </template>
-                    <template v-slot:head(feedDataDecimals)="data">
-                      <span style="font-size: 90%">Decimals</span>
-                    </template>
-                    <template v-slot:head(spot)="data">
-                      <span class="text-right" style="font-size: 90%">Spot</span>
-                    </template>
-                    <template v-slot:head(hasData)="data">
-                      <span class="text-right" style="font-size: 90%">Data?</span>
-                    </template>
-                    <template v-slot:head(feedTimestamp)="data">
-                      <span class="text-right" style="font-size: 90%">Timestamp</span>
-                    </template>
-                    <template v-slot:head(feedAddress)="data">
-                      <span class="text-right" style="font-size: 90%">Address</span>
-                    </template>
-                    <template v-slot:head(extra)="data">
-                      <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
-                      <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
-                      <b-button size="sm" class="m-0 p-0" :pressed.sync="showFavourite" variant="link" v-b-popover.hover.bottom="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
-                    </template>
-                    <template v-slot:cell(name)="data">
-                      <div style="font-size: 80%">{{ data.item.name }} </div>
-                    </template>
-                    <template v-slot:cell(feedDataType)="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.feedDataTypeString }} </div>
-                    </template>
-                    <template v-slot:cell(feedDataDecimals)="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.feedDataDecimals }} </div>
-                    </template>
-                    <template v-slot:cell(hasData)="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.hasData }} </div>
-                    </template>
-                    <template v-slot:cell(spot)="data">
-                      <div class="text-right" style="font-size: 80%">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
-                    </template>
-                    <template v-slot:cell(feedTimestamp)="data">
-                      <div class="text-right" style="font-size: 80%">{{ new Date(data.item.feedTimestamp*1000).toLocaleString() }} </div>
-                    </template>
-                    <template v-slot:cell(feedAddress)="data">
-                      <b-link style="font-size: 80%" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
-                    </template>
-                    <template v-slot:cell(extra)="row">
-                      <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.top="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
-                      <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration cannot be updated'"></b-icon-lock-fill>
-                      <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="!row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration can still be updated'"></b-icon-unlock-fill>
-                      <b-button size="sm" class="m-0 p-0" @click="setFeedFavourite(row.item.feedAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover.bottom="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
-                    </template>
-                    <template v-slot:row-details="row">
-                      <b-card>
-                        <b-card-header header-tag="header" class="p-1">
-                          {{ row.item.name }} @ {{ row.item.feedAddress }}
-                        </b-card-header>
-                        <b-card-body>
-                          <b-form-group label-cols="3" label-size="sm" label="Address">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" v-model.trim="row.item.feedAddress" readonly></b-form-input>
-                              <b-input-group-append>
-                                <b-button size="sm" :href="explorer + 'address/' + row.item.feedAddress + '#readContract'" target="_blank" variant="outline-info">🔗</b-button>
-                              </b-input-group-append>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Name">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" v-model.trim="row.item.name" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Message">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" v-model.trim="row.item.message" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Type">
-                            <b-input-group>
-                              <b-form-select size="sm" :value="row.item.feedDataType" :options="typeOptions" disabled></b-form-select>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Decimals">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" :value="row.item.feedDataDecimals" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Locked">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" :value="row.item.feedDataLocked.toString()" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Spot">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" :value="row.item.spot.shift(-row.item.feedDataDecimals).toString()" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Has Data">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" :value="row.item.hasData" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-form-group label-cols="3" label-size="sm" label="Timestamp">
-                            <b-input-group>
-                              <b-form-input type="text" size="sm" :value="new Date(row.item.feedTimestamp*1000).toLocaleString()" readonly></b-form-input>
-                            </b-input-group>
-                          </b-form-group>
-                        </b-card-body>
-                        <div v-if="coinbase == owner">
-                          <b-card-header header-tag="header" class="p-1">
-                            <code>updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)</code>
-                          </b-card-header>
-                          <b-card-body>
-                            <b-form-group label-cols="3" label-size="sm" label="Name">
-                              <b-input-group>
-                                <b-form-input type="text" size="sm" v-model.trim="feed.name"></b-form-input>
-                              </b-input-group>
-                            </b-form-group>
-                            <b-form-group label-cols="3" label-size="sm" label="Message">
-                              <b-input-group>
-                                <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
-                              </b-input-group>
-                            </b-form-group>
-                            <b-form-group label-cols="3" label-size="sm" label="Type">
-                              <b-input-group>
-                                <b-form-select size="sm" v-model.trim="feed.type" :options="typeOptions"></b-form-select>
-                              </b-input-group>
-                            </b-form-group>
-                            <b-form-group label-cols="3" label-size="sm" label="Decimals">
-                              <b-input-group>
-                                <b-form-select size="sm" v-model.trim="feed.decimals" :options="decimalsOptions"></b-form-select>
-                              </b-input-group>
-                            </b-form-group>
-                            <b-form-group label-cols="3" label-size="sm" label="">
-                              <b-input-group>
-                                <b-button size="sm" :disabled="row.item.feedDataLocked" @click="updateFeed(row.item.feedAddress, feed.name, feed.message, feed.type, feed.decimals)" variant="primary" v-b-popover.hover="'Update Feed'">Update Feed</b-button>
-                              </b-input-group>
-                            </b-form-group>
-                          </b-card-body>
-                          <b-card-header header-tag="header" class="p-1">
-                            <code>lockFeed(address _feed)</code>
-                          </b-card-header>
-                          <b-card-body>
-                            <b-form-group label-cols="3" label-size="sm" label="">
-                              <b-input-group>
-                                <b-button size="sm" :disabled="row.item.feedDataLocked" @click="lockFeed(row.item.feedAddress)" variant="primary" v-b-popover.hover="'Lock Feed'">Lock Feed</b-button>
-                              </b-input-group>
-                            </b-form-group>
-                          </b-card-body>
-                          <b-card-header header-tag="header" class="p-1">
-                            <code>updateFeedMessage(address _feed, string memory _message)</code>
-                          </b-card-header>
-                          <b-card-body>
-                            <b-form-group label-cols="3" label-size="sm" label="Message">
-                              <b-input-group>
-                                <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
-                              </b-input-group>
-                            </b-form-group>
-                            <b-form-group label-cols="3" label-size="sm" label="">
-                              <b-input-group>
-                                <b-button size="sm" @click="updateFeedMessage(row.item.feedAddress, feed.message)" variant="primary" v-b-popover.hover="'Update Feed Message'">Update Feed Message</b-button>
-                              </b-input-group>
-                            </b-form-group>
-                          </b-card-body>
-                        </div>
-                      </b-card>
-                    </template>
-                  </b-table>
-                </b-card-body>
-              </b-collapse>
+              <b-table small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="filter" @filtered="onFiltered" :filter-included-fields="['name', 'message']" show-empty>
+                <template v-slot:head(name)="data">
+                  <span style="font-size: 90%">Name</span>
+                </template>
+                <template v-slot:head(feedDataType)="data">
+                  <span style="font-size: 90%">Type</span>
+                </template>
+                <template v-slot:head(feedDataDecimals)="data">
+                  <span style="font-size: 90%">Decimals</span>
+                </template>
+                <template v-slot:head(spot)="data">
+                  <span class="text-right" style="font-size: 90%">Spot</span>
+                </template>
+                <template v-slot:head(hasData)="data">
+                  <span class="text-right" style="font-size: 90%">Data?</span>
+                </template>
+                <template v-slot:head(feedTimestamp)="data">
+                  <span class="text-right" style="font-size: 90%">Timestamp</span>
+                </template>
+                <template v-slot:head(feedAddress)="data">
+                  <span class="text-right" style="font-size: 90%">Address</span>
+                </template>
+                <template v-slot:head(extra)="data">
+                  <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
+                  <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
+                  <b-button size="sm" class="m-0 p-0" :pressed.sync="showFavourite" variant="link" v-b-popover.hover.bottom="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
+                </template>
+                <template v-slot:cell(name)="data">
+                  <div style="font-size: 80%">{{ data.item.name }} </div>
+                </template>
+                <template v-slot:cell(feedDataType)="data">
+                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataTypeString }} </div>
+                </template>
+                <template v-slot:cell(feedDataDecimals)="data">
+                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataDecimals }} </div>
+                </template>
+                <template v-slot:cell(hasData)="data">
+                  <div class="text-right" style="font-size: 80%">{{ data.item.hasData }} </div>
+                </template>
+                <template v-slot:cell(spot)="data">
+                  <div class="text-right" style="font-size: 80%">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
+                </template>
+                <template v-slot:cell(feedTimestamp)="data">
+                  <div class="text-right" style="font-size: 80%">{{ new Date(data.item.feedTimestamp*1000).toLocaleString() }} </div>
+                </template>
+                <template v-slot:cell(feedAddress)="data">
+                  <b-link style="font-size: 80%" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ data.item.feedAddress.substr(0, 10) }}...</b-link>
+                </template>
+                <template v-slot:cell(extra)="row">
+                  <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.top="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
+                  <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration cannot be updated'"></b-icon-lock-fill>
+                  <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="!row.item.feedDataLocked" v-b-popover.hover.top="'Feed configuration can still be updated'"></b-icon-unlock-fill>
+                  <b-button size="sm" class="m-0 p-0" @click="setFeedFavourite(row.item.feedAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover.bottom="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
+                </template>
+                <template v-slot:row-details="row">
+                  <b-card>
+                    <b-card-header header-tag="header" class="p-1">
+                      {{ row.item.name }} @ {{ row.item.feedAddress }}
+                    </b-card-header>
+                    <b-card-body>
+                      <b-form-group label-cols="3" label-size="sm" label="Address">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" v-model.trim="row.item.feedAddress" readonly></b-form-input>
+                          <b-input-group-append>
+                            <b-button size="sm" :href="explorer + 'address/' + row.item.feedAddress + '#readContract'" target="_blank" variant="outline-info">🔗</b-button>
+                          </b-input-group-append>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Name">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" v-model.trim="row.item.name" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Message">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" v-model.trim="row.item.message" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Type">
+                        <b-input-group>
+                          <b-form-select size="sm" :value="row.item.feedDataType" :options="typeOptions" disabled></b-form-select>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Decimals">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" :value="row.item.feedDataDecimals" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Locked">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" :value="row.item.feedDataLocked.toString()" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Spot">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" :value="row.item.spot.shift(-row.item.feedDataDecimals).toString()" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Has Data">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" :value="row.item.hasData" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                      <b-form-group label-cols="3" label-size="sm" label="Timestamp">
+                        <b-input-group>
+                          <b-form-input type="text" size="sm" :value="new Date(row.item.feedTimestamp*1000).toLocaleString()" readonly></b-form-input>
+                        </b-input-group>
+                      </b-form-group>
+                    </b-card-body>
+                    <div v-if="coinbase == owner">
+                      <b-card-header header-tag="header" class="p-1">
+                        <code>updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)</code>
+                      </b-card-header>
+                      <b-card-body>
+                        <b-form-group label-cols="3" label-size="sm" label="Name">
+                          <b-input-group>
+                            <b-form-input type="text" size="sm" v-model.trim="feed.name"></b-form-input>
+                          </b-input-group>
+                        </b-form-group>
+                        <b-form-group label-cols="3" label-size="sm" label="Message">
+                          <b-input-group>
+                            <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
+                          </b-input-group>
+                        </b-form-group>
+                        <b-form-group label-cols="3" label-size="sm" label="Type">
+                          <b-input-group>
+                            <b-form-select size="sm" v-model.trim="feed.type" :options="typeOptions"></b-form-select>
+                          </b-input-group>
+                        </b-form-group>
+                        <b-form-group label-cols="3" label-size="sm" label="Decimals">
+                          <b-input-group>
+                            <b-form-select size="sm" v-model.trim="feed.decimals" :options="decimalsOptions"></b-form-select>
+                          </b-input-group>
+                        </b-form-group>
+                        <b-form-group label-cols="3" label-size="sm" label="">
+                          <b-input-group>
+                            <b-button size="sm" :disabled="row.item.feedDataLocked" @click="updateFeed(row.item.feedAddress, feed.name, feed.message, feed.type, feed.decimals)" variant="primary" v-b-popover.hover="'Update Feed'">Update Feed</b-button>
+                          </b-input-group>
+                        </b-form-group>
+                      </b-card-body>
+                      <b-card-header header-tag="header" class="p-1">
+                        <code>lockFeed(address _feed)</code>
+                      </b-card-header>
+                      <b-card-body>
+                        <b-form-group label-cols="3" label-size="sm" label="">
+                          <b-input-group>
+                            <b-button size="sm" :disabled="row.item.feedDataLocked" @click="lockFeed(row.item.feedAddress)" variant="primary" v-b-popover.hover="'Lock Feed'">Lock Feed</b-button>
+                          </b-input-group>
+                        </b-form-group>
+                      </b-card-body>
+                      <b-card-header header-tag="header" class="p-1">
+                        <code>updateFeedMessage(address _feed, string memory _message)</code>
+                      </b-card-header>
+                      <b-card-body>
+                        <b-form-group label-cols="3" label-size="sm" label="Message">
+                          <b-input-group>
+                            <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
+                          </b-input-group>
+                        </b-form-group>
+                        <b-form-group label-cols="3" label-size="sm" label="">
+                          <b-input-group>
+                            <b-button size="sm" @click="updateFeedMessage(row.item.feedAddress, feed.message)" variant="primary" v-b-popover.hover="'Update Feed Message'">Update Feed Message</b-button>
+                          </b-input-group>
+                        </b-form-group>
+                      </b-card-body>
+                    </div>
+                  </b-card>
+                </template>
+              </b-table>
 
               <!--
               <b-card-header header-tag="header" class="p-1">
@@ -281,6 +311,17 @@ const FeedsExplorer = {
   `,
   data: function () {
     return {
+      filter: null,
+      currentPage: 1,
+      perPage: 10,
+      pageOptions: [
+        { text: "5", value: 5 },
+        { text: "10", value: 10 },
+        { text: "25", value: 25 },
+        { text: "50", value: 50 },
+        { text: "All", value: 0 },
+      ],
+
       showFavourite: false,
 
       feed: {
@@ -319,6 +360,9 @@ const FeedsExplorer = {
     coinbase() {
       return store.getters['connection/coinbase'];
     },
+    networkName() {
+      return store.getters['connection/networkName'];
+    },
     owner() {
       return store.getters['optinoFactory/owner'];
     },
@@ -348,6 +392,14 @@ const FeedsExplorer = {
     }
   },
   methods: {
+    onFiltered(filteredItems) {
+      if (this.totalRows !== filteredItems.length) {
+        this.totalRows = filteredItems.length;
+        this.currentPage = 1
+      }
+    },
+
+
     setFeedFavourite(feedAddress, favourite) {
       logInfo("FeedsExplorer", "setFeedFavourite(" + feedAddress + ", " + favourite + ")");
       store.dispatch('optinoFactory/setFeedFavourite', { feedAddress: feedAddress, favourite: favourite });
@@ -528,10 +580,6 @@ const feedsExplorerModule = {
       logInfo("feedsExplorerModule", "updateValue(" + value + ", " + hasValue + ")");
       state.executionQueue.push({ value: value, hasValue: hasValue });
     },
-    deQueue (state) {
-      logDebug("feedsExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
-      state.executionQueue.shift();
-    },
     updateParams (state, params) {
       state.params = params;
       logDebug("feedsExplorerModule", "updateParams('" + params + "')")
@@ -539,6 +587,10 @@ const feedsExplorerModule = {
     updateExecuting (state, executing) {
       state.executing = executing;
       logDebug("feedsExplorerModule", "updateExecuting(" + executing + ")")
+    },
+    deQueue(state) {
+      logDebug("feedsExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
+      state.executionQueue.shift();
     },
   },
   actions: {
