@@ -691,7 +691,7 @@ const OptinoExplorer = {
       });
       var results = [];
       sortedData.forEach(function(e) {
-        results.push({ value: e.tokenAddress, text: e.tokenAddress.substring(0, 10) + " " + e.symbol + " '" + e.name + "' " + e.decimals + " bal " + parseFloat(new BigNumber(e.balance).toFixed(8)) + " allow " + parseFloat(new BigNumber(e.allowance).toFixed(8)), disabled: false });
+        results.push({ value: e.address.toLowerCase(), text: e.address.substring(0, 10) + " " + e.symbol + " '" + e.name + "' " + e.decimals + " bal " + parseFloat(new BigNumber(e.balance).toFixed(8)) + " allow " + parseFloat(new BigNumber(e.allowance).toFixed(8)), disabled: false });
       });
       return results;
     },
