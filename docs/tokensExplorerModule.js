@@ -19,7 +19,7 @@ const TokensExplorer = {
                     <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover.bottom="'Select page size'"/>
                   </div>
                   <div class="pr-1">
-                    <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
                   </div>
                   <div class="pr-1">
                     <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" no-caret v-b-popover.hover.bottom="'Additional Menu Items...'">
@@ -37,7 +37,7 @@ const TokensExplorer = {
                   </template>
                   <b-card-body class="m-0 p-0">
                     <div>
-                      <b-tabs v-model="addTokenTabIndex" @input="addTokenTabChanged" content-class="mt-1">
+                      <b-tabs v-model="addTokenTabIndex" content-class="mt-1">
                         <b-tab size="sm" title="Search">
                           <b-form-group>
                             <b-input-group>
@@ -91,8 +91,7 @@ const TokensExplorer = {
                         </b-tab>
                         <b-tab size="sm" title="Common Token List">
                           <p class="p-2">Select from these common tokens. Please verify these on your preferred block explorer:</p>
-                          <!-- <b-table small striped :selectable="!tokenPickerLoadingRow" sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onCommonTokensRowSelected" show-empty :filter-function="filterFunction" @row-clicked="rowClicked"> -->
-                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onCommonTokensRowSelected" show-empty @row-clicked="rowClicked">
+                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" show-empty @row-clicked="rowClicked">
                             <template v-slot:empty="scope">
                               <p class="pt-4" v-if="loadingCommon">Loading records</p>
                               <p class="pt-4" v-if="!loadingCommon">{{ scope.emptyText }}</p>
@@ -152,8 +151,7 @@ const TokensExplorer = {
                         </b-tab>
                         <b-tab size="sm" title="Fake Token List">
                           <p class="p-2">Select some fake tokens to test with:</p>
-                          <!-- <b-table small striped :selectable="!tokenPickerLoadingRow" sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onFakeTokensRowSelected" show-empty :filter-function="filterFunction"> -->
-                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onFakeTokensRowSelected" show-empty @row-clicked="rowClicked">
+                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" show-empty @row-clicked="rowClicked">
                             <template v-slot:empty="scope">
                               <p class="pt-4" v-if="loadingFake">Loading records</p>
                               <p class="pt-4" v-if="!loadingFake">{{ scope.emptyText }}</p>
@@ -233,7 +231,7 @@ const TokensExplorer = {
                 <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="filter" @filtered="onFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
                   <template v-slot:empty="scope">
                     <p class="pt-4">{{ scope.emptyText }}</p>
-                    <p class="pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</p>
+                    <p class="pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</p>
                   </template>
                   <template v-slot:emptyfiltered="scope">
                     <p class="pt-4">{{ scope.emptyFilteredText }}</p>
@@ -260,8 +258,7 @@ const TokensExplorer = {
                     <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
                   </template>
                   <template v-slot:head(extra)="data">
-                    <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
-                    <b-button size="sm" class="m-0 p-0" :pressed.sync="showFavourite" variant="link" v-b-popover.hover.bottom="'Show favourites only?'"><div v-if="showFavourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
+                    <span style="font-size: 90%">Details</span>
                   </template>
                   <template v-slot:cell(symbol)="data">
                     <div style="font-size: 80%">{{ data.item.symbol }} </div>
@@ -286,7 +283,6 @@ const TokensExplorer = {
                   </template>
                   <template v-slot:cell(extra)="row">
                     <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.bottom="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
-                    <b-button size="sm" class="m-0 p-0" @click="setTokenFavourite(row.item.address, row.item.favourite ? false : true)" variant="link" v-b-popover.hover.bottom="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
                   </template>
                   <template v-slot:row-details="row">
                     <b-card>
@@ -388,9 +384,6 @@ const TokensExplorer = {
       loadingCommon: false,
       loadingFake: false,
 
-      selectedCommonTokens: [],
-      selectedFakeTokens: [],
-
       tokenPickerMap: {},
       tokenPickerList: [],
       tokenPickerLoadingRow: null,
@@ -398,7 +391,7 @@ const TokensExplorer = {
 
       // testingCode: "1234",
 
-      showFavourite: false,
+      // showFavourite: false,
 
       tokenInfo: {
         address: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
@@ -420,7 +413,6 @@ const TokensExplorer = {
         { key: 'balance', label: 'Balance', sortable: true },
         { key: 'allowance', label: 'Allowance', sortable: true },
         { key: 'address', label: 'Address', sortable: true },
-        // { key: 'showDetails', label: 'Details', sortable: false },
         { key: 'selected', label: 'Select', sortable: false },
       ],
 
@@ -432,7 +424,6 @@ const TokensExplorer = {
         { key: 'balance', label: 'Balance', sortable: true },
         { key: 'allowance', label: 'Allowance', sortable: true },
         { key: 'address', label: 'Address', sortable: true },
-        // { key: 'showDetails', label: 'Details', sortable: false },
         { key: 'extra', label: 'Extra', sortable: false },
       ],
       show: true,
@@ -458,14 +449,10 @@ const TokensExplorer = {
       var results = [];
       var tokenData = store.getters['tokens/tokenData'];
       for (token in tokenData) {
-        if (/^\w+$/.test(tokenData[token].symbol)) {
-          if (!this.showFavourite || tokenData[token].favourite) {
-            results.push(tokenData[token]);
-          }
-        }
+        results.push(tokenData[token]);
       }
       results.sort(function(a, b) {
-        return ('' + a.symbol).localeCompare(b.symbol);
+        return ('' + a.symbol + a.name).localeCompare(b.symbol + a.name);
       });
       return results;
     },
@@ -478,9 +465,9 @@ const TokensExplorer = {
           results.push(e);
         }
       });
-      // results.sort(function(a, b) {
-      //   return ('' + a.symbol + a.name).localeCompare(b.symbol + b.name);
-      // });
+      results.sort(function(a, b) {
+        return ('' + a.symbol + a.name).localeCompare(b.symbol + a.name);
+      });
       return results;
     },
     selectedCommonTokenList() {
@@ -497,10 +484,12 @@ const TokensExplorer = {
       var tokenData = store.getters['tokens/tokenData'];
       var results = [];
       this.tokenPickerList.forEach(function(e) {
-        // logInfo("TokensExplorer", "fakeTokenList(" + e.symbol + ")");
         if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "fake") {
           results.push(e);
         }
+      });
+      results.sort(function(a, b) {
+        return ('' + a.symbol + a.name).localeCompare(b.symbol + a.name);
       });
       return results;
     },
@@ -518,76 +507,8 @@ const TokensExplorer = {
   },
   methods: {
     rowClicked(record, index) {
-      console.log("rowClicked " + JSON.stringify(record) + " " + JSON.stringify(index));
+      // console.log("rowClicked " + JSON.stringify(record) + " " + JSON.stringify(index));
       record.selected = !record.selected;
-      // 'record' will be the row data from items
-      // `index` will be the visible row number (available in the v-model 'shownItems')
-      // log(record); // This will be the item data for the row
-    },
-    // filterFunction(row, filter) {
-    //   console.log("filterFunction " + JSON.stringify(row) + " " + JSON.stringify(filter));
-    //   // if (row.age >= filter) {
-    //   //   return false;
-    //   // } else {
-    //     return true;
-    //   // }
-    // },
-    async addTokenTabChanged(event) {
-      logInfo("TokensExplorer", "addTokenTabChanged(" + event + ")");
-      var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
-      if (this.addTokenTabIndex == 1) {
-        // logInfo("TokensExplorer", "addTokenTabChanged - common");
-        // this.loadingCommon = true;
-        // for (var i = 0; i < COMMONTOKENLIST.length; i++) {
-        //   // logInfo("TokensExplorer", "addTokenTabChanged - common(" + i + ") " + COMMONTOKENLIST[i]);
-        //   var address = COMMONTOKENLIST[i];
-        //   var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-        //   var tokenInfo = await _tokenInfo;
-        //   var symbol = tokenInfo[4];
-        //   var name = tokenInfo[5];
-        //   // logInfo("tokensModule", "execWeb3() common(" + address + "): '" + symbol + "', '" + name + "'");
-        //   var decimals = parseInt(tokenInfo[0]);
-        //   var totalSupply = tokenInfo[1].shift(-decimals).toString();
-        //   var balance = tokenInfo[2].shift(-decimals).toString();
-        //   var allowance = tokenInfo[3].shift(-decimals).toString();
-        //   // Vue.set(this.commonTokenMap, address.toLowerCase(), {address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "common"} );
-        //   // logInfo("tokensModule", "addTokenTabChanged() common(" + COMMONTOKENLIST[i] + "): '" + JSON.stringify(this.commonTokenMap[COMMONTOKENLIST[i]]));
-        // }
-        // this.loadingCommon = false;
-      } else if (this.addTokenTabIndex == 2) {
-        // logInfo("TokensExplorer", "addTokenTabChanged - fake");
-        // this.loadingFake = true;
-        // var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
-        // var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
-        // var fakeTokensLength = await _fakeTokensLength;
-        //
-        // for (var fakeTokensIndex = 0; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
-        //   var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
-        //   var fakeTokenAddress = await _fakeTokenAddress;
-        //   var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-        //   var tokenInfo = await _tokenInfo;
-        //   var symbol = tokenInfo[4];
-        //   var name = tokenInfo[5];
-        //   // logInfo("tokensModule", "execWeb3() fake(" + fakeTokenAddress + "): '" + symbol + "', '" + name + "'");
-        //   var decimals = parseInt(tokenInfo[0]);
-        //   var totalSupply = tokenInfo[1].shift(-decimals).toString();
-        //   var balance = tokenInfo[2].shift(-decimals).toString();
-        //   var allowance = tokenInfo[3].shift(-decimals).toString();
-        //   if (symbol.startsWith("f")) {
-        //     // Vue.set(this.fakeTokenMap, fakeTokenAddress.toLowerCase(), {address: fakeTokenAddress, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "fake"} );
-        //     logInfo("tokensModule", "addTokenTabChanged() fake(" + fakeTokenAddress + "): '" + JSON.stringify(this.fakeTokenMap[fakeTokenAddress]));
-        //   }
-        // }
-        // this.loadingFake = false;
-      }
-    },
-    onCommonTokensRowSelected(items) {
-      // logInfo("TokensExplorer", "onCommonTokensRowSelected(" + items + ")");
-      this.selectedCommonTokens = items
-    },
-    onFakeTokensRowSelected(items) {
-      // logInfo("TokensExplorer", "onFakeTokensRowSelected(" + items + ")");
-      this.selectedFakeTokens = items
     },
     onFiltered(filteredItems) {
       if (this.totalRows !== filteredItems.length) {
@@ -598,29 +519,6 @@ const TokensExplorer = {
     formatMaxDecimals(value, decimals) {
       return parseFloat(new BigNumber(value).toFixed(decimals));
     },
-    // does not work
-    //
-    // <span class="btn btn-info text-white copy-btn ml-auto" @click.stop.prevent="copyAddress(row.item.address)">
-    //   Copy
-    // </span>
-    // <input type="text" id="testing-code" :value="testingCode">
-    //
-    // copyAddress(event) {
-    //   alert("Copied " + JSON.stringify(event) + " to the clipboard");
-    //
-    //   testingCodeToCopy = document.querySelector('#testing-code')
-    //   testingCodeToCopy.setAttribute('type', 'text')
-    //   testingCodeToCopy.select()
-    //
-    //   try {
-    //     var successful = document.execCommand('copy');
-    //     var msg = successful ? 'successful' : 'unsuccessful';
-    //     alert('Testing code was copied ' + msg);
-    //   } catch (err) {
-    //     alert('Oops, unable to copy');
-    //   }
-    //   testingCodeToCopy.setAttribute('type', 'hidden')
-    // },
     addTokensToList(list) {
       logInfo("TokensExplorer", "addTokensToList(" + JSON.stringify(list) + ")");
       this.$bvToast.toast(`Added ${list.length} item(s) to your token list`, {
@@ -681,10 +579,6 @@ const TokensExplorer = {
         .catch(err => {
           // An error occurred
         });
-    },
-    setTokenFavourite(address, favourite) {
-      logInfo("TokensExplorer", "setTokenFavourite(" + address + ", " + favourite + ")");
-      store.dispatch('tokens/setTokenFavourite', { address: address, favourite: favourite });
     },
     async checkTokenContract(event) {
       logInfo("TokensExplorer", "checkTokenContract(" + this.tokenInfo.address + ")");
@@ -921,6 +815,7 @@ const tokensExplorerModule = {
     },
   },
   actions: {
+    /*
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
       if (!state.executing) {
         commit('updateExecuting', true);
@@ -960,5 +855,6 @@ const tokensExplorerModule = {
         logDebug("tokensExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
       }
     }
+    */
   },
 };

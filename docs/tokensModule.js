@@ -97,24 +97,6 @@ const tokensModule = {
       state.tokenData = {};
       localStorage.removeItem('tokenData');
     },
-    setTokenFavourite(state, { tokenAddress, favourite }) {
-      logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
-      var existing = state.personalTokenList[tokenAddress.toLowerCase()];
-      var source = "";
-      if (existing) {
-        source = existing.source;
-      }
-      Vue.set(state.personalTokenList, tokenAddress, { tokenAddress: tokenAddress, source: source, favourite: favourite });
-      logInfo("tokensModule", "mutations.setTokenFavourite(" + tokenAddress + "): " + favourite);
-      localStorage.setItem('personalTokenList', JSON.stringify(state.personalTokenList));
-      logInfo("tokensModule", "mutations.setTokenFavourite personalTokenList=" + JSON.stringify(state.personalTokenList));
-
-      var token = state.tokenData[tokenAddress.toLowerCase()];
-      if (token) {
-        token.favourite = favourite;
-      }
-      // logInfo("tokensModule", "mutations.setTokenFavourite - state.executionQueue: " +  JSON.stringify(state.executionQueue));
-    },
     updateToken(state, token) {
       // logInfo("tokensModule", "mutations.updateToken(" + JSON.stringify(token) + ")");
       var currentToken = state.tokenData[token.address.toLowerCase()];
@@ -158,10 +140,6 @@ const tokensModule = {
     removeAllTokens(context, blah) {
       // logInfo("tokensModule", "actions.removeAllTokens(" + blah + ")");
       context.commit('removeAllTokens', blah);
-    },
-    setTokenFavourite(context, { tokenAddress, favourite }) {
-      // logInfo("tokensModule", "actions.setTokenFavourite(" + tokenAddress + ", " + favourite + ")");
-      context.commit('setTokenFavourite', { tokenAddress: tokenAddress, favourite: favourite });
     },
     // Called by Connection.execWeb3()
     async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
