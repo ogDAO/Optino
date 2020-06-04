@@ -316,3 +316,12 @@ function payoffInDeliveryToken(callPut, strike, bound, spot, tokens, decimals, d
   }
   return results;
 }
+
+// https://ourcodeworld.com/articles/read/278/how-to-split-an-array-into-chunks-of-the-same-size-easily-in-javascript
+function chunkArray(myArray, chunk_size) {
+  var results = [];
+  while (myArray.length) {
+    results.push(myArray.splice(0, chunk_size));
+  }
+  return results;
+}

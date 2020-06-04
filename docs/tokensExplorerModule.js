@@ -90,45 +90,124 @@ const TokensExplorer = {
                           </b-card>
                         </b-tab>
                         <b-tab size="sm" title="Common Token List">
-                          <b-table small striped :selectable="!loadingCommon" sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onCommonTokensRowSelected" show-empty>
+                          <p class="p-2">Select from these common tokens. Please verify these on your preferred block explorer:</p>
+                          <!-- <b-table small striped :selectable="!tokenPickerLoadingRow" sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onCommonTokensRowSelected" show-empty :filter-function="filterFunction" @row-clicked="rowClicked"> -->
+                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onCommonTokensRowSelected" show-empty @row-clicked="rowClicked">
                             <template v-slot:empty="scope">
-                              <h4 class="pt-5" v-if="loadingCommon">Loading records</h4>
-                              <h4 class="pt-5" v-if="!loadingCommon">{{ scope.emptyText }}</h4>
+                              <p class="pt-4" v-if="loadingCommon">Loading records</p>
+                              <p class="pt-4" v-if="!loadingCommon">{{ scope.emptyText }}</p>
                             </template>
                             <template v-slot:emptyfiltered="scope">
-                              <h4 class="pt-5">{{ scope.emptyFilteredText }}</h4>
+                              <p class="pt-4">{{ scope.emptyFilteredText }}</p>
                             </template>
-                            <template v-slot:cell(selected)="{ rowSelected }">
-                              <template v-if="rowSelected">
-                                <span aria-hidden="true">&check;</span>
-                                <span class="sr-only">Selected</span>
-                              </template>
-                              <template v-else>
-                                <span aria-hidden="true">&nbsp;</span>
-                                <span class="sr-only">Not selected</span>
-                              </template>
+                            <template v-slot:head(symbol)="data">
+                              <span style="font-size: 90%">Symbol</span>
+                            </template>
+                            <template v-slot:head(name)="data">
+                              <span style="font-size: 90%">Name</span>
+                            </template>
+                            <template v-slot:head(decimals)="data">
+                              <span style="font-size: 90%">Decimals</span>
+                            </template>
+                            <template v-slot:head(totalSupply)="data">
+                              <span style="font-size: 90%">Total Supply</span>
+                            </template>
+                            <template v-slot:head(balance)="data">
+                              <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
+                            </template>
+                            <template v-slot:head(allowance)="data">
+                              <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
+                            </template>
+                            <template v-slot:head(address)="data">
+                              <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
+                            </template>
+                            <template v-slot:head(selected)="data">
+                              <span style="font-size: 90%">Select</span>
+                            </template>
+                            <template v-slot:cell(symbol)="data">
+                              <div style="font-size: 80%">{{ data.item.symbol }} </div>
+                            </template>
+                            <template v-slot:cell(name)="data">
+                              <div style="font-size: 80%">{{ data.item.name }} </div>
+                            </template>
+                            <template v-slot:cell(decimals)="data">
+                              <div class="text-right" style="font-size: 80%">{{ data.item.decimals }}</div>
+                            </template>
+                            <template v-slot:cell(totalSupply)="data">
+                              <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.totalSupply, 8) }}</div>
+                            </template>
+                            <template v-slot:cell(balance)="data">
+                              <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.balance, 8) }}</div>
+                            </template>
+                            <template v-slot:cell(allowance)="data">
+                              <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.allowance, 8) }}</div>
+                            </template>
+                            <template v-slot:cell(address)="data">
+                              <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.address" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.address">{{ data.item.address.substr(0, 10) }}...</b-link>
+                            </template>
+                            <template v-slot:cell(selected)="data">
+                              <div style="font-size: 80%"><b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2></div>
                             </template>
                           </b-table>
                         </b-tab>
                         <b-tab size="sm" title="Fake Token List">
-                          Select some fake tokens to test with
-                          <b-table small striped :selectable="!loadingFake" sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onFakeTokensRowSelected" show-empty>
+                          <p class="p-2">Select some fake tokens to test with:</p>
+                          <!-- <b-table small striped :selectable="!tokenPickerLoadingRow" sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onFakeTokensRowSelected" show-empty :filter-function="filterFunction"> -->
+                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" @row-selected="onFakeTokensRowSelected" show-empty @row-clicked="rowClicked">
                             <template v-slot:empty="scope">
-                              <h4 class="pt-5" v-if="loadingFake">Loading records</h4>
-                              <h4 class="pt-5" v-if="!loadingFake">{{ scope.emptyText }}</h4>
+                              <p class="pt-4" v-if="loadingFake">Loading records</p>
+                              <p class="pt-4" v-if="!loadingFake">{{ scope.emptyText }}</p>
                             </template>
                             <template v-slot:emptyfiltered="scope">
-                              <h4 class="pt-5">{{ scope.emptyFilteredText }}</h4>
+                              <p class="pt-4">{{ scope.emptyFilteredText }}</p>
                             </template>
-                            <template v-slot:cell(selected)="{ rowSelected }">
-                              <template v-if="rowSelected">
-                                <span aria-hidden="true">&check;</span>
-                                <span class="sr-only">Selected</span>
-                              </template>
-                              <template v-else>
-                                <span aria-hidden="true">&nbsp;</span>
-                                <span class="sr-only">Not selected</span>
-                              </template>
+                            <template v-slot:head(symbol)="data">
+                              <span style="font-size: 90%">Symbol</span>
+                            </template>
+                            <template v-slot:head(name)="data">
+                              <span style="font-size: 90%">Name</span>
+                            </template>
+                            <template v-slot:head(decimals)="data">
+                              <span style="font-size: 90%">Decimals</span>
+                            </template>
+                            <template v-slot:head(totalSupply)="data">
+                              <span style="font-size: 90%">Total Supply</span>
+                            </template>
+                            <template v-slot:head(balance)="data">
+                              <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
+                            </template>
+                            <template v-slot:head(allowance)="data">
+                              <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
+                            </template>
+                            <template v-slot:head(address)="data">
+                              <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
+                            </template>
+                            <template v-slot:head(selected)="data">
+                              <span style="font-size: 90%">Select</span>
+                            </template>
+                            <template v-slot:cell(symbol)="data">
+                              <div style="font-size: 80%">{{ data.item.symbol }} </div>
+                            </template>
+                            <template v-slot:cell(name)="data">
+                              <div style="font-size: 80%">{{ data.item.name }} </div>
+                            </template>
+                            <template v-slot:cell(decimals)="data">
+                              <div class="text-right" style="font-size: 80%">{{ data.item.decimals }}</div>
+                            </template>
+                            <template v-slot:cell(totalSupply)="data">
+                              <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.totalSupply, 8) }}</div>
+                            </template>
+                            <template v-slot:cell(balance)="data">
+                              <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.balance, 8) }}</div>
+                            </template>
+                            <template v-slot:cell(allowance)="data">
+                              <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.allowance, 8) }}</div>
+                            </template>
+                            <template v-slot:cell(address)="data">
+                              <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.address" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.address">{{ data.item.address.substr(0, 10) }}...</b-link>
+                            </template>
+                            <template v-slot:cell(selected)="data">
+                              <div style="font-size: 80%"><b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2></div>
                             </template>
                           </b-table>
                         </b-tab>
@@ -142,10 +221,10 @@ const TokensExplorer = {
                         <b-button size="sm" @click="addTokensToList([tokenInfo], 'search')" variant="primary" v-b-popover.hover="'Add token to list'">Add Token To List</b-button>
                       </div>
                       <div class="pr-1" v-if="addTokenTabIndex == 1">
-                        <b-button size="sm" @click="addTokensToList(selectedCommonTokens, 'common')" variant="primary" v-b-popover.hover="'Add token(s) to list'" :disabled="selectedCommonTokens.length == 0">Add Token(s) To List</b-button>
+                        <b-button size="sm" @click="addTokensToList(selectedCommonTokenList, 'common')" variant="primary" v-b-popover.hover="'Add token(s) to list'" :disabled="selectedCommonTokenList.length == 0">Add Token(s) To List</b-button>
                       </div>
                       <div class="pr-1" v-if="addTokenTabIndex == 2">
-                        <b-button size="sm" @click="addTokensToList(selectedFakeTokens, 'fake')" variant="primary" v-b-popover.hover="'Add token(s) to list'" :disabled="selectedFakeTokens.length == 0">Add Token(s) To List</b-button>
+                        <b-button size="sm" @click="addTokensToList(selectedFakeTokenList, 'fake')" variant="primary" v-b-popover.hover="'Add token(s) to list'" :disabled="selectedFakeTokenList.length == 0">Add Token(s) To List</b-button>
                       </div>
                     </div>
                   </b-card-body>
@@ -153,11 +232,11 @@ const TokensExplorer = {
 
                 <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="filter" @filtered="onFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
                   <template v-slot:empty="scope">
-                    <h4 class="pt-5">{{ scope.emptyText }}</h4>
-                    <p class="pt-5">Click <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your personal token list</p>
+                    <p class="pt-4">{{ scope.emptyText }}</p>
+                    <p class="pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</p>
                   </template>
                   <template v-slot:emptyfiltered="scope">
-                    <h4 class="pt-5">{{ scope.emptyFilteredText }}</h4>
+                    <p class="pt-4">{{ scope.emptyFilteredText }}</p>
                   </template>
                   <template v-slot:head(symbol)="data">
                     <span style="font-size: 90%">Symbol</span>
@@ -288,6 +367,9 @@ const TokensExplorer = {
   `,
   data: function () {
     return {
+      count: 0,
+      reschedule: false,
+
       filter: null,
       currentPage: 1,
       perPage: 10,
@@ -308,6 +390,11 @@ const TokensExplorer = {
 
       selectedCommonTokens: [],
       selectedFakeTokens: [],
+
+      tokenPickerMap: {},
+      tokenPickerList: [],
+      tokenPickerLoadingRow: null,
+      tokenPickerTotalRows: null,
 
       // testingCode: "1234",
 
@@ -330,8 +417,8 @@ const TokensExplorer = {
         { key: 'name', label: 'Name', sortable: true },
         { key: 'decimals', label: 'Decimals', sortable: true },
         { key: 'totalSupply', label: 'TotalSupply', sortable: true },
-        // { key: 'balance', label: 'Balance', sortable: true },
-        // { key: 'allowance', label: 'Allowance', sortable: true },
+        { key: 'balance', label: 'Balance', sortable: true },
+        { key: 'allowance', label: 'Allowance', sortable: true },
         { key: 'address', label: 'Address', sortable: true },
         // { key: 'showDetails', label: 'Details', sortable: false },
         { key: 'selected', label: 'Select', sortable: false },
@@ -385,82 +472,113 @@ const TokensExplorer = {
     commonTokenList() {
       var tokenData = store.getters['tokens/tokenData'];
       var results = [];
-      var t = this;
-      Object.keys(this.commonTokenMap).forEach(function(e) {
-        var token = t.commonTokenMap[e];
-        if (typeof tokenData[e.toLowerCase()] === "undefined") {
-          results.push(token);
+      this.tokenPickerList.forEach(function(e) {
+        // logInfo("TokensExplorer", "commonTokenList(" + e.symbol + ")");
+        if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "common") {
+          results.push(e);
         }
       });
-      results.sort(function(a, b) {
-        return ('' + a.symbol + a.name).localeCompare(b.symbol + b.name);
+      // results.sort(function(a, b) {
+      //   return ('' + a.symbol + a.name).localeCompare(b.symbol + b.name);
+      // });
+      return results;
+    },
+    selectedCommonTokenList() {
+      var tokenData = store.getters['tokens/tokenData'];
+      var results = [];
+      this.tokenPickerList.forEach(function(e) {
+        if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "common" && e.selected) {
+          results.push(e);
+        }
       });
       return results;
     },
     fakeTokenList() {
       var tokenData = store.getters['tokens/tokenData'];
       var results = [];
-      var t = this;
-      Object.keys(this.fakeTokenMap).forEach(function(e) {
-        var token = t.fakeTokenMap[e];
-        if (typeof tokenData[e.toLowerCase()] === "undefined") {
-          results.push(token);
+      this.tokenPickerList.forEach(function(e) {
+        // logInfo("TokensExplorer", "fakeTokenList(" + e.symbol + ")");
+        if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "fake") {
+          results.push(e);
         }
       });
-      results.sort(function(a, b) {
-        return ('' + a.symbol + a.name).localeCompare(b.symbol + b.name);
+      return results;
+    },
+    selectedFakeTokenList() {
+      var tokenData = store.getters['tokens/tokenData'];
+      var results = [];
+      this.tokenPickerList.forEach(function(e) {
+        // logInfo("TokensExplorer", "fakeTokenList(" + e.symbol + ")");
+        if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "fake" && e.selected) {
+          results.push(e);
+        }
       });
       return results;
     },
   },
   methods: {
+    rowClicked(record, index) {
+      console.log("rowClicked " + JSON.stringify(record) + " " + JSON.stringify(index));
+      record.selected = !record.selected;
+      // 'record' will be the row data from items
+      // `index` will be the visible row number (available in the v-model 'shownItems')
+      // log(record); // This will be the item data for the row
+    },
+    // filterFunction(row, filter) {
+    //   console.log("filterFunction " + JSON.stringify(row) + " " + JSON.stringify(filter));
+    //   // if (row.age >= filter) {
+    //   //   return false;
+    //   // } else {
+    //     return true;
+    //   // }
+    // },
     async addTokenTabChanged(event) {
       logInfo("TokensExplorer", "addTokenTabChanged(" + event + ")");
       var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
       if (this.addTokenTabIndex == 1) {
         // logInfo("TokensExplorer", "addTokenTabChanged - common");
-        this.loadingCommon = true;
-        for (var i = 0; i < COMMONTOKENLIST.length; i++) {
-          // logInfo("TokensExplorer", "addTokenTabChanged - common(" + i + ") " + COMMONTOKENLIST[i]);
-          var address = COMMONTOKENLIST[i];
-          var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-          var tokenInfo = await _tokenInfo;
-          var symbol = tokenInfo[4];
-          var name = tokenInfo[5];
-          // logInfo("tokensModule", "execWeb3() common(" + address + "): '" + symbol + "', '" + name + "'");
-          var decimals = parseInt(tokenInfo[0]);
-          var totalSupply = tokenInfo[1].shift(-decimals).toString();
-          var balance = tokenInfo[2].shift(-decimals).toString();
-          var allowance = tokenInfo[3].shift(-decimals).toString();
-          Vue.set(this.commonTokenMap, address.toLowerCase(), {address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "common"} );
-          // logInfo("tokensModule", "addTokenTabChanged() common(" + COMMONTOKENLIST[i] + "): '" + JSON.stringify(this.commonTokenMap[COMMONTOKENLIST[i]]));
-        }
-        this.loadingCommon = false;
+        // this.loadingCommon = true;
+        // for (var i = 0; i < COMMONTOKENLIST.length; i++) {
+        //   // logInfo("TokensExplorer", "addTokenTabChanged - common(" + i + ") " + COMMONTOKENLIST[i]);
+        //   var address = COMMONTOKENLIST[i];
+        //   var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+        //   var tokenInfo = await _tokenInfo;
+        //   var symbol = tokenInfo[4];
+        //   var name = tokenInfo[5];
+        //   // logInfo("tokensModule", "execWeb3() common(" + address + "): '" + symbol + "', '" + name + "'");
+        //   var decimals = parseInt(tokenInfo[0]);
+        //   var totalSupply = tokenInfo[1].shift(-decimals).toString();
+        //   var balance = tokenInfo[2].shift(-decimals).toString();
+        //   var allowance = tokenInfo[3].shift(-decimals).toString();
+        //   // Vue.set(this.commonTokenMap, address.toLowerCase(), {address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "common"} );
+        //   // logInfo("tokensModule", "addTokenTabChanged() common(" + COMMONTOKENLIST[i] + "): '" + JSON.stringify(this.commonTokenMap[COMMONTOKENLIST[i]]));
+        // }
+        // this.loadingCommon = false;
       } else if (this.addTokenTabIndex == 2) {
-        logInfo("TokensExplorer", "addTokenTabChanged - fake");
-        this.loadingFake = true;
-        var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
-        var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
-        var fakeTokensLength = await _fakeTokensLength;
-
-        for (var fakeTokensIndex = 0; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
-          var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
-          var fakeTokenAddress = await _fakeTokenAddress;
-          var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-          var tokenInfo = await _tokenInfo;
-          var symbol = tokenInfo[4];
-          var name = tokenInfo[5];
-          // logInfo("tokensModule", "execWeb3() fake(" + fakeTokenAddress + "): '" + symbol + "', '" + name + "'");
-          var decimals = parseInt(tokenInfo[0]);
-          var totalSupply = tokenInfo[1].shift(-decimals).toString();
-          var balance = tokenInfo[2].shift(-decimals).toString();
-          var allowance = tokenInfo[3].shift(-decimals).toString();
-          if (symbol.startsWith("f")) {
-            Vue.set(this.fakeTokenMap, fakeTokenAddress.toLowerCase(), {address: fakeTokenAddress, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "fake"} );
-            logInfo("tokensModule", "addTokenTabChanged() fake(" + fakeTokenAddress + "): '" + JSON.stringify(this.fakeTokenMap[fakeTokenAddress]));
-          }
-        }
-        this.loadingFake = false;
+        // logInfo("TokensExplorer", "addTokenTabChanged - fake");
+        // this.loadingFake = true;
+        // var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
+        // var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
+        // var fakeTokensLength = await _fakeTokensLength;
+        //
+        // for (var fakeTokensIndex = 0; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
+        //   var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
+        //   var fakeTokenAddress = await _fakeTokenAddress;
+        //   var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+        //   var tokenInfo = await _tokenInfo;
+        //   var symbol = tokenInfo[4];
+        //   var name = tokenInfo[5];
+        //   // logInfo("tokensModule", "execWeb3() fake(" + fakeTokenAddress + "): '" + symbol + "', '" + name + "'");
+        //   var decimals = parseInt(tokenInfo[0]);
+        //   var totalSupply = tokenInfo[1].shift(-decimals).toString();
+        //   var balance = tokenInfo[2].shift(-decimals).toString();
+        //   var allowance = tokenInfo[3].shift(-decimals).toString();
+        //   if (symbol.startsWith("f")) {
+        //     // Vue.set(this.fakeTokenMap, fakeTokenAddress.toLowerCase(), {address: fakeTokenAddress, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "fake"} );
+        //     logInfo("tokensModule", "addTokenTabChanged() fake(" + fakeTokenAddress + "): '" + JSON.stringify(this.fakeTokenMap[fakeTokenAddress]));
+        //   }
+        // }
+        // this.loadingFake = false;
       }
     },
     onCommonTokensRowSelected(items) {
@@ -508,7 +626,7 @@ const TokensExplorer = {
       this.$bvToast.toast(`Added ${list.length} item(s) to your token list`, {
         title: 'Tokens',
         variant: 'primary',
-        autoHideDelay: 10000,
+        autoHideDelay: 5000,
         appendToast: true
       })
       for (var i = 0; i < list.length; i++) {
@@ -596,6 +714,7 @@ const TokensExplorer = {
       logInfo("TokensExplorer", "checkTokenContract: " + JSON.stringify(this.tokenInfo));
     },
     getSome(fakeTokenAddress) {
+      fakeTokenAddress = fakeTokenAddress.toLowerCase();
       logInfo("TokensExplorer", "getSome(" + JSON.stringify(fakeTokenAddress) + ")");
       this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[fakeTokenAddress].name + '?', {
           title: 'Please Confirm',
@@ -675,6 +794,100 @@ const TokensExplorer = {
           // An error occurred
         });
     },
+    async timeoutCallback() {
+      // logInfo("TokensExplorer", "timeoutCallback() count: " + this.count);
+      var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+      var fakeTokenContract = web3.eth.contract(FAKETOKENFACTORYABI).at(FAKETOKENFACTORYADDRESS);
+
+      if (this.count == 0) {
+        var _fakeTokensLength = promisify(cb => fakeTokenContract.fakeTokensLength.call(cb));
+        var fakeTokensLength = await _fakeTokensLength;
+        this.tokenPickerTotalRows = parseInt(COMMONTOKENLIST.length) + parseInt(fakeTokensLength);
+        // logInfo("TokensExplorer", "timeoutCallback() - tokenPickerTotalRows: " + this.tokenPickerTotalRows);
+        this.tokenPickerLoadingRow = 0;
+
+        for (var i = 0; i < COMMONTOKENLIST.length; i++) {
+          var address = COMMONTOKENLIST[i];
+          var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+          var tokenInfo = await _tokenInfo;
+          var symbol = tokenInfo[4];
+          var name = tokenInfo[5];
+          var decimals = parseInt(tokenInfo[0]);
+          var totalSupply = tokenInfo[1].shift(-decimals).toString();
+          var balance = tokenInfo[2].shift(-decimals).toString();
+          var allowance = tokenInfo[3].shift(-decimals).toString();
+          var token = { address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "common", selected: false };
+          Vue.set(this.tokenPickerMap, address.toLowerCase(), token);
+          this.tokenPickerList.push(token);
+          this.tokenPickerLoadingRow++;
+          // logInfo("TokensExplorer", "timeoutCallback() - loading " + this.tokenPickerLoadingRow + " of " + this.tokenPickerTotalRows + " " + symbol);
+        }
+
+        for (var fakeTokensIndex = 0; fakeTokensIndex < fakeTokensLength; fakeTokensIndex++) {
+          var _fakeTokenAddress = promisify(cb => fakeTokenContract.fakeTokens.call(fakeTokensIndex, cb));
+          var fakeTokenAddress = await _fakeTokenAddress;
+          var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(fakeTokenAddress, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+          var tokenInfo = await _tokenInfo;
+          var symbol = tokenInfo[4];
+          var name = tokenInfo[5];
+          var decimals = parseInt(tokenInfo[0]);
+          var totalSupply = tokenInfo[1].shift(-decimals).toString();
+          var balance = tokenInfo[2].shift(-decimals).toString();
+          var allowance = tokenInfo[3].shift(-decimals).toString();
+          if (symbol.startsWith("f")) {
+            var token = { address: fakeTokenAddress, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "fake", selected: false };
+            Vue.set(this.tokenPickerMap, fakeTokenAddress.toLowerCase(), token);
+            this.tokenPickerList.push(token);
+            this.tokenPickerLoadingRow++;
+            // logInfo("TokensExplorer", "timeoutCallback() - loading " + this.tokenPickerLoadingRow + " of " + this.tokenPickerTotalRows + " " + symbol);
+          }
+        }
+
+        this.tokenPickerTotalRows = this.tokenPickerLoadingRow;
+        this.tokenPickerLoadingRow = null;
+        logDebug("TokensExplorer", "timeoutCallback() - loaded " + this.tokenPickerTotalRows);
+
+        // this.tokenPickerList.sort(function(a, b) {
+        //   return ('' + a.symbol + a.name).localeCompare(b.symbol + b.name);
+        // });
+        // logInfo("tokensModule", "timeoutCallback() tokenPickerList: " + JSON.stringify(this.tokenPickerList));
+
+      } else {
+        var addresses = Object.keys(this.tokenPickerMap);
+        var addressesLength = addresses.length;
+        var chunks = chunkArray(addresses, 10);
+        for (var chunkIndex in chunks) {
+          var chunk = chunks[chunkIndex];
+          var _tokensInfo = promisify(cb => tokenToolz.getTokensInfo(chunk, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+          var tokensInfo = await _tokensInfo;
+          for (var tokenIndex = 0; tokenIndex < chunk.length; tokenIndex++) {
+            var address = chunk[tokenIndex].toLowerCase();
+            var token = this.tokenPickerMap[address];
+            token.totalSupply = tokensInfo[0][tokenIndex].shift(-token.decimals).toString();
+            token.balance = tokensInfo[1][tokenIndex].shift(-token.decimals).toString();
+            token.allowance = tokensInfo[2][tokenIndex].shift(-token.decimals).toString();
+            Vue.set(this.tokenPickerMap, address, token);
+          }
+        }
+        logDebug("TokensExplorer", "timeoutCallback() - refreshed " + addressesLength);
+        // logInfo("tokensModule", "timeoutCallback() tokenPickerList: " + JSON.stringify(this.tokenPickerList));
+      }
+
+      this.count++;
+      var t = this;
+      if (this.reschedule) {
+        setTimeout(function() {
+          t.timeoutCallback();
+        }, 15000);
+      }
+    },
+  },
+  mounted() {
+    this.reschedule = true;
+    this.timeoutCallback();
+  },
+  destroyed() {
+    this.reschedule = false;
   },
 };
 

@@ -80,13 +80,11 @@ const tokensModule = {
 
     params: null,
     executing: false,
-    executionQueue: [],
   },
   getters: {
     tokenData: state => state.tokenData,
 
     params: state => state.params,
-    executionQueue: state => state.executionQueue,
   },
   mutations: {
     removeToken(state, address) {
@@ -115,7 +113,6 @@ const tokensModule = {
       if (token) {
         token.favourite = favourite;
       }
-      state.executionQueue.push("setTokenFavourite");
       // logInfo("tokensModule", "mutations.setTokenFavourite - state.executionQueue: " +  JSON.stringify(state.executionQueue));
     },
     updateToken(state, token) {
@@ -133,18 +130,8 @@ const tokensModule = {
         Vue.set(state.tokenData, token.address.toLowerCase(), {address: token.address, symbol: token.symbol, name: token.name, decimals: token.decimals, totalSupply: token.totalSupply, balance: token.balance, allowance: token.allowance, source: token.source });
         // logInfo("tokensModule", "mutations.updateToken - state.tokenData: " +  JSON.stringify(state.tokenData));
         localStorage.setItem('tokenData', JSON.stringify(state.tokenData));
-      } else {
-        // logInfo("tokensModule", "mutations.updateToken - NOT UPDATED state.tokenData: " +  JSON.stringify(state.tokenData));
-      }
-    },
-    updateTokenStats(state, {tokenAddress, totalSupply, balance, allowance}) {
-      var token = state.tokenData[tokenAddress.toLowerCase()];
-      if (token != null && typeof token.decimals !== "undefined") {
-        token.totalSupply = totalSupply.shift(-token.decimals);
-        token.balance = balance.shift(-token.decimals);
-        token.allowance = allowance.shift(-token.decimals);
-        Vue.set(state.tokenData, tokenAddress.toLowerCase(), token);
-        // logInfo("tokensModule", "updateTokenStats(" + tokenAddress + ", " + JSON.stringify(token) + ")")
+      // } else {
+      //   logInfo("tokensModule", "mutations.updateToken - NOT UPDATED state.tokenData: " +  JSON.stringify(state.tokenData));
       }
     },
     // updateTokenShowDetails(state, parameters){
@@ -157,10 +144,6 @@ const tokensModule = {
     updateExecuting(state, executing) {
       state.executing = executing;
       logDebug("tokensModule", "updateExecuting(" + executing + ")")
-    },
-    deQueue(state) {
-      // logInfo("tokensModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
-      state.executionQueue.shift();
     },
   },
   actions: {
@@ -185,7 +168,6 @@ const tokensModule = {
       logDebug("tokensModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged+ "]");
       if (!state.executing) {
         commit('updateExecuting', true);
-        var queued = state.executionQueue.length > 0;
         logDebug("tokensModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
 
         var paramsChanged = false;
@@ -199,37 +181,38 @@ const tokensModule = {
 
           var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
 
-          // logInfo("tokensModule", "execWeb3() state.tokenData: " + JSON.stringify(state.tokenData));
-          for (var address in state.tokenData) {
-            // logInfo("tokensModule", "execWeb3() address: " + address);
-            var token = state.tokenData[address];
-            // logInfo("tokensModule", "execWeb3() token: " + token);
-            var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(token.address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-            var tokenInfo = await _tokenInfo;
-            // logInfo("tokensModule", "execWeb3() tokenInfo: " + JSON.stringify(tokenInfo));
-            var symbol = tokenInfo[4];
-            var name = tokenInfo[5];
-            var decimals = parseInt(tokenInfo[0]);
-            var totalSupply = tokenInfo[1].shift(-decimals).toString();
-            var balance = tokenInfo[2].shift(-decimals).toString();
-            var allowance = tokenInfo[3].shift(-decimals).toString();
-            commit('updateToken', { address: token.address, symbol: symbol, name: name, decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: token.source } );
-          }
+          // TODO: Load up STARTUPTOKENLIST ?
 
-          // // TODO block by batches of addresses
-          // var tokens = Object.keys(state.tokenData);
-          // // logInfo("tokensModule", "execWeb3() tokensInfo: " + JSON.stringify(tokens));
-          // var _tokensInfo = promisify(cb => tokenToolz.getTokensInfo(tokens, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
-          // var tokensInfo = await _tokensInfo;
-          // // logInfo("tokensModule", "execWeb3() tokensInfo: " + JSON.stringify(tokensInfo));
-          // for (var tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
-          //   var tokenAddress = tokens[tokenIndex];
-          //   // logInfo("tokensModule", "execWeb3() updateTokenStats: " + JSON.stringify({ tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]}));
-          //   commit('updateTokenStats', { tokenAddress: tokenAddress, totalSupply: tokensInfo[0][tokenIndex], balance: tokensInfo[1][tokenIndex], allowance: tokensInfo[2][tokenIndex]} );
-          // }
-        }
-        if (queued) {
-          commit('deQueue');
+          // logInfo("tokensModule", "execWeb3() state.tokenData: " + JSON.stringify(state.tokenData));
+          if (count == 1) {
+            for (var address in state.tokenData) {
+              var token = state.tokenData[address];
+              var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(token.address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+              var tokenInfo = await _tokenInfo;
+              var symbol = tokenInfo[4];
+              var name = tokenInfo[5];
+              var decimals = parseInt(tokenInfo[0]);
+              var totalSupply = tokenInfo[1].shift(-decimals).toString();
+              var balance = tokenInfo[2].shift(-decimals).toString();
+              var allowance = tokenInfo[3].shift(-decimals).toString();
+              commit('updateToken', { address: token.address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: token.source } );
+            }
+          } else {
+            var addresses = Object.keys(state.tokenData);
+            var addressesLength = addresses.length;
+            var chunks = chunkArray(addresses, 10);
+            for (var chunkIndex in chunks) {
+              var chunk = chunks[chunkIndex];
+              var _tokensInfo = promisify(cb => tokenToolz.getTokensInfo(chunk, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+              var tokensInfo = await _tokensInfo;
+              for (var tokenIndex = 0; tokenIndex < chunk.length; tokenIndex++) {
+                var address = chunk[tokenIndex].toLowerCase();
+                var token = state.tokenData[address];
+                commit('updateToken', { address: token.address, symbol: token.symbol, name: token.name, decimals: token.decimals, totalSupply: tokensInfo[0][tokenIndex].shift(-token.decimals).toString(), balance: tokensInfo[1][tokenIndex].shift(-token.decimals).toString(), allowance: tokensInfo[2][tokenIndex].shift(-token.decimals).toString(), source: token.source });
+              }
+            }
+            logInfo("TokensExplorer", "timeoutCallback() - refreshed " + addressesLength);
+          }
         }
         commit('updateExecuting', false);
         logDebug("tokensModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
