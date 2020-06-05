@@ -3,7 +3,7 @@ const FeedsExplorer = {
     <div class="mt-5 pt-3">
       <b-row>
         <b-col cols="12" md="9" class="m-0 p-1">
-          <b-card no-body header="Personal Feed List" class="border-0" header-class="p-1">
+          <b-card no-body header="Feeds" class="border-0" header-class="p-1">
             <br />
             <b-card no-body class="mb-1">
               <b-card-body class="p-1">
@@ -135,10 +135,10 @@ const FeedsExplorer = {
                   <div style="font-size: 80%">{{ data.item.name }} </div>
                 </template>
                 <template v-slot:cell(feedDataType)="data">
-                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataTypeString }} </div>
+                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataTypeString }}</div>
                 </template>
                 <template v-slot:cell(feedDataDecimals)="data">
-                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataDecimals }} </div>
+                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataDecimals }}</div>
                 </template>
                 <template v-slot:cell(hasData)="data">
                   <div class="text-right" style="font-size: 80%">{{ data.item.hasData }} </div>
