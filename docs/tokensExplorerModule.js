@@ -3,57 +3,59 @@ const TokensExplorer = {
     <div class="mt-5 pt-3">
       <b-row>
         <b-col cols="12" md="9" class="m-0 p-1">
-          <b-card no-body header="Personal Token List" class="border-0" header-class="p-1">
+          <b-card no-body header="Token List" class="border-0" header-class="p-1">
             <br />
             <b-card no-body class="mb-1">
               <b-card-body class="p-1">
 
-                <div class="d-flex justify-content-end m-0 p-0" style="height: 37px;">
+                <div class="d-flex m-0 p-0" style="height: 37px;">
                   <div class="pr-1">
-                    <b-form-input type="text" size="sm" v-model.trim="filter" debounce="600" placeholder="Search..." v-b-popover.hover.bottom="'Search'"></b-form-input>
+                    <b-form-input type="text" size="sm" v-model.trim="search" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                  </div>
+                  <div class="pr-1 flex-grow-1">
                   </div>
                   <div class="pt-1 pr-1">
-                    <b-pagination pills size="sm" v-model="currentPage" :total-rows="tokenDataSorted.length" :per-page="perPage" v-b-popover.hover.bottom="'Page through records'"></b-pagination>
+                    <b-pagination pills size="sm" v-model="currentPage" :total-rows="tokenDataSorted.length" :per-page="perPage" v-b-popover.hover="'Page through records'"></b-pagination>
                   </div>
                   <div class="pr-1">
-                    <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover.bottom="'Select page size'"/>
+                    <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover="'Select page size'"/>
                   </div>
                   <div class="pr-1">
-                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
                   </div>
                   <div class="pr-1">
-                    <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" no-caret v-b-popover.hover.bottom="'Additional Menu Items...'">
+                    <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" button-class="m-0 p-0" no-caret v-b-popover.hover="'Additional Menu Items...'">
                       <template v-slot:button-content>
                         <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
                       </template>
-                      <b-dropdown-item-button @click="resetTokenList()">Reset Personal Token List ...</b-dropdown-item-button>
+                      <b-dropdown-item-button size="sm" @click="resetTokenList()"><span style="font-size: 90%">Reset Token List</span></b-dropdown-item-button>
                     </b-dropdown>
                   </div>
                 </div>
 
                 <b-modal id="bv-modal-addtoken" size="xl" hide-footer>
                   <template v-slot:modal-title>
-                    Add Token To List [{{ networkName }}]
+                    Add Token(s) To List [{{ networkName }}]
                   </template>
                   <b-card-body class="m-0 p-0">
                     <div>
-                      <b-tabs v-model="addTokenTabIndex" content-class="mt-1">
+                      <b-tabs card v-model="addTokenTabIndex" content-class="m-0">
                         <b-tab size="sm" title="Search">
                           <b-form-group>
                             <b-input-group>
-                              <b-form-input size="sm" type="text" v-model.trim="tokenInfo.address" placeholder="Enter token contract address and click on the search button" v-b-popover.hover.bottom="'Enter token contract address and click on the search button'"></b-form-input>
+                              <b-form-input size="sm" type="text" v-model.trim="tokenInfo.address" placeholder="Enter token contract address and click on the search button" v-b-popover.hover="'Enter token contract address and click on the search button'"></b-form-input>
                               <b-input-group-append>
-                                <b-button size="sm" :href="explorer + 'token/' + tokenInfo.address" target="_blank" variant="outline-info" v-b-popover.hover.bottom="'View on explorer'"><b-icon-link45deg class="rounded-circle" font-scale="1"></b-icon-link45deg></b-button>
+                                <b-button size="sm" :href="explorer + 'token/' + tokenInfo.address" target="_blank" variant="outline-info" v-b-popover.hover="'View on explorer'"><b-icon-link45deg class="rounded-circle" font-scale="1"></b-icon-link45deg></b-button>
                                 <b-button isRounded size="sm" @click="checkTokenContract()" variant="primary" v-b-popover.hover="'Check token address'"><b-icon-search class="rounded-circle" font-scale="1"></b-icon-search></b-button>
                               </b-input-group-append>
-                              <b-form-invalid-feedback :state="tokenInfo.ok">
+                              <b-form-invalid-feedback :state="tokenInfo.ok && tokenInfo.address != ''">
                                 Invalid token contract address
                               </b-form-invalid-feedback>
                             </b-input-group>
                           </b-form-group>
                           <b-card no-body bg-variant="light" class="m-1 p-1" v-if="tokenInfo.ok">
                             <b-card-body class="m-0 p-0">
-                              <b-card-header header-tag="header" class="p-1">
+                              <b-card-header header-tag="header" class="p-1 m-1">
                                 Search results
                               </b-card-header>
                               <b-form-group label-cols="5" label-size="sm" label="Symbol">
@@ -76,12 +78,12 @@ const TokensExplorer = {
                                   <b-form-input size="sm" type="text" v-model.trim="tokenInfo.totalSupply" readonly></b-form-input>
                                 </b-input-group>
                               </b-form-group>
-                              <b-form-group label-cols="5" label-size="sm" label="Your Balance">
+                              <b-form-group label-cols="5" label-size="sm" label="Your account's token balance">
                                 <b-input-group>
                                   <b-form-input size="sm" type="text" v-model.trim="tokenInfo.balance" readonly></b-form-input>
                                 </b-input-group>
                               </b-form-group>
-                              <b-form-group label-cols="5" label-size="sm" label="Your Allowance To The Factory">
+                              <b-form-group label-cols="5" label-size="sm" label="Your account's allowance to the Optino Factory">
                                 <b-input-group>
                                   <b-form-input size="sm" type="text" v-model.trim="tokenInfo.allowance" readonly></b-form-input>
                                 </b-input-group>
@@ -89,9 +91,19 @@ const TokensExplorer = {
                             </b-card-body>
                           </b-card>
                         </b-tab>
-                        <b-tab size="sm" title="Common Token List">
-                          <p class="p-2">Select from these common tokens. Please verify these on your preferred block explorer:</p>
-                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" head-variant="light" show-empty @row-clicked="rowClicked">
+
+                        <b-tab size="sm" title="Common Tokens">
+                          <div class="d-flex m-0 p-0" style="height: 37px;">
+                            <div class="pr-1">
+                              <b-form-input type="text" size="sm" v-model.trim="searchCommon" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                            </div>
+                            <div class="pr-1 flex-grow-1">
+                            </div>
+                            <div class="pr-1">
+                             <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" font-scale="0.9"></b-icon-exclamation-circle> Always validate the token contract address in your block explorer</span>
+                            </div>
+                          </div>
+                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" :filter="searchCommon" :filter-included-fields="['symbol', 'name']" head-variant="light" show-empty @row-clicked="rowClicked">
                             <template v-slot:empty="scope">
                               <p class="pt-4" v-if="loadingCommon">Loading records</p>
                               <p class="pt-4" v-if="!loadingCommon">{{ scope.emptyText }}</p>
@@ -112,13 +124,13 @@ const TokensExplorer = {
                               <span style="font-size: 90%">Total Supply</span>
                             </template>
                             <template v-slot:head(balance)="data">
-                              <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
+                              <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token balance for your account'"></b-icon-info-circle></span>
                             </template>
                             <template v-slot:head(allowance)="data">
-                              <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
+                              <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of your tokens that can be transferred by the Optino Factory as collateral to mint Optinos and Cover tokens'"></b-icon-info-circle></span>
                             </template>
                             <template v-slot:head(address)="data">
-                              <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
+                              <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address. Always verify independently on your favourite block explorer'"></b-icon-info-circle></span>
                             </template>
                             <template v-slot:head(selected)="data">
                               <span style="font-size: 90%">Select</span>
@@ -149,9 +161,20 @@ const TokensExplorer = {
                             </template>
                           </b-table>
                         </b-tab>
-                        <b-tab size="sm" title="Fake Token List">
-                          <p class="p-2">Select some fake tokens to test with:</p>
-                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" head-variant="light" show-empty @row-clicked="rowClicked">
+
+                        <b-tab size="sm" title="Fake Tokens For Testing">
+                          <div class="d-flex m-0 p-0" style="height: 37px;">
+                            <div class="pr-1">
+                              <b-form-input type="text" size="sm" v-model.trim="searchFake" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                            </div>
+                            <div class="pr-1 flex-grow-1">
+                            </div>
+                            <div class="pr-1">
+                             <span class="text-right" style="font-size: 90%"><b-icon-info-circle font-scale="0.9"></b-icon-info-circle> Add any token below to your token list, then request for tokens from the faucet <b-icon-droplet font-scale="0.9"></b-icon-droplet> for testing</span>
+                            </div>
+                          </div>
+
+                          <b-table small striped selectable sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" :filter="searchFake" :filter-included-fields="['symbol', 'name']" head-variant="light" show-empty @row-clicked="rowClicked">
                             <template v-slot:empty="scope">
                               <p class="pt-4" v-if="loadingFake">Loading records</p>
                               <p class="pt-4" v-if="!loadingFake">{{ scope.emptyText }}</p>
@@ -172,13 +195,13 @@ const TokensExplorer = {
                               <span style="font-size: 90%">Total Supply</span>
                             </template>
                             <template v-slot:head(balance)="data">
-                              <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
+                              <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token balance for your account'"></b-icon-info-circle></span>
                             </template>
                             <template v-slot:head(allowance)="data">
-                              <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
+                              <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of your tokens that can be transferred by the Optino Factory as collateral to mint Optinos and Cover tokens'"></b-icon-info-circle></span>
                             </template>
                             <template v-slot:head(address)="data">
-                              <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
+                              <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address. Always verify independently on your favourite block explorer'"></b-icon-info-circle></span>
                             </template>
                             <template v-slot:head(selected)="data">
                               <span style="font-size: 90%">Select</span>
@@ -228,10 +251,10 @@ const TokensExplorer = {
                   </b-card-body>
                 </b-modal>
 
-                <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="filter" @filtered="onFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
+                <b-table small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="search" @filtered="onFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
                   <template v-slot:empty="scope">
                     <p class="pt-4">{{ scope.emptyText }}</p>
-                    <p class="pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover.bottom="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</p>
+                    <p class="pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</p>
                   </template>
                   <template v-slot:emptyfiltered="scope">
                     <p class="pt-4">{{ scope.emptyFilteredText }}</p>
@@ -249,45 +272,47 @@ const TokensExplorer = {
                     <span style="font-size: 90%">Total Supply</span>
                   </template>
                   <template v-slot:head(balance)="data">
-                    <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Your account balance'"></b-icon-info-circle></span>
+                    <span class="text-right" style="font-size: 90%">Balance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token balance for your account'"></b-icon-info-circle></span>
                   </template>
                   <template v-slot:head(allowance)="data">
-                    <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of tokens that can be transferred by the factory to mint Optinos'"></b-icon-info-circle></span>
+                    <span class="text-right" style="font-size: 90%">Allowance <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Amount of your tokens that can be transferred by the Optino Factory as collateral to mint Optinos and Cover tokens'"></b-icon-info-circle></span>
                   </template>
                   <template v-slot:head(address)="data">
-                    <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address'"></b-icon-info-circle></span>
+                    <span class="text-right" style="font-size: 90%">Address <b-icon-info-circle font-scale="0.9" v-b-popover.hover="'Token contract address. Always verify independently on your favourite block explorer'"></b-icon-info-circle></span>
                   </template>
                   <template v-slot:head(extra)="data">
-                    <span style="font-size: 90%">Details</span>
+                    <span style="font-size: 90%"></span>
                   </template>
                   <template v-slot:cell(symbol)="data">
-                    <div style="font-size: 80%">{{ data.item.symbol }} </div>
+                    <span style="font-size: 80%">{{ data.item.symbol }}</span>
                   </template>
                   <template v-slot:cell(name)="data">
-                    <div style="font-size: 80%">{{ data.item.name }} </div>
+                    <span style="font-size: 80%">{{ data.item.name }}</span>
                   </template>
                   <template v-slot:cell(decimals)="data">
-                    <div class="text-right" style="font-size: 80%">{{ data.item.decimals }}</div>
+                    <span class="text-right" style="font-size: 80%">{{ data.item.decimals }}</span>
                   </template>
                   <template v-slot:cell(totalSupply)="data">
-                    <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.totalSupply, 8) }}</div>
+                    <span class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.totalSupply, 8) }}</span>
                   </template>
                   <template v-slot:cell(balance)="data">
-                    <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.balance, 8) }}</div>
+                    <span class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.balance, 8) }}</span>
                   </template>
                   <template v-slot:cell(allowance)="data">
-                    <div class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.allowance, 8) }}</div>
+                    <span class="text-right" style="font-size: 80%">{{ formatMaxDecimals(data.item.allowance, 8) }}</span>
                   </template>
                   <template v-slot:cell(address)="data">
-                    <b-link  style="font-size: 80%" :href="explorer + 'token/' + data.item.address" class="card-link truncate" target="_blank" v-b-popover.hover="data.item.address">{{ data.item.address.substr(0, 10) }}...</b-link>
+                    <b-link style="font-size: 80%" :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="data.item.address">{{ data.item.address.substr(0, 10) }}...</b-link>
                   </template>
                   <template v-slot:cell(extra)="row">
-                    <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.bottom="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
+                    <b-link style="font-size: 80%" @click="row.toggleDetails" class="card-link m-0 p-0" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><b-icon-caret-up-fill font-scale="0.9" v-if="row.detailsShowing"></b-icon-caret-up-fill><b-icon-caret-down-fill font-scale="0.9" v-if="!row.detailsShowing"></b-icon-caret-down-fill></b-link>
+                    <b-link style="font-size: 80%" @click="getSomeTokens(row.item.address)" class="card-link m-0 p-0" v-b-popover.hover="'Get some ' + row.item.symbol + ' tokens from the faucet for testing'"><b-icon-droplet font-scale="0.9"></b-icon-droplet></b-link>
+                    <b-link style="font-size: 80%" @click="removeTokenFromList(row.item.address, row.item.symbol)" class="card-link m-0 p-0" v-b-popover.hover="'Remove ' + row.item.symbol + ' from list. This can be added back later.'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-link>
                   </template>
                   <template v-slot:row-details="row">
                     <b-card>
                       <b-card-header header-tag="header" class="p-1">
-                        Token {{ row.item.symbol }} {{ row.item.name }} <b-button size="sm" class="m-0 p-0" @click="removeTokenFromList(row.item.address)" variant="link" v-b-popover.hover.bottom="'Remove ' + row.item.symbol + ' from your personal list?'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-button>
+                        Token {{ row.item.symbol }} {{ row.item.name }}<!-- <b-button size="sm" class="m-0 p-0" @click="removeTokenFromList(row.item.address, row.item.symbol)" variant="link" v-b-popover.hover="'Remove ' + row.item.symbol + ' from list?'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-button> -->
                       </b-card-header>
                       <b-card-body>
                         <b-form-group label-cols="3" label-size="sm" label="Address">
@@ -323,9 +348,9 @@ const TokensExplorer = {
                             <b-form-input type="text" size="sm" :value="row.item.balance.toString()" readonly></b-form-input>
                           </b-input-group>
                         </b-form-group>
-                        <b-form-group label-cols="3" label-size="sm" label="">
+                        <b-form-group label-cols="3" label-size="sm" label="" v-if="row.item.source == 'fake' || row.item.symbol.endsWith('EENUS')">
                           <b-input-group>
-                            <b-button size="sm" class="pull-right" @click="getSome(row.item.address)" variant="primary" v-b-popover.hover="'Get 1,000 tokens'">Get 1,000 {{ row.item.name }}</b-button>
+                            <b-button size="sm" class="pull-right" @click="getSomeTokens(row.item.address)" variant="primary" v-b-popover.hover="'From the faucet for testing'"><b-icon-droplet font-scale="0.9"></b-icon-droplet> Get 1,000 {{ row.item.name }} tokens</b-button>
                           </b-input-group>
                         </b-form-group>
                         <b-form-group label-cols="3" label-size="sm" label="Allowance to factory">
@@ -366,7 +391,7 @@ const TokensExplorer = {
       count: 0,
       reschedule: false,
 
-      filter: null,
+      search: null,
       currentPage: 1,
       perPage: 10,
       pageOptions: [
@@ -379,19 +404,17 @@ const TokensExplorer = {
 
       addTokenTabIndex: 0,
 
-      commonTokenMap: {},
-      fakeTokenMap: {},
-      loadingCommon: false,
-      loadingFake: false,
-
       tokenPickerMap: {},
       tokenPickerList: [],
       tokenPickerLoadingRow: null,
       tokenPickerTotalRows: null,
 
-      // testingCode: "1234",
-
-      // showFavourite: false,
+      commonTokenMap: {},
+      fakeTokenMap: {},
+      loadingCommon: false,
+      loadingFake: false,
+      searchCommon: null,
+      searchFake: null,
 
       tokenInfo: {
         address: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
@@ -401,7 +424,7 @@ const TokensExplorer = {
         totalSupply: null,
         balance: null,
         allowance: null,
-        ok: null
+        ok: null,
       },
       newAllowance: "0",
 
@@ -532,9 +555,9 @@ const TokensExplorer = {
       }
       this.$bvModal.hide('bv-modal-addtoken');
     },
-    removeTokenFromList(address) {
-      logInfo("TokensExplorer", "removeTokenFromList(" + address + ")?");
-      this.$bvModal.msgBoxConfirm('Remove From Personal Token List?', {
+    removeTokenFromList(address, symbol) {
+      logInfo("TokensExplorer", "removeTokenFromList(" + address + ", '" + symbol + "')?");
+      this.$bvModal.msgBoxConfirm('Remove ' + symbol + ' from token list?', {
           title: 'Please Confirm',
           size: 'sm',
           buttonSize: 'sm',
@@ -558,7 +581,7 @@ const TokensExplorer = {
     },
     resetTokenList() {
       logInfo("TokensExplorer", "resetTokenList()?");
-      this.$bvModal.msgBoxConfirm('Reset Personal Token List?', {
+      this.$bvModal.msgBoxConfirm('Reset token list?', {
           title: 'Please Confirm',
           size: 'sm',
           buttonSize: 'sm',
@@ -607,10 +630,10 @@ const TokensExplorer = {
       }
       logInfo("TokensExplorer", "checkTokenContract: " + JSON.stringify(this.tokenInfo));
     },
-    getSome(fakeTokenAddress) {
+    getSomeTokens(fakeTokenAddress) {
       fakeTokenAddress = fakeTokenAddress.toLowerCase();
-      logInfo("TokensExplorer", "getSome(" + JSON.stringify(fakeTokenAddress) + ")");
-      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[fakeTokenAddress].name + '?', {
+      logInfo("TokensExplorer", "getSomeTokens(" + JSON.stringify(fakeTokenAddress) + ")");
+      this.$bvModal.msgBoxConfirm('Get 1,000 ' + this.tokenData[fakeTokenAddress].symbol + ' tokens from the faucet for testing?', {
           title: 'Please Confirm',
           size: 'sm',
           buttonSize: 'sm',
@@ -623,16 +646,16 @@ const TokensExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("TokensExplorer", "getSome(" + this.tokenData[fakeTokenAddress].symbol + ")");
+            logInfo("TokensExplorer", "getSomeTokens(" + this.tokenData[fakeTokenAddress].symbol + ")");
             var factoryAddress = store.getters['optinoFactory/address']
-            logInfo("TokensExplorer", "getSome(" + fakeTokenAddress + ")");
+            logInfo("TokensExplorer", "getSomeTokens(" + fakeTokenAddress + ")");
             web3.eth.sendTransaction({ to: fakeTokenAddress, from: store.getters['connection/coinbase'] }, function(error, tx) {
-                logInfo("TokensExplorer", "getSome() DEBUG2");
+                logInfo("TokensExplorer", "getSomeTokens() DEBUG2");
               if (!error) {
-                logInfo("TokensExplorer", "getSome() token.approve() tx: " + tx);
+                logInfo("TokensExplorer", "getSomeTokens() token.approve() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
               } else {
-                logInfo("TokensExplorer", "getSome() token.approve() error: ");
+                logInfo("TokensExplorer", "getSomeTokens() token.approve() error: ");
                 console.table(error);
                 store.dispatch('connection/setTxError', error.message);
               }
