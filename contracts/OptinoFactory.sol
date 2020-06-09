@@ -185,7 +185,7 @@ contract DataType {
         uint timestamp;
         uint index;
         address feed;
-        string[2] text; // [name, message]
+        string[2] text; // [name, note]
         uint8[3] data; // FeedDataField: [type, decimals, locked]
     }
     struct Series {
@@ -1010,7 +1010,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     event TokenDecimalsUpdated(ERC20 indexed token, uint8 decimals, uint8 locked);
     event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals);
     event FeedLocked(address indexed feed);
-    event FeedMessageUpdated(address indexed feed, string message);
+    event FeedNoteUpdated(address indexed feed, string note);
     event SeriesAdded(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
     event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos, uint tokens, uint ownerFee, uint integratorFee);
@@ -1031,7 +1031,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         fee = _fee;
     }
 
-    function updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals) public onlyOwner {
+    function updateFeed(address _feed, string memory name, string memory _note, uint8 feedType, uint8 decimals) public onlyOwner {
         Feed storage feed = feedData[_feed];
         require(feed.data[uint(FeedDataField.Locked)] == 0, "Locked");
         (uint spot, bool hasData, uint8 feedDecimals, uint timestamp) = getRateFromFeed(_feed, FeedType(feedType));
@@ -1043,10 +1043,10 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         require(timestamp == uint(NODATA) || timestamp + ONEDAY > block.timestamp, "Feed stale");
         if (feed.feed == address(0)) {
             feedIndex.push(_feed);
-            feedData[_feed] = Feed(block.timestamp, feedIndex.length - 1, _feed, [name, _message], [feedType, decimals, 0]);
+            feedData[_feed] = Feed(block.timestamp, feedIndex.length - 1, _feed, [name, _note], [feedType, decimals, 0]);
         } else {
             feed.text[0] = name;
-            feed.text[1] = _message;
+            feed.text[1] = _note;
             feed.data = [feedType, decimals, 0];
             feed.timestamp = block.timestamp;
         }
@@ -1060,18 +1060,18 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         feed.timestamp = block.timestamp;
         emit FeedLocked(_feed);
     }
-    function updateFeedMessage(address _feed, string memory _message) public onlyOwner {
+    function updateFeedNote(address _feed, string memory _note) public onlyOwner {
         Feed storage feed = feedData[_feed];
         require(feed.timestamp > 0, "Invalid feed");
-        feed.text[1] = _message;
+        feed.text[1] = _note;
         feed.timestamp = block.timestamp;
-        emit FeedMessageUpdated(_feed, feed.text[1]);
+        emit FeedNoteUpdated(_feed, _note);
     }
-    function getFeedByIndex(uint i) public view returns (address feed, string memory feedName, string memory _message, uint8[3] memory _feedData, uint spot, bool hasData, uint8 feedReportedDecimals, uint feedTimestamp) {
+    function getFeedByIndex(uint i) public view returns (address feed, string memory feedName, string memory _note, uint8[3] memory _feedData, uint spot, bool hasData, uint8 feedReportedDecimals, uint feedTimestamp) {
         require(i < feedIndex.length, "Invalid index");
         feed = feedIndex[i];
         Feed memory _feed = feedData[feed];
-        (feedName, _message, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
+        (feedName, _note, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
         (spot, hasData, feedReportedDecimals, feedTimestamp) = getRateFromFeed(_feed.feed, FeedType(_feed.data[uint(FeedDataField.Type)]));
     }
     function getFeedData(address _feed) public view returns (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) {

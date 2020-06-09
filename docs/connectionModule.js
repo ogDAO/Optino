@@ -334,8 +334,8 @@ const Connection = {
 
       if (store.getters['connection/isOk']) {
         /*await*/ store.dispatch('tokens/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
-        /*await*/ store.dispatch('feeds/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         /*await*/ store.dispatch('optinoFactory/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
+        /*await*/ store.dispatch('feeds/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // await store.dispatch('tokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });
         // if (this.$route.name == "DeployTokenContract") {
         //   await store.dispatch('deployTokenContract/execWeb3', { count: this.count, networkChanged, blockChanged, coinbaseChanged });

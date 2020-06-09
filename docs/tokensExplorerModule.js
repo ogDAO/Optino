@@ -39,25 +39,31 @@ const TokensExplorer = {
                   </template>
                   <b-card-body class="m-0 p-0">
                     <div>
-                      <b-tabs card v-model="addTokenTabIndex" content-class="m-0">
+                      <b-tabs card v-model="addTokenTabIndex" content-class="m-0" active-tab-class="m-0 mt-2 p-0">
                         <b-tab size="sm" title="Search">
-                          <b-form-group>
-                            <b-input-group>
-                              <b-form-input size="sm" type="text" v-model.trim="tokenInfo.address" placeholder="Enter token contract address and click on the search button" v-b-popover.hover="'Enter token contract address and click on the search button'"></b-form-input>
-                              <b-input-group-append>
-                                <b-button size="sm" :href="explorer + 'token/' + tokenInfo.address" target="_blank" variant="outline-info" v-b-popover.hover="'View on the block explorer'"><b-icon-link45deg class="rounded-circle" font-scale="1"></b-icon-link45deg></b-button>
-                                <b-button isRounded size="sm" @click="checkTokenContract()" variant="primary" v-b-popover.hover="'Check token address'"><b-icon-search class="rounded-circle" font-scale="1"></b-icon-search></b-button>
-                              </b-input-group-append>
-                              <b-form-invalid-feedback :state="tokenInfo.ok && tokenInfo.address != ''">
-                                Invalid token contract address
-                              </b-form-invalid-feedback>
-                            </b-input-group>
-                          </b-form-group>
-                          <b-card no-body bg-variant="light" class="m-1 p-1" v-if="tokenInfo.ok">
-                            <b-card-body class="m-0 p-0">
-                              <b-card-header header-tag="header" class="p-1 m-1">
-                                Search results
-                              </b-card-header>
+                          <b-container class="m-0 p-0">
+                            <b-row>
+                              <b-col cols="8">
+                                <b-input-group size="sm">
+                                  <template v-slot:prepend>
+                                    <b-input-group-text>Token Contract Address</b-input-group-text>
+                                  </template>
+                                  <b-form-input size="sm" type="text" v-model.trim="tokenInfo.address" placeholder="Enter token contract address and click on the search button" v-b-popover.hover="'Enter token contract address and click on the search button'"></b-form-input>
+                                  <b-input-group-append>
+                                    <b-button size="sm" :href="explorer + 'token/' + tokenInfo.address" target="_blank" variant="outline-info" v-b-popover.hover="'View address on the block explorer'"><b-icon-link45deg class="rounded-circle" font-scale="1"></b-icon-link45deg></b-button>
+                                  </b-input-group-append>
+                                  <b-form-invalid-feedback :state="tokenInfo.ok && tokenInfo.address != ''">
+                                    Invalid token contract address
+                                  </b-form-invalid-feedback>
+                                </b-input-group>
+                              </b-col>
+                              <b-col cols="4">
+                                <b-button size="sm" style="float: right;" @click="checkTokenAddress()" variant="primary" v-b-popover.hover="'Check token address'"><b-icon-search class="rounded-circle" font-scale="1"></b-icon-search> Search</b-button>
+                              </b-col>
+                            </b-row>
+                          </b-container>
+                          <b-card no-body bg-variant="light" class="m-0 mt-3 p-2" v-if="tokenInfo.ok" header-class="m-0 p-0" header="Search Results">
+                            <b-card-body class="m-0 mt-2 p-0">
                               <b-form-group label-cols="5" label-size="sm" label="Symbol">
                                 <b-input-group>
                                   <b-form-input size="sm" type="text" v-model.trim="tokenInfo.symbol" readonly></b-form-input>
@@ -100,7 +106,7 @@ const TokensExplorer = {
                             <div class="pr-1 flex-grow-1">
                             </div>
                             <div class="pr-1">
-                             <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" font-scale="0.9"></b-icon-exclamation-circle> Always validate the token contract address in your block explorer</span>
+                             <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" font-scale="0.9"></b-icon-exclamation-circle> Always confirm the token contract address in a block explorer</span>
                             </div>
                           </div>
                           <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" :filter="searchCommon" :filter-included-fields="['symbol', 'name']" head-variant="light" show-empty @row-clicked="rowClicked">
@@ -126,10 +132,10 @@ const TokensExplorer = {
                               <span v-b-popover.hover="data.item.allowance">{{ formatNumberForDisplay(data.item.allowance, 8) }}</span>
                             </template>
                             <template v-slot:head(address)="data">
-                              <span v-b-popover.hover="'Always independently verify the token contract address on a block explorer'">Address</span>
+                              <span v-b-popover.hover="'Always confirm the token contract address on a block explorer'">Address</span>
                             </template>
                             <template v-slot:cell(address)="data">
-                              <b-link :href="explorer + 'token/' + data.item.address" class="card-link truncate" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ data.item.address.substr(0, 10) }}...</b-link>
+                              <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                             </template>
                             <template v-slot:cell(selected)="data">
                               <b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2>
@@ -172,10 +178,10 @@ const TokensExplorer = {
                               <span v-b-popover.hover="data.item.allowance">{{ formatNumberForDisplay(data.item.allowance, 8) }}</span>
                             </template>
                             <template v-slot:head(address)="data">
-                              <span v-b-popover.hover="'Always independently verify the token contract address on a block explorer'">Address</span>
+                              <span v-b-popover.hover="'Always confirm the token contract address on a block explorer'">Address</span>
                             </template>
                             <template v-slot:cell(address)="data">
-                              <b-link :href="explorer + 'token/' + data.item.address" class="card-link truncate" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ data.item.address.substr(0, 10) }}...</b-link>
+                              <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                             </template>
                             <template v-slot:cell(selected)="data">
                               <b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2>
@@ -225,10 +231,10 @@ const TokensExplorer = {
                     <span v-b-popover.hover="data.item.allowance">{{ formatNumberForDisplay(data.item.allowance, 8) }}</span>
                   </template>
                   <template v-slot:head(address)="data">
-                    <span v-b-popover.hover="'Always independently verify the token contract address on a block explorer'">Address</span>
+                    <span v-b-popover.hover="'Always confirm the token contract address on a block explorer'">Address</span>
                   </template>
                   <template v-slot:cell(address)="data">
-                    <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ data.item.address.substr(0, 10) }}...</b-link>
+                    <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                   </template>
                   <template v-slot:cell(extra)="row">
                     <b-link @click="row.toggleDetails" class="card-link m-0 p-0" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><b-icon-caret-up-fill font-scale="0.9" v-if="row.detailsShowing"></b-icon-caret-up-fill><b-icon-caret-down-fill font-scale="0.9" v-if="!row.detailsShowing"></b-icon-caret-down-fill></b-link>
@@ -308,6 +314,8 @@ const TokensExplorer = {
           <optinoFactory></optinoFactory>
           <br />
           <tokens></tokens>
+          <br />
+          <feeds></feeds>
         </b-col>
       </b-row>
     </div>
@@ -453,10 +461,6 @@ const TokensExplorer = {
     },
   },
   methods: {
-    tdClass(value, key, item) {
-      console.log("tdClass " + JSON.stringify(value) + " " + JSON.stringify(key) + " " + JSON.stringify(item));
-      return 'text-danger';
-    },
     rowClicked(record, index) {
       record.selected = !record.selected;
     },
@@ -465,6 +469,12 @@ const TokensExplorer = {
         this.totalRows = filteredItems.length;
         this.currentPage = 1
       }
+    },
+    truncate(s, l) {
+      if (s.length > l) {
+        return s.substr(0, l) + '...';
+      }
+      return s;
     },
     formatNumberForDisplay(value, decimals) {
       // return parseFloat(new BigNumber(value).toFixed(decimals));
@@ -531,13 +541,13 @@ const TokensExplorer = {
           // An error occurred
         });
     },
-    async checkTokenContract(event) {
-      logInfo("TokensExplorer", "checkTokenContract(" + this.tokenInfo.address + ")");
+    async checkTokenAddress(event) {
+      logInfo("TokensExplorer", "checkTokenAddress(" + this.tokenInfo.address + ")");
       var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
       try {
         var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(this.tokenInfo.address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
         var tokenInfo = await _tokenInfo;
-        logInfo("TokensExplorer", "checkTokenContract: " + JSON.stringify(tokenInfo));
+        logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(tokenInfo));
         this.tokenInfo.symbol = tokenInfo[4];
         this.tokenInfo.name = tokenInfo[5];
         this.tokenInfo.decimals = parseInt(tokenInfo[0]);
@@ -556,7 +566,7 @@ const TokensExplorer = {
         this.tokenInfo.source = null;
         this.tokenInfo.ok = false;
       }
-      logInfo("TokensExplorer", "checkTokenContract: " + JSON.stringify(this.tokenInfo));
+      logInfo("TokensExplorer", "checkTokenAddress: " + JSON.stringify(this.tokenInfo));
     },
     getSomeTokens(fakeTokenAddress) {
       fakeTokenAddress = fakeTokenAddress.toLowerCase();
@@ -748,10 +758,6 @@ const tokensExplorerModule = {
     executionQueue: state => state.executionQueue,
   },
   mutations: {
-    setValue(state, { value, hasValue }) {
-      logInfo("tokensExplorerModule", "updateValue(" + value + ", " + hasValue + ")");
-      state.executionQueue.push({ value: value, hasValue: hasValue });
-    },
     deQueue (state) {
       logDebug("tokensExplorerModule", "deQueue(" + JSON.stringify(state.executionQueue) + ")");
       state.executionQueue.shift();
@@ -766,46 +772,5 @@ const tokensExplorerModule = {
     },
   },
   actions: {
-    /*
-    async execWeb3({ state, commit, rootState }, { count, networkChanged, blockChanged, coinbaseChanged }) {
-      if (!state.executing) {
-        commit('updateExecuting', true);
-        logDebug("tokensExplorerModule", "execWeb3() start[" + count + ", " + JSON.stringify(rootState.route.params) + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-
-        var paramsChanged = false;
-        if (state.params != rootState.route.params.param) {
-          logDebug("tokensExplorerModule", "execWeb3() params changed from " + state.params + " to " + JSON.stringify(rootState.route.params.param));
-          paramsChanged = true;
-          commit('updateParams', rootState.route.params.param);
-        }
-
-        var priceFeedAddress = store.getters['priceFeed/address']
-        var priceFeedContract = web3.eth.contract(PRICEFEEDABI).at(priceFeedAddress);
-        if (networkChanged || blockChanged || coinbaseChanged || paramsChanged || state.executionQueue.length > 0) {
-          if (state.executionQueue.length > 0) {
-            var request = state.executionQueue[0];
-            var value = new BigNumber(request.value).shift(18).toString();
-            var hasValue = request.hasValue;
-            logDebug("tokensExplorerModule", "execWeb3() priceFeed.setValue(" + value + ", " + hasValue + ")");
-            priceFeedContract.setValue(value, hasValue, { from: store.getters['connection/coinbase'] }, function(error, tx) {
-              if (!error) {
-                logDebug("tokensExplorerModule", "execWeb3() priceFeed.setValue() tx: " + tx);
-                store.dispatch('connection/addTx', tx);
-              } else {
-                logDebug("tokensExplorerModule", "execWeb3() priceFeed.setValue() error: ");
-                console.table(error);
-                store.dispatch('connection/setTxError', error.message);
-              }
-            });
-            commit('deQueue');
-          }
-        }
-        commit('updateExecuting', false);
-        logDebug("tokensExplorerModule", "execWeb3() end[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-      } else {
-        logDebug("tokensExplorerModule", "execWeb3() already executing[" + count + ", " + networkChanged + ", " + blockChanged + ", " + coinbaseChanged + "]");
-      }
-    }
-    */
   },
 };

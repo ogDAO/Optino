@@ -25,18 +25,18 @@ const OptinoFactory = {
             <b-col cols="4" class="small">Fee</b-col><b-col class="small truncate" cols="8">{{ fee }} %</b-col>
           </b-row>
 
-          <b-row v-if="Object.keys(feedData).length > 0">
+          <b-row v-if="Object.keys(registeredFeedData).length > 0">
             <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
           </b-row>
-          <b-row v-for="(feed) in feedDataSorted" v-bind:key="feed.feedAddress">
+          <b-row v-for="(feed) in registeredFeedDataSorted" v-bind:key="feed.address">
             <b-col cols="5" class="small truncate" style="font-size: 70%">
-              <b-link :href="explorer + 'address/' + feed.feedAddress + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
+              <b-link :href="explorer + 'address/' + feed.address + '#readContract'" class="card-link" target="_blank">{{ feed.name }}</b-link>
             </b-col>
-            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-              {{ feed.spot.shift(-feed.feedDataDecimals) }}
+            <b-col cols="4" class="small truncate text-right"  style="font-size: 65%" v-b-popover.hover="new Date(feed.timestamp*1000).toLocaleString()">
+              {{ feed.spot.shift(-feed.decimals) }}
             </b-col>
-            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.feedTimestamp*1000).toLocaleString()">
-              {{ new Date(feed.feedTimestamp*1000).toLocaleTimeString() }}
+            <b-col cols="3" class="small truncate" style="font-size: 50%" v-b-popover.hover="new Date(feed.timestamp*1000).toLocaleString()">
+              {{ new Date(feed.timestamp*1000).toLocaleTimeString() }}
             </b-col>
           </b-row>
 
@@ -154,15 +154,15 @@ const OptinoFactory = {
     fee() {
       return store.getters['optinoFactory/fee'];
     },
-    feedData() {
-      return store.getters['optinoFactory/feedData'];
+    registeredFeedData() {
+      return store.getters['optinoFactory/registeredFeedData'];
     },
-    feedDataSorted() {
+    registeredFeedDataSorted() {
       var results = [];
-      var feedData = store.getters['optinoFactory/feedData'];
-      for (feed in feedData) {
-        // console.log("feed: " + JSON.stringify(feedData[feed]));
-        results.push(feedData[feed]);
+      var registeredFeedData = store.getters['optinoFactory/registeredFeedData'];
+      for (feed in registeredFeedData) {
+        // console.log("registeredFeedDataSorted - feed: " + JSON.stringify(registeredFeedData[feed]));
+        results.push(registeredFeedData[feed]);
       }
       results.sort(function(a, b) {
         return ('' + a.sortKey).localeCompare(b.sortKey);
@@ -200,8 +200,7 @@ const optinoFactoryModule = {
     owner: null,
     message: null,
     fee: null,
-    feedData: {},
-    feedDataSorted: [],
+    registeredFeedData: {},
     seriesData: {},
     optinoData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
     typeOptions: [
@@ -242,8 +241,7 @@ const optinoFactoryModule = {
     owner: state => state.owner,
     message: state => state.message,
     fee: state => state.fee,
-    feedData: state => state.feedData,
-    feedDataSorted: state => state.feedDataSorted,
+    registeredFeedData: state => state.registeredFeedData,
     seriesData: state => state.seriesData,
     optinoData: state => state.optinoData,
     typeOptions: state => state.typeOptions,
@@ -251,9 +249,29 @@ const optinoFactoryModule = {
     params: state => state.params,
   },
   mutations: {
-    updateFeed(state, {feedAddress, feed}) {
-      Vue.set(state.feedData, feedAddress, feed);
-      // logDebug("optinoFactoryModule", "updateFeed(" + feedAddress + ", " + JSON.stringify(feed) + ")")
+    updateFeed(state, feed) {
+      // logInfo("optinoFactoryModule", "updateFeed(" + JSON.stringify(feed) + ")")
+      var currentFeed = state.registeredFeedData[feed.address.toLowerCase()];
+      if (typeof currentFeed === 'undefined' ||
+        currentFeed.address != feed.address ||
+        currentFeed.index != feed.index ||
+        currentFeed.sortKey != feed.sortKey ||
+        currentFeed.name != feed.name ||
+        currentFeed.type != feed.type ||
+        currentFeed.decimals != feed.decimals ||
+        currentFeed.message != feed.message ||
+        currentFeed.locked != feed.locked ||
+        currentFeed.spot != feed.spot ||
+        currentFeed.hasData != feed.hasData ||
+        currentFeed.reportedDecimals != feed.reportedDecimals ||
+        currentFeed.timestamp != feed.timestamp ||
+        currentFeed.source != feed.source) {
+        Vue.set(state.registeredFeedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, message: feed.message,
+          type: feed.type, decimals: feed.decimals, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source, selected: feed.selected || false });
+        // logInfo("optinoFactoryModule", "mutations.updateFeed - state.registeredFeedData: " +  JSON.stringify(state.registeredFeedData));
+      // } else {
+        // logInfo("optinoFactoryModule", "mutations.updateFeed - NOT UPDATED state.registeredFeedData: " +  JSON.stringify(state.registeredFeedData));
+      }
     },
     setFeedFavourite(state, { feedAddress, favourite }) {
       logInfo("optinoFactoryModule", "mutations.setFeedFavourite(" + feedAddress + ", " + favourite + ")");
@@ -328,99 +346,55 @@ const optinoFactoryModule = {
           commit('updateParams', rootState.route.params.param);
         }
 
-        var contract = web3.eth.contract(OPTINOFACTORYABI).at(state.address);
+        var factory = web3.eth.contract(OPTINOFACTORYABI).at(state.address);
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
-          var _optinoTokenTemplate = promisify(cb => contract.optinoTokenTemplate(cb));
+          var _optinoTokenTemplate = promisify(cb => factory.optinoTokenTemplate(cb));
           var optinoTokenTemplate = await _optinoTokenTemplate;
           if (optinoTokenTemplate !== state.optinoTokenTemplate) {
             commit('updateOptinoTokenTemplate', optinoTokenTemplate);
           }
-          var _owner = promisify(cb => contract.owner(cb));
+          var _owner = promisify(cb => factory.owner(cb));
           var owner = await _owner;
           if (owner !== state.owner) {
             commit('updateOwner', owner);
           }
-          var _message = promisify(cb => contract.message(cb));
+          var _message = promisify(cb => factory.message(cb));
           var message = await _message;
           if (message !== state.message) {
             commit('updateMessage', message);
           }
-          var _fee = promisify(cb => contract.fee(cb));
+          var _fee = promisify(cb => factory.fee(cb));
           var fee = await _fee;
           if (fee !== state.fee) {
             commit('updateFee', fee.shift(-16));
           }
 
-          var _feedLength = promisify(cb => contract.feedLength(cb));
+          var _feedLength = promisify(cb => factory.feedLength(cb));
           var feedLength = await _feedLength;
           // logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
           for (var i = 0; i < feedLength; i++) {
-            var _feed = promisify(cb => contract.getFeedByIndex(i, cb));
+            var _feed = promisify(cb => factory.getFeedByIndex(i, cb));
             var feed = await _feed;
             // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
-            var feedAddress = feed[0];
-            var feedName = feed[1];
-            var feedMessage = feed[2];
-            var feedDataType = parseInt(feed[3][0]);
-            var feedDataTypeString;
-            if (feedDataType == 0) {
-              feedDataTypeString = "Chainlink v4";
-            } else if (feedDataType == 1) {
-              feedDataTypeString = "Chainlink v6";
-            } else if (feedDataType == 2) {
-              feedDataTypeString = "MakerDAO";
-            } else if (feedDataType == 3) {
-              feedDataTypeString = "Adaptor";
-            } else {
-              feedDataTypeString = "Unknown: " + feedDataType;
-            }
-            var feedDataDecimals = parseInt(feed[3][1]);
-            var feedDataLocked = parseInt(feed[3][2]) > 0;
+            var address = feed[0];
+            var name = feed[1];
+            var message = feed[2];
+            var feedType = parseInt(feed[3][0]);
+            var decimals = parseInt(feed[3][1]);
+            var locked = parseInt(feed[3][2]) > 0;
             var spot = feed[4];
-            var hasData = feed[5];
-            var feedReportedDecimals = parseInt(feed[6]);
-            var feedTimestamp = parseInt(feed[7]);
+            var hasData = feed[5].toString();
+            var reportedDecimals = parseInt(feed[6]);
+            var timestamp = parseInt(feed[7]);
             var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
-            var favourite = false;
-            if (!(feedAddress in state.feedData) || state.feedData[feedAddress].feedTimestamp < feedTimestamp || state.feedData[feedAddress].feedDataLocked != feedDataLocked) {
-              commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage,
-                feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
-                spot: spot, hasData: hasData.toString(), feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
-            }
+            var record = { address: address, index: i, sortKey: sortKey, name: name, message: message,
+              type: feedType, decimals: decimals, locked: locked, spot: spot, hasData: hasData, reportedDecimals: reportedDecimals, timestamp: timestamp, source: "registered" };
+            commit('updateFeed', record);
+            store.dispatch('feeds/updateFeedIfUsing', record);
           }
-
-          // Testing custom feed, i.e., not registered
-          // 0x1c621Aab85F7879690B5407404A097068770b59a, "Chainlink AUD/USD", "https://feeds.chain.link/", 0, 8
-          // ["0x5b8b87a0aba4be247e660b0e0143bb30cdf566af","Chainlink BTC/ETH","https://feeds.chain.link/",["0","18","0"],"44198965000000000000",true,"255","1590192137"]
-          var feedAddress = "0x1c621Aab85F7879690B5407404A097068770b59a";
-          var feedName = "Chainlink AUD/USD Test Custom";
-          var feedMessage = "Test Custom";
-          var feedDataType = 0; // MAKER
-          var feedDataTypeString;
-          if (feedDataType == 0) {
-            feedDataTypeString = "Chainlink v4";
-          } else if (feedDataType == 1) {
-            feedDataTypeString = "Chainlink v6";
-          } else if (feedDataType == 2) {
-            feedDataTypeString = "MakerDAO";
-          } else if (feedDataType == 3) {
-            feedDataTypeString = "Adaptor";
-          } else {
-            feedDataTypeString = "Unknown: " + feedDataType;
-          }
-          var feedDataDecimals = 8;
-          var feedDataLocked = false;
-          var spot = new BigNumber(65656565);
-          var hasData = false;
-          var feedReportedDecimals = 8;
-          var feedTimestamp = 1590192137;
-          commit('updateFeed', { feedAddress: feedAddress, feed: { index: i, sortKey: sortKey, feedAddress: feedAddress, name: feedName, message: feedMessage,
-            feedDataType: feedDataType, feedDataTypeString: feedDataTypeString, feedDataDecimals: feedDataDecimals, feedDataLocked: feedDataLocked,
-            spot: spot, hasData: hasData.toString(), feedReportedDecimals: feedReportedDecimals, feedTimestamp: feedTimestamp, favourite: favourite } });
 
           /*
-
             // TODO: Fix updating of token info. Refresh for now
             [baseToken, quoteToken].forEach(async function(t) {
               if (!(t in state.optinoData)) {
@@ -468,11 +442,11 @@ const optinoFactoryModule = {
           //       feedType0: feedType0, feedType1: feedType1, decimals0: decimals0, decimals1: decimals1, inverse0: inverse0, inverse1: inverse1 } });
           //   }
 
-            var _seriesLength = promisify(cb => contract.seriesLength(cb));
+            var _seriesLength = promisify(cb => factory.seriesLength(cb));
             var seriesLength = await _seriesLength;
             // logInfo("optinoFactoryModule", "execWeb3() seriesLength): " + seriesLength);
             for (var seriesIndex = 0; seriesIndex < seriesLength; seriesIndex++) {
-              var _series = promisify(cb => contract.getSeriesByIndex(seriesIndex, cb));
+              var _series = promisify(cb => factory.getSeriesByIndex(seriesIndex, cb));
               var series = await _series;
               // logInfo("optinoFactoryModule", "series: " + JSON.stringify(series));
               var seriesKey = series[0];

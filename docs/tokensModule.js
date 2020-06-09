@@ -62,10 +62,10 @@ const Tokens = {
     logDebug("Tokens", "mounted()")
     if (localStorage.getItem('tokenData')) {
       var tokenData = JSON.parse(localStorage.getItem('tokenData'));
-      logInfo("Tokens", "Restoring tokenData: " + JSON.stringify(tokenData));
+      // logInfo("Tokens", "Restoring tokenData: " + JSON.stringify(tokenData));
       for (var address in tokenData) {
         var token = tokenData[address];
-        logInfo("Tokens", "Restoring token: " + JSON.stringify(token));
+        // logInfo("Tokens", "Restoring token: " + JSON.stringify(token));
         store.dispatch('tokens/updateToken', token);
       }
     }
@@ -87,16 +87,6 @@ const tokensModule = {
     params: state => state.params,
   },
   mutations: {
-    removeToken(state, address) {
-      // logInfo("tokensModule", "mutations.removeToken(" + address + ")");
-      Vue.delete(state.tokenData, address.toLowerCase());
-      localStorage.setItem('tokenData', JSON.stringify(state.tokenData));
-    },
-    removeAllTokens(state, blah) {
-      // logInfo("tokensModule", "mutations.removeAllTokens()");
-      state.tokenData = {};
-      localStorage.removeItem('tokenData');
-    },
     updateToken(state, token) {
       // logInfo("tokensModule", "mutations.updateToken(" + JSON.stringify(token) + ")");
       var currentToken = state.tokenData[token.address.toLowerCase()];
@@ -116,9 +106,16 @@ const tokensModule = {
       //   logInfo("tokensModule", "mutations.updateToken - NOT UPDATED state.tokenData: " +  JSON.stringify(state.tokenData));
       }
     },
-    // updateTokenShowDetails(state, parameters){
-    //   parameters.ref.__showDetails = parameters.val
-    // },
+    removeToken(state, address) {
+      // logInfo("tokensModule", "mutations.removeToken(" + address + ")");
+      Vue.delete(state.tokenData, address.toLowerCase());
+      localStorage.setItem('tokenData', JSON.stringify(state.tokenData));
+    },
+    removeAllTokens(state, blah) {
+      // logInfo("tokensModule", "mutations.removeAllTokens()");
+      state.tokenData = {};
+      localStorage.removeItem('tokenData');
+    },
     updateParams(state, params) {
       state.params = params;
       logDebug("tokensModule", "updateParams('" + params + "')")
@@ -189,7 +186,7 @@ const tokensModule = {
                 commit('updateToken', { address: token.address, symbol: token.symbol, name: token.name, decimals: token.decimals, totalSupply: tokensInfo[0][tokenIndex].shift(-token.decimals).toString(), balance: tokensInfo[1][tokenIndex].shift(-token.decimals).toString(), allowance: tokensInfo[2][tokenIndex].shift(-token.decimals).toString(), source: token.source });
               }
             }
-            logInfo("TokensExplorer", "timeoutCallback() - refreshed " + addressesLength);
+            // logInfo("tokensModule", "timeoutCallback() - refreshed " + addressesLength);
           }
         }
         commit('updateExecuting', false);

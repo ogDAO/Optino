@@ -397,6 +397,8 @@ const OptinoExplorer = {
           <optinoFactory></optinoFactory>
           <br />
           <tokens></tokens>
+          <br />
+          <feeds></feeds>
         </b-col>
       </b-row>
     </div>

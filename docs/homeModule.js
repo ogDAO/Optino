@@ -7,8 +7,8 @@ const Home = {
             <b-card-body class="p-1 mt-5">
               <b-list-group>
                 <b-list-group-item to="/optinoExplorer/all">Optino Explorer</b-list-group-item>
-                <b-list-group-item to="/tokensExplorer/all">Tokens Explorer</b-list-group-item>
                 <b-list-group-item to="/feedsExplorer/all">Feeds Explorer</b-list-group-item>
+                <b-list-group-item to="/tokensExplorer/all">Tokens Explorer</b-list-group-item>
               </b-list-group>
               <b-card-text class="mt-5">
                 Note that you will need a browser with a web3 injection, e.g., using the MetaMask addon. In your web3 wallet, switch to the Ropsten testnet.
