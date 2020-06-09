@@ -8,9 +8,11 @@ const FeedsExplorer = {
             <b-card no-body class="mb-1">
               <b-card-body class="p-1">
 
-                <div class="d-flex justify-content-end m-0 p-0" style="height: 37px;">
+                <div class="d-flex m-0 p-0" style="height: 37px;">
                   <div class="pr-1">
                     <b-form-input type="text" size="sm" v-model.trim="filter" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                  </div>
+                  <div class="pr-1 flex-grow-1">
                   </div>
                   <div class="pt-1 pr-1">
                     <b-pagination pills size="sm" v-model="currentPage" :total-rows="feedDataSorted.length" :per-page="perPage" v-b-popover.hover="'Page through records'"></b-pagination>

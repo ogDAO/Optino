@@ -81,12 +81,12 @@ const OptinoExplorer = {
                   <b-form>
                     <b-form-group label-cols="3" label="feed0">
                       <b-input-group>
-                        <b-form-select v-model="feed0" :options="feedOptionsSorted" @input="recalculate('feed0', $event)"></b-form-select>
+                        <b-form-select v-model="feed0" :options="feedSelectionsSorted0" @input="recalculate('feed0', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="feed1">
                       <b-input-group>
-                        <b-form-select v-model="feed1" :options="feedOptionsSorted" v-on:change="recalculate('feed1', $event)"></b-form-select>
+                        <b-form-select v-model="feed1" :options="feedSelectionsSorted1" v-on:change="recalculate('feed1', $event)"></b-form-select>
                       </b-input-group>
                     </b-form-group>
 
@@ -697,20 +697,54 @@ const OptinoExplorer = {
       });
       return results;
     },
-    feedOptionsSorted(includeNull) {
-      var feedData = store.getters['optinoFactory/feedData'];
+    // feedSelectionsSorted1() {
+    //   var results = [];
+    //   var feedData = store.getters['feeds/feedData'];
+    //   for (address in feedData) {
+    //     var feed = feedData[address];
+    //     console.log("feedSelectionsSorted: " + address + " => " + JSON.stringify(feed));
+    //     results.push({ value: address, text: feed.name });
+    //   }
+    //   results.sort(function(a, b) {
+    //     return ('' + a.sortKey).localeCompare(b.sortKey);
+    //   });
+    //   return results;
+    // },
+    feedSelectionsSorted0() {
+      var feedData = store.getters['feeds/feedData'];
       var sortedData = [];
-      for (feed in feedData) {
-        // console.log("feed: " + JSON.stringify(feedData[feed]));
-        sortedData.push(feedData[feed]);
+      for (address in feedData) {
+        var feed = feedData[address];
+        console.log("feedSelectionsSorted: " + address + " => " + JSON.stringify(feed));
+        sortedData.push(feed);
+      }
+      sortedData.sort(function(a, b) {
+        return ('' + a.sortKey).localeCompare(b.sortKey);
+      });
+      var results = [];
+      var t = this;
+      sortedData.forEach(function(e) {
+        results.push({ value: e.address, text: e.address.substring(0, 10) + " " + e.name + " " + parseFloat(new BigNumber(e.spot).shift(-e.decimals).toFixed(9)) + " " + new Date(e.timestamp*1000).toLocaleString(), disabled: e.address == t.feed1 });
+      });
+      return results;
+    },
+    feedSelectionsSorted1() {
+      var feedData = store.getters['feeds/feedData'];
+      var sortedData = [];
+      for (address in feedData) {
+        var feed = feedData[address];
+        // console.log("feedSelectionsSorted1: " + address + " => " + JSON.stringify(feed));
+        sortedData.push(feed);
       }
       sortedData.sort(function(a, b) {
         return ('' + a.sortKey).localeCompare(b.sortKey);
       });
       var results = [];
       results.push({ value: "0x0000000000000000000000000000000000000000", text: "(Select optional second feed)", disabled: false });
+      var t = this;
       sortedData.forEach(function(e) {
-        results.push({ value: e.feedAddress, text: e.feedAddress.substring(0, 10) + " " + e.name + " " + parseFloat(e.spot.shift(-e.feedDataDecimals).toFixed(9)) + " " + new Date(e.feedTimestamp*1000).toLocaleString(), disabled: false });
+        var disabled = e.address === t.feed0;
+        results.push({ value: e.address, text: e.address.substring(0, 10) + " " + e.name + " " + parseFloat(new BigNumber(e.spot).shift(-e.decimals).toFixed(9)) + " " + new Date(e.timestamp*1000).toLocaleString(), disabled: e.address == t.feed0 });
       });
       return results;
     },
@@ -740,7 +774,7 @@ const OptinoExplorer = {
       if (this.reschedule) {
         setTimeout(function() {
           t.timeoutCallback();
-        }, 2500);
+        }, 5000);
       }
     },
     configSelected(config) {
@@ -841,15 +875,16 @@ const OptinoExplorer = {
         this.calculatedSpot = "";
       }
 
-      var feedData = store.getters['optinoFactory/feedData'];
-      var feed = feedData[this.feed0.toLowerCase()];
-      // logInfo("optinoExplorer", "this.feed0: " + this.feed0);
-      // logInfo("optinoExplorer", "feed: " + feed);
+      var feedData = store.getters['feeds/feedData'];
+      logInfo("optinoExplorer", "feedData: " + JSON.stringify(feedData));
+      logInfo("optinoExplorer", "this.feed0: " + this.feed0);
+      var feed = this.feed0 == null ? null : feedData[this.feed0.toLowerCase()];
+      logInfo("optinoExplorer", "feed: " + JSON.stringify(feed));
       // logInfo("optinoExplorer", "feedData: " + JSON.stringify(feed));
       if (!feed && (this.type0 == 0xff || this.decimals0 == 0xff)) {
         alert("Feed data not available yet");
       } else {
-        var feedDecimals0 = this.decimals0 != 0xff ? this.decimals0 : feed.feedDataDecimals;
+        var feedDecimals0 = this.decimals0 != 0xff ? this.decimals0 : feed.decimals;
         // logInfo("optinoExplorer", "feedDecimals0: " + feedDecimals0);
         var spots = [new BigNumber("9769.26390498279639").shift(feedDecimals0), new BigNumber(50).shift(feedDecimals0), new BigNumber(100).shift(feedDecimals0), new BigNumber(150).shift(feedDecimals0), new BigNumber(200).shift(feedDecimals0), new BigNumber(250).shift(feedDecimals0), new BigNumber(300).shift(feedDecimals0), new BigNumber(350).shift(feedDecimals0), new BigNumber(400).shift(feedDecimals0), new BigNumber(450).shift(feedDecimals0), new BigNumber(500).shift(feedDecimals0), new BigNumber(1000).shift(feedDecimals0), new BigNumber(10000).shift(feedDecimals0), new BigNumber(100000).shift(feedDecimals0)];
         function shiftBigNumberArray(data, decimals) {
@@ -950,7 +985,7 @@ const OptinoExplorer = {
             logInfo("optinoExplorer", "mintOptinos(" + this.tokens + ")");
             var factoryAddress = store.getters['optinoFactory/address']
             var factory = web3.eth.contract(OPTINOFACTORYABI).at(factoryAddress);
-            var feedData = store.getters['optinoFactory/feedData'];
+            var feedData = store.getters['feeds/feedData'];
             var feed = feedData[this.feed0.toLowerCase()];
             logInfo("optinoExplorer", "this.feed0: " + this.feed0);
             logInfo("optinoExplorer", "feed: " + feed);
@@ -958,7 +993,7 @@ const OptinoExplorer = {
             if (!feed && (this.type0 == 0xff || this.decimals0 == 0xff)) {
               alert("Feed data not available yet");
             } else {
-              var feedDecimals0 = this.decimals0 != 0xff ? this.decimals0 : feed.feedDataDecimals;
+              var feedDecimals0 = this.decimals0 != 0xff ? this.decimals0 : feed.decimals;
               logInfo("optinoExplorer", "feedDecimals0: " + feedDecimals0);
               var OPTINODECIMALS = 18;
               var data = factory.mint.getData([this.token0, this.token1], [this.feed0, this.feed1],
