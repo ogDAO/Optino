@@ -110,12 +110,14 @@ const TokensExplorer = {
                             </div>
                           </div>
                           <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" :filter="searchCommon" :filter-included-fields="['symbol', 'name']" head-variant="light" show-empty @row-clicked="rowClicked">
+                            <!--
                             <template v-slot:empty="scope">
                               <p class="pt-4">{{ scope.emptyText }}</p>
                             </template>
                             <template v-slot:emptyfiltered="scope">
                               <p class="pt-4">{{ scope.emptyFilteredText }}</p>
                             </template>
+                            -->
                             <template v-slot:cell(totalSupply)="data">
                               {{ formatNumberForDisplay(data.item.totalSupply, 8) }}
                             </template>
@@ -156,12 +158,14 @@ const TokensExplorer = {
                           </div>
 
                           <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="fakeTokenList" :fields="addTokenTableFields" :filter="searchFake" :filter-included-fields="['symbol', 'name']" head-variant="light" show-empty @row-clicked="rowClicked">
+                            <!--
                             <template v-slot:empty="scope">
                               <p class="pt-4">{{ scope.emptyText }}</p>
                             </template>
                             <template v-slot:emptyfiltered="scope">
                               <p class="pt-4">{{ scope.emptyFilteredText }}</p>
                             </template>
+                            -->
                             <template v-slot:cell(totalSupply)="data">
                               {{ formatNumberForDisplay(data.item.totalSupply, 8) }}
                             </template>
@@ -209,12 +213,14 @@ const TokensExplorer = {
 
                 <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="search" @filtered="onFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
                   <template v-slot:empty="scope">
-                    <p class="pt-4">{{ scope.emptyText }}</p>
-                    <p class="pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</p>
+                    <div class="text-center my-2">{{ scope.emptyText }}</div>
+                    <div class="text-center my-2 pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</div>
                   </template>
+                  <!--
                   <template v-slot:emptyfiltered="scope">
                     <p class="pt-4">{{ scope.emptyFilteredText }}</p>
                   </template>
+                  -->
                   <template v-slot:cell(totalSupply)="data">
                     {{ formatNumberForDisplay(data.item.totalSupply, 8) }}
                   </template>
@@ -242,11 +248,11 @@ const TokensExplorer = {
                     <b-link @click="removeTokenFromList(row.item.address, row.item.symbol)" class="card-link m-0 p-0" v-b-popover.hover="'Remove ' + row.item.symbol + ' from list. This can be added back later.'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-link>
                   </template>
                   <template v-slot:row-details="row">
-                    <b-card>
-                      <b-card-header header-tag="header" class="p-1">
+                    <b-card no-body class="m-1 mt-2 p-1">
+                      <b-card-header header-tag="header" class="m-1 p-1">
                         Token {{ row.item.symbol }} {{ row.item.name }}<!-- <b-button size="sm" class="m-0 p-0" @click="removeTokenFromList(row.item.address, row.item.symbol)" variant="link" v-b-popover.hover="'Remove ' + row.item.symbol + ' from list?'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-button> -->
                       </b-card-header>
-                      <b-card-body>
+                      <b-card-body class="m-0 p-0">
                         <b-form-group label-cols="3" label-size="sm" label="Address">
                           <b-input-group>
                             <b-form-input type="text" size="sm" v-model.trim="row.item.address" readonly></b-form-input>

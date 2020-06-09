@@ -10,20 +10,20 @@ const FeedsExplorer = {
 
                 <div class="d-flex justify-content-end m-0 p-0" style="height: 37px;">
                   <div class="pr-1">
-                    <b-form-input type="text" size="sm" v-model.trim="filter" debounce="600" placeholder="Search..." v-b-popover.hover.bottom="'Search'"></b-form-input>
+                    <b-form-input type="text" size="sm" v-model.trim="filter" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
                   </div>
                   <div class="pt-1 pr-1">
-                    <b-pagination pills size="sm" v-model="currentPage" :total-rows="feedDataSorted.length" :per-page="perPage" v-b-popover.hover.bottom="'Page through records'"></b-pagination>
+                    <b-pagination pills size="sm" v-model="currentPage" :total-rows="feedDataSorted.length" :per-page="perPage" v-b-popover.hover="'Page through records'"></b-pagination>
                   </div>
                   <div class="pr-1">
-                    <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover.bottom="'Select page size'"/>
+                    <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover="'Select page size'"/>
                   </div>
                   <div class="pr-1">
-                    <!-- <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover.bottom="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> -->
-                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover.bottom="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
+                    <!-- <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> -->
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
                   </div>
                   <div class="pr-1">
-                    <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" no-caret v-b-popover.hover.bottom="'Additional Menu Items...'">
+                    <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" no-caret v-b-popover.hover="'Additional Menu Items...'">
                       <template v-slot:button-content>
                         <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
                       </template>
@@ -70,9 +70,9 @@ const FeedsExplorer = {
                                 <b-form-input size="sm" type="text" v-model.trim="feedInfo.name" readonly></b-form-input>
                               </b-input-group>
                             </b-form-group>
-                            <b-form-group label-cols="5" label-size="sm" label="Message">
+                            <b-form-group label-cols="5" label-size="sm" label="Note">
                               <b-input-group>
-                                <b-form-input size="sm" type="text" v-model.trim="feedInfo.message" readonly></b-form-input>
+                                <b-form-input size="sm" type="text" v-model.trim="feedInfo.note" readonly></b-form-input>
                               </b-input-group>
                             </b-form-group>
                             <b-form-group label-cols="5" label-size="sm" label="Decimals">
@@ -110,7 +110,7 @@ const FeedsExplorer = {
                            <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" font-scale="0.9"></b-icon-exclamation-circle> Always confirm the feed contract address in a block explorer and alternative sources</span>
                           </div>
                         </div>
-                        <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="registeredFeeds" :fields="addFeedFields" :filter="searchRegistered" :filter-included-fields="['name', 'message']" head-variant="light" show-empty @row-clicked="rowClicked">
+                        <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="registeredFeeds" :fields="addFeedFields" :filter="searchRegistered" :filter-included-fields="['name', 'note']" head-variant="light" show-empty @row-clicked="rowClicked">
                           <!--
                           <template v-slot:empty="scope">
                             <p class="pt-4">{{ scope.emptyText }}</p>
@@ -125,8 +125,8 @@ const FeedsExplorer = {
                           <template v-slot:cell(type)="data">
                             <b-form-select plain size="sm" v-model.trim="data.item.type" :options="typeOptions" disabled></b-form-select>
                           </template>
-                          <template v-slot:cell(message)="data">
-                            <span v-b-popover.hover="data.item.message">{{ truncate(data.item.message, 32) }}</span>
+                          <template v-slot:cell(note)="data">
+                            <span v-b-popover.hover="data.item.note">{{ truncate(data.item.note, 32) }}</span>
                           </template>
                           <template v-slot:cell(spot)="data">
                             <div class="text-right">{{ data.item.spot.shift(-data.item.decimals).toString() }} </div>
@@ -186,9 +186,9 @@ const FeedsExplorer = {
                         <b-form-input type="text" v-model.trim="feed.name"></b-form-input>
                       </b-input-group>
                     </b-form-group>
-                    <b-form-group label-cols="3" label="Message">
+                    <b-form-group label-cols="3" label="Note">
                       <b-input-group>
-                        <b-form-input type="text" v-model.trim="feed.message"></b-form-input>
+                        <b-form-input type="text" v-model.trim="feed.note"></b-form-input>
                       </b-input-group>
                     </b-form-group>
                     <b-form-group label-cols="3" label="Type">
@@ -231,7 +231,7 @@ const FeedsExplorer = {
               </b-collapse>
               -->
 
-              <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="filter" @filtered="onFiltered" :filter-included-fields="['name', 'message']" show-empty>
+              <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="feedDataSorted" :fields="feedDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="filter" @filtered="onFiltered" :filter-included-fields="['name', 'note']" show-empty>
 
                 <template v-slot:cell(name)="data">
                   <span v-b-popover.hover="data.item.name">{{ truncate(data.item.name, 24) }}</span>
@@ -239,8 +239,8 @@ const FeedsExplorer = {
                 <template v-slot:cell(type)="data">
                   <b-form-select plain size="sm" v-model.trim="data.item.type" :options="typeOptions" disabled></b-form-select>
                 </template>
-                <template v-slot:cell(message)="data">
-                  <span v-b-popover.hover="data.item.message">{{ truncate(data.item.message, 32) }}</span>
+                <template v-slot:cell(note)="data">
+                  <span v-b-popover.hover="data.item.note">{{ truncate(data.item.note, 32) }}</span>
                 </template>
                 <template v-slot:cell(spot)="data">
                   <!-- <div class="text-right">{{ data.item.spot.shift(-data.item.decimals).toString() }} </div> -->
@@ -256,77 +256,22 @@ const FeedsExplorer = {
                   <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                 </template>
                 <template v-slot:cell(extra)="row">
-                  <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.top="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
-                  <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="row.item.locked" v-b-popover.hover.top="'Feed configuration cannot be updated'"></b-icon-lock-fill>
-                  <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="!row.item.locked" v-b-popover.hover.top="'Feed configuration can still be updated'"></b-icon-unlock-fill>
-                  <!-- <b-button size="sm" class="m-0 p-0" @click="setFeedFavourite(row.item.feedAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover.bottom="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button> -->
-                </template>
-
-
-                <!--
-                <template v-slot:head(name)="data">
-                  <span style="font-size: 90%">Name</span>
-                </template>
-                <template v-slot:head(feedDataType)="data">
-                  <span style="font-size: 90%">Type</span>
-                </template>
-                <template v-slot:head(feedDataDecimals)="data">
-                  <span style="font-size: 90%">Decimals</span>
-                </template>
-                <template v-slot:head(spot)="data">
-                  <span class="text-right" style="font-size: 90%">Spot</span>
-                </template>
-                <template v-slot:head(hasData)="data">
-                  <span class="text-right" style="font-size: 90%">Data?</span>
-                </template>
-                <template v-slot:head(feedTimestamp)="data">
-                  <span class="text-right" style="font-size: 90%">Timestamp</span>
-                </template>
-                <template v-slot:head(feedAddress)="data">
-                  <span class="text-right" style="font-size: 90%">Address</span>
-                </template>
-                <template v-slot:head(extra)="data">
-                  <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
-                  <b-button size="sm" class="m-0 p-0" variant="link"><b-icon icon="blank" font-scale="0.9"></b-icon></b-button>
-                </template>
-                <template v-slot:cell(name)="data">
-                  <div style="font-size: 80%">{{ data.item.name }} </div>
-                </template>
-                <template v-slot:cell(feedDataType)="data">
-                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataTypeString }}</div>
-                </template>
-                <template v-slot:cell(feedDataDecimals)="data">
-                  <div class="text-right" style="font-size: 80%">{{ data.item.feedDataDecimals }}</div>
-                </template>
-                <template v-slot:cell(hasData)="data">
-                  <div class="text-right" style="font-size: 80%">{{ data.item.hasData }} </div>
-                </template>
-                <template v-slot:cell(spot)="data">
-                  <div class="text-right" style="font-size: 80%">{{ data.item.spot.shift(-data.item.feedDataDecimals).toString() }} </div>
-                </template>
-                <template v-slot:cell(feedTimestamp)="data">
-                  <div class="text-right" style="font-size: 80%">{{ new Date(data.item.feedTimestamp*1000).toLocaleString() }} </div>
-                </template>
-                <template v-slot:cell(feedAddress)="data">
-                  <b-link style="font-size: 80%" :href="explorer + 'address/' + data.item.feedAddress + '#readContract'" class="card-link" target="_blank" v-b-popover.hover="data.item.feedAddress">{{ truncate(data.item.feedAddress, 10) }}</b-link>
-                </template>
-                <template v-slot:cell(extra)="row">
-                  <b-button size="sm" class="m-0 p-0" @click="row.toggleDetails" variant="link" v-b-popover.hover.top="'Show ' + (row.detailsShowing ? 'less' : 'more')"><div v-if="row.detailsShowing"><b-icon-caret-up-fill font-scale="0.9"></b-icon-caret-up-fill></div><div v-else><b-icon-caret-down-fill font-scale="0.9"></b-icon-caret-down-fill></div></b-button>
-                  <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="row.item.locked" v-b-popover.hover.top="'Feed configuration cannot be updated'"></b-icon-lock-fill>
-                  <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="primary" v-if="!row.item.locked" v-b-popover.hover.top="'Feed configuration can still be updated'"></b-icon-unlock-fill>
-                  <b-button size="sm" class="m-0 p-0" @click="setFeedFavourite(row.item.feedAddress, row.item.favourite ? false : true)" variant="link" v-b-popover.hover.bottom="'Mark ' + row.item.name + ' as a favourite?'"><div v-if="row.item.favourite"><b-icon-star-fill font-scale="0.9"></b-icon-star-fill></div><div v-else><b-icon-star font-scale="0.9"></b-icon-star></div></b-button>
+                  <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="secondary" v-if="row.item.locked" v-b-popover.hover="'Feed configuration cannot be updated'"></b-icon-lock-fill>
+                  <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="secondary" v-if="!row.item.locked" v-b-popover.hover="'Feed configuration can still be updated'"></b-icon-unlock-fill>
+                  <b-link @click="row.toggleDetails" class="card-link m-0 p-0" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><b-icon-caret-up-fill font-scale="0.9" v-if="row.detailsShowing"></b-icon-caret-up-fill><b-icon-caret-down-fill font-scale="0.9" v-if="!row.detailsShowing"></b-icon-caret-down-fill></b-link>
+                  <b-link @click="removeFeedFromList(row.item.address, row.item.name)" class="card-link m-0 p-0" v-b-popover.hover="'Remove ' + row.item.name + ' from list. This can be added back later.'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-link>
                 </template>
                 <template v-slot:row-details="row">
-                  <b-card>
-                    <b-card-header header-tag="header" class="p-1">
-                      {{ row.item.name }} @ {{ row.item.feedAddress }}
+                  <b-card no-body class="m-1 mt-2 p-1">
+                    <b-card-header header-tag="header" class="m-1 p-1">
+                      {{ row.item.name }} @ {{ row.item.address }}
                     </b-card-header>
-                    <b-card-body>
+                    <b-card-body class="m-0 p-0">
                       <b-form-group label-cols="3" label-size="sm" label="Address">
                         <b-input-group>
-                          <b-form-input type="text" size="sm" v-model.trim="row.item.feedAddress" readonly></b-form-input>
+                          <b-form-input type="text" size="sm" v-model.trim="row.item.address" readonly></b-form-input>
                           <b-input-group-append>
-                            <b-button size="sm" :href="explorer + 'address/' + row.item.feedAddress + '#readContract'" target="_blank" variant="outline-info">🔗</b-button>
+                            <b-button size="sm" :href="explorer + 'address/' + row.item.address + '#readContract'" target="_blank" variant="outline-info">🔗</b-button>
                           </b-input-group-append>
                         </b-input-group>
                       </b-form-group>
@@ -335,9 +280,10 @@ const FeedsExplorer = {
                           <b-form-input type="text" size="sm" v-model.trim="row.item.name" readonly></b-form-input>
                         </b-input-group>
                       </b-form-group>
-                      <b-form-group label-cols="3" label-size="sm" label="Message">
+                      <!--
+                      <b-form-group label-cols="3" label-size="sm" label="Note">
                         <b-input-group>
-                          <b-form-input type="text" size="sm" v-model.trim="row.item.message" readonly></b-form-input>
+                          <b-form-input type="text" size="sm" v-model.trim="row.item.note" readonly></b-form-input>
                         </b-input-group>
                       </b-form-group>
                       <b-form-group label-cols="3" label-size="sm" label="Type">
@@ -370,10 +316,12 @@ const FeedsExplorer = {
                           <b-form-input type="text" size="sm" :value="new Date(row.item.feedTimestamp*1000).toLocaleString()" readonly></b-form-input>
                         </b-input-group>
                       </b-form-group>
+                      -->
                     </b-card-body>
+                    <!--
                     <div v-if="coinbase == owner">
                       <b-card-header header-tag="header" class="p-1">
-                        <code>updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)</code>
+                        <code>updateFeed(address _feed, string memory name, string memory _note, uint8 feedType, uint8 decimals)</code>
                       </b-card-header>
                       <b-card-body>
                         <b-form-group label-cols="3" label-size="sm" label="Name">
@@ -381,9 +329,9 @@ const FeedsExplorer = {
                             <b-form-input type="text" size="sm" v-model.trim="feed.name"></b-form-input>
                           </b-input-group>
                         </b-form-group>
-                        <b-form-group label-cols="3" label-size="sm" label="Message">
+                        <b-form-group label-cols="3" label-size="sm" label="Note">
                           <b-input-group>
-                            <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
+                            <b-form-input type="text" size="sm" v-model.trim="feed.note"></b-form-input>
                           </b-input-group>
                         </b-form-group>
                         <b-form-group label-cols="3" label-size="sm" label="Type">
@@ -398,7 +346,7 @@ const FeedsExplorer = {
                         </b-form-group>
                         <b-form-group label-cols="3" label-size="sm" label="">
                           <b-input-group>
-                            <b-button size="sm" :disabled="row.item.locked" @click="updateFeed(row.item.feedAddress, feed.name, feed.message, feed.type, feed.decimals)" variant="primary" v-b-popover.hover="'Update Feed'">Update Feed</b-button>
+                            <b-button size="sm" :disabled="row.item.locked" @click="updateFeed(row.item.feedAddress, feed.name, feed.note, feed.type, feed.decimals)" variant="primary" v-b-popover.hover="'Update Feed'">Update Feed</b-button>
                           </b-input-group>
                         </b-form-group>
                       </b-card-body>
@@ -413,24 +361,24 @@ const FeedsExplorer = {
                         </b-form-group>
                       </b-card-body>
                       <b-card-header header-tag="header" class="p-1">
-                        <code>updateFeedMessage(address _feed, string memory _message)</code>
+                        <code>updateFeedNote(address _feed, string memory _note)</code>
                       </b-card-header>
                       <b-card-body>
-                        <b-form-group label-cols="3" label-size="sm" label="Message">
+                        <b-form-group label-cols="3" label-size="sm" label="Note">
                           <b-input-group>
-                            <b-form-input type="text" size="sm" v-model.trim="feed.message"></b-form-input>
+                            <b-form-input type="text" size="sm" v-model.trim="feed.note"></b-form-input>
                           </b-input-group>
                         </b-form-group>
                         <b-form-group label-cols="3" label-size="sm" label="">
                           <b-input-group>
-                            <b-button size="sm" @click="updateFeedMessage(row.item.feedAddress, feed.message)" variant="primary" v-b-popover.hover="'Update Feed Message'">Update Feed Message</b-button>
+                            <b-button size="sm" @click="updateFeedNote(row.item.feedAddress, feed.note)" variant="primary" v-b-popover.hover="'Update Feed Note'">Update Feed Note</b-button>
                           </b-input-group>
                         </b-form-group>
                       </b-card-body>
                     </div>
+                    -->
                   </b-card>
                 </template>
-                -->
               </b-table>
 
               <!--
@@ -488,7 +436,7 @@ const FeedsExplorer = {
       feed: {
         address: "0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A",
         name: "Chainlink:XAG/USD",
-        message: "https://feeds.chain.link/",
+        note: "https://feeds.chain.link/",
         type: 0,
         decimals: 8,
         results: {
@@ -502,7 +450,7 @@ const FeedsExplorer = {
       feedInfo: {
         address: "0x42dE9E69B3a5a45600a11D3f37768dffA2846A8A",
         name: "Chainlink:XAG/USD",
-        message: "https://feeds.chain.link/",
+        note: "https://feeds.chain.link/",
         type: 0,
         decimals: 8,
         getFeedDataResults: {
@@ -527,7 +475,7 @@ const FeedsExplorer = {
         { key: 'name', label: 'Name', sortable: true },
         { key: 'type', label: 'Type', sortable: true },
         { key: 'decimals', label: 'Decimals', sortable: true, tdClass: 'text-right' },
-        { key: 'message', label: 'Message', sortable: true },
+        { key: 'note', label: 'Note', sortable: true },
         { key: 'spot', label: 'Spot', sortable: true },
         { key: 'hasData', label: 'Data?', sortable: true },
         { key: 'timestamp', label: 'Timestamp', formatter: d => { return new Date(d*1000).toLocaleString(); }, sortable: true },
@@ -539,7 +487,7 @@ const FeedsExplorer = {
         { key: 'name', label: 'Name', sortable: true },
         { key: 'type', label: 'Type', sortable: true },
         { key: 'decimals', label: 'Decimals', sortable: true, tdClass: 'text-right' },
-        { key: 'message', label: 'Message', sortable: true },
+        { key: 'note', label: 'Note', sortable: true },
         { key: 'spot', label: 'Spot', sortable: true },
         { key: 'hasData', label: 'Data?', sortable: true },
         { key: 'timestamp', label: 'Timestamp', formatter: d => { return new Date(d*1000).toLocaleString(); }, sortable: true },
@@ -650,6 +598,30 @@ const FeedsExplorer = {
       }
       this.$bvModal.hide('bv-modal-addfeed');
     },
+    removeFeedFromList(address, name) {
+      logInfo("FeedsExplorer", "removeFeedFromList(" + address + ", '" + name + "')?");
+      this.$bvModal.msgBoxConfirm('Remove ' + name + ' from feed list? This can be added back later', {
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes',
+          cancelTitle: 'No',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value1 => {
+          if (value1) {
+            logInfo("FeedsExplorer", "removeFeedFromList(" + address + ")");
+            store.dispatch('feeds/removeFeed', address);
+            fakeTokenAddress.preventDefault();
+          }
+        })
+        .catch(err => {
+          // An error occurred
+        });
+    },
     resetFeedList() {
       logInfo("FeedsExplorer", "resetFeedList()?");
       this.$bvModal.msgBoxConfirm('Reset feed list? Feeds can be added back later', {
@@ -701,7 +673,7 @@ const FeedsExplorer = {
       }
       logInfo("FeedsExplorer", "checkFeedAddress - this.feedInfo: " + JSON.stringify(this.feedInfo));
     },
-    updateFeed(feedAddress, name, message, feedType, decimals) {
+    updateFeed(feedAddress, name, note, feedType, decimals) {
       logInfo("FeedsExplorer", "updateFeed(" + feedAddress + ", '" + name + "')?");
       this.$bvModal.msgBoxConfirm('Update feed for "' + feedAddress + '" "' + name + '"?', {
           title: 'Please Confirm',
@@ -716,9 +688,9 @@ const FeedsExplorer = {
         })
         .then(value1 => {
           if (value1) {
-            logInfo("FeedsExplorer", "updateFeed(" + feedAddress + ", '" + message + "')");
+            logInfo("FeedsExplorer", "updateFeed(" + feedAddress + ", '" + note + "')");
             var factory = web3.eth.contract(OPTINOFACTORYABI).at(store.getters['optinoFactory/address']);
-            factory.updateFeed(feedAddress, name, message, feedType, decimals, { from: store.getters['connection/coinbase'] }, function(error, tx) {
+            factory.updateFeed(feedAddress, name, note, feedType, decimals, { from: store.getters['connection/coinbase'] }, function(error, tx) {
               if (!error) {
                 logInfo("FeedsExplorer", "updateFeed() token.approve() tx: " + tx);
                 store.dispatch('connection/addTx', tx);
@@ -735,7 +707,7 @@ const FeedsExplorer = {
           // An error occurred
         });
     },
-    lockFeed(feedAddress, message) {
+    lockFeed(feedAddress, blah) {
       logInfo("FeedsExplorer", "lockFeed(" + feedAddress + ")?");
       this.$bvModal.msgBoxConfirm('Lock feed "' + feedAddress + '"?', {
           title: 'Please Confirm',

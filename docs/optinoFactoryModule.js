@@ -259,15 +259,15 @@ const optinoFactoryModule = {
         currentFeed.name != feed.name ||
         currentFeed.type != feed.type ||
         currentFeed.decimals != feed.decimals ||
-        currentFeed.message != feed.message ||
+        currentFeed.note != feed.note ||
         currentFeed.locked != feed.locked ||
         currentFeed.spot != feed.spot ||
         currentFeed.hasData != feed.hasData ||
         currentFeed.reportedDecimals != feed.reportedDecimals ||
         currentFeed.timestamp != feed.timestamp ||
         currentFeed.source != feed.source) {
-        Vue.set(state.registeredFeedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, message: feed.message,
-          type: feed.type, decimals: feed.decimals, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source, selected: feed.selected || false });
+        Vue.set(state.registeredFeedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, note: feed.note,
+          type: feed.type, decimals: feed.decimals, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source, selected: feed.selected || false, _showDetails: feed._showDetails || false });
         // logInfo("optinoFactoryModule", "mutations.updateFeed - state.registeredFeedData: " +  JSON.stringify(state.registeredFeedData));
       // } else {
         // logInfo("optinoFactoryModule", "mutations.updateFeed - NOT UPDATED state.registeredFeedData: " +  JSON.stringify(state.registeredFeedData));
@@ -378,7 +378,7 @@ const optinoFactoryModule = {
             // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
             var address = feed[0];
             var name = feed[1];
-            var message = feed[2];
+            var note = feed[2];
             var feedType = parseInt(feed[3][0]);
             var decimals = parseInt(feed[3][1]);
             var locked = parseInt(feed[3][2]) > 0;
@@ -388,7 +388,7 @@ const optinoFactoryModule = {
             var timestamp = parseInt(feed[7]);
             var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
             var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
-            var record = { address: address, index: i, sortKey: sortKey, name: name, message: message,
+            var record = { address: address, index: i, sortKey: sortKey, name: name, note: note,
               type: feedType, decimals: decimals, locked: locked, spot: spot, hasData: hasData, reportedDecimals: reportedDecimals, timestamp: timestamp, source: "registered" };
             commit('updateFeed', record);
             store.dispatch('feeds/updateFeedIfUsing', record);

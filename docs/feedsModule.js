@@ -101,13 +101,13 @@ const feedsModule = {
         currentFeed.name != feed.name ||
         currentFeed.type != feed.type ||
         currentFeed.decimals != feed.decimals ||
-        currentFeed.message != feed.message ||
+        currentFeed.note != feed.note ||
         currentFeed.spot != feed.spot ||
         currentFeed.hasData != feed.hasData ||
         currentFeed.reportedDecimals != feed.reportedDecimals ||
         currentFeed.timestamp != feed.timestamp ||
         currentFeed.source != feed.source) {
-        Vue.set(state.feedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, type: feed.type, decimals: feed.decimals, message: feed.message, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source });
+        Vue.set(state.feedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, type: feed.type, decimals: feed.decimals, note: feed.note, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source });
         // logInfo("feedsModule", "mutations.updateFeed - state.feedData: " +  JSON.stringify(state.feedData));
         localStorage.setItem('feedData', JSON.stringify(state.feedData));
       // } else {
@@ -123,13 +123,13 @@ const feedsModule = {
         currentFeed.name != feed.name ||
         currentFeed.type != feed.type ||
         currentFeed.decimals != feed.decimals ||
-        currentFeed.message != feed.message ||
+        currentFeed.note != feed.note ||
         currentFeed.spot != feed.spot ||
         currentFeed.hasData != feed.hasData ||
         currentFeed.reportedDecimals != feed.reportedDecimals ||
         currentFeed.timestamp != feed.timestamp ||
         currentFeed.source != feed.source)) {
-        Vue.set(state.feedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, type: feed.type, decimals: feed.decimals, message: feed.message, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source });
+        Vue.set(state.feedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, type: feed.type, decimals: feed.decimals, note: feed.note, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source });
         // logInfo("feedsModule", "mutations.updateFeedIfUsing - state.feedData: " +  JSON.stringify(state.feedData));
         localStorage.setItem('feedData', JSON.stringify(state.feedData));
       // } else {
