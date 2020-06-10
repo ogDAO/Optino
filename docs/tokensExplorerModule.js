@@ -39,7 +39,7 @@ const TokensExplorer = {
                   </template>
                   <b-card-body class="m-0 p-0">
                     <div>
-                      <b-tabs card v-model="addTokenTabIndex" content-class="m-0" active-tab-class="m-0 mt-2 p-0">
+                      <b-tabs card v-model="addTokenTabIndex" content-class="m-0" active-tab-class="m-0 mt-2 p-0" nav-class="m-0 p-0" nav-wrapper-class="m-0 p-0">
                         <b-tab size="sm" title="Search">
                           <b-container class="m-0 p-0">
                             <b-row>
