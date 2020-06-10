@@ -3,8 +3,54 @@ const OptinoExplorer = {
     <div class="mt-5 pt-3">
       <b-row>
         <b-col cols="12" md="9" class="m-0 p-1">
-          <b-card no-body header="Optino Explorer" class="border-0" header-class="p-1">
+          <b-card no-body header="Optinos" class="border-0" header-class="p-1">
             <br />
+            <b-card no-body class="mb-1">
+              <b-card-body class="p-1">
+
+                <div class="d-flex m-0 p-0" style="height: 37px;">
+                  <div class="pr-1">
+                    <b-form-input type="text" size="sm" v-model.trim="seriesSearch" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                  </div>
+                  <div class="pr-1 flex-grow-1">
+                  </div>
+                  <div class="pt-1 pr-1">
+                    <b-pagination pills size="sm" v-model="seriesCurrentPage" :total-rows="seriesDataSorted.length" :per-page="seriesPerPage" v-b-popover.hover="'Page through records'"></b-pagination>
+                  </div>
+                  <div class="pr-1">
+                    <b-form-select size="sm" :options="seriesPageOptions" v-model="seriesPerPage" v-b-popover.hover="'Select page size'"/>
+                  </div>
+                  <div class="pr-1">
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-mintoptino')" variant="link" v-b-popover.hover="'Mint Optino'"><b-icon-pencil-square font-scale="1.4"></b-icon-pencil-square></b-button>
+                  </div>
+                  <!--
+                  <div class="pr-1">
+                    <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" button-class="m-0 p-0" no-caret v-b-popover.hover="'Additional Menu Items...'">
+                      <template v-slot:button-content>
+                        <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
+                      </template>
+                      <b-dropdown-item-button size="sm" @click="resetTokenList()"><span style="font-size: 90%">Reset Token List</span></b-dropdown-item-button>
+                    </b-dropdown>
+                  </div>
+                  -->
+                </div>
+
+                {{ seriesDataSorted }}
+
+                <b-modal id="bv-modal-mintoptino" size="xl" hide-footer title-class="m-0 p-0" header-class="m-1 p-1" body-class="m-1 p-1">
+                  <template v-slot:modal-title>
+                    Mint Optinos [{{ networkName }}]
+                  </template>
+                  <b-card-body class="m-0 p-0">
+                  </b-card-body>
+                </b-modal>
+
+                <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="seriesDataSorted" :fields="seriesDataFields" head-variant="light" :current-page="seriesCurrentPage" :per-page="seriesPerPage" :filter="seriesSearch" @filtered="seriesOnFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
+                </b-table>
+
+              </b-card-body>
+            </b-card>
+
             <b-card no-body class="mb-1">
               <b-card-header header-tag="header" class="p-1">
                 <b-button href="#" v-b-toggle.factoryseries variant="outline-info">Series</b-button>
@@ -409,6 +455,17 @@ const OptinoExplorer = {
 
       reschedule: false,
 
+      seriesSearch: null,
+      seriesCurrentPage: 1,
+      seriesPerPage: 10,
+      seriesPageOptions: [
+        { text: "5", value: 5 },
+        { text: "10", value: 10 },
+        { text: "25", value: 25 },
+        { text: "50", value: 50 },
+        { text: "All", value: 0 },
+      ],
+
       token0: "0x452a2652d1245132f7f47700c24e217faceb1c6c",
       token1: "0x2269fbd941938ac213719cd3487323a0c75f1667",
       feed0: "0x8468b2bdce073a157e560aa4d9ccf6db1db98507",
@@ -521,6 +578,23 @@ const OptinoExplorer = {
       //   // defaultMinute: 0,
       //   // defaultSeconds: 0,
       // },
+      seriesDataFields: [
+        { key: 'index', label: 'Index', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'pair[0]', label: 'Base', sortable: true },
+        { key: 'pair[1]', label: 'Quote', sortable: true },
+        { key: 'feeds[0]', label: 'Feed0', sortable: true },
+        { key: 'feeds[1]', label: 'Feed1', sortable: true },
+        { key: 'callPut', label: 'callPut', sortable: true },
+        { key: 'expiry', label: 'expiry', sortable: true },
+        { key: 'strike', label: 'strike', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'bound', label: 'bound', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'decimals', label: 'Decimals', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'totalSupply', label: 'Total Supply', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'balance', label: 'Balance', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'allowance', label: 'Allowance', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        // { key: 'address', label: 'Address', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'extra', label: '', sortable: false },
+      ],
     }
   },
   computed: {
@@ -529,6 +603,9 @@ const OptinoExplorer = {
     },
     coinbase() {
       return store.getters['connection/coinbase'];
+    },
+    networkName() {
+      return store.getters['connection/networkName'];
     },
     maxTermInDays() {
       return this.maxTerm == null ? null : parseInt(this.maxTerm)/60/60/24;
@@ -640,6 +717,18 @@ const OptinoExplorer = {
       });
       return results;
     },
+    seriesDataSorted() {
+      var results = [];
+      var seriesData = store.getters['optinoFactory/seriesData'];
+      for (address in seriesData) {
+        results.push(seriesData[address]);
+      }
+      // TODO
+      // results.sort(function(a, b) {
+      //   return ('' + a.symbol + a.name).localeCompare(b.symbol + a.name);
+      // });
+      return results;
+    },
     seriesData() {
       return store.getters['optinoFactory/seriesData'];
     },
@@ -715,7 +804,7 @@ const OptinoExplorer = {
       var sortedData = [];
       for (address in feedData) {
         var feed = feedData[address];
-        console.log("feedSelectionsSorted: " + address + " => " + JSON.stringify(feed));
+        // console.log("feedSelectionsSorted: " + address + " => " + JSON.stringify(feed));
         sortedData.push(feed);
       }
       sortedData.sort(function(a, b) {
@@ -761,6 +850,12 @@ const OptinoExplorer = {
   methods: {
     formatUTC(d) {
       return moment(d).utc().format();
+    },
+    seriesOnFiltered(filteredItems) {
+      if (this.seriestotalRows !== filteredItems.length) {
+        this.seriestotalRows = filteredItems.length;
+        this.seriesCurrentPage = 1
+      }
     },
     timeoutCallback() {
       var seriesData = store.getters['optinoFactory/seriesData'];

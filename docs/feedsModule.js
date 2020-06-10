@@ -62,10 +62,10 @@ const Feeds = {
     logDebug("Feeds", "mounted()")
     if (localStorage.getItem('feedData')) {
       var feedData = JSON.parse(localStorage.getItem('feedData'));
-      logInfo("Feeds", "Restoring feedData: " + JSON.stringify(feedData));
+      // logInfo("Feeds", "Restoring feedData: " + JSON.stringify(feedData));
       for (var address in feedData) {
         var feed = feedData[address];
-        logInfo("Feeds", "Restoring feed: " + JSON.stringify(feed));
+        // logInfo("Feeds", "Restoring feed: " + JSON.stringify(feed));
         store.dispatch('feeds/updateFeed', feed);
       }
     }

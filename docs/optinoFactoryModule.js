@@ -26,7 +26,7 @@ const OptinoFactory = {
           </b-row>
 
           <b-row v-if="Object.keys(registeredFeedData).length > 0">
-            <b-col colspan="2" class="small truncate"><b>Registered Feeds</b></b-col>
+            <b-col colspan="2" class="small truncate"><b>{{ Object.keys(registeredFeedData).length }} Registered Feeds</b></b-col>
           </b-row>
           <b-row v-for="(feed) in registeredFeedDataSorted" v-bind:key="feed.address">
             <b-col cols="5" class="small truncate" style="font-size: 70%">
@@ -40,29 +40,8 @@ const OptinoFactory = {
             </b-col>
           </b-row>
 
-          <!--
-          <b-row v-if="Object.keys(pairData).length > 0">
-            <b-col colspan="2" class="small truncate"><b>Pairs</b></b-col>
-          </b-row>
-          <b-row v-for="(pair) in pairData" v-bind:key="pair.pairKey">
-            <b-col>
-              <b-row>
-                <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  {{ pair.pairKey }}
-                </b-col>
-                <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'token/' + pair.token0" class="card-link" target="_blank">{{ pair.token0 }}</b-link>
-                </b-col>
-                <b-col cols="4" class="small truncate" style="font-size: 70%">
-                  <b-link :href="explorer + 'token/' + pair.token1" class="card-link" target="_blank">{{ pair.token1 }}</b-link>
-                </b-col>
-              </b-row>
-            </b-col>
-          </b-row>
-          -->
-
           <b-row v-if="Object.keys(seriesData).length > 0">
-            <b-col colspan="2" class="small truncate"><b>Series</b></b-col>
+            <b-col colspan="2" class="small truncate"><b>{{ Object.keys(seriesData).length }} Series</b></b-col>
           </b-row>
           <b-row v-for="(series) in seriesData" v-bind:key="series.seriesKey">
             <b-col>
