@@ -21,12 +21,12 @@ const TokensExplorer = {
                     <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover="'Select page size'"/>
                   </div>
                   <div class="pr-1">
-                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus shift-v="-2" font-scale="1.4"></b-icon-plus></b-button>
                   </div>
                   <div class="pr-1">
                     <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" button-class="m-0 p-0" no-caret v-b-popover.hover="'Additional Menu Items...'">
                       <template v-slot:button-content>
-                        <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
+                        <b-icon-three-dots class="rounded-circle" shift-v="-2" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
                       </template>
                       <b-dropdown-item-button size="sm" @click="resetTokenList()"><span style="font-size: 90%">Reset Token List</span></b-dropdown-item-button>
                     </b-dropdown>
@@ -106,7 +106,7 @@ const TokensExplorer = {
                             <div class="pr-1 flex-grow-1">
                             </div>
                             <div class="pr-1">
-                             <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" font-scale="0.9"></b-icon-exclamation-circle> Always confirm the token contract address in a block explorer</span>
+                             <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" shift-v="1" font-scale="0.9"></b-icon-exclamation-circle> Always confirm the token contract address in a block explorer</span>
                             </div>
                           </div>
                           <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="commonTokenList" :fields="addTokenTableFields" :filter="searchCommon" :filter-included-fields="['symbol', 'name']" head-variant="light" show-empty @row-clicked="rowClicked">
@@ -153,7 +153,7 @@ const TokensExplorer = {
                             <div class="pr-1 flex-grow-1">
                             </div>
                             <div class="pr-1">
-                             <span class="text-right" style="font-size: 90%"><b-icon-info-circle font-scale="0.9"></b-icon-info-circle> Add any token below to your token list, then request for tokens from the faucet <b-icon-droplet font-scale="0.9"></b-icon-droplet> for testing</span>
+                             <span class="text-right" style="font-size: 90%"><b-icon-info-circle shift-v="1" font-scale="0.9"></b-icon-info-circle> Add any token below to your token list, then request for tokens from the faucet <b-icon-droplet font-scale="0.9"></b-icon-droplet> for testing</span>
                             </div>
                           </div>
 
@@ -214,7 +214,7 @@ const TokensExplorer = {
                 <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="tokenDataSorted" :fields="tokenDataFields" head-variant="light" :current-page="currentPage" :per-page="perPage" :filter="search" @filtered="onFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
                   <template v-slot:empty="scope">
                     <div class="text-center my-2">{{ scope.emptyText }}</div>
-                    <div class="text-center my-2 pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> to customise your token list</div>
+                    <div class="text-center my-2 pt-4">Click <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addtoken')" variant="link" v-b-popover.hover="'Add new token'"><b-icon-plus shift-v="1" font-scale="1.4"></b-icon-plus></b-button> to customise your token list</div>
                   </template>
                   <!--
                   <template v-slot:emptyfiltered="scope">

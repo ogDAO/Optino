@@ -21,21 +21,19 @@ const OptinoExplorer = {
                     <b-form-select size="sm" :options="seriesPageOptions" v-model="seriesPerPage" v-b-popover.hover="'Select page size'"/>
                   </div>
                   <div class="pr-1">
-                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-mintoptino')" variant="link" v-b-popover.hover="'Mint Optino'"><b-icon-pencil-square font-scale="1.4"></b-icon-pencil-square></b-button>
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-mintoptino')" variant="link" v-b-popover.hover="'Mint Optino'"><b-icon-pencil-square shift-v="-2" font-scale="1.4"></b-icon-pencil-square></b-button>
                   </div>
                   <!--
                   <div class="pr-1">
                     <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" button-class="m-0 p-0" no-caret v-b-popover.hover="'Additional Menu Items...'">
                       <template v-slot:button-content>
-                        <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
+                        <b-icon-three-dots shift-v="-2" class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
                       </template>
                       <b-dropdown-item-button size="sm" @click="resetTokenList()"><span style="font-size: 90%">Reset Token List</span></b-dropdown-item-button>
                     </b-dropdown>
                   </div>
                   -->
                 </div>
-
-                {{ seriesDataSorted }}
 
                 <b-modal id="bv-modal-mintoptino" size="xl" hide-footer title-class="m-0 p-0" header-class="m-1 p-1" body-class="m-1 p-1">
                   <template v-slot:modal-title>
@@ -46,8 +44,37 @@ const OptinoExplorer = {
                 </b-modal>
 
                 <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="seriesDataSorted" :fields="seriesDataFields" head-variant="light" :current-page="seriesCurrentPage" :per-page="seriesPerPage" :filter="seriesSearch" @filtered="seriesOnFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
+                  <template v-slot:cell(base)="data">
+                    <b-link :href="explorer + 'token/' + data.item.pair[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.pair[0] + ' on the block explorer'">{{ displayToken(data.item.pair[0]) }}</b-link>
+                  </template>
+                  <template v-slot:cell(quote)="data">
+                    <b-link :href="explorer + 'token/' + data.item.pair[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.pair[1] + ' on the block explorer'">{{ displayToken(data.item.pair[1]) }}</b-link>
+                  </template>
+                  <template v-slot:cell(feed0)="data">
+                    <b-link :href="explorer + 'address/' + data.item.feeds[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.feeds[0] + ' on the block explorer'">{{ displayFeed(data.item.feeds[0]) }}</b-link>
+                  </template>
+                  <template v-slot:cell(feed1)="data">
+                    <b-link :href="explorer + 'address/' + data.item.feeds[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.feeds[1] + ' on the block explorer'">{{ displayFeed(data.item.feeds[1]) }}</b-link>
+                  </template>
+                  <template v-slot:cell(type)="data">
+                    {{ formatType(data.item.callPut, data.item.bound) }}
+                  </template>
+                  <template v-slot:cell(expiry)="data">
+                    {{ formatUTC(data.item.expiry * 1000) }}
+                  </template>
+                  <template v-slot:cell(strike)="data">
+                    {{ formatValue(data.item.strike, data.item.feedDecimals0) }}
+                  </template>
+                  <template v-slot:cell(bound)="data">
+                    {{ formatValue(data.item.bound, data.item.feedDecimals0) }}
+                  </template>
+                  <template v-slot:cell(optino)="data">
+                    <b-link :href="explorer + 'token/' + data.item.optinos[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.optinos[0] + ' on the block explorer'">{{ displayToken(data.item.optinos[0]) }}</b-link>
+                  </template>
+                  <template v-slot:cell(cover)="data">
+                    <b-link :href="explorer + 'token/' + data.item.optinos[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.optinos[1] + ' on the block explorer'">{{ displayToken(data.item.optinos[1]) }}</b-link>
+                  </template>
                 </b-table>
-
               </b-card-body>
             </b-card>
 
@@ -580,14 +607,16 @@ const OptinoExplorer = {
       // },
       seriesDataFields: [
         { key: 'index', label: 'Index', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'pair[0]', label: 'Base', sortable: true },
-        { key: 'pair[1]', label: 'Quote', sortable: true },
-        { key: 'feeds[0]', label: 'Feed0', sortable: true },
-        { key: 'feeds[1]', label: 'Feed1', sortable: true },
-        { key: 'callPut', label: 'callPut', sortable: true },
-        { key: 'expiry', label: 'expiry', sortable: true },
-        { key: 'strike', label: 'strike', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'bound', label: 'bound', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'base', label: 'Base', sortable: true },
+        { key: 'quote', label: 'Quote', sortable: true },
+        { key: 'feed0', label: 'Feed0', sortable: true },
+        { key: 'feed1', label: 'Feed1', sortable: true },
+        { key: 'type', label: 'Type', sortable: true },
+        { key: 'expiry', label: 'Expiry', sortable: true },
+        { key: 'strike', label: 'Strike', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'bound', label: 'Bound', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
+        { key: 'optino', label: 'Optino', sortable: true },
+        { key: 'Cover', label: 'Cover', sortable: true },
         // { key: 'decimals', label: 'Decimals', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
         // { key: 'totalSupply', label: 'Total Supply', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
         // { key: 'balance', label: 'Balance', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
@@ -851,11 +880,48 @@ const OptinoExplorer = {
     formatUTC(d) {
       return moment(d).utc().format();
     },
+    formatValue(value, decimals) {
+      return parseFloat(new BigNumber(value).shift(-decimals).toFixed(decimals));
+      // return parseFloat(new BigNumber(value).toFixed(decimals)).toLocaleString();
+    },
+    formatType(callPut, bound) {
+      if (callPut == 0) {
+        return bound == 0 ? "Vanilla Call" : "Capped Call";
+      } else {
+        return bound == 0 ? "Vanilla Put" : "Floored Put";
+      }
+    },
     seriesOnFiltered(filteredItems) {
       if (this.seriestotalRows !== filteredItems.length) {
         this.seriestotalRows = filteredItems.length;
         this.seriesCurrentPage = 1
       }
+    },
+    // TODO Delete
+    truncate(s, l) {
+      if (s.length > l) {
+        return s.substr(0, l) + '...';
+      }
+      return s;
+    },
+    displayToken(address) {
+      var addr = address.toLowerCase();
+      var tokenData = store.getters['tokens/tokenData'];
+      if (typeof tokenData[addr] !== "undefined") {
+        return tokenData[addr].symbol;
+      }
+      return address.substr(0, 10) + '...';
+    },
+    displayFeed(address) {
+      if (address == ADDRESS0) {
+        return "";
+      }
+      var addr = address.toLowerCase();
+      var feedData = store.getters['feeds/feedData'];
+      if (typeof feedData[addr] !== "undefined") {
+        return feedData[addr].name;
+      }
+      return address.substr(0, 10) + '...';
     },
     timeoutCallback() {
       var seriesData = store.getters['optinoFactory/seriesData'];

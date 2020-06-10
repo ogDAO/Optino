@@ -21,13 +21,13 @@ const FeedsExplorer = {
                     <b-form-select size="sm" :options="pageOptions" v-model="perPage" v-b-popover.hover="'Select page size'"/>
                   </div>
                   <div class="pr-1">
-                    <!-- <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button> -->
-                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover="'Add new feed'"><b-icon-plus font-scale="1.4"></b-icon-plus></b-button>
+                    <!-- <b-button size="sm" class="m-0 p-0" href="#" @click="addTokenTabChanged(0); $bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover="'Add new feed'"><b-icon-plus shift-v="-2" font-scale="1.4"></b-icon-plus></b-button> -->
+                    <b-button size="sm" class="m-0 p-0" href="#" @click="$bvModal.show('bv-modal-addfeed')" variant="link" v-b-popover.hover="'Add new feed'"><b-icon-plus shift-v="-2" font-scale="1.4"></b-icon-plus></b-button>
                   </div>
                   <div class="pr-1">
                     <b-dropdown size="sm" variant="link" toggle-class="m-0 p-0" menu-class="m-0 p-0" no-caret v-b-popover.hover="'Additional Menu Items...'">
                       <template v-slot:button-content>
-                        <b-icon-three-dots class="rounded-circle" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
+                        <b-icon-three-dots class="rounded-circle" shift-v="-2" font-scale="1.4"></b-icon-three-dots><span class="sr-only">Submenu</span>
                       </template>
                       <b-dropdown-item-button size="sm" @click="resetFeedList()"><span style="font-size: 90%">Reset Feed List</span></b-dropdown-item-button>
                     </b-dropdown>
@@ -109,7 +109,7 @@ const FeedsExplorer = {
                           <div class="pr-1 flex-grow-1">
                           </div>
                           <div class="pr-1">
-                           <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" font-scale="0.9"></b-icon-exclamation-circle> Always confirm the feed contract address in a block explorer and alternative sources</span>
+                           <span class="text-right" style="font-size: 90%"><b-icon-exclamation-circle variant="danger" shift-v="1" font-scale="0.9"></b-icon-exclamation-circle> Always confirm the feed contract address in a block explorer and alternative sources</span>
                           </div>
                         </div>
                         <b-table style="font-size: 85%;" small striped selectable sticky-header select-mode="multi" responsive hover :items="registeredFeeds" :fields="addFeedFields" :filter="searchRegistered" :filter-included-fields="['name', 'note']" head-variant="light" show-empty @row-clicked="rowClicked">
@@ -258,8 +258,8 @@ const FeedsExplorer = {
                   <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                 </template>
                 <template v-slot:cell(extra)="row">
-                  <b-icon-lock-fill class="m-0 p-0" font-scale="0.9" variant="secondary" v-if="row.item.locked" v-b-popover.hover="'Feed configuration cannot be updated'"></b-icon-lock-fill>
-                  <b-icon-unlock-fill class="m-0 p-0" font-scale="0.9" variant="secondary" v-if="!row.item.locked" v-b-popover.hover="'Feed configuration can still be updated'"></b-icon-unlock-fill>
+                  <b-icon-lock-fill class="m-0 p-0" shift-v="2" font-scale="0.9" variant="secondary" v-if="row.item.locked" v-b-popover.hover="'Feed configuration cannot be updated'"></b-icon-lock-fill>
+                  <b-icon-unlock-fill class="m-0 p-0" shift-v="2" font-scale="0.9" variant="secondary" v-if="!row.item.locked" v-b-popover.hover="'Feed configuration can still be updated'"></b-icon-unlock-fill>
                   <b-link @click="row.toggleDetails" class="card-link m-0 p-0" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><b-icon-caret-up-fill font-scale="0.9" v-if="row.detailsShowing"></b-icon-caret-up-fill><b-icon-caret-down-fill font-scale="0.9" v-if="!row.detailsShowing"></b-icon-caret-down-fill></b-link>
                   <b-link @click="removeFeedFromList(row.item.address, row.item.name)" class="card-link m-0 p-0" v-b-popover.hover="'Remove ' + row.item.name + ' from list. This can be added back later.'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-link>
                 </template>
