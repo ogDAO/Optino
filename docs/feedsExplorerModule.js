@@ -35,7 +35,7 @@ const FeedsExplorer = {
                 </div>
               </b-card-body>
 
-              <b-modal id="bv-modal-addfeed" size="xl" hide-footer>
+              <b-modal id="bv-modal-addfeed" size="xl" hide-footer title-class="m-0 p-0" header-class="m-1 p-1" body-class="m-1 p-1">
                 <template v-slot:modal-title>
                   Add Feed(s) To List [{{ networkName }}]
                 </template>
@@ -143,7 +143,7 @@ const FeedsExplorer = {
                             <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                           </template>
                           <template v-slot:cell(selected)="data">
-                            <b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2>
+                            <b-icon-check2 font-scale="1.4" v-if="selectedFeeds[data.item.address.toLowerCase()]"></b-icon-check2>
                           </template>
                         </b-table>
                       </b-tab>
@@ -473,6 +473,8 @@ const FeedsExplorer = {
 
       searchRegistered: null,
 
+      selectedFeeds: {},
+
       addFeedFields: [
         { key: 'name', label: 'Name', sortable: true },
         { key: 'type', label: 'Type', sortable: true },
@@ -497,8 +499,8 @@ const FeedsExplorer = {
         { key: 'extra', label: '', sortable: false },
       ],
       show: true,
-      value: "0",
-      hasValue: false,
+      // value: "0",
+      // hasValue: false,
     }
   },
   computed: {
@@ -550,8 +552,8 @@ const FeedsExplorer = {
       var feedData = store.getters['feeds/feedData'];
       for (var address in registeredFeedData) {
         var feed = registeredFeedData[address];
-        if (feed.source == "registered" && feed.selected && typeof feedData[feed.address.toLowerCase()] === "undefined") {
-          console.log("feed SELECTED: " + JSON.stringify(feed));
+        var addr = feed.address.toLowerCase();
+        if (typeof feedData[addr] === "undefined" && feed.source == "registered" && typeof this.selectedFeeds[addr] !== "undefined" && this.selectedFeeds[addr]) {
           results.push(feed);
         }
       }
@@ -569,7 +571,9 @@ const FeedsExplorer = {
   },
   methods: {
     rowClicked(record, index) {
-      record.selected = !record.selected;
+      var address = record.address.toLowerCase();
+      // this.selectedFeeds[address] = !this.selectedFeeds[address];
+      Vue.set(this.selectedFeeds, address, !this.selectedFeeds[address]);
     },
     onFiltered(filteredItems) {
       if (this.totalRows !== filteredItems.length) {
@@ -597,6 +601,10 @@ const FeedsExplorer = {
       })
       for (var i = 0; i < list.length; i++) {
         store.dispatch('feeds/updateFeed', list[i]);
+      }
+      for (var i = 0; i < list.length; i++) {
+        // this.selectedFeeds[list[i].address.toLowerCase()] = false;
+        Vue.set(this.selectedFeeds, list[i].address.toLowerCase(), false);
       }
       this.$bvModal.hide('bv-modal-addfeed');
     },

@@ -33,7 +33,7 @@ const TokensExplorer = {
                   </div>
                 </div>
 
-                <b-modal id="bv-modal-addtoken" size="xl" hide-footer>
+                <b-modal id="bv-modal-addtoken" size="xl" hide-footer title-class="m-0 p-0" header-class="m-1 p-1" body-class="m-1 p-1">
                   <template v-slot:modal-title>
                     Add Token(s) To List [{{ networkName }}]
                   </template>
@@ -140,7 +140,7 @@ const TokensExplorer = {
                               <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                             </template>
                             <template v-slot:cell(selected)="data">
-                              <b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2>
+                              <b-icon-check2 font-scale="1.4" v-if="selectedTokens[data.item.address.toLowerCase()]"></b-icon-check2>
                             </template>
                           </b-table>
                         </b-tab>
@@ -188,7 +188,7 @@ const TokensExplorer = {
                               <b-link :href="explorer + 'token/' + data.item.address" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.address + ' on the block explorer'">{{ truncate(data.item.address, 10) }}</b-link>
                             </template>
                             <template v-slot:cell(selected)="data">
-                              <b-icon-check2 font-scale="1.4" v-if="data.item.selected"></b-icon-check2>
+                              <b-icon-check2 font-scale="1.4" v-if="selectedTokens[data.item.address.toLowerCase()]"></b-icon-check2>
                             </template>
                           </b-table>
                         </b-tab>
@@ -353,6 +353,7 @@ const TokensExplorer = {
       fakeTokenMap: {},
       searchCommon: null,
       searchFake: null,
+      selectedTokens: {},
 
       tokenInfo: {
         address: "0x7E0480Ca9fD50EB7A3855Cf53c347A1b4d6A2FF5",
@@ -434,8 +435,10 @@ const TokensExplorer = {
     selectedCommonTokenList() {
       var tokenData = store.getters['tokens/tokenData'];
       var results = [];
+      var t = this;
       this.tokenPickerList.forEach(function(e) {
-        if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "common" && e.selected) {
+        var address = e.address.toLowerCase();
+        if (typeof tokenData[address] === "undefined" && e.source == "common"  && typeof t.selectedTokens[address] !== "undefined" && t.selectedTokens[address]) {
           results.push(e);
         }
       });
@@ -457,9 +460,10 @@ const TokensExplorer = {
     selectedFakeTokenList() {
       var tokenData = store.getters['tokens/tokenData'];
       var results = [];
+      var t = this;
       this.tokenPickerList.forEach(function(e) {
-        // logInfo("TokensExplorer", "fakeTokenList(" + e.symbol + ")");
-        if (typeof tokenData[e.address.toLowerCase()] === "undefined" && e.source == "fake" && e.selected) {
+        var address = e.address.toLowerCase();
+        if (typeof tokenData[address] === "undefined" && e.source == "fake" && typeof t.selectedTokens[address] !== "undefined" && t.selectedTokens[address]) {
           results.push(e);
         }
       });
@@ -468,7 +472,8 @@ const TokensExplorer = {
   },
   methods: {
     rowClicked(record, index) {
-      record.selected = !record.selected;
+      var address = record.address.toLowerCase();
+      Vue.set(this.selectedTokens, address, !this.selectedTokens[address]);
     },
     onFiltered(filteredItems) {
       if (this.totalRows !== filteredItems.length) {
@@ -496,6 +501,9 @@ const TokensExplorer = {
       })
       for (var i = 0; i < list.length; i++) {
         store.dispatch('tokens/updateToken', list[i]);
+      }
+      for (var i = 0; i < list.length; i++) {
+        Vue.set(this.selectedTokens, list[i].address.toLowerCase(), false);
       }
       this.$bvModal.hide('bv-modal-addtoken');
     },
@@ -677,7 +685,7 @@ const TokensExplorer = {
           var totalSupply = tokenInfo[1].shift(-decimals).toString();
           var balance = tokenInfo[2].shift(-decimals).toString();
           var allowance = tokenInfo[3].shift(-decimals).toString();
-          var token = { address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "common", selected: false };
+          var token = { address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "common" };
           Vue.set(this.tokenPickerMap, address.toLowerCase(), token);
           this.tokenPickerList.push(token);
           this.tokenPickerLoadingRow++;
@@ -696,7 +704,7 @@ const TokensExplorer = {
           var balance = tokenInfo[2].shift(-decimals).toString();
           var allowance = tokenInfo[3].shift(-decimals).toString();
           if (symbol.startsWith("f")) {
-            var token = { address: fakeTokenAddress, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "fake", selected: false };
+            var token = { address: fakeTokenAddress, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: "fake" };
             Vue.set(this.tokenPickerMap, fakeTokenAddress.toLowerCase(), token);
             this.tokenPickerList.push(token);
             this.tokenPickerLoadingRow++;

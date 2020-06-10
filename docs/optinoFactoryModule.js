@@ -26,7 +26,7 @@ const OptinoFactory = {
           </b-row>
 
           <b-row v-if="Object.keys(registeredFeedData).length > 0">
-            <b-col colspan="2" class="small truncate"><b>Feeds</b></b-col>
+            <b-col colspan="2" class="small truncate"><b>Registered Feeds</b></b-col>
           </b-row>
           <b-row v-for="(feed) in registeredFeedDataSorted" v-bind:key="feed.address">
             <b-col cols="5" class="small truncate" style="font-size: 70%">
@@ -267,7 +267,7 @@ const optinoFactoryModule = {
         currentFeed.timestamp != feed.timestamp ||
         currentFeed.source != feed.source) {
         Vue.set(state.registeredFeedData, feed.address.toLowerCase(), {address: feed.address, index: feed.index, sortKey: feed.sortKey, name: feed.name, note: feed.note,
-          type: feed.type, decimals: feed.decimals, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source, selected: feed.selected || false, _showDetails: feed._showDetails || false });
+          type: feed.type, decimals: feed.decimals, locked: feed.locked, spot: feed.spot, hasData: feed.hasData, reportedDecimals: feed.reportedDecimals, timestamp: feed.timestamp, source: feed.source, _showDetails: feed._showDetails || false });
         // logInfo("optinoFactoryModule", "mutations.updateFeed - state.registeredFeedData: " +  JSON.stringify(state.registeredFeedData));
       // } else {
         // logInfo("optinoFactoryModule", "mutations.updateFeed - NOT UPDATED state.registeredFeedData: " +  JSON.stringify(state.registeredFeedData));
