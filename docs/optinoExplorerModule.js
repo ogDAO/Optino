@@ -45,10 +45,10 @@ const OptinoExplorer = {
 
                 <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="seriesDataSorted" :fields="seriesDataFields" head-variant="light" :current-page="seriesCurrentPage" :per-page="seriesPerPage" :filter="seriesSearch" @filtered="seriesOnFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
                   <template v-slot:cell(base)="data">
-                    <b-link :href="explorer + 'token/' + data.item.pair[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.pair[0] + ' on the block explorer'">{{ displayToken(data.item.pair[0]) }}</b-link>
+                    <b-link :href="explorer + 'token/' + data.item.pair[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.pair[0]) + ' on the block explorer'">{{ tokenSymbol(data.item.pair[0]) }}</b-link>
                   </template>
                   <template v-slot:cell(quote)="data">
-                    <b-link :href="explorer + 'token/' + data.item.pair[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.pair[1] + ' on the block explorer'">{{ displayToken(data.item.pair[1]) }}</b-link>
+                    <b-link :href="explorer + 'token/' + data.item.pair[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.pair[1]) + ' on the block explorer'">{{ tokenSymbol(data.item.pair[1]) }}</b-link>
                   </template>
                   <template v-slot:cell(feed0)="data">
                     <b-link :href="explorer + 'address/' + data.item.feeds[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.feeds[0] + ' on the block explorer'">{{ displayFeed(data.item.feeds[0]) }}</b-link>
@@ -69,10 +69,10 @@ const OptinoExplorer = {
                     {{ formatValue(data.item.bound, data.item.feedDecimals0) }}
                   </template>
                   <template v-slot:cell(optino)="data">
-                    <b-link :href="explorer + 'token/' + data.item.optinos[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.optinos[0] + ' on the block explorer'">{{ displayToken(data.item.optinos[0]) }}</b-link>
+                    <b-link :href="explorer + 'token/' + data.item.optinos[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.optinos[0]) + ' on the block explorer'">{{ tokenSymbol(data.item.optinos[0]) }}</b-link>
                   </template>
                   <template v-slot:cell(cover)="data">
-                    <b-link :href="explorer + 'token/' + data.item.optinos[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + data.item.optinos[1] + ' on the block explorer'">{{ displayToken(data.item.optinos[1]) }}</b-link>
+                    <b-link :href="explorer + 'token/' + data.item.optinos[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.optinos[1]) + ' on the block explorer'">{{ tokenSymbol(data.item.optinos[1]) }}</b-link>
                   </template>
                 </b-table>
               </b-card-body>
@@ -904,13 +904,21 @@ const OptinoExplorer = {
       }
       return s;
     },
-    displayToken(address) {
+    tokenSymbol(address) {
       var addr = address.toLowerCase();
-      var tokenData = store.getters['tokens/tokenData'];
+      var tokenData = store.getters['optinoFactory/tokenData'];
       if (typeof tokenData[addr] !== "undefined") {
         return tokenData[addr].symbol;
       }
       return address.substr(0, 10) + '...';
+    },
+    tokenName(address) {
+      var addr = address.toLowerCase();
+      var tokenData = store.getters['optinoFactory/tokenData'];
+      if (typeof tokenData[addr] !== "undefined") {
+        return tokenData[addr].name;
+      }
+      return address;
     },
     displayFeed(address) {
       if (address == ADDRESS0) {
@@ -929,7 +937,8 @@ const OptinoExplorer = {
       // Feed loaded
       if (Object.keys(seriesData).length > 0) {
         // this.reschedule = false;
-        this.recalculate("mounted", "mounted") // Calls the method before page loads
+        // TODO
+        // this.recalculate("mounted", "mounted") // Calls the method before page loads
       }
       var t = this;
       if (this.reschedule) {
@@ -1037,10 +1046,10 @@ const OptinoExplorer = {
       }
 
       var feedData = store.getters['feeds/feedData'];
-      logInfo("optinoExplorer", "feedData: " + JSON.stringify(feedData));
-      logInfo("optinoExplorer", "this.feed0: " + this.feed0);
+      // logInfo("optinoExplorer", "feedData: " + JSON.stringify(feedData));
+      // logInfo("optinoExplorer", "this.feed0: " + this.feed0);
       var feed = this.feed0 == null ? null : feedData[this.feed0.toLowerCase()];
-      logInfo("optinoExplorer", "feed: " + JSON.stringify(feed));
+      // logInfo("optinoExplorer", "feed: " + JSON.stringify(feed));
       // logInfo("optinoExplorer", "feedData: " + JSON.stringify(feed));
       if (!feed && (this.type0 == 0xff || this.decimals0 == 0xff)) {
         alert("Feed data not available yet");

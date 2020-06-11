@@ -155,14 +155,14 @@ const OptinoFactory = {
       return store.getters['optinoFactory/seriesData'];
     },
     tokenData() {
-      return store.getters['tokens/tokenData'];
+      return store.getters['optinoFactory/tokenData'];
     },
   },
   methods: {
     displayTokenSymbol(tokenAddress) {
-      var token = store.getters['tokens/tokenData'][tokenAddress];
+      var token = store.getters['optinoFactory/tokenData'][tokenAddress];
       if (token == null) {
-        return tokenAddress.substr(0, 10);
+        return tokenAddress.substr(0, 10) + "...";
       } else {
         return token.symbol;
       }
@@ -181,7 +181,8 @@ const optinoFactoryModule = {
     fee: null,
     registeredFeedData: {},
     seriesData: {},
-    optinoData: {}, // { ADDRESS0: { symbol: "ETH", name: "Ether", decimals: "18", balance: "0", totalSupply: null }},
+    tokenData: {},
+    optinoData: {},
     typeOptions: [
       { value: 0xff, text: 'Default' },
       { value: 0, text: 'Chainlink v4' },
@@ -222,6 +223,7 @@ const optinoFactoryModule = {
     fee: state => state.fee,
     registeredFeedData: state => state.registeredFeedData,
     seriesData: state => state.seriesData,
+    tokenData: state => state.tokenData,
     optinoData: state => state.optinoData,
     typeOptions: state => state.typeOptions,
     decimalsOptions: state => state.decimalsOptions,
@@ -277,6 +279,29 @@ const optinoFactoryModule = {
       Vue.set(state.seriesData, seriesKey, series);
       // logInfo("optinoFactoryModule", "updateSeries(" + seriesKey + ", " + JSON.stringify(series) + ")")
     },
+    processingToken(state, address) {
+      Vue.set(state.tokenData, address, {address: address, symbol: null, name: null, decimals: null, totalSupply: null, balance: null, allowance: null, source: null });
+      logInfo("optinoFactoryModule", "mutations.processingToken - state.tokenData[" + address + "]: " +  JSON.stringify(state.tokenData[address]));
+    },
+    updateToken(state, token) {
+      // logInfo("optinoFactoryModule", "mutations.updateToken(" + JSON.stringify(token) + ")");
+      var currentToken = state.tokenData[token.address.toLowerCase()];
+      if (typeof currentToken === 'undefined' ||
+        currentToken.address != token.address ||
+        currentToken.symbol != token.symbol ||
+        currentToken.name != token.name ||
+        currentToken.decimals != token.decimals ||
+        currentToken.totalSupply != token.totalSupply ||
+        currentToken.balance != token.balance ||
+        currentToken.allowance != token.allowance ||
+        currentToken.source != token.source) {
+        Vue.set(state.tokenData, token.address.toLowerCase(), {address: token.address, symbol: token.symbol, name: token.name, decimals: token.decimals, totalSupply: token.totalSupply, balance: token.balance, allowance: token.allowance, source: token.source });
+        logInfo("optinoFactoryModule", "mutations.updateToken - state.tokenData: " +  JSON.stringify(state.tokenData));
+        // localStorage.setItem('tokenData', JSON.stringify(state.tokenData));
+      // } else {
+      //   logInfo("optinoFactoryModule", "mutations.updateToken - NOT UPDATED state.tokenData: " +  JSON.stringify(state.tokenData));
+      }
+    },
     updateOptino(state, {optinoAddress, optino}) {
       Vue.set(state.optinoData, optinoAddress, optino);
       logDebug("optinoFactoryModule", "updateOptino(" + optinoAddress + ", " + JSON.stringify(optino) + ")")
@@ -327,6 +352,8 @@ const optinoFactoryModule = {
 
         var factory = web3.eth.contract(OPTINOFACTORYABI).at(state.address);
         if (networkChanged || blockChanged || coinbaseChanged || paramsChanged) {
+          var tokenToolz = web3.eth.contract(TOKENTOOLZABI).at(TOKENTOOLZADDRESS);
+
           var _optinoTokenTemplate = promisify(cb => factory.optinoTokenTemplate(cb));
           var optinoTokenTemplate = await _optinoTokenTemplate;
           if (optinoTokenTemplate !== state.optinoTokenTemplate) {
@@ -441,6 +468,22 @@ const optinoFactoryModule = {
               var bound = data[3].toString();
               var spot = data[4].toString();
               var timestamp = series[7];
+
+              [pair[0], pair[1], optinos[0], optinos[1]].forEach(async function(address) {
+                if (!(address in state.tokenData)) {
+                  commit('processingToken', address);
+                  var _tokenInfo = promisify(cb => tokenToolz.getTokenInfo(address, store.getters['connection/coinbase'], store.getters['optinoFactory/address'], cb));
+                  var tokenInfo = await _tokenInfo;
+                  var symbol = tokenInfo[4];
+                  var name = tokenInfo[5];
+                  var decimals = parseInt(tokenInfo[0]);
+                  var totalSupply = tokenInfo[1].shift(-decimals).toString();
+                  var balance = tokenInfo[2].shift(-decimals).toString();
+                  var allowance = tokenInfo[3].shift(-decimals).toString();
+                  commit('updateToken', { address: address, symbol: symbol, name: name, decimals: decimals, totalSupply: totalSupply, balance: balance, allowance: allowance, source: token.source } );
+                }
+              });
+
               if (!(seriesKey in state.seriesData) || state.seriesData[seriesKey].timestamp < timestamp) {
                 commit('updateSeries', { seriesKey: seriesKey, series: { index: seriesIndex, seriesKey: seriesKey, pair: pair, feeds: feeds, feedParameters: feedParameters, feedDecimals0: feedDecimals0,
                   callPut: callPut, expiry: expiry, strike: strike, bound: bound, spot: spot, timestamp: timestamp, optinos: optinos } });
