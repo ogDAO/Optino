@@ -43,10 +43,12 @@ const OptinoExplorer = {
                   </b-card-body>
                 </b-modal>
 
-                <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="seriesDataSorted" :fields="seriesDataFields" head-variant="light" :current-page="seriesCurrentPage" :per-page="seriesPerPage" :filter="seriesSearch" @filtered="seriesOnFiltered" :filter-included-fields="['symbol', 'name']" show-empty>
+                <b-table style="font-size: 85%;" small striped selectable select-mode="single" responsive hover :items="seriesDataSorted" :fields="seriesDataFields" head-variant="light" :current-page="seriesCurrentPage" :per-page="seriesPerPage" :filter="seriesSearch" @filtered="seriesOnFiltered" :filter-included-fields="['base', 'quote', 'feed0', 'feed1', 'type', 'strike', 'bound', 'optino', 'cover']" show-empty>
+                  <!--
                   <template v-slot:cell(base)="data">
                     <b-link :href="explorer + 'token/' + data.item.pair[0]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.pair[0]) + ' on the block explorer'">{{ tokenSymbol(data.item.pair[0]) }}</b-link>
                   </template>
+                  -->
                   <template v-slot:cell(quote)="data">
                     <b-link :href="explorer + 'token/' + data.item.pair[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.pair[1]) + ' on the block explorer'">{{ tokenSymbol(data.item.pair[1]) }}</b-link>
                   </template>
@@ -73,6 +75,11 @@ const OptinoExplorer = {
                   </template>
                   <template v-slot:cell(cover)="data">
                     <b-link :href="explorer + 'token/' + data.item.optinos[1]" class="card-link" target="_blank" v-b-popover.hover="'View ' + tokenName(data.item.optinos[1]) + ' on the block explorer'">{{ tokenSymbol(data.item.optinos[1]) }}</b-link>
+                  </template>
+                  <template v-slot:cell(extra)="row">
+                    <b-link @click="row.toggleDetails" class="card-link m-0 p-0" v-b-popover.hover="'Show ' + (row.detailsShowing ? 'less' : 'more')"><b-icon-caret-up-fill font-scale="0.9" v-if="row.detailsShowing"></b-icon-caret-up-fill><b-icon-caret-down-fill font-scale="0.9" v-if="!row.detailsShowing"></b-icon-caret-down-fill></b-link>
+                    <b-link @click="getSomeTokens(row.item.address)" class="card-link m-0 p-0" v-b-popover.hover="'Get some ' + row.item.symbol + ' tokens from the faucet for testing'"><b-icon-droplet font-scale="0.9"></b-icon-droplet></b-link>
+                    <b-link @click="removeTokenFromList(row.item.address, row.item.symbol)" class="card-link m-0 p-0" v-b-popover.hover="'Remove ' + row.item.symbol + ' from list. This can be added back later.'"><b-icon-trash font-scale="0.9"></b-icon-trash></b-link>
                   </template>
                 </b-table>
               </b-card-body>
@@ -607,7 +614,7 @@ const OptinoExplorer = {
       // },
       seriesDataFields: [
         { key: 'index', label: 'Index', sortable: true, thClass: 'text-right', tdClass: 'text-right' },
-        { key: 'base', label: 'Base', sortable: true },
+        { key: 'base', label: 'Base', sortable: true, filterByFormatted: true },
         { key: 'quote', label: 'Quote', sortable: true },
         { key: 'feed0', label: 'Feed0', sortable: true },
         { key: 'feed1', label: 'Feed1', sortable: true },
