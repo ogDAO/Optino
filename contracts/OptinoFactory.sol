@@ -10,15 +10,15 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.991-testnet-pre-release
+// Optino Factory v0.992-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x197e82bffF3Db9FA384941824E0721eD481256F6
-// OptinoFactory deployment on Ropsten: 0x5072d81a78e66FcB12359D18b34086f7d778Fd33
+// OptinoToken deployment on Ropsten:
+// OptinoFactory deployment on Ropsten:
 //
 // Web UI at https://bokkypoobah.github.io/Optino,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
@@ -335,7 +335,7 @@ contract NameUtils is DataType {
                 b[j++] = OPTINOSYMBOL[i];
             }
         }
-        i = 10;
+        i = 7;
         do {
             i--;
             num = id / 10 ** i;
@@ -997,7 +997,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.991-testnet-pre-release";
+    string public message = "v0.992-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
