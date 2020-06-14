@@ -9,7 +9,7 @@ See the Optino [wiki](https://github.com/bokkypoobah/Optino/wiki) for documentat
 
 The testing is in the [test](test) folder, with some sample results in [test/test1results.txt](test/test1results.txt).
 
-You can test out a version of the smart contracts using MetaMask connected to the Ropsten network at [https://bokkypoobah.github.io/Optino](https://bokkypoobah.github.io/Optino/#/vanillaOptinoExplorer/all).
+You can test out a version of the smart contracts using MetaMask connected to the Ropsten network at [https://bokkypoobah.github.io/OptinoExplorer](https://bokkypoobah.github.io/OptinoExplorer/#/vanillaOptinoExplorer/all).
 
 ---
 
