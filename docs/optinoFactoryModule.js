@@ -375,31 +375,6 @@ const optinoFactoryModule = {
             commit('updateFee', fee.shift(-16));
           }
 
-          var _feedLength = promisify(cb => factory.feedLength(cb));
-          var feedLength = await _feedLength;
-          // logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
-          for (var i = 0; i < feedLength; i++) {
-            var _feed = promisify(cb => factory.getFeedByIndex(i, cb));
-            var feed = await _feed;
-            // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
-            var address = feed[0];
-            var name = feed[1];
-            var note = feed[2];
-            var feedType = parseInt(feed[3][0]);
-            var decimals = parseInt(feed[3][1]);
-            var locked = parseInt(feed[3][2]) > 0;
-            var spot = feed[4];
-            var hasData = feed[5].toString();
-            var reportedDecimals = parseInt(feed[6]);
-            var timestamp = parseInt(feed[7]);
-            var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
-            var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
-            var record = { address: address, index: i, sortKey: sortKey, name: name, note: note,
-              type: feedType, decimals: decimals, locked: locked, spot: spot, hasData: hasData, reportedDecimals: reportedDecimals, timestamp: timestamp, source: "registered" };
-            commit('updateFeed', record);
-            store.dispatch('feeds/updateFeedIfUsing', record);
-          }
-
           /*
             // TODO: Fix updating of token info. Refresh for now
             [baseToken, quoteToken].forEach(async function(t) {
@@ -489,6 +464,33 @@ const optinoFactoryModule = {
                   callPut: callPut, expiry: expiry, strike: strike, bound: bound, spot: spot, timestamp: timestamp, optinos: optinos } });
               }
             }
+            
+            var _feedLength = promisify(cb => factory.feedLength(cb));
+            var feedLength = await _feedLength;
+            // logInfo("optinoFactoryModule", "execWeb3() feedLength: " + feedLength);
+            for (var i = 0; i < feedLength; i++) {
+              var _feed = promisify(cb => factory.getFeedByIndex(i, cb));
+              var feed = await _feed;
+              // logInfo("optinoFactoryModule", "execWeb3() feed: " + JSON.stringify(feed));
+              var address = feed[0];
+              var name = feed[1];
+              var note = feed[2];
+              var feedType = parseInt(feed[3][0]);
+              var decimals = parseInt(feed[3][1]);
+              var locked = parseInt(feed[3][2]) > 0;
+              var spot = feed[4];
+              var hasData = feed[5].toString();
+              var reportedDecimals = parseInt(feed[6]);
+              var timestamp = parseInt(feed[7]);
+              var matcher = feed[1].match(/\s*(\w+)\/(\w+)/);
+              var sortKey = matcher == null ? feed[1] : matcher[2] + "/" + matcher[1] + " " + feed[1];
+              var record = { address: address, index: i, sortKey: sortKey, name: name, note: note,
+                type: feedType, decimals: decimals, locked: locked, spot: spot, hasData: hasData, reportedDecimals: reportedDecimals, timestamp: timestamp, source: "registered" };
+              commit('updateFeed', record);
+              store.dispatch('feeds/updateFeedIfUsing', record);
+            }
+
+
           // }
 // bytes32 _pairKey, ERC20[2] memory _pair, address[2] memory _feeds, uint8[6] memory _feedParameters)
           /*

@@ -489,7 +489,7 @@ const TokensExplorer = {
     },
     formatNumberForDisplay(value, decimals) {
       // return parseFloat(new BigNumber(value).toFixed(decimals));
-      return parseFloat(new BigNumber(value).toFixed(decimals)).toLocaleString();
+      return parseFloat(new BigNumber(value).toFixed(decimals)).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 9});
     },
     addTokensToList(list) {
       logInfo("TokensExplorer", "addTokensToList(" + JSON.stringify(list) + ")");

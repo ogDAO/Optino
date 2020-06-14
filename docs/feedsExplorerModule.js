@@ -588,8 +588,8 @@ const FeedsExplorer = {
       return s;
     },
     formatValue(value, decimals) {
-      return parseFloat(new BigNumber(value).shift(-decimals).toFixed(decimals));
-      // return parseFloat(new BigNumber(value).toFixed(decimals)).toLocaleString();
+      // return parseFloat(new BigNumber(value).shift(-decimals).toFixed(decimals));
+      return parseFloat(new BigNumber(value).shift(-decimals).toFixed(decimals)).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 9});
     },
     addFeedsToList(list) {
       logInfo("FeedsExplorer", "addFeedsToList(" + JSON.stringify(list) + ")");
