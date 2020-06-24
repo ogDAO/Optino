@@ -10,17 +10,17 @@ pragma solidity ^0.6.8;
 //         | |                                                      __/ |
 //         |_|                                                     |___/
 //
-// Optino Factory v0.989-testnet-pre-release
+// Optino Factory v0.992-testnet-pre-release
 //
 // Status: Work in progress. To test, optimise and review
 //
 // A factory to conveniently deploy your own source code verified ERC20 vanilla
 // european optinos and the associated collateral optinos
 //
-// OptinoToken deployment on Ropsten: 0x4FDBD28f04A758bE949f315DA29Eba2717C69133
-// OptinoFactory deployment on Ropsten: 0x46c3C6F76E4cA194AeEf79d5322716cb27d4BF53
+// OptinoToken deployment on Ropsten: 0x1a00323741D7E6Dc0461909a8c7900C0c5680B21
+// OptinoFactory deployment on Ropsten: 0xe607dd1f70d79312575e3A350F1193EA9a89CB8e
 //
-// Web UI at https://bokkypoobah.github.io/Optino,
+// Web UI at https://bokkypoobah.github.io/OptinoExplorer,
 // Later at https://optino.xyz, https://optino.eth and https://optino.eth.link
 //
 // https://github.com/bokkypoobah/Optino
@@ -185,7 +185,7 @@ contract DataType {
         uint timestamp;
         uint index;
         address feed;
-        string[2] text; // [name, message]
+        string[2] text; // [name, note]
         uint8[3] data; // FeedDataField: [type, decimals, locked]
     }
     struct Series {
@@ -335,7 +335,7 @@ contract NameUtils is DataType {
                 b[j++] = OPTINOSYMBOL[i];
             }
         }
-        i = 10;
+        i = 7;
         do {
             i--;
             num = id / 10 ** i;
@@ -701,15 +701,19 @@ contract OptinoFormulae is DataType {
 
 /// @notice OptinoToken = basic token + burn + payoff + close + settle
 contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
+    enum BurnType { Close, Settle }
+
     OptinoFactory public factory;
     bytes32 public seriesKey;
     bool public isCover;
     OptinoToken public optinoPair;
     ERC20 public collateralToken;
+    uint public closed;
+    uint public settled;
 
-    event Close(OptinoToken indexed optinoToken, OptinoToken indexed coverToken, address indexed tokenOwner, uint tokens, uint collateralRefunded);
-    event Payoff(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPaid);
-    event LogInfo(bytes note, address addr, uint number);
+    event Close(OptinoToken indexed optinoToken, OptinoToken indexed coverToken, address indexed tokenOwner, uint tokens, uint collateralRefund);
+    event Settle(OptinoToken indexed optinoOrCoverToken, address indexed tokenOwner, uint tokens, uint collateralPayoff);
+    // event LogInfo(bytes note, address addr, uint number);
 
     function initOptinoToken(OptinoFactory _factory, bytes32 _seriesKey,  OptinoToken _optinoPair, bool _isCover, uint _decimals) public {
         (factory, seriesKey, optinoPair, isCover) = (_factory, _seriesKey, _optinoPair, _isCover);
@@ -720,10 +724,15 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
         super.initToken(address(factory), _symbol, _name, _decimals);
     }
 
-    function burn(address tokenOwner, uint tokens) external returns (bool success) {
+    function burn(address tokenOwner, uint tokens, BurnType burnType) external returns (bool success) {
         require(msg.sender == tokenOwner || msg.sender == address(optinoPair) || msg.sender == address(this), "Not authorised");
         balances[tokenOwner] = balances[tokenOwner].sub(tokens);
-        balances[address(0)] = balances[address(0)].add(tokens);
+        _totalSupply = _totalSupply.sub(tokens);
+        if (burnType == BurnType.Close) {
+            closed = closed.add(tokens);
+        } else if (burnType == BurnType.Settle) {
+            settled = settled.add(tokens);
+        }
         emit Transfer(tokenOwner, address(0), tokens);
         return true;
     }
@@ -789,12 +798,12 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
             payoff = isCover ? collateral.sub(payoff) : payoff;
         }
     }
-    function payoffForSpot(uint tokens, uint _spot) public view returns (uint payoff) {
-        (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
-        uint collateral = computeCollateral(_seriesData, tokens, decimalsData);
-        payoff = computePayoff(_seriesData, _spot, tokens, decimalsData);
-        payoff = isCover ? collateral.sub(payoff) : payoff;
-    }
+    // function payoffForSpot(uint tokens, uint _spot) public view returns (uint payoff) {
+    //     (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
+    //     uint collateral = computeCollateral(_seriesData, tokens, decimalsData);
+    //     payoff = computePayoff(_seriesData, _spot, tokens, decimalsData);
+    //     payoff = isCover ? collateral.sub(payoff) : payoff;
+    // }
     function payoffForSpots(uint tokens, uint[] memory spots) public view returns (uint[] memory payoffs) {
         payoffs = new uint[](spots.length);
         (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
@@ -815,8 +824,8 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
         } else {
             require(tokens <= optinoPair.balanceOf(tokenOwner), "Insufficient optino tokens");
             require(tokens <= this.balanceOf(tokenOwner), "Insufficient cover tokens");
-            require(optinoPair.burn(tokenOwner, tokens), "Burn optino tokens failure");
-            require(this.burn(tokenOwner, tokens), "Burn cover tokens failure");
+            require(optinoPair.burn(tokenOwner, tokens, BurnType.Close), "Burn optino tokens failure");
+            require(this.burn(tokenOwner, tokens, BurnType.Close), "Burn cover tokens failure");
             (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
             uint collateralRefund = computeCollateral(_seriesData, tokens, decimalsData);
             bool isEmpty = optinoPair.totalSupply() + this.totalSupply() == 0;
@@ -830,6 +839,7 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
         settleFor(msg.sender);
     }
     function settleFor(address tokenOwner) public {
+        require(msg.sender == tokenOwner || msg.sender == address(optinoPair) || msg.sender == address(this), "Not authorised");
         if (!isCover) {
             optinoPair.settleFor(tokenOwner);
         } else {
@@ -846,11 +856,11 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
             uint collateral;
             (uint[5] memory _seriesData, uint8[4] memory decimalsData) = factory.getCalcData(seriesKey);
             if (optinoTokens > 0) {
-                require(optinoPair.burn(tokenOwner, optinoTokens), "Burn optino tokens failure");
+                require(optinoPair.burn(tokenOwner, optinoTokens, BurnType.Settle), "Burn optino tokens failure");
             }
             bool isEmpty1 = optinoPair.totalSupply() + this.totalSupply() == 0;
             if (coverTokens > 0) {
-                require(this.burn(tokenOwner, coverTokens), "Burn cover tokens failure");
+                require(this.burn(tokenOwner, coverTokens, BurnType.Settle), "Burn cover tokens failure");
             }
             bool isEmpty2 = optinoPair.totalSupply() + this.totalSupply() == 0;
             if (optinoTokens > 0) {
@@ -859,7 +869,7 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
                     payoff = isEmpty1 ? collateralToken.balanceOf(address(this)) : payoff;
                     require(collateralToken.transfer(tokenOwner, payoff), "Payoff transfer failure");
                 }
-                emit Payoff(optinoPair, tokenOwner, optinoTokens, payoff);
+                emit Settle(optinoPair, tokenOwner, optinoTokens, payoff);
             }
             if (coverTokens > 0) {
                 payoff = computePayoff(_seriesData, _spot, coverTokens, decimalsData);
@@ -869,7 +879,7 @@ contract OptinoToken is BasicToken, OptinoFormulae, NameUtils {
                     coverPayoff = isEmpty2 ? collateralToken.balanceOf(address(this)) : coverPayoff;
                     require(collateralToken.transfer(tokenOwner, coverPayoff), "Cover payoff transfer failure");
                 }
-                emit Payoff(this, tokenOwner, coverTokens, coverPayoff);
+                emit Settle(this, tokenOwner, coverTokens, coverPayoff);
             }
         }
     }
@@ -997,7 +1007,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     uint private constant GRACEPERIOD = 7 * ONEDAY; // Manually set spot 7 days after expiry, if feed fails (spot == 0 or hasValue == 0)
 
     address public optinoTokenTemplate;
-    string public message = "v0.989-testnet-pre-release";
+    string public message = "v0.992-testnet-pre-release";
     uint public fee = 10 ** 15; // 0.1%, 1 ETH = 0.001 fee
 
     mapping(address => Feed) feedData; // address => Feed
@@ -1010,11 +1020,11 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
     event TokenDecimalsUpdated(ERC20 indexed token, uint8 decimals, uint8 locked);
     event FeedUpdated(address indexed feed, string name, uint8 feedType, uint8 decimals);
     event FeedLocked(address indexed feed);
-    event FeedMessageUpdated(address indexed feed, string message);
+    event FeedNoteUpdated(address indexed feed, string note);
     event SeriesAdded(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos);
     event SeriesSpotUpdated(bytes32 indexed seriesKey, uint spot);
     event OptinosMinted(bytes32 indexed seriesKey, uint indexed seriesIndex, OptinoToken[2] optinos, uint tokens, uint ownerFee, uint integratorFee);
-    event LogInfo(bytes note, address addr, uint number);
+    // event LogInfo(bytes note, address addr, uint number);
 
     constructor(address _optinoTokenTemplate) public {
         require(_optinoTokenTemplate != address(0), "Invalid template");
@@ -1031,7 +1041,7 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         fee = _fee;
     }
 
-    function updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals) public onlyOwner {
+    function updateFeed(address _feed, string memory name, string memory _note, uint8 feedType, uint8 decimals) public onlyOwner {
         Feed storage feed = feedData[_feed];
         require(feed.data[uint(FeedDataField.Locked)] == 0, "Locked");
         (uint spot, bool hasData, uint8 feedDecimals, uint timestamp) = getRateFromFeed(_feed, FeedType(feedType));
@@ -1043,11 +1053,12 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         require(timestamp == uint(NODATA) || timestamp + ONEDAY > block.timestamp, "Feed stale");
         if (feed.feed == address(0)) {
             feedIndex.push(_feed);
-            feedData[_feed] = Feed(block.timestamp, feedIndex.length - 1, _feed, [name, _message], [feedType, decimals, 0]);
+            feedData[_feed] = Feed(block.timestamp, feedIndex.length - 1, _feed, [name, _note], [feedType, decimals, 0]);
         } else {
             feed.text[0] = name;
-            feed.text[1] = message;
+            feed.text[1] = _note;
             feed.data = [feedType, decimals, 0];
+            feed.timestamp = block.timestamp;
         }
         emit FeedUpdated(_feed, name, feedType, decimals);
     }
@@ -1059,18 +1070,18 @@ contract OptinoFactory is Owned, CloneFactory, OptinoFormulae, FeedHandler {
         feed.timestamp = block.timestamp;
         emit FeedLocked(_feed);
     }
-    function updateFeedMessage(address _feed, string memory _message) public onlyOwner {
+    function updateFeedNote(address _feed, string memory _note) public onlyOwner {
         Feed storage feed = feedData[_feed];
         require(feed.timestamp > 0, "Invalid feed");
-        feed.text[1] = _message;
+        feed.text[1] = _note;
         feed.timestamp = block.timestamp;
-        emit FeedMessageUpdated(_feed, feed.text[1]);
+        emit FeedNoteUpdated(_feed, _note);
     }
-    function getFeedByIndex(uint i) public view returns (address feed, string memory feedName, string memory _message, uint8[3] memory _feedData, uint spot, bool hasData, uint8 feedReportedDecimals, uint feedTimestamp) {
+    function getFeedByIndex(uint i) public view returns (address feed, string memory feedName, string memory _note, uint8[3] memory _feedData, uint spot, bool hasData, uint8 feedReportedDecimals, uint feedTimestamp) {
         require(i < feedIndex.length, "Invalid index");
         feed = feedIndex[i];
         Feed memory _feed = feedData[feed];
-        (feedName, _message, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
+        (feedName, _note, _feedData) = (_feed.text[0], _feed.text[1], _feed.data);
         (spot, hasData, feedReportedDecimals, feedTimestamp) = getRateFromFeed(_feed.feed, FeedType(_feed.data[uint(FeedDataField.Type)]));
     }
     function getFeedData(address _feed) public view returns (bool isRegistered, string memory feedName, uint8 feedType, uint8 decimals) {

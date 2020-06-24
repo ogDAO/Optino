@@ -164,6 +164,11 @@ v0.991-testnet-pre-release
 OptinoToken https://ropsten.etherscan.io/address/0x197e82bffF3Db9FA384941824E0721eD481256F6#code
 Factory https://ropsten.etherscan.io/address/0x5072d81a78e66FcB12359D18b34086f7d778Fd33#code
 
+v0.992-testnet-pre-release
+OptinoToken https://ropsten.etherscan.io/address/0x1a00323741D7E6Dc0461909a8c7900C0c5680B21#code
+Factory https://ropsten.etherscan.io/address/0xe607dd1f70d79312575e3A350F1193EA9a89CB8e#code
+Last 2 feeds below left off to test custom feeds
+
 # Ropsten Feed data
 
 updateFeed(address _feed, string memory name, string memory _message, uint8 feedType, uint8 decimals)
